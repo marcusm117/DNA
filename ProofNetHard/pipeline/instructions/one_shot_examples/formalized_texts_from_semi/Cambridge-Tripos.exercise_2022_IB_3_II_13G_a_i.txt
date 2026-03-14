@@ -1,0 +1,11 @@
+Now we can convert the Semi-Formalized Structure to a Formalized Statement. According to the guidelines, we will do the following:
+
+1. Formalize the quantification properly, remember to use the binder form whenever possible and as much as possible.
+2. Formalize each clause (maybe sub-structure) in the premises properly especially the quantifications, remember to use the binder form whenever possible and as much as possible.
+3. Formalize each clause (maybe sub-structure) in the conclusions properly especially the quantifications.
+4. Assemble the quantification, premises, and conclusions properly into a Formalized Statement. Name the theorem following the guidelines as `thm_Q`. Use the correct syntax if we are using the binder form.
+5. Wrap the entire Formalized Statement with triple angle brackets (<<< Lean expression here >>>) for parsing.
+
+Finally, we have the Formalized Statement:
+
+<<< theorem thm_Q (U : Set ℂ) (hU_1 : Nonempty U) (hU_2 : IsConnected U) (hU_3 : IsOpen U) (f_n : ℕ → ℂ → ℂ) (hf_n_1 : ∀ n : ℕ, DifferentiableOn ℂ (f_n n) U) (f : ℂ → ℂ) (hf_1 : ∀ X : Set ℂ, X ⊆ U ∧ IsCompact X → TendstoUniformlyOn (λ n x => f_n n x) f atTop X) : DifferentiableOn ℂ f U := by sorry >>>

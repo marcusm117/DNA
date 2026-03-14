@@ -1,0 +1,3 @@
+In the diagram, points T, U, W, and V form a quadrilateral □TUWV with an inside line TV.
+
+∠ T V U ≅ ∠ V T W , T U ⟂ U V , and V W ⟂ T W. Complete the proof that T U ≅ V W.

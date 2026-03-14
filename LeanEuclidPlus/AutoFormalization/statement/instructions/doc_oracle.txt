@@ -1,0 +1,105 @@
+-- Basic Geometric Sorts --
+axiom Point : Type
+axiom Line : Type
+axiom Circle : Type
+
+
+
+-- Inductive Types for Geometric Entities --
+inductive Angle | right | ofPoints (A B C : Point)
+inductive Segment | endpoints (a b : Point)
+inductive Triangle | ofPoints (a b c : Point)
+
+
+
+-- Notations and Macros for Geometric Entities --
+"|(a─b)|" means the length of the line segment (type ℝ, not type Segment) between point a and point b.
+
+"∠ a:b:c" means the degree of the angle (type ℝ, not type Angle) formed by points a, b, and c, where b is the vertex of the angle and a and c are points respectively on the two sides of the angle. Add parentheses around the angle notation like "(∠ a:b:c)" to avoid ambiguity.
+
+"∟" means the degree of the right angle (type ℝ, not type Angle).
+
+"△ a:b:c" means the triangle (type Triangle) formed from points a, b and c.
+"Triangle.area △ a:b:c" means the area of the triangle formed by points a, b and c. Add parentheses around the triangle notation like "(△ a:b:c)" to avoid ambiguity.
+
+
+
+-- Relations and Axioms for Geometric Sorts --
+namespace Point
+def onLine (a : Point) (L : Line) -- point a is on line L. The syntax is `a.onLine L`.
+
+def sameSide (a b : Point) (L : Line) -- point a and b are on the same side of line L. They both are not on line L, but can be the same point. The syntax is `a.sameSide b L`.
+
+def opposingSides (a b : Point) (L : Line) -- distinct point a and b are on opposite sides of line L. They both are not on line L. The syntax is `a.opposingSides b L`.
+
+def onCircle (a: Point) (C: Circle) -- point a is on circle C. The syntax is `a.onCircle C`.
+
+def insideCircle (a: Point) (C: Circle) -- point a is inside circle C. It can't be on the circle. The syntax is `a.insideCircle C`.
+
+def outsideCircle (a: Point) (C: Circle)-- point a is outside circle C. It can't be on the circle. The syntax is `a.outsideCircle C`.
+
+def isCentre (a: Point) (C: Circle) -- point a is on the unique center circle C. The syntax is `a.isCentre C`.
+end Point
+
+
+namespace Line
+def intersectsLine (L M : Line) -- two lines L and M intersect at some point. They can be the same line. The syntax is `L.intersectsLine M`.
+
+def intersectsCircle (L : Line) (C : Circle) -- line L and circle C intersect. The syntax is `L.intersectsCircle C`.
+end Line
+
+
+namespace Circle
+def intersectsCircle (C1 C2: Circle) -- circle C1 and C2 intersect. The syntax is `C1.intersectsCircle C2`.
+end Circle
+
+
+namespace Triangle
+def congruent (T1 T2 : Triangle) -- triangle T1 and T2 are congruent. Note that the order of vertices of T1 and T2 must correspond to each other! For example, if T1 is △ A:B:C, then T2 must be △ D:E:F with A corresponding to D, B corresponding to E, and C corresponding to F. The syntax is `(△ A:B:C).congruent (△ D:E:F)`.
+
+def similar (T1 T2 : Triangle) -- triangle T1 and T2 are similar. Note that the order of vertices of T1 and T2 must correspond to each other! For example, if T1 is △ A:B:C, then T2 must be △ D:E:F with A corresponding to D, B corresponding to E, and C corresponding to F. The syntax is `(△ A:B:C).similar (△ D:E:F)`.
+end Triangle
+
+
+-- Geometric Relations --
+def distinctPointsOnLine (a b : Point) (L : Line) -- points a and b are distinct and on line L. The syntax is `distinctPointsOnLine a b L`.
+
+def twoLinesIntersectAtPoint (L1 L2 : Line) (i: Point) -- distinct lines L1 and L2 intersect at point i. The syntax is `twoLinesIntersectAtPoint L1 L2 i`.
+
+def between (a b c : Point) -- mutually distinct points a, b and c are collinear and ordered. Point b is between point a and c. The syntax is `between a b c`.
+
+def formTriangle (a b c : Point) (AB BC CA : Line) -- mutually distinct points a, b and c form a triangle, where point a and b are on line AB, point b and c are on line BC, point a and c are on line CA. The lines AB, BC, and CA must be distinct. Note that the order and correspondence of arguments a, b, c, AB, BC, CA is strictly required i.e. a and b must be on AB, b and c must be on BC, a and c must be on CA, and they must be passed in the exact order! The syntax is `formTriangle a b c AB BC CA`.
+
+def formRectilinearAngle (a b c : Point) (AB BC : Line)  -- points a, b and c form a rectilinear angle, where b is the vertex of the angle and a and c are points respectively on the sides AB and BC. The sides AB and BC can be the same line, the points a and c can be the same point, but the vertex b must be distinct from a and c. The syntax is `formRectilinearAngle a b c AB BC`.
+
+def formParallelogram (a b c d : Point) (AB CD AC BD : Line) -- mutually distinct points a, b, d, and c (in clockwise/counterclockwise order i.e. ad is a diagonal) form a parallelogram, where points a and b are on line AB, points c and d are on line CD, points a and c are on line AC, and points b and d are on line BD. The lines AB, CD, AC, and BD must be distinct. Note that the order and correspondence of arguments a, b, c, d, AB, CD, AC, BD is strictly required i.e. a and b must be on AB, c and d must be on CD, a and c must be on AC, b and d must be on BD, and they must be passed in the exact order! The syntax is `formParallelogram a b c d AB CD AC BD`.
+
+def formConvexQuadrilateral (a b c d : Point) (AB CD AC BD : Line) -- mutually distinct points a, b, d, and c (in clockwise/counterclockwise order i.e. ad is a diagonal) form a convex quadrilateral, where points a and b are on line AB, points c and d are on line CD, points a and c are on line AC, and points b and d are on line BD. The lines AB, CD, AC, and BD must be distinct. Note that the order and correspondence of arguments a, b, c, d, AB, CD, AC, BD is strictly required i.e. a and b must be on AB, c and d must be on CD, a and c must be on AC, b and d must be on BD, and they must be passed in the exact order! The syntax is `formConvexQuadrilateral a b c d AB CD AC BD`.
+
+def formConvexQuadrilateralWithDiagonalAD (a b c d: Point) (AB CD AC BD AD : Line) -- mutually distinct points a, b, d, and c (in clockwise/counterclockwise order i.e. ad is a diagonal) form a convex quadrilateral with line AD being one diagonal, where points a and b are on line AB, points c and d are on line CD, points a and c are on line AC, and points b and d are on line BD. The lines AB, CD, AC, BD, and AD must be distinct. Note that the order and correspondence of arguments a, b, c, d, AB, CD, AC, BD, AD is strictly required i.e. a and b must be on AB, c and d must be on CD, a and c must be on AC, b and d must be on BD, a and d must be on AD, and they must be passed in the exact order! The syntax is `formConvexQuadrilateralWithDiagonalAD a b c d AB CD AC BD AD`, you shouldn't change the relation name `formConvexQuadrilateralWithDiagonalAD`!
+
+def formConvexQuadrilateralWithDiagonalBC (a b c d: Point) (AB CD AC BD BC : Line) -- mutually distinct points a, b, d, and c (in clockwise/counterclockwise order i.e. ad is a diagonal) form a convex quadrilateral with line BC being one diagonal, where points a and b are on line AB, points c and d are on line CD, points a and c are on line AC, and points b and d are on line BD. The lines AB, CD, AC, BD, and BC must be distinct. Note that the order and correspondence of arguments a, b, c, d, AB, CD, AC, BD, BC is strictly required i.e. a and b must be on AB, c and d must be on CD, a and c must be on AC, b and d must be on BD, b and c must be on BC, and they must be passed in the exact order! The syntax is `formConvexQuadrilateralWithDiagonalBC a b c d AB CD AC BD BC`, you shouldn't change the relation name `formConvexQuadrilateralWithDiagonalBC`!
+
+def parallel (L1 L2 : Line) -- distinct lines L1 and L2 are parallel. The syntax is `parallel L1 L2`.
+
+def perpendicular (L1 L2 : Line) (p1 p2 i: Point) -- distinct lines L1 and L2 are perpendicular, where L1 intersects L2 at point i, p1 is a point on L1 distinct from i, p2 is a point on L2 distinct from i, and ∠ p1:i:p2 is a right angle i.e. ∠ p1:i:p2 = ∟. Note that the order and correspondence of arguments L1, L2, p1, p2, i is strictly required i.e. L1 must intersect L2 at i, p1 must be on L1 and distinct from i, p2 must be on L2 and distinct from i, and they must be passed in the exact order! The syntax is `perpendicular L1 L2 p1 p2 i`.
+
+def midpoint (a b c : Point) -- point c is the midpoint of the line segment formed by endpoints a and b i.e. b is between a and c, and |(a─b)| = |(b─c)|. The points a, b, and c are mutually distinct. The syntax is `midpoint a b c`.
+
+def supplementaryAngles (α β : ℝ) -- degree of the angles α and β are supplementary, i.e. α + β is a straight angle i.e. α + β = ∟ + ∟. If α = ∠ a:b:c and β = ∠ d:e:f, then the syntax is `supplementaryAngles (∠ a:b:c) (∠ d:e:f)`.
+
+def sequentiallyAlignedList (point_list : List Point) -- mutually distinct points in the list are sequentially aligned i.e. they are collinear and ordered in the order of the list. The order of points in the list matters! The syntax is `sequentiallyAlignedList point_list`.
+
+def collinearAndOrderedList (point_list : List Point) -- an alias for sequentiallyAlignedList i.e. mutually distinct points in the list are collinear and ordered in the order of the list. The order of points in the list matters! The syntax is `collinearAndOrderedList point_list`.
+
+def sameSideList (point_list : List Point) (L : Line) -- all points in the list are on the same side of line L. Any two of them can be the same point. The order of points in the list doesn't matter. The syntax is `sameSideList point_list L`.
+
+def sameSideDistinctList (point_list : List Point) (L : Line) -- all points in the list are on the same side of line L. These points must be mutually distinct. The order of points in the list doesn't matter. The syntax is `sameSideDistinctList point_list L`.
+
+def extendedPointCloserToA (a b c: Point) -- point c is an extended point of the line segment formed by endpoints a and b, closer to point a. The points a, b, and c are mutually distinct. The syntax is `extendedPointCloserToA a b c`, you shouldn't change the relation name `extendedPointCloserToA`!
+
+def extendedPointCloserToB (a b c: Point) -- point c is an extended point of the line segment formed by endpoints a and b, closer to point b. The points a, b, and c are mutually distinct. The syntax is `extendedPointCloserToB a b c`, you shouldn't change the relation name `extendedPointCloserToB`!
+
+def lineBisectsAngle (a b c x: Point) (BX : Line) -- line BX bisects the angle ∠ a:b:c, where b and x are distinct points on BX, and ∠ a:b:x = ∠ c:b:x. The angle ∠ a:b:c can be a zero angle. The order and correspondence of arguments a, b, c, x, BX is strictly required i.e. b and x must be on BX, and they must be passed in the exact order! The syntax is `lineBisectsAngle a b c x BX`.
+
+def equilateralTriangle (a b c: Point) -- triangle △ a:b:c formed by points a, b, and c is equilateral, i.e. |(a─b)| = |(b─c)| = |(c─a)|. The triangle △ a:b:c can be a degenerate triangle i.e. a = b = c. The syntax is `equilateralTriangle a b c`.

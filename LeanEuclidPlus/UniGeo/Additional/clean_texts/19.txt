@@ -1,0 +1,3 @@
+There are two circles f and g with centers U and V. The line UV is fixed by the two centers U and V. It intersects f at point W and g at point X. The two circles intersect at points F and G with F and G on the opposite sides of the line UV.
+
+Given that FX ∥ GW, and ∠VFX ≅ ∠UGW. Complete the proof that △VXF ~ △WUG.

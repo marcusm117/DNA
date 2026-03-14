@@ -1,0 +1,5 @@
+Not Applicable, the original text is ambiguous.
+
+Disambiguating Premises based on the original formalization (for curation of clean text only):
+
+The lines WU and VX intersect at point Y. The point Y lies between V and X.

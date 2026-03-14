@@ -1,0 +1,3 @@
+In the diagram, lines PR and SZ intersect at Q. TV and SZ intersect at U, WY and SZ intersect at X. The points S, Q, U, X, and Z are sequentially aligned.
+
+Given W Y ∥ P R and T V ∥ P R. Complete the proof that W Y ∥ T V.

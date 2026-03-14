@@ -1,0 +1,3 @@
+There are two triangles △TSW and △UVW. Line UV is inside △TSW, and intersecting SW at U and intersecting TW at V.
+
+Given ∠T and ∠ T V U are supplementary. Complete the proof that △ U V W ~ △ S T W.

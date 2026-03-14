@@ -1,0 +1,3 @@
+In the diagram, there is a convex quadrilateral □HIKJ. HJ is a diagonal line of the quadrilateral.
+
+J K ≅ H I and H K ≅ I J. Complete the proof that ∠K ≅ ∠I.

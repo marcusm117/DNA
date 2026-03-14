@@ -1,0 +1,3 @@
+There are two convex quadrilaterals □GHIF and □GYZH with the vertices arranged in the named order clockwise. They share a common side GH. The points F, G, Y are sequentially aligned on the line FY.
+
+Given GH ⟂ FY, GH ∥ FI, and ∠IFH ≅ ∠HYG. Complete the proof that △HYG ~ △FHG.

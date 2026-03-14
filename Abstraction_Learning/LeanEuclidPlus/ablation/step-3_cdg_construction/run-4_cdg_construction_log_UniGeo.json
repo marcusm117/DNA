@@ -1,0 +1,521 @@
+[
+  {
+    "batch_index": 1,
+    "concepts_analyzed": [
+      "two distinct lines intersecting at a point in 2-dimensional Euclidean space",
+      "three or more distinct points being sequentially aligned on a line in Euclidean plane",
+      "two sets of points lying on opposing sides of a line in Euclidean plane",
+      "two angles in Euclidean plane being supplementary",
+      "two lines being parallel in 2-dimensional Euclidean space"
+    ],
+    "llm_reasoning": [],
+    "llm_response": "<<<\n{\n  \"two distinct lines intersecting at a point in 2-dimensional Euclidean space\": {\n    \"analysis\": \"The concept of two distinct lines intersecting at a point is closely related to the DSL's `intersectsLine` relation defined in the `Line` namespace. However, `L.intersectsLine M` only states that lines L and M intersect, without requiring them to be distinct. The current concept specifies that the lines must be distinct. Since the DSL does not have a built-in relation for 'distinct lines intersecting', we need to express 'distinctness' explicitly. In Lean 4, we can express inequality between two lines using `L ≠ M`. Therefore, the full concept can be formalized as `L ≠ M ∧ L.intersectsLine M`. Since both `≠` (from Lean's logic) and `intersectsLine` (from the DSL) are available, this concept is directly expressible using existing DSL and Lean primitives.\",\n    \"formal_correspondents\": [\n      \"Line.intersectsLine\",\n      \"≠ (inequality from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"three or more distinct points being sequentially aligned on a line in Euclidean plane\": {\n    \"analysis\": \"This concept refers to multiple (at least three) distinct points lying on a single line, with a sequential (i.e., ordered) arrangement. The DSL provides `distinctPointsOnLine a b L` which ensures two distinct points a and b are on line L. However, this only handles two points. For three or more points, we need to generalize. Additionally, 'sequentially aligned' implies an order — for example, point b is between a and c. The DSL includes the `between a b c` relation, which expresses that three mutually distinct, collinear points are ordered with b between a and c. To express 'three or more points sequentially aligned', we can use a combination of `onLine` for each point and a chain of `between` relations. For example, for points a, b, c, d on line L with order a-b-c-d, we can express `between a b c`, `between b c d`, etc. Since all points must be on the same line, we can use `a.onLine L`, `b.onLine L`, etc. All these elements (`onLine`, `between`, `≠`) are available in the DSL or Lean. Therefore, the concept can be directly expressed by combining these primitives, even though no single DSL function encapsulates it. Hence, it is directly expressible.\",\n    \"formal_correspondents\": [\n      \"Point.onLine\",\n      \"between\",\n      \"≠ (inequality from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"two sets of points lying on opposing sides of a line in Euclidean plane\": {\n    \"analysis\": \"This concept involves two sets of points (say, set A and set B) such that every point in A is on one side of a line L, every point in B is on the opposite side, and no point is on L. The DSL provides `a.opposingSides b L`, which means two distinct points a and b are on opposite sides of line L. However, this is for individual points. To extend this to sets, we need to quantify over all points in each set. In Lean 4, we can express universal quantification. For example, if A and B are sets (types like `Set Point`), then the condition can be formalized as: ∀ a ∈ A, ∀ b ∈ B, a ≠ b ∧ a.opposingSides b L. Additionally, we must ensure that no point in A or B lies on L, which can be expressed using `¬(a.onLine L)` for all a in A ∪ B. The DSL does not define sets of points or quantification over them, but Lean 4 supports `Set Point`, universal quantifiers, and logical negation. Therefore, using Lean's logic and the DSL's `opposingSides` and `onLine`, this concept can be directly expressed. No new mathematical concepts need to be introduced. Thus, it is directly expressible.\",\n    \"formal_correspondents\": [\n      \"Point.opposingSides\",\n      \"Point.onLine\",\n      \"∀ (universal quantifier from Lean 4)\",\n      \"¬ (negation from Lean 4)\",\n      \"Set Point (from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"two angles in Euclidean plane being supplementary\": {\n    \"analysis\": \"Two angles are supplementary if the sum of their measures is 180 degrees. The DSL provides angle notation: `∠ a:b:c` denotes the degree measure (as a real number) of the angle formed by points a, b, c with vertex at b. Therefore, given two angles, say `∠ a:b:c` and `∠ d:e:f`, their sum can be expressed as `(∠ a:b:c) + (∠ d:e:f)`. The concept of being supplementary is then `(∠ a:b:c) + (∠ d:e:f) = 180`. Since real number addition and equality are part of Lean 4, and the angle measure notation is part of the DSL, this can be directly expressed. There is no need for a new relation or function. The value 180 can be written as a real number literal. Therefore, this concept is directly expressible using existing DSL and Lean constructs.\",\n    \"formal_correspondents\": [\n      \"∠ a:b:c (angle measure notation)\",\n      \"+ (real addition from Lean 4)\",\n      \"= (equality from Lean 4)\",\n      \"180 (real number literal)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"two lines being parallel in 2-dimensional Euclidean space\": {\n    \"analysis\": \"The concept of two lines being parallel is not directly present in the DSL. The DSL has `intersectsLine`, but no primitive for non-intersection or parallelism. In Euclidean geometry, two distinct lines are parallel if they do not intersect. So, parallelism can be defined as `L ≠ M ∧ ¬(L.intersectsLine M)`. The DSL provides `intersectsLine`, and Lean provides negation and inequality. Therefore, we can define parallelism using existing constructs. However, note that the concept 'parallel' typically includes the case of a line being parallel to itself in some contexts, but in classical Euclidean geometry, parallel lines are often required to be distinct. The standard definition in Euclidean geometry is that two lines are parallel if they are coplanar and do not intersect — which implies they are distinct. Since we can express non-intersection and distinctness using `¬(L.intersectsLine M)` and `L ≠ M`, the concept can be directly expressed as their conjunction. Therefore, no new mathematical object, relation, or function needs to be introduced. The concept is directly expressible using existing DSL and Lean logic.\",\n    \"formal_correspondents\": [\n      \"Line.intersectsLine\",\n      \"¬ (negation from Lean 4)\",\n      \"≠ (inequality from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  }\n}\n>>>",
+    "batch_analysis": {
+      "two distinct lines intersecting at a point in 2-dimensional Euclidean space": {
+        "analysis": "The concept of two distinct lines intersecting at a point is closely related to the DSL's `intersectsLine` relation defined in the `Line` namespace. However, `L.intersectsLine M` only states that lines L and M intersect, without requiring them to be distinct. The current concept specifies that the lines must be distinct. Since the DSL does not have a built-in relation for 'distinct lines intersecting', we need to express 'distinctness' explicitly. In Lean 4, we can express inequality between two lines using `L ≠ M`. Therefore, the full concept can be formalized as `L ≠ M ∧ L.intersectsLine M`. Since both `≠` (from Lean's logic) and `intersectsLine` (from the DSL) are available, this concept is directly expressible using existing DSL and Lean primitives.",
+        "formal_correspondents": [
+          "Line.intersectsLine",
+          "≠ (inequality from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "three or more distinct points being sequentially aligned on a line in Euclidean plane": {
+        "analysis": "This concept refers to multiple (at least three) distinct points lying on a single line, with a sequential (i.e., ordered) arrangement. The DSL provides `distinctPointsOnLine a b L` which ensures two distinct points a and b are on line L. However, this only handles two points. For three or more points, we need to generalize. Additionally, 'sequentially aligned' implies an order — for example, point b is between a and c. The DSL includes the `between a b c` relation, which expresses that three mutually distinct, collinear points are ordered with b between a and c. To express 'three or more points sequentially aligned', we can use a combination of `onLine` for each point and a chain of `between` relations. For example, for points a, b, c, d on line L with order a-b-c-d, we can express `between a b c`, `between b c d`, etc. Since all points must be on the same line, we can use `a.onLine L`, `b.onLine L`, etc. All these elements (`onLine`, `between`, `≠`) are available in the DSL or Lean. Therefore, the concept can be directly expressed by combining these primitives, even though no single DSL function encapsulates it. Hence, it is directly expressible.",
+        "formal_correspondents": [
+          "Point.onLine",
+          "between",
+          "≠ (inequality from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "two sets of points lying on opposing sides of a line in Euclidean plane": {
+        "analysis": "This concept involves two sets of points (say, set A and set B) such that every point in A is on one side of a line L, every point in B is on the opposite side, and no point is on L. The DSL provides `a.opposingSides b L`, which means two distinct points a and b are on opposite sides of line L. However, this is for individual points. To extend this to sets, we need to quantify over all points in each set. In Lean 4, we can express universal quantification. For example, if A and B are sets (types like `Set Point`), then the condition can be formalized as: ∀ a ∈ A, ∀ b ∈ B, a ≠ b ∧ a.opposingSides b L. Additionally, we must ensure that no point in A or B lies on L, which can be expressed using `¬(a.onLine L)` for all a in A ∪ B. The DSL does not define sets of points or quantification over them, but Lean 4 supports `Set Point`, universal quantifiers, and logical negation. Therefore, using Lean's logic and the DSL's `opposingSides` and `onLine`, this concept can be directly expressed. No new mathematical concepts need to be introduced. Thus, it is directly expressible.",
+        "formal_correspondents": [
+          "Point.opposingSides",
+          "Point.onLine",
+          "∀ (universal quantifier from Lean 4)",
+          "¬ (negation from Lean 4)",
+          "Set Point (from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "two angles in Euclidean plane being supplementary": {
+        "analysis": "Two angles are supplementary if the sum of their measures is 180 degrees. The DSL provides angle notation: `∠ a:b:c` denotes the degree measure (as a real number) of the angle formed by points a, b, c with vertex at b. Therefore, given two angles, say `∠ a:b:c` and `∠ d:e:f`, their sum can be expressed as `(∠ a:b:c) + (∠ d:e:f)`. The concept of being supplementary is then `(∠ a:b:c) + (∠ d:e:f) = 180`. Since real number addition and equality are part of Lean 4, and the angle measure notation is part of the DSL, this can be directly expressed. There is no need for a new relation or function. The value 180 can be written as a real number literal. Therefore, this concept is directly expressible using existing DSL and Lean constructs.",
+        "formal_correspondents": [
+          "∠ a:b:c (angle measure notation)",
+          "+ (real addition from Lean 4)",
+          "= (equality from Lean 4)",
+          "180 (real number literal)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "two lines being parallel in 2-dimensional Euclidean space": {
+        "analysis": "The concept of two lines being parallel is not directly present in the DSL. The DSL has `intersectsLine`, but no primitive for non-intersection or parallelism. In Euclidean geometry, two distinct lines are parallel if they do not intersect. So, parallelism can be defined as `L ≠ M ∧ ¬(L.intersectsLine M)`. The DSL provides `intersectsLine`, and Lean provides negation and inequality. Therefore, we can define parallelism using existing constructs. However, note that the concept 'parallel' typically includes the case of a line being parallel to itself in some contexts, but in classical Euclidean geometry, parallel lines are often required to be distinct. The standard definition in Euclidean geometry is that two lines are parallel if they are coplanar and do not intersect — which implies they are distinct. Since we can express non-intersection and distinctness using `¬(L.intersectsLine M)` and `L ≠ M`, the concept can be directly expressed as their conjunction. Therefore, no new mathematical object, relation, or function needs to be introduced. The concept is directly expressible using existing DSL and Lean logic.",
+        "formal_correspondents": [
+          "Line.intersectsLine",
+          "¬ (negation from Lean 4)",
+          "≠ (inequality from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      }
+    },
+    "new_dependencies_found": [],
+    "queue_after_batch": [
+      "two angles in Euclidean plane being congruent",
+      "a triangle in 2-dimensional Euclidean space defined by three non-collinear points",
+      "two triangles sharing a common vertex in Euclidean plane",
+      "an angle at a vertex of a triangle in Euclidean plane",
+      "a line segment from a vertex of a triangle to a point on the opposite side in Euclidean plane",
+      "a point being the midpoint of a line segment in Euclidean plane",
+      "a line segment bisecting an angle at a vertex of a triangle in Euclidean plane",
+      "a point lying on the extension of a line segment beyond an endpoint in Euclidean plane",
+      "two line segments in Euclidean plane being congruent",
+      "two lines being perpendicular in 2-dimensional Euclidean space",
+      "two ratios of lengths of line segments in Euclidean plane being equal",
+      "three angles in a triangle in Euclidean plane summing to 180 degrees",
+      "the ratio of lengths function mapping two line segments in Euclidean plane to a positive real number",
+      "two triangles being similar in 2-dimensional Euclidean space",
+      "a convex quadrilateral in 2-dimensional Euclidean space defined by four non-collinear points",
+      "a diagonal of a quadrilateral in Euclidean plane defined as a line segment connecting two non-adjacent vertices",
+      "a line segment bisecting an angle at its vertex in Euclidean plane",
+      "two triangles being congruent in 2-dimensional Euclidean space",
+      "two triangles sharing a common side in Euclidean plane",
+      "a triangle in Euclidean plane being equilateral",
+      "a triangle in 2-dimensional Euclidean space being isosceles",
+      "a line intersecting two sides of a triangle and being parallel to the third side in Euclidean plane",
+      "a line intersecting two sides of a triangle in Euclidean plane"
+    ],
+    "batch_status_summary": {
+      "directly_expressible": 5,
+      "needs_dependencies": 0,
+      "impossible": 0
+    }
+  },
+  {
+    "batch_index": 2,
+    "concepts_analyzed": [
+      "two angles in Euclidean plane being congruent",
+      "a triangle in 2-dimensional Euclidean space defined by three non-collinear points",
+      "two triangles sharing a common vertex in Euclidean plane",
+      "an angle at a vertex of a triangle in Euclidean plane",
+      "a line segment from a vertex of a triangle to a point on the opposite side in Euclidean plane"
+    ],
+    "llm_reasoning": [],
+    "llm_response": "<<<\n{\n  \"two angles in Euclidean plane being congruent\": {\n    \"analysis\": \"The concept of two angles being congruent means that their angle measures are equal. In the DSL, the measure of an angle formed by three points a, b, c (with b as the vertex) is denoted by '∠ a:b:c', which evaluates to a real number (ℝ). Therefore, to express that two angles are congruent, we simply assert that their measures are equal. For example, the congruence of ∠ a:b:c and ∠ d:e:f can be written as (∠ a:b:c) = (∠ d:e:f). This uses only existing DSL notations and Lean 4 primitives for equality. No additional geometric definitions or relations are needed. Thus, this concept is directly expressible using the angle measure notation and equality.\",\n    \"formal_correspondents\": [\n      \"∠ a:b:c (angle measure notation)\",\n      \"= (equality from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"a triangle in 2-dimensional Euclidean space defined by three non-collinear points\": {\n    \"analysis\": \"The DSL already includes a constructor 'Triangle.ofPoints (a b c : Point)' which forms a triangle from three points. However, the concept specifies 'non-collinear' points, which is essential for a valid triangle. The DSL does not have a direct predicate for collinearity, but we can define non-collinearity using existing primitives. Three points a, b, c are non-collinear if it is not the case that they are collinear. Collinearity can be expressed via the 'between' relation or via the existence of a single line containing all three. The DSL has 'distinctPointsOnLine a b L' which requires two points to be on a line, but not three. However, we can express that three points are collinear by asserting that there exists a line L such that a.onLine L, b.onLine L, and c.onLine L. Since the DSL allows quantification over Line (as a type), and we have 'Point.onLine', we can use Lean 4's universal and existential quantifiers to define collinearity. Then, non-collinearity is the negation of that. Therefore, the triangle defined by three non-collinear points can be formalized as: (Triangle.ofPoints a b c) ∧ ¬(∃ L : Line, a.onLine L ∧ b.onLine L ∧ c.onLine L). All components (existential quantifier, negation, conjunction, onLine) are available in Lean 4 or the DSL. Thus, this concept is directly expressible using existing DSL elements and Lean 4 logic.\",\n    \"formal_correspondents\": [\n      \"Triangle.ofPoints\",\n      \"Point.onLine\",\n      \"∃ (existential quantifier from Lean 4)\",\n      \"∧ (conjunction from Lean 4)\",\n      \"¬ (negation from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"two triangles sharing a common vertex in Euclidean plane\": {\n    \"analysis\": \"A triangle is defined in the DSL as 'Triangle.ofPoints a b c' for points a, b, c. Two triangles share a common vertex if one of the points in the first triangle is equal to one of the points in the second triangle. For example, if we have △ a:b:c and △ a:d:e, then they share vertex a. This can be expressed using equality of points (from Lean 4) and the Triangle.ofPoints constructor. Specifically, given two triangles T1 = Triangle.ofPoints a b c and T2 = Triangle.ofPoints d e f, they share a common vertex if (a = d) ∨ (a = e) ∨ (a = f) ∨ (b = d) ∨ (b = e) ∨ (b = f) ∨ (c = d) ∨ (c = e) ∨ (c = f). All of these are expressible using equality and logical disjunction from Lean 4. No additional geometric concepts are needed. The DSL does not require a special relation for this — it's purely a logical combination of point equality and triangle construction. Therefore, this concept is directly expressible.\",\n    \"formal_correspondents\": [\n      \"Triangle.ofPoints\",\n      \"= (equality from Lean 4)\",\n      \"∨ (disjunction from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"an angle at a vertex of a triangle in Euclidean plane\": {\n    \"analysis\": \"An angle at a vertex of a triangle is formed by the two sides meeting at that vertex. For example, in triangle △ a:b:c, the angle at vertex b is formed by points a, b, c, and is denoted ∠ a:b:c in the DSL. The DSL explicitly defines '∠ a:b:c' as the degree of the angle with vertex b and points a and c on the two sides. This matches exactly the geometric concept. Furthermore, the DSL has the 'formRectilinearAngle' relation which ensures that points a, b, c form a rectilinear angle with lines AB and BC, but even without that, the angle measure notation ∠ a:b:c is sufficient to refer to the angle at the vertex. Since the triangle △ a:b:c implies that a, b, c are vertices, and the angle at b is directly given by ∠ a:b:c, this concept is directly expressible using the angle measure notation. No additional definitions are needed.\",\n    \"formal_correspondents\": [\n      \"∠ a:b:c (angle measure notation)\",\n      \"△ a:b:c (triangle notation)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"a line segment from a vertex of a triangle to a point on the opposite side in Euclidean plane\": {\n    \"analysis\": \"This concept refers to a line segment connecting a vertex of a triangle to a point on the side opposite to it. For example, in triangle △ a:b:c, the side opposite to vertex a is segment bc. A point d on that side satisfies that d is on the line segment between b and c, or at least on the line containing b and c and between them. The DSL has the 'between' relation: between b d c means d is between b and c, hence on the segment. The segment from a to d is represented by the inductive type 'Segment.endpoints a d'. So the entire concept can be expressed as: given △ a:b:c, and a point d such that between b d c (or more generally, d is on the line segment bc), then the segment is Segment.endpoints a d. The DSL includes 'Segment.endpoints' and 'between', and we can use 'Point.onLine' in combination with ordering to define being on the segment. However, note that 'between' already implies collinearity and ordering, so if between b d c holds, then d is on the segment bc. Therefore, the full concept is expressible as: ∃ d : Point, between b d c ∧ Segment.endpoints a d. All components — Segment.endpoints, between, existential quantifier — are available. Thus, this concept is directly expressible using existing DSL elements.\",\n    \"formal_correspondents\": [\n      \"Segment.endpoints\",\n      \"between\",\n      \"∃ (existential quantifier from Lean 4)\",\n      \"△ a:b:c (triangle notation)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  }\n}\n>>>",
+    "batch_analysis": {
+      "two angles in Euclidean plane being congruent": {
+        "analysis": "The concept of two angles being congruent means that their angle measures are equal. In the DSL, the measure of an angle formed by three points a, b, c (with b as the vertex) is denoted by '∠ a:b:c', which evaluates to a real number (ℝ). Therefore, to express that two angles are congruent, we simply assert that their measures are equal. For example, the congruence of ∠ a:b:c and ∠ d:e:f can be written as (∠ a:b:c) = (∠ d:e:f). This uses only existing DSL notations and Lean 4 primitives for equality. No additional geometric definitions or relations are needed. Thus, this concept is directly expressible using the angle measure notation and equality.",
+        "formal_correspondents": [
+          "∠ a:b:c (angle measure notation)",
+          "= (equality from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "a triangle in 2-dimensional Euclidean space defined by three non-collinear points": {
+        "analysis": "The DSL already includes a constructor 'Triangle.ofPoints (a b c : Point)' which forms a triangle from three points. However, the concept specifies 'non-collinear' points, which is essential for a valid triangle. The DSL does not have a direct predicate for collinearity, but we can define non-collinearity using existing primitives. Three points a, b, c are non-collinear if it is not the case that they are collinear. Collinearity can be expressed via the 'between' relation or via the existence of a single line containing all three. The DSL has 'distinctPointsOnLine a b L' which requires two points to be on a line, but not three. However, we can express that three points are collinear by asserting that there exists a line L such that a.onLine L, b.onLine L, and c.onLine L. Since the DSL allows quantification over Line (as a type), and we have 'Point.onLine', we can use Lean 4's universal and existential quantifiers to define collinearity. Then, non-collinearity is the negation of that. Therefore, the triangle defined by three non-collinear points can be formalized as: (Triangle.ofPoints a b c) ∧ ¬(∃ L : Line, a.onLine L ∧ b.onLine L ∧ c.onLine L). All components (existential quantifier, negation, conjunction, onLine) are available in Lean 4 or the DSL. Thus, this concept is directly expressible using existing DSL elements and Lean 4 logic.",
+        "formal_correspondents": [
+          "Triangle.ofPoints",
+          "Point.onLine",
+          "∃ (existential quantifier from Lean 4)",
+          "∧ (conjunction from Lean 4)",
+          "¬ (negation from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "two triangles sharing a common vertex in Euclidean plane": {
+        "analysis": "A triangle is defined in the DSL as 'Triangle.ofPoints a b c' for points a, b, c. Two triangles share a common vertex if one of the points in the first triangle is equal to one of the points in the second triangle. For example, if we have △ a:b:c and △ a:d:e, then they share vertex a. This can be expressed using equality of points (from Lean 4) and the Triangle.ofPoints constructor. Specifically, given two triangles T1 = Triangle.ofPoints a b c and T2 = Triangle.ofPoints d e f, they share a common vertex if (a = d) ∨ (a = e) ∨ (a = f) ∨ (b = d) ∨ (b = e) ∨ (b = f) ∨ (c = d) ∨ (c = e) ∨ (c = f). All of these are expressible using equality and logical disjunction from Lean 4. No additional geometric concepts are needed. The DSL does not require a special relation for this — it's purely a logical combination of point equality and triangle construction. Therefore, this concept is directly expressible.",
+        "formal_correspondents": [
+          "Triangle.ofPoints",
+          "= (equality from Lean 4)",
+          "∨ (disjunction from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "an angle at a vertex of a triangle in Euclidean plane": {
+        "analysis": "An angle at a vertex of a triangle is formed by the two sides meeting at that vertex. For example, in triangle △ a:b:c, the angle at vertex b is formed by points a, b, c, and is denoted ∠ a:b:c in the DSL. The DSL explicitly defines '∠ a:b:c' as the degree of the angle with vertex b and points a and c on the two sides. This matches exactly the geometric concept. Furthermore, the DSL has the 'formRectilinearAngle' relation which ensures that points a, b, c form a rectilinear angle with lines AB and BC, but even without that, the angle measure notation ∠ a:b:c is sufficient to refer to the angle at the vertex. Since the triangle △ a:b:c implies that a, b, c are vertices, and the angle at b is directly given by ∠ a:b:c, this concept is directly expressible using the angle measure notation. No additional definitions are needed.",
+        "formal_correspondents": [
+          "∠ a:b:c (angle measure notation)",
+          "△ a:b:c (triangle notation)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "a line segment from a vertex of a triangle to a point on the opposite side in Euclidean plane": {
+        "analysis": "This concept refers to a line segment connecting a vertex of a triangle to a point on the side opposite to it. For example, in triangle △ a:b:c, the side opposite to vertex a is segment bc. A point d on that side satisfies that d is on the line segment between b and c, or at least on the line containing b and c and between them. The DSL has the 'between' relation: between b d c means d is between b and c, hence on the segment. The segment from a to d is represented by the inductive type 'Segment.endpoints a d'. So the entire concept can be expressed as: given △ a:b:c, and a point d such that between b d c (or more generally, d is on the line segment bc), then the segment is Segment.endpoints a d. The DSL includes 'Segment.endpoints' and 'between', and we can use 'Point.onLine' in combination with ordering to define being on the segment. However, note that 'between' already implies collinearity and ordering, so if between b d c holds, then d is on the segment bc. Therefore, the full concept is expressible as: ∃ d : Point, between b d c ∧ Segment.endpoints a d. All components — Segment.endpoints, between, existential quantifier — are available. Thus, this concept is directly expressible using existing DSL elements.",
+        "formal_correspondents": [
+          "Segment.endpoints",
+          "between",
+          "∃ (existential quantifier from Lean 4)",
+          "△ a:b:c (triangle notation)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      }
+    },
+    "new_dependencies_found": [],
+    "queue_after_batch": [
+      "a point being the midpoint of a line segment in Euclidean plane",
+      "a line segment bisecting an angle at a vertex of a triangle in Euclidean plane",
+      "a point lying on the extension of a line segment beyond an endpoint in Euclidean plane",
+      "two line segments in Euclidean plane being congruent",
+      "two lines being perpendicular in 2-dimensional Euclidean space",
+      "two ratios of lengths of line segments in Euclidean plane being equal",
+      "three angles in a triangle in Euclidean plane summing to 180 degrees",
+      "the ratio of lengths function mapping two line segments in Euclidean plane to a positive real number",
+      "two triangles being similar in 2-dimensional Euclidean space",
+      "a convex quadrilateral in 2-dimensional Euclidean space defined by four non-collinear points",
+      "a diagonal of a quadrilateral in Euclidean plane defined as a line segment connecting two non-adjacent vertices",
+      "a line segment bisecting an angle at its vertex in Euclidean plane",
+      "two triangles being congruent in 2-dimensional Euclidean space",
+      "two triangles sharing a common side in Euclidean plane",
+      "a triangle in Euclidean plane being equilateral",
+      "a triangle in 2-dimensional Euclidean space being isosceles",
+      "a line intersecting two sides of a triangle and being parallel to the third side in Euclidean plane",
+      "a line intersecting two sides of a triangle in Euclidean plane"
+    ],
+    "batch_status_summary": {
+      "directly_expressible": 5,
+      "needs_dependencies": 0,
+      "impossible": 0
+    }
+  },
+  {
+    "batch_index": 3,
+    "concepts_analyzed": [
+      "a point being the midpoint of a line segment in Euclidean plane",
+      "a line segment bisecting an angle at a vertex of a triangle in Euclidean plane",
+      "a point lying on the extension of a line segment beyond an endpoint in Euclidean plane",
+      "two line segments in Euclidean plane being congruent",
+      "two lines being perpendicular in 2-dimensional Euclidean space"
+    ],
+    "llm_reasoning": [],
+    "llm_response": "<<<\n{\n  \"a point being the midpoint of a line segment in Euclidean plane\": {\n    \"analysis\": \"A midpoint of a line segment is a point that lies on the segment and divides it into two equal-length parts. The concept requires: (1) a line segment defined by two endpoints, (2) a point that lies between the two endpoints, and (3) the distances from the midpoint to each endpoint being equal. The DSL provides the notation '|(a─b)|' for the length of a segment between points a and b (a real number), and the 'between' relation to express that a point is between two others. Since all these elements are available, and equality of real numbers is supported via Lean 4's '= ', this concept can be directly expressed. No new definitions are needed. For example, for segment endpoints A and B and a point M, M is the midpoint iff 'between A M B' and '|(A─M)| = |(M─B)|'.\",\n    \"formal_correspondents\": [\n      \"|(a─b)| (segment length notation)\",\n      \"between\",\n      \"= (equality from Lean 4)\",\n      \"Segment.endpoints (to define the segment, though not strictly necessary)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"a line segment bisecting an angle at a vertex of a triangle in Euclidean plane\": {\n    \"analysis\": \"An angle bisector in a triangle is a line segment from the vertex of the angle to a point on the opposite side, such that it divides the angle into two equal parts. This requires: (1) an angle at a vertex of a triangle, (2) a segment from that vertex to a point on the opposite side, and (3) the two resulting angles being congruent. The DSL provides '∠ a:b:c' for angle measure, so equality of angles (i.e., congruence) is expressible via '='. The 'between' relation can express that the foot of the bisector lies on the opposite side. The triangle is expressible via '△ a:b:c'. Thus, for triangle △A:B:C with vertex B, and a point D on AC such that between A D C, the segment BD bisects ∠A:B:C iff ∠A:B:D = ∠D:B:C. All required components are available in the DSL.\",\n    \"formal_correspondents\": [\n      \"∠ a:b:c (angle measure notation)\",\n      \"= (equality from Lean 4)\",\n      \"between\",\n      \"△ a:b:c (triangle notation)\",\n      \"|(a─b)| (not strictly needed, but available)\",\n      \"Segment.endpoints (to define the bisecting segment)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"a point lying on the extension of a line segment beyond an endpoint in Euclidean plane\": {\n    \"analysis\": \"This concept refers to a point C such that for a segment AB, point B lies between A and C. This means the segment is extended beyond B to C. The key idea is collinearity and ordering: A, B, C are collinear, B is between A and C, and C ≠ B. The DSL has the 'between' relation which requires mutual distinctness and ordering. So 'between A B C' would mean B is between A and C, but here we want C to be beyond B from A, so we need 'between A B C' — this exactly captures that C is on the extension of AB beyond B. Similarly, extension beyond A would be 'between C A B'. The relation 'between' already implies collinearity and distinctness. Thus, the concept is expressible using only 'between'. No additional geometric primitives are needed.\",\n    \"formal_correspondents\": [\n      \"between\",\n      \"≠ (inequality from Lean 4, implied by between)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"two line segments in Euclidean plane being congruent\": {\n    \"analysis\": \"Two line segments are congruent if they have the same length. The DSL provides the notation '|(a─b)|' which denotes the real number representing the length of the segment between points a and b. Therefore, two segments (say AB and CD) are congruent iff '|(A─B)| = |(C─D)|'. Equality of real numbers is available via Lean 4's '='. No additional geometric relations or types are needed. The concept is purely based on equality of lengths, which is directly supported. Thus, this is directly expressible.\",\n    \"formal_correspondents\": [\n      \"|(a─b)| (segment length notation)\",\n      \"= (equality from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"two lines being perpendicular in 2-dimensional Euclidean space\": {\n    \"analysis\": \"Two lines are perpendicular if they intersect at a point and form a right angle. The DSL has the 'Line.intersectsLine' relation to express that two lines intersect. To express the right angle, we can use the angle measure notation '∠ a:b:c' and compare it to '∟', which is defined as the degree of the right angle (90 degrees). So, if lines L and M intersect at point B, and points A and C are on L and M respectively (distinct from B), then L and M are perpendicular iff ∠A:B:C = ∟. The DSL does not have a direct predicate for perpendicularity, but all components needed — intersection, angle measurement, equality, and the right angle constant — are present. Thus, this can be defined without introducing new primitives. The concept is therefore directly expressible using existing DSL elements and Lean 4 logic.\",\n    \"formal_correspondents\": [\n      \"Line.intersectsLine\",\n      \"∠ a:b:c (angle measure notation)\",\n      \"∟ (right angle measure)\",\n      \"= (equality from Lean 4)\",\n      \"∃ (existential quantifier from Lean 4, to assert existence of points forming the angle)\",\n      \"Point.onLine\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  }\n}\n>>>",
+    "batch_analysis": {
+      "a point being the midpoint of a line segment in Euclidean plane": {
+        "analysis": "A midpoint of a line segment is a point that lies on the segment and divides it into two equal-length parts. The concept requires: (1) a line segment defined by two endpoints, (2) a point that lies between the two endpoints, and (3) the distances from the midpoint to each endpoint being equal. The DSL provides the notation '|(a─b)|' for the length of a segment between points a and b (a real number), and the 'between' relation to express that a point is between two others. Since all these elements are available, and equality of real numbers is supported via Lean 4's '= ', this concept can be directly expressed. No new definitions are needed. For example, for segment endpoints A and B and a point M, M is the midpoint iff 'between A M B' and '|(A─M)| = |(M─B)|'.",
+        "formal_correspondents": [
+          "|(a─b)| (segment length notation)",
+          "between",
+          "= (equality from Lean 4)",
+          "Segment.endpoints (to define the segment, though not strictly necessary)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "a line segment bisecting an angle at a vertex of a triangle in Euclidean plane": {
+        "analysis": "An angle bisector in a triangle is a line segment from the vertex of the angle to a point on the opposite side, such that it divides the angle into two equal parts. This requires: (1) an angle at a vertex of a triangle, (2) a segment from that vertex to a point on the opposite side, and (3) the two resulting angles being congruent. The DSL provides '∠ a:b:c' for angle measure, so equality of angles (i.e., congruence) is expressible via '='. The 'between' relation can express that the foot of the bisector lies on the opposite side. The triangle is expressible via '△ a:b:c'. Thus, for triangle △A:B:C with vertex B, and a point D on AC such that between A D C, the segment BD bisects ∠A:B:C iff ∠A:B:D = ∠D:B:C. All required components are available in the DSL.",
+        "formal_correspondents": [
+          "∠ a:b:c (angle measure notation)",
+          "= (equality from Lean 4)",
+          "between",
+          "△ a:b:c (triangle notation)",
+          "|(a─b)| (not strictly needed, but available)",
+          "Segment.endpoints (to define the bisecting segment)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "a point lying on the extension of a line segment beyond an endpoint in Euclidean plane": {
+        "analysis": "This concept refers to a point C such that for a segment AB, point B lies between A and C. This means the segment is extended beyond B to C. The key idea is collinearity and ordering: A, B, C are collinear, B is between A and C, and C ≠ B. The DSL has the 'between' relation which requires mutual distinctness and ordering. So 'between A B C' would mean B is between A and C, but here we want C to be beyond B from A, so we need 'between A B C' — this exactly captures that C is on the extension of AB beyond B. Similarly, extension beyond A would be 'between C A B'. The relation 'between' already implies collinearity and distinctness. Thus, the concept is expressible using only 'between'. No additional geometric primitives are needed.",
+        "formal_correspondents": [
+          "between",
+          "≠ (inequality from Lean 4, implied by between)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "two line segments in Euclidean plane being congruent": {
+        "analysis": "Two line segments are congruent if they have the same length. The DSL provides the notation '|(a─b)|' which denotes the real number representing the length of the segment between points a and b. Therefore, two segments (say AB and CD) are congruent iff '|(A─B)| = |(C─D)|'. Equality of real numbers is available via Lean 4's '='. No additional geometric relations or types are needed. The concept is purely based on equality of lengths, which is directly supported. Thus, this is directly expressible.",
+        "formal_correspondents": [
+          "|(a─b)| (segment length notation)",
+          "= (equality from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "two lines being perpendicular in 2-dimensional Euclidean space": {
+        "analysis": "Two lines are perpendicular if they intersect at a point and form a right angle. The DSL has the 'Line.intersectsLine' relation to express that two lines intersect. To express the right angle, we can use the angle measure notation '∠ a:b:c' and compare it to '∟', which is defined as the degree of the right angle (90 degrees). So, if lines L and M intersect at point B, and points A and C are on L and M respectively (distinct from B), then L and M are perpendicular iff ∠A:B:C = ∟. The DSL does not have a direct predicate for perpendicularity, but all components needed — intersection, angle measurement, equality, and the right angle constant — are present. Thus, this can be defined without introducing new primitives. The concept is therefore directly expressible using existing DSL elements and Lean 4 logic.",
+        "formal_correspondents": [
+          "Line.intersectsLine",
+          "∠ a:b:c (angle measure notation)",
+          "∟ (right angle measure)",
+          "= (equality from Lean 4)",
+          "∃ (existential quantifier from Lean 4, to assert existence of points forming the angle)",
+          "Point.onLine"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      }
+    },
+    "new_dependencies_found": [],
+    "queue_after_batch": [
+      "two ratios of lengths of line segments in Euclidean plane being equal",
+      "three angles in a triangle in Euclidean plane summing to 180 degrees",
+      "the ratio of lengths function mapping two line segments in Euclidean plane to a positive real number",
+      "two triangles being similar in 2-dimensional Euclidean space",
+      "a convex quadrilateral in 2-dimensional Euclidean space defined by four non-collinear points",
+      "a diagonal of a quadrilateral in Euclidean plane defined as a line segment connecting two non-adjacent vertices",
+      "a line segment bisecting an angle at its vertex in Euclidean plane",
+      "two triangles being congruent in 2-dimensional Euclidean space",
+      "two triangles sharing a common side in Euclidean plane",
+      "a triangle in Euclidean plane being equilateral",
+      "a triangle in 2-dimensional Euclidean space being isosceles",
+      "a line intersecting two sides of a triangle and being parallel to the third side in Euclidean plane",
+      "a line intersecting two sides of a triangle in Euclidean plane"
+    ],
+    "batch_status_summary": {
+      "directly_expressible": 5,
+      "needs_dependencies": 0,
+      "impossible": 0
+    }
+  },
+  {
+    "batch_index": 4,
+    "concepts_analyzed": [
+      "two ratios of lengths of line segments in Euclidean plane being equal",
+      "three angles in a triangle in Euclidean plane summing to 180 degrees",
+      "the ratio of lengths function mapping two line segments in Euclidean plane to a positive real number",
+      "two triangles being similar in 2-dimensional Euclidean space",
+      "a convex quadrilateral in 2-dimensional Euclidean space defined by four non-collinear points"
+    ],
+    "llm_reasoning": [],
+    "llm_response": "<<<\n{\n  \"two ratios of lengths of line segments in Euclidean plane being equal\": {\n    \"analysis\": \"The concept of two ratios of lengths being equal involves comparing the quotient of lengths of two pairs of line segments. The DSL provides the notation '|(a─b)|' which denotes the length of a segment between points a and b as a real number (ℝ). Ratios of lengths can thus be expressed as real number division using Lean 4's standard real division (/). Equality of two such ratios, say |(a─b)| / |(c─d)| = |(e─f)| / |(g─h)|, can be expressed using Lean 4's equality (=) on real numbers. Since all required operations (lengths, division, equality) are available via the DSL and Lean 4 primitives, this concept is directly expressible. No additional definitions are needed.\",\n    \"formal_correspondents\": [\n      \"|(a─b)| (segment length notation)\",\n      \"/ (real division from Lean 4)\",\n      \"= (equality from Lean 4)\",\n      \"ℝ (real numbers from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"three angles in a triangle in Euclidean plane summing to 180 degrees\": {\n    \"analysis\": \"This concept refers to the sum of the three internal angles of a triangle being equal to 180 degrees. The DSL provides the notation '∠ a:b:c' to denote the measure of an angle at vertex b formed by points a, b, c. Given a triangle △ a:b:c, the three angles are ∠ a:b:c, ∠ b:c:a, and ∠ c:a:b (with appropriate vertex ordering). The sum of these three real numbers can be formed using Lean 4's real addition (+), and equality to 180 can be checked using Lean 4's equality (=) and the real literal 180. Therefore, the expression (∠ a:b:c) + (∠ b:c:a) + (∠ c:a:b) = 180 is directly expressible using existing DSL notations and Lean 4 primitives. No additional definitions are required.\",\n    \"formal_correspondents\": [\n      \"∠ a:b:c (angle measure notation)\",\n      \"+ (real addition from Lean 4)\",\n      \"= (equality from Lean 4)\",\n      \"180 (real number literal)\",\n      \"△ a:b:c (triangle notation, to identify the triangle's points)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"the ratio of lengths function mapping two line segments in Euclidean plane to a positive real number\": {\n    \"analysis\": \"This concept is a function that takes two line segments and returns the ratio of their lengths as a positive real number. The DSL provides '|(a─b)|' to denote the length of a segment between two points, which is a real number. Given two segments, say with endpoints (a,b) and (c,d), the ratio is |(a─b)| / |(c─d)|. Since division of real numbers is available in Lean 4, and the result is a real number (and positive if segments are non-degenerate), this function can be defined directly in Lean 4 using lambda abstraction or a top-level definition. The DSL does not provide a named function for this, but all constituent operations (length extraction, division) are available. Therefore, this function can be expressed directly using existing DSL elements and Lean 4 function abstraction. No new mathematical concepts need to be introduced.\",\n    \"formal_correspondents\": [\n      \"|(a─b)| (segment length notation)\",\n      \"/ (real division from Lean 4)\",\n      \"ℝ (real numbers from Lean 4)\",\n      \"Segment.endpoints (to identify segments, though lengths are extracted via points)\",\n      \"λ (lambda abstraction from Lean 4, for function definition)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"two triangles being similar in 2-dimensional Euclidean space\": {\n    \"analysis\": \"Two triangles are similar if their corresponding angles are equal and their corresponding sides are proportional. The DSL allows expressing equality of angles via '∠ a:b:c = ∠ d:e:f' and equality of ratios of lengths via '|(a─b)| / |(d─e)| = |(b─c)| / |(e─f)|', etc. To formalize triangle similarity, one must assert that all three pairs of corresponding angles are equal, or (equivalently in Euclidean geometry) that all three pairs of corresponding side lengths are in the same ratio. Since both angle equality and ratio equality are directly expressible (as shown in previous analyses), and logical conjunction (∧) and universal quantification over permutations (to handle correspondence) can be expressed using Lean 4's logic, the full definition can be constructed. While the DSL does not have a built-in 'similar' predicate, the concept can be defined directly using existing DSL elements and Lean 4 logic. Therefore, it is directly expressible, though it would require a compound expression.\",\n    \"formal_correspondents\": [\n      \"∠ a:b:c (angle measure notation)\",\n      \"= (equality from Lean 4)\",\n      \"|(a─b)| (segment length notation)\",\n      \"/ (real division from Lean 4)\",\n      \"∧ (conjunction from Lean 4)\",\n      \"△ a:b:c (triangle notation)\",\n      \"∃ (existential quantifier, to match vertices if needed)\",\n      \"∀ (universal quantifier, if quantifying over correspondences)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"a convex quadrilateral in 2-dimensional Euclidean space defined by four non-collinear points\": {\n    \"analysis\": \"A convex quadrilateral is defined by four points such that the interior angles are less than 180 degrees and the line segments connecting consecutive points do not cross. However, a simpler characterization in Euclidean geometry is that the four points are in convex position: no point lies in the interior of the triangle formed by the other three. Alternatively, one can define it via the ordering of points and the property that the diagonals intersect inside the quadrilateral. The DSL does not have a built-in 'Quadrilateral' type, but we can represent four points a, b, c, d. Convexity can be expressed by ensuring that the points are not collinear (using 'between' and 'onLine' to negate collinearity), and that they are in convex position. One way is to assert that the diagonals (a,c) and (b,d) intersect at a point that lies between the endpoints of both diagonals. The DSL has 'between' and can express intersection via existence of a common point on both segments. While 'Segment' is inductive, we can use 'between' to define interior points. Also, 'formParallelogram' shows that quadrilateral-like structures can be built from points and lines. Since we can express betweenness, non-collinearity, and intersection of diagonals (via existence of a point satisfying betweenness on both diagonals), convexity can be defined using existing DSL elements. Thus, no new mathematical concepts are needed.\",\n    \"formal_correspondents\": [\n      \"between\",\n      \"Point.onLine\",\n      \"¬ (negation from Lean 4)\",\n      \"∧ (conjunction from Lean 4)\",\n      \"∃ (existential quantifier from Lean 4)\",\n      \"Segment.endpoints (to define diagonals)\",\n      \"≠ (inequality from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  }\n}\n>>>",
+    "batch_analysis": {
+      "two ratios of lengths of line segments in Euclidean plane being equal": {
+        "analysis": "The concept of two ratios of lengths being equal involves comparing the quotient of lengths of two pairs of line segments. The DSL provides the notation '|(a─b)|' which denotes the length of a segment between points a and b as a real number (ℝ). Ratios of lengths can thus be expressed as real number division using Lean 4's standard real division (/). Equality of two such ratios, say |(a─b)| / |(c─d)| = |(e─f)| / |(g─h)|, can be expressed using Lean 4's equality (=) on real numbers. Since all required operations (lengths, division, equality) are available via the DSL and Lean 4 primitives, this concept is directly expressible. No additional definitions are needed.",
+        "formal_correspondents": [
+          "|(a─b)| (segment length notation)",
+          "/ (real division from Lean 4)",
+          "= (equality from Lean 4)",
+          "ℝ (real numbers from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "three angles in a triangle in Euclidean plane summing to 180 degrees": {
+        "analysis": "This concept refers to the sum of the three internal angles of a triangle being equal to 180 degrees. The DSL provides the notation '∠ a:b:c' to denote the measure of an angle at vertex b formed by points a, b, c. Given a triangle △ a:b:c, the three angles are ∠ a:b:c, ∠ b:c:a, and ∠ c:a:b (with appropriate vertex ordering). The sum of these three real numbers can be formed using Lean 4's real addition (+), and equality to 180 can be checked using Lean 4's equality (=) and the real literal 180. Therefore, the expression (∠ a:b:c) + (∠ b:c:a) + (∠ c:a:b) = 180 is directly expressible using existing DSL notations and Lean 4 primitives. No additional definitions are required.",
+        "formal_correspondents": [
+          "∠ a:b:c (angle measure notation)",
+          "+ (real addition from Lean 4)",
+          "= (equality from Lean 4)",
+          "180 (real number literal)",
+          "△ a:b:c (triangle notation, to identify the triangle's points)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "the ratio of lengths function mapping two line segments in Euclidean plane to a positive real number": {
+        "analysis": "This concept is a function that takes two line segments and returns the ratio of their lengths as a positive real number. The DSL provides '|(a─b)|' to denote the length of a segment between two points, which is a real number. Given two segments, say with endpoints (a,b) and (c,d), the ratio is |(a─b)| / |(c─d)|. Since division of real numbers is available in Lean 4, and the result is a real number (and positive if segments are non-degenerate), this function can be defined directly in Lean 4 using lambda abstraction or a top-level definition. The DSL does not provide a named function for this, but all constituent operations (length extraction, division) are available. Therefore, this function can be expressed directly using existing DSL elements and Lean 4 function abstraction. No new mathematical concepts need to be introduced.",
+        "formal_correspondents": [
+          "|(a─b)| (segment length notation)",
+          "/ (real division from Lean 4)",
+          "ℝ (real numbers from Lean 4)",
+          "Segment.endpoints (to identify segments, though lengths are extracted via points)",
+          "λ (lambda abstraction from Lean 4, for function definition)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "two triangles being similar in 2-dimensional Euclidean space": {
+        "analysis": "Two triangles are similar if their corresponding angles are equal and their corresponding sides are proportional. The DSL allows expressing equality of angles via '∠ a:b:c = ∠ d:e:f' and equality of ratios of lengths via '|(a─b)| / |(d─e)| = |(b─c)| / |(e─f)|', etc. To formalize triangle similarity, one must assert that all three pairs of corresponding angles are equal, or (equivalently in Euclidean geometry) that all three pairs of corresponding side lengths are in the same ratio. Since both angle equality and ratio equality are directly expressible (as shown in previous analyses), and logical conjunction (∧) and universal quantification over permutations (to handle correspondence) can be expressed using Lean 4's logic, the full definition can be constructed. While the DSL does not have a built-in 'similar' predicate, the concept can be defined directly using existing DSL elements and Lean 4 logic. Therefore, it is directly expressible, though it would require a compound expression.",
+        "formal_correspondents": [
+          "∠ a:b:c (angle measure notation)",
+          "= (equality from Lean 4)",
+          "|(a─b)| (segment length notation)",
+          "/ (real division from Lean 4)",
+          "∧ (conjunction from Lean 4)",
+          "△ a:b:c (triangle notation)",
+          "∃ (existential quantifier, to match vertices if needed)",
+          "∀ (universal quantifier, if quantifying over correspondences)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "a convex quadrilateral in 2-dimensional Euclidean space defined by four non-collinear points": {
+        "analysis": "A convex quadrilateral is defined by four points such that the interior angles are less than 180 degrees and the line segments connecting consecutive points do not cross. However, a simpler characterization in Euclidean geometry is that the four points are in convex position: no point lies in the interior of the triangle formed by the other three. Alternatively, one can define it via the ordering of points and the property that the diagonals intersect inside the quadrilateral. The DSL does not have a built-in 'Quadrilateral' type, but we can represent four points a, b, c, d. Convexity can be expressed by ensuring that the points are not collinear (using 'between' and 'onLine' to negate collinearity), and that they are in convex position. One way is to assert that the diagonals (a,c) and (b,d) intersect at a point that lies between the endpoints of both diagonals. The DSL has 'between' and can express intersection via existence of a common point on both segments. While 'Segment' is inductive, we can use 'between' to define interior points. Also, 'formParallelogram' shows that quadrilateral-like structures can be built from points and lines. Since we can express betweenness, non-collinearity, and intersection of diagonals (via existence of a point satisfying betweenness on both diagonals), convexity can be defined using existing DSL elements. Thus, no new mathematical concepts are needed.",
+        "formal_correspondents": [
+          "between",
+          "Point.onLine",
+          "¬ (negation from Lean 4)",
+          "∧ (conjunction from Lean 4)",
+          "∃ (existential quantifier from Lean 4)",
+          "Segment.endpoints (to define diagonals)",
+          "≠ (inequality from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      }
+    },
+    "new_dependencies_found": [],
+    "queue_after_batch": [
+      "a diagonal of a quadrilateral in Euclidean plane defined as a line segment connecting two non-adjacent vertices",
+      "a line segment bisecting an angle at its vertex in Euclidean plane",
+      "two triangles being congruent in 2-dimensional Euclidean space",
+      "two triangles sharing a common side in Euclidean plane",
+      "a triangle in Euclidean plane being equilateral",
+      "a triangle in 2-dimensional Euclidean space being isosceles",
+      "a line intersecting two sides of a triangle and being parallel to the third side in Euclidean plane",
+      "a line intersecting two sides of a triangle in Euclidean plane"
+    ],
+    "batch_status_summary": {
+      "directly_expressible": 5,
+      "needs_dependencies": 0,
+      "impossible": 0
+    }
+  },
+  {
+    "batch_index": 5,
+    "concepts_analyzed": [
+      "a diagonal of a quadrilateral in Euclidean plane defined as a line segment connecting two non-adjacent vertices",
+      "a line segment bisecting an angle at its vertex in Euclidean plane",
+      "two triangles being congruent in 2-dimensional Euclidean space",
+      "two triangles sharing a common side in Euclidean plane",
+      "a triangle in Euclidean plane being equilateral"
+    ],
+    "llm_reasoning": [],
+    "llm_response": "<<<\n{\n  \"a diagonal of a quadrilateral in Euclidean plane defined as a line segment connecting two non-adjacent vertices\": {\n    \"analysis\": \"A diagonal of a quadrilateral is a line segment connecting two non-adjacent vertices. In the DSL, a line segment is represented via `Segment.endpoints (a b : Point)`, which constructs a segment between two points. The concept of 'non-adjacent vertices' depends on the structure of the quadrilateral. Although the DSL does not have a direct type for quadrilateral, quadrilaterals can be represented implicitly by four distinct points and the lines connecting them, as seen in `formParallelogram`. Adjacency can be determined based on the order of points and the lines forming the sides. For example, in a quadrilateral with vertices a, b, c, d in order, the adjacent pairs are (a,b), (b,c), (c,d), (d,a), so non-adjacent pairs are (a,c) and (b,d). Thus, a diagonal is simply a segment between such non-adjacent points. Since we can express distinctness (`≠`), construct segments (`Segment.endpoints`), and reason about point configurations using logical connectives and quantifiers from Lean 4, this concept is directly expressible without needing new definitions. We do not need a formal 'Quadrilateral' type because the concept is defined purely in terms of points and segments, which are already in the DSL.\",\n    \"formal_correspondents\": [\n      \"Segment.endpoints\",\n      \"≠ (inequality from Lean 4)\",\n      \"∧ (conjunction from Lean 4)\",\n      \"¬ (negation from Lean 4)\",\n      \"∃ (existential quantifier from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"a line segment bisecting an angle at its vertex in Euclidean plane\": {\n    \"analysis\": \"An angle bisector is a line segment from the vertex of an angle to a point on the opposite side such that it splits the angle into two equal parts. The angle is formed by three points a, b, c with b as the vertex, denoted ∠ a:b:c. The bisecting segment would be from b to some point d such that ∠ a:b:d = ∠ d:b:c. The DSL provides `∠ a:b:c` for angle measure, `Segment.endpoints` for defining the segment, and `= (equality)` for comparing angle measures. The point d must lie on the opposite side (i.e., on the segment or line between a and c), which can be expressed using `between a d c` or via `Point.onLine` if line context is used. Since all these components are available, and no new geometric relations or objects are required, this concept is directly expressible. Note that this is a generalization of the previously analyzed 'a line segment bisecting an angle at a vertex of a triangle', but the same formal tools apply even outside a triangle context, as long as three points define the angle.\",\n    \"formal_correspondents\": [\n      \"∠ a:b:c (angle measure notation)\",\n      \"= (equality from Lean 4)\",\n      \"Segment.endpoints\",\n      \"Point.onLine\",\n      \"between\",\n      \"∃ (existential quantifier from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"two triangles being congruent in 2-dimensional Euclidean space\": {\n    \"analysis\": \"Two triangles are congruent if their corresponding sides and angles are equal. In 2D Euclidean geometry, this can be established via criteria such as SSS (side-side-side), SAS (side-angle-side), ASA, etc. The DSL provides `|(a─b)|` for segment length, `∠ a:b:c` for angle measure, and `= (equality)` for comparing real numbers. A triangle is represented as `Triangle.ofPoints a b c`. To express congruence, we need to assert that there exists a correspondence between the vertices of the two triangles such that all three side lengths are equal and all three angles are equal. Since we can quantify over points (using `∃`), compare lengths and angles, and use logical conjunctions, this can be directly formalized. For example, △ a:b:c ≅ △ d:e:f can be expressed by stating that |(a─b)| = |(d─e)|, |(b─c)| = |(e─f)|, |(a─c)| = |(d─f)|, and ∠ a:b:c = ∠ d:e:f, ∠ b:c:a = ∠ e:f:d, ∠ c:a:b = ∠ f:d:e (with appropriate cyclic ordering). All required elements are present in the DSL. No new types or relations are needed.\",\n    \"formal_correspondents\": [\n      \"|(a─b)| (segment length notation)\",\n      \"∠ a:b:c (angle measure notation)\",\n      \"= (equality from Lean 4)\",\n      \"∧ (conjunction from Lean 4)\",\n      \"∃ (existential quantifier from Lean 4)\",\n      \"△ a:b:c (triangle notation)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"two triangles sharing a common side in Euclidean plane\": {\n    \"analysis\": \"Two triangles share a common side if there exists a line segment that is a side of both triangles. A side of a triangle is defined by two of its vertices. So, for triangles △ a:b:c and △ d:e:f, they share a common side if, for example, the segment between a and b is the same as the segment between d and e, meaning points a=d and b=e, or a=e and b=d (since segments are unordered in terms of endpoints in geometry, though `Segment.endpoints` is symmetric in effect). The DSL allows defining segments via `Segment.endpoints`, and we can compare whether two segments have the same endpoints using equality of points (`=`) and permutations. Since point equality and segment construction are available, and we can use logical disjunction (`∨`) to account for endpoint order, this concept is directly expressible. For instance, we can write: ∃ a b c d e f, (△ a:b:c) ∧ (△ d:e:f) ∧ ((a = d ∧ b = e) ∨ (a = e ∧ b = d)) ∧ (Segment.endpoints a b is side of both). But since the side is determined by the points, and the triangle is defined by its points, we don't need an explicit side type. Thus, this is expressible using existing tools.\",\n    \"formal_correspondents\": [\n      \"△ a:b:c (triangle notation)\",\n      \"Segment.endpoints\",\n      \"= (equality from Lean 4)\",\n      \"∨ (disjunction from Lean 4)\",\n      \"∧ (conjunction from Lean 4)\",\n      \"∃ (existential quantifier from Lean 4)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"a triangle in Euclidean plane being equilateral\": {\n    \"analysis\": \"An equilateral triangle is one where all three sides have equal length. Given a triangle △ a:b:c, it is equilateral if |(a─b)| = |(b─c)| and |(b─c)| = |(a─c)|. The DSL provides `|(a─b)|` for segment length, `= (equality)` for real numbers, and `∧ (conjunction)` to combine conditions. The triangle is represented as `Triangle.ofPoints a b c`. Therefore, we can directly express the condition that all three pairwise distances are equal. No additional definitions are required. This is a straightforward combination of existing segment length comparisons, which are already used in other contexts like congruence and similarity.\",\n    \"formal_correspondents\": [\n      \"|(a─b)| (segment length notation)\",\n      \"= (equality from Lean 4)\",\n      \"∧ (conjunction from Lean 4)\",\n      \"△ a:b:c (triangle notation)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  }\n}\n>>>",
+    "batch_analysis": {
+      "a diagonal of a quadrilateral in Euclidean plane defined as a line segment connecting two non-adjacent vertices": {
+        "analysis": "A diagonal of a quadrilateral is a line segment connecting two non-adjacent vertices. In the DSL, a line segment is represented via `Segment.endpoints (a b : Point)`, which constructs a segment between two points. The concept of 'non-adjacent vertices' depends on the structure of the quadrilateral. Although the DSL does not have a direct type for quadrilateral, quadrilaterals can be represented implicitly by four distinct points and the lines connecting them, as seen in `formParallelogram`. Adjacency can be determined based on the order of points and the lines forming the sides. For example, in a quadrilateral with vertices a, b, c, d in order, the adjacent pairs are (a,b), (b,c), (c,d), (d,a), so non-adjacent pairs are (a,c) and (b,d). Thus, a diagonal is simply a segment between such non-adjacent points. Since we can express distinctness (`≠`), construct segments (`Segment.endpoints`), and reason about point configurations using logical connectives and quantifiers from Lean 4, this concept is directly expressible without needing new definitions. We do not need a formal 'Quadrilateral' type because the concept is defined purely in terms of points and segments, which are already in the DSL.",
+        "formal_correspondents": [
+          "Segment.endpoints",
+          "≠ (inequality from Lean 4)",
+          "∧ (conjunction from Lean 4)",
+          "¬ (negation from Lean 4)",
+          "∃ (existential quantifier from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "a line segment bisecting an angle at its vertex in Euclidean plane": {
+        "analysis": "An angle bisector is a line segment from the vertex of an angle to a point on the opposite side such that it splits the angle into two equal parts. The angle is formed by three points a, b, c with b as the vertex, denoted ∠ a:b:c. The bisecting segment would be from b to some point d such that ∠ a:b:d = ∠ d:b:c. The DSL provides `∠ a:b:c` for angle measure, `Segment.endpoints` for defining the segment, and `= (equality)` for comparing angle measures. The point d must lie on the opposite side (i.e., on the segment or line between a and c), which can be expressed using `between a d c` or via `Point.onLine` if line context is used. Since all these components are available, and no new geometric relations or objects are required, this concept is directly expressible. Note that this is a generalization of the previously analyzed 'a line segment bisecting an angle at a vertex of a triangle', but the same formal tools apply even outside a triangle context, as long as three points define the angle.",
+        "formal_correspondents": [
+          "∠ a:b:c (angle measure notation)",
+          "= (equality from Lean 4)",
+          "Segment.endpoints",
+          "Point.onLine",
+          "between",
+          "∃ (existential quantifier from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "two triangles being congruent in 2-dimensional Euclidean space": {
+        "analysis": "Two triangles are congruent if their corresponding sides and angles are equal. In 2D Euclidean geometry, this can be established via criteria such as SSS (side-side-side), SAS (side-angle-side), ASA, etc. The DSL provides `|(a─b)|` for segment length, `∠ a:b:c` for angle measure, and `= (equality)` for comparing real numbers. A triangle is represented as `Triangle.ofPoints a b c`. To express congruence, we need to assert that there exists a correspondence between the vertices of the two triangles such that all three side lengths are equal and all three angles are equal. Since we can quantify over points (using `∃`), compare lengths and angles, and use logical conjunctions, this can be directly formalized. For example, △ a:b:c ≅ △ d:e:f can be expressed by stating that |(a─b)| = |(d─e)|, |(b─c)| = |(e─f)|, |(a─c)| = |(d─f)|, and ∠ a:b:c = ∠ d:e:f, ∠ b:c:a = ∠ e:f:d, ∠ c:a:b = ∠ f:d:e (with appropriate cyclic ordering). All required elements are present in the DSL. No new types or relations are needed.",
+        "formal_correspondents": [
+          "|(a─b)| (segment length notation)",
+          "∠ a:b:c (angle measure notation)",
+          "= (equality from Lean 4)",
+          "∧ (conjunction from Lean 4)",
+          "∃ (existential quantifier from Lean 4)",
+          "△ a:b:c (triangle notation)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "two triangles sharing a common side in Euclidean plane": {
+        "analysis": "Two triangles share a common side if there exists a line segment that is a side of both triangles. A side of a triangle is defined by two of its vertices. So, for triangles △ a:b:c and △ d:e:f, they share a common side if, for example, the segment between a and b is the same as the segment between d and e, meaning points a=d and b=e, or a=e and b=d (since segments are unordered in terms of endpoints in geometry, though `Segment.endpoints` is symmetric in effect). The DSL allows defining segments via `Segment.endpoints`, and we can compare whether two segments have the same endpoints using equality of points (`=`) and permutations. Since point equality and segment construction are available, and we can use logical disjunction (`∨`) to account for endpoint order, this concept is directly expressible. For instance, we can write: ∃ a b c d e f, (△ a:b:c) ∧ (△ d:e:f) ∧ ((a = d ∧ b = e) ∨ (a = e ∧ b = d)) ∧ (Segment.endpoints a b is side of both). But since the side is determined by the points, and the triangle is defined by its points, we don't need an explicit side type. Thus, this is expressible using existing tools.",
+        "formal_correspondents": [
+          "△ a:b:c (triangle notation)",
+          "Segment.endpoints",
+          "= (equality from Lean 4)",
+          "∨ (disjunction from Lean 4)",
+          "∧ (conjunction from Lean 4)",
+          "∃ (existential quantifier from Lean 4)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "a triangle in Euclidean plane being equilateral": {
+        "analysis": "An equilateral triangle is one where all three sides have equal length. Given a triangle △ a:b:c, it is equilateral if |(a─b)| = |(b─c)| and |(b─c)| = |(a─c)|. The DSL provides `|(a─b)|` for segment length, `= (equality)` for real numbers, and `∧ (conjunction)` to combine conditions. The triangle is represented as `Triangle.ofPoints a b c`. Therefore, we can directly express the condition that all three pairwise distances are equal. No additional definitions are required. This is a straightforward combination of existing segment length comparisons, which are already used in other contexts like congruence and similarity.",
+        "formal_correspondents": [
+          "|(a─b)| (segment length notation)",
+          "= (equality from Lean 4)",
+          "∧ (conjunction from Lean 4)",
+          "△ a:b:c (triangle notation)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      }
+    },
+    "new_dependencies_found": [],
+    "queue_after_batch": [
+      "a triangle in 2-dimensional Euclidean space being isosceles",
+      "a line intersecting two sides of a triangle and being parallel to the third side in Euclidean plane",
+      "a line intersecting two sides of a triangle in Euclidean plane"
+    ],
+    "batch_status_summary": {
+      "directly_expressible": 5,
+      "needs_dependencies": 0,
+      "impossible": 0
+    }
+  },
+  {
+    "batch_index": 6,
+    "concepts_analyzed": [
+      "a triangle in 2-dimensional Euclidean space being isosceles",
+      "a line intersecting two sides of a triangle and being parallel to the third side in Euclidean plane",
+      "a line intersecting two sides of a triangle in Euclidean plane"
+    ],
+    "llm_reasoning": [],
+    "llm_response": "<<<\n{\n  \"a triangle in 2-dimensional Euclidean space being isosceles\": {\n    \"analysis\": \"An isosceles triangle is defined as a triangle with at least two sides of equal length. In the DSL, the length of a segment between two points is expressed using the notation `|(a─b)|`, which evaluates to a real number (ℝ). The equality of two such lengths can be expressed using the standard equality `=` from Lean 4. The triangle itself is represented using `△ a:b:c`, which constructs a Triangle from three points. To express that a triangle is isosceles, we need to assert that at least two of the three side lengths are equal. For example, we can write: `|(a─b)| = |(a─c)| ∨ |(a─b)| = |(b─c)| ∨ |(a─c)| = |(b─c)|`. All required components—segment length notation, equality, and disjunction—are available in the DSL or in Lean 4. Therefore, no new definitions are needed. The concept is directly expressible using existing DSL elements.\",\n    \"formal_correspondents\": [\n      \"|(a─b)| (segment length notation)\",\n      \"= (equality from Lean 4)\",\n      \"∨ (disjunction from Lean 4)\",\n      \"△ a:b:c (triangle notation)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"a line intersecting two sides of a triangle in Euclidean plane\": {\n    \"analysis\": \"We need to formalize the concept of a line L intersecting two sides of a triangle △a:b:c. First, recall that a triangle has three sides: the segments between a and b, b and c, and a and c. However, in the DSL, sides are not standalone objects but are defined implicitly via lines. The relation `formTriangle a b c AB BC CA` specifies that AB contains a and b, BC contains b and c, and CA contains a and c. Alternatively, we can use `Point.onLine` to express that two points lie on a line. To say that a line L intersects a side, say AB, we mean that there exists a point x such that x is on L and x is on AB, and x lies between a and b (or on the segment). However, the DSL does not have a primitive for 'intersection of two lines' producing a point, but it does have `Line.intersectsLine L AB`, which asserts that lines L and AB intersect. But this only gives existence of an intersection point, not that it lies on the segment. To ensure the intersection is on the side (i.e., the segment), we need to assert that the intersection point lies between the endpoints. However, we cannot extract the intersection point directly from `intersectsLine`. But we can use existential quantification: ∃x, x.onLine L ∧ x.onLine AB ∧ between a x b (for side AB). This requires the ability to quantify over points and use `between`. All of these are available: `Point.onLine`, `between`, `∃`, `∧` are all in the DSL or Lean 4. So, to say L intersects two sides, say AB and AC, we can write: ∃x y, x.onLine L ∧ x.onLine AB ∧ between a x b ∧ y.onLine L ∧ y.onLine AC ∧ between a y c. We must ensure AB and AC are the lines containing the sides. Since we can define AB as the line through a and b (though the DSL doesn't have a function to construct the line through two points, but in the context of `formTriangle`, such lines are provided), but in general, we may need to assume such lines exist. However, in any geometric statement involving a triangle, the lines of the sides are typically given or can be introduced. Since the DSL allows us to quantify over lines and points, and use `onLine` and `between`, we can express the condition that a line intersects two sides of a triangle by asserting the existence of two distinct points (or possibly the same, but typically distinct) on the line L that lie on two different sides (as segments) of the triangle. The key insight is that 'intersecting a side' means intersecting the segment, not just the infinite line. But the DSL does not have a primitive for 'intersection with a segment', but we can define it using `between`. Therefore, the concept can be expressed using existing DSL elements: we use `∃`, `∧`, `Point.onLine`, `between`, and logical connectives. No new mathematical concepts are needed. Thus, it is directly expressible.\",\n    \"formal_correspondents\": [\n      \"∃ (existential quantifier from Lean 4)\",\n      \"∧ (conjunction from Lean 4)\",\n      \"Point.onLine\",\n      \"between\",\n      \"△ a:b:c (to identify the triangle's vertices)\",\n      \"≠ (to ensure sides are different, optional)\",\n      \"∨ (to allow any two of the three sides)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  },\n  \"a line intersecting two sides of a triangle and being parallel to the third side in Euclidean plane\": {\n    \"analysis\": \"This concept combines two conditions: (1) the line intersects two sides of the triangle, and (2) it is parallel to the third side. We have already established that 'a line intersecting two sides of a triangle' is directly expressible using `∃`, `∧`, `Point.onLine`, and `between`. Now, for the second part: being parallel to the third side. In the DSL, two lines are parallel if they do not intersect and are not the same line. This is formalized as `¬(L.intersectsLine M) ∧ L ≠ M`. This exact formulation was used in the previously analyzed concept 'two lines being parallel', and it is directly expressible. The third side of the triangle is a line segment, but 'parallel to the third side' means parallel to the line containing that side. So, if the triangle is △a:b:c, and the line L intersects sides AB and AC, then it should be parallel to BC. We need to refer to the line containing BC. Again, while the DSL doesn't have a function to construct the line through two points, in context, we can assume such a line exists (say, line BC), and we can use `L` and `BC` in the parallel condition. Therefore, the full statement is: (L intersects side AB and side AC) ∧ ¬(L.intersectsLine BC) ∧ L ≠ BC. All components are available: the intersection condition as analyzed above, and the parallel condition using negation, `intersectsLine`, and inequality. We also need to ensure that the two intersection points are on the respective sides (using `between`), and that the sides are distinct. Since all required logical and geometric constructs are present in the DSL or Lean 4, this concept is directly expressible without introducing new mathematical concepts.\",\n    \"formal_correspondents\": [\n      \"∃ (existential quantifier from Lean 4)\",\n      \"∧ (conjunction from Lean 4)\",\n      \"Point.onLine\",\n      \"between\",\n      \"¬ (negation from Lean 4)\",\n      \"Line.intersectsLine\",\n      \"≠ (inequality from Lean 4)\",\n      \"△ a:b:c (to identify the triangle's vertices)\",\n      \"∨ (to allow any two sides to be intersected, and the third to be parallel)\"\n    ],\n    \"concept_dependencies\": [],\n    \"status\": \"directly_expressible\"\n  }\n}\n>>>",
+    "batch_analysis": {
+      "a triangle in 2-dimensional Euclidean space being isosceles": {
+        "analysis": "An isosceles triangle is defined as a triangle with at least two sides of equal length. In the DSL, the length of a segment between two points is expressed using the notation `|(a─b)|`, which evaluates to a real number (ℝ). The equality of two such lengths can be expressed using the standard equality `=` from Lean 4. The triangle itself is represented using `△ a:b:c`, which constructs a Triangle from three points. To express that a triangle is isosceles, we need to assert that at least two of the three side lengths are equal. For example, we can write: `|(a─b)| = |(a─c)| ∨ |(a─b)| = |(b─c)| ∨ |(a─c)| = |(b─c)|`. All required components—segment length notation, equality, and disjunction—are available in the DSL or in Lean 4. Therefore, no new definitions are needed. The concept is directly expressible using existing DSL elements.",
+        "formal_correspondents": [
+          "|(a─b)| (segment length notation)",
+          "= (equality from Lean 4)",
+          "∨ (disjunction from Lean 4)",
+          "△ a:b:c (triangle notation)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "a line intersecting two sides of a triangle in Euclidean plane": {
+        "analysis": "We need to formalize the concept of a line L intersecting two sides of a triangle △a:b:c. First, recall that a triangle has three sides: the segments between a and b, b and c, and a and c. However, in the DSL, sides are not standalone objects but are defined implicitly via lines. The relation `formTriangle a b c AB BC CA` specifies that AB contains a and b, BC contains b and c, and CA contains a and c. Alternatively, we can use `Point.onLine` to express that two points lie on a line. To say that a line L intersects a side, say AB, we mean that there exists a point x such that x is on L and x is on AB, and x lies between a and b (or on the segment). However, the DSL does not have a primitive for 'intersection of two lines' producing a point, but it does have `Line.intersectsLine L AB`, which asserts that lines L and AB intersect. But this only gives existence of an intersection point, not that it lies on the segment. To ensure the intersection is on the side (i.e., the segment), we need to assert that the intersection point lies between the endpoints. However, we cannot extract the intersection point directly from `intersectsLine`. But we can use existential quantification: ∃x, x.onLine L ∧ x.onLine AB ∧ between a x b (for side AB). This requires the ability to quantify over points and use `between`. All of these are available: `Point.onLine`, `between`, `∃`, `∧` are all in the DSL or Lean 4. So, to say L intersects two sides, say AB and AC, we can write: ∃x y, x.onLine L ∧ x.onLine AB ∧ between a x b ∧ y.onLine L ∧ y.onLine AC ∧ between a y c. We must ensure AB and AC are the lines containing the sides. Since we can define AB as the line through a and b (though the DSL doesn't have a function to construct the line through two points, but in the context of `formTriangle`, such lines are provided), but in general, we may need to assume such lines exist. However, in any geometric statement involving a triangle, the lines of the sides are typically given or can be introduced. Since the DSL allows us to quantify over lines and points, and use `onLine` and `between`, we can express the condition that a line intersects two sides of a triangle by asserting the existence of two distinct points (or possibly the same, but typically distinct) on the line L that lie on two different sides (as segments) of the triangle. The key insight is that 'intersecting a side' means intersecting the segment, not just the infinite line. But the DSL does not have a primitive for 'intersection with a segment', but we can define it using `between`. Therefore, the concept can be expressed using existing DSL elements: we use `∃`, `∧`, `Point.onLine`, `between`, and logical connectives. No new mathematical concepts are needed. Thus, it is directly expressible.",
+        "formal_correspondents": [
+          "∃ (existential quantifier from Lean 4)",
+          "∧ (conjunction from Lean 4)",
+          "Point.onLine",
+          "between",
+          "△ a:b:c (to identify the triangle's vertices)",
+          "≠ (to ensure sides are different, optional)",
+          "∨ (to allow any two of the three sides)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      },
+      "a line intersecting two sides of a triangle and being parallel to the third side in Euclidean plane": {
+        "analysis": "This concept combines two conditions: (1) the line intersects two sides of the triangle, and (2) it is parallel to the third side. We have already established that 'a line intersecting two sides of a triangle' is directly expressible using `∃`, `∧`, `Point.onLine`, and `between`. Now, for the second part: being parallel to the third side. In the DSL, two lines are parallel if they do not intersect and are not the same line. This is formalized as `¬(L.intersectsLine M) ∧ L ≠ M`. This exact formulation was used in the previously analyzed concept 'two lines being parallel', and it is directly expressible. The third side of the triangle is a line segment, but 'parallel to the third side' means parallel to the line containing that side. So, if the triangle is △a:b:c, and the line L intersects sides AB and AC, then it should be parallel to BC. We need to refer to the line containing BC. Again, while the DSL doesn't have a function to construct the line through two points, in context, we can assume such a line exists (say, line BC), and we can use `L` and `BC` in the parallel condition. Therefore, the full statement is: (L intersects side AB and side AC) ∧ ¬(L.intersectsLine BC) ∧ L ≠ BC. All components are available: the intersection condition as analyzed above, and the parallel condition using negation, `intersectsLine`, and inequality. We also need to ensure that the two intersection points are on the respective sides (using `between`), and that the sides are distinct. Since all required logical and geometric constructs are present in the DSL or Lean 4, this concept is directly expressible without introducing new mathematical concepts.",
+        "formal_correspondents": [
+          "∃ (existential quantifier from Lean 4)",
+          "∧ (conjunction from Lean 4)",
+          "Point.onLine",
+          "between",
+          "¬ (negation from Lean 4)",
+          "Line.intersectsLine",
+          "≠ (inequality from Lean 4)",
+          "△ a:b:c (to identify the triangle's vertices)",
+          "∨ (to allow any two sides to be intersected, and the third to be parallel)"
+        ],
+        "concept_dependencies": [],
+        "status": "directly_expressible"
+      }
+    },
+    "new_dependencies_found": [],
+    "queue_after_batch": [],
+    "batch_status_summary": {
+      "directly_expressible": 3,
+      "needs_dependencies": 0,
+      "impossible": 0
+    }
+  }
+]

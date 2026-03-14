@@ -1,0 +1,3 @@
+In the diagram, points I, J, and K form a triangle △IJK, and points F, G, and H form a triangle △FGH.
+
+Given ∠I ≅ ∠F and ∠K ≅ ∠G. Complete the proof that I K / F G = J K / G H.

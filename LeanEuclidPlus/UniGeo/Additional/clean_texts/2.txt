@@ -1,0 +1,3 @@
+There are four lines AB, CD, EF, and GH that all pass through a common point P. Points E, A, and D are one side of GH, and C, B, and F are on the opposite side of GH. P is the midpoint of GH.
+
+Given ∠GAB ≅ ∠GBA ≅ ∠HAB, and HA ≅ HB. Complete the proof that the convex quadrilateral □AHBG with vertices A, H, B, and G arranged in clockwise order is a rhombus.

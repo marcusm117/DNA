@@ -1,0 +1,3 @@
+There are two convex quadrilaterals □JKLM and □NOPQ with the vertices arranged in the named order clockwise. The quadrilateral □JKLM has diagonal lines JL and KM. The diagonal lines JL and KM intersect at point V. The vertices J, K, L, M of □JKLM are the midpoints of the sides NO, OP, PQ, QN of □NOPQ, respectively.
+
+Complete the proof that V is the midpoint of JL and also the midpoint of KM.

@@ -1,0 +1,3 @@
+Line WY and SZ intersect at X, TV and SZ intersect at U. The points S, U, X, Z are collinear and ordered. The points T, W are on one side of line SZ. The points V, Y are on the other side of line SZ.
+
+Given ∠ U X W and ∠ T U X are supplementary. Complete the proof that W Y ∥ T V.

@@ -1,0 +1,3 @@
+In the diagram, points V, W, and X form a triangle △VWX, and points S, U, and T form a triangle △SUT.
+
+Given ∠V ≅ ∠S and ∠W ≅ ∠U. Complete the proof that W X / T U = V X / S T.

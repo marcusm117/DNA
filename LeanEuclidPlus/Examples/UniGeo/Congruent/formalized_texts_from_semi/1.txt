@@ -1,0 +1,12 @@
+Now we can convert the Semi-Formalized Structure to a Formalized Statement. According to the guidelines, we will do the following:
+
+1. Formalize each clause in the premises, and use the conjunction of them as the antecedent.
+2. Formalize each clause in the conclusions, and use the conjunction of them as the consequent.
+3. Connect the antecedent and consequent with an implication (→).
+4. Declare all geometric objects that is mentioned in the premises or conclusions as variables.
+5. Quantify the declared variables correctly.
+6. Wrap the entire Formalized Statement with triple angle brackets (<<< Lean expression here >>>) for parsing.
+
+Finally, we have the Formalized Statement:
+
+<<< ∀ (U V X W Y : Point) (UV VX XU VW WY YV UW : Line), formTriangle U V X UV VX XU ∧ formTriangle V W Y VW WY YV ∧ (distinctPointsOnLine U W UW ∧ distinctPointsOnLine V W UW ∧ distinctPointsOnLine V U UW) ∧ (X.sameSide Y UW ∧ X ≠ Y) ∧ |(W─Y)| = |(V─X)| ∧ |(V─Y)| = |(U─X)| ∧ (between U V W ∧ |(U─V)| = |(V─W)|) → (△ V:W:Y).congruent (△ U:V:X) >>>

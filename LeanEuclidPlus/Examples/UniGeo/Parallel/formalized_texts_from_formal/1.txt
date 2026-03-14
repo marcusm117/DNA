@@ -1,0 +1,11 @@
+Now we can combine the declarations, premises, and conclusions to convert the Formalized Structure to a Formalized Statement. According to the guidelines, we will do the following:
+
+1. Quantify the declared variables correctly.
+2. Use the conjunction of all formal clauses in the premises as the antecedent.
+3. Use the conjunction of all formal clauses in the conclusions as the consequent.
+4. Connect the antecedent and consequent with an implication (→).
+5. Wrap the entire Formalized Statement with triple angle brackets (<<< Lean expression here >>>) for parsing.
+
+Finally, we have the Formalized Statement:
+
+<<< ∀ (W Y S Z T V X U : Point) (WY SZ TV : Line), distinctPointsOnLine W Y WY ∧ distinctPointsOnLine S Z SZ ∧ distinctPointsOnLine T V TV ∧ twoLinesIntersectAtPoint WY SZ X ∧ twoLinesIntersectAtPoint TV SZ U ∧ (between S U X ∧ between U X Z) ∧ (T.sameSide W SZ ∧ T ≠ W) ∧ (V.sameSide Y SZ ∧ V ≠ Y) ∧ T.opposingSides V SZ ∧ W.opposingSides Y SZ ∧ ∠ U:X:W + ∠ T:U:X = ∟ + ∟ → ¬ WY.intersectsLine TV >>>

@@ -1,0 +1,3 @@
+There is a isosceles triangle △BCD with BC ≅ BD. There is an internal line MN cutting across BC at M and BD at N. J point O lies on the side CD such that O is between C and D. The line NO is fixed by the points N and O, and another line MO is fixed by the points M and O.
+
+Given that MN ∥ CD. Complete the proof that the points M, N, O forms a triangle that is isosceles at vertex O.

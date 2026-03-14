@@ -1,0 +1,3 @@
+In the diagram, points G, H,J, and I form a convex quadrilateral □GHJI with a diagonal line GI.
+
+Given I J ≅ G H. G H ∥ I J. Complete the proof that H I ≅ G J.

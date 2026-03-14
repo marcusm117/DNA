@@ -1,0 +1,3 @@
+There is a quadrilateral □VSUT with a diagonal line SU.
+
+U V ⟂ S V , ∠ U S V ≅ ∠ S U T , and S T ⟂ T U. Complete the proof that U V ≅ S T.

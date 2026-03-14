@@ -1,0 +1,3 @@
+In the diagram, points U, V, X, and W form a quadrilateral □UVXW with two diagonals UW and VX. Y is an extended point of WX closer to X, and line UY is formed by connecting points U and Y.
+
+Given U Y ∥ V X and W X ∥ U V and X Y ∥ U V. V X ≅ U W. Complete the proof that ∠ V W X ≅ ∠ U X W.

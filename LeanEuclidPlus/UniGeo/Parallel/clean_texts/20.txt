@@ -1,0 +1,3 @@
+Two triangles WXZ and VYZ share a point Z. The lines VX and WY intersect at point Z. The point Z lies between X and V, and also lies between W and Y.
+
+Given ∠ Y V Z ≅ ∠ V Y Z and W X ∥ V Y. Complete the proof that ∠W ≅ ∠X.

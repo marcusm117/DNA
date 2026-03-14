@@ -1,0 +1,3 @@
+In the diagram, points W, X,Z, and Y form a convex quadrilateral □WXZY with a diagonal line WY.
+
+X Y ≅ W Z and Y Z ≅ W X. Complete the proof that ∠ Y W Z ≅ ∠ W Y X.

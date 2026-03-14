@@ -1,0 +1,3 @@
+In the diagram, there is a triangle TVW. Within the triangle, line XU intersects TV at U and intersects TW at X.
+
+Given ∠ T U X ≅ ∠W and U X ∥ V W. Complete the proof that ∠ U V W ≅ ∠W.

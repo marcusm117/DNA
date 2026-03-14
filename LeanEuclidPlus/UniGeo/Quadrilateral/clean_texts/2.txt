@@ -1,0 +1,3 @@
+In the diagram, points E, F,H, and G form a convex quadrilateral □EFHG. It has a diagonal line EG.
+
+G H ∥ E F and E F ≅ G H. Complete the proof that ∠F ≅ ∠H.

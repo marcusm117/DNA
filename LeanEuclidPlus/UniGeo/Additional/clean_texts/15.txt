@@ -1,0 +1,3 @@
+There is a triangle △UVW with three lines drawn from each vertex to the opposite side. The line UX from U meets side VW at point X, the line VY from V meets side UW at point Y, and the line WZ from W meets side UV at point Z. The three lines meet at point M.
+
+Given UX ⊥ VW, VY ⊥ UW, and WZ ⊥ UV. MX ≅ MY ≅ MZ. Complete the proof that △UVW is equilateral.

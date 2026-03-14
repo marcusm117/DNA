@@ -1,0 +1,3 @@
+There are two overlapping triangles, △SRT and △TPS. They share a same side TS, and TR intersect SP at Q.
+
+Given ∠P ≅ ∠R. S T ⟂ R S and S T ⟂ P T. Complete the proof that △ R S T ≅ △ P T S.

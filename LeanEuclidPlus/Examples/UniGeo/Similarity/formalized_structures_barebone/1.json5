@@ -1,0 +1,91 @@
+/*
+    To convert the Semi-Formalized Structure into a Formalized Structure, we will examine the natural language clauses in the Semi-Formalized Structure one by one, and formalize each into a formal clause that is well-formed and well-defined according to the guidelines.
+*/
+
+{
+    "premises": [
+        /*
+        The clause "The distinct points G, H, and J form a triangle △ G H J" has a potential direct formalization in the guidelines: `formTriangle`.
+
+        We double check the description of the `formTriangle` relation: "mutually distinct points a, b and c form a triangle, where point a and b are on line AB, point b and c are on line BC, point a and c are on line CA. The lines AB, BC, and CA must be distinct".
+
+        The mutual distinctness of points in our target clause matches the description of "mutually distinct points a, b and c". By definition, the 3 points that form a triangle must be non-collinear, which matches the description "The lines AB, BC, and CA must be distinct". Therefore, this relation is indeed equivalent to our target clause.
+
+        `formTriangle` takes (a b c : Point) (AB BC CA : Line) as arguments in order, so we can formalize the clause as: `formTriangle G H J GH HJ JG`.
+
+        The following clause "The distinct points I, F, and J form a triangle △ I F J" can be formalized in the exact same way.
+
+        Therefore, we can formalize the first 2 clauses as follows:
+        */
+        "formTriangle G H J GH HJ JG",
+        "formTriangle I F J IF FJ JI",
+
+        /*
+        The clause "H and F are distinct points on line HF" has a potential direct formalization in the guidelines: `distinctPointsOnLine`.
+
+        We double check the description of the `distinctPointsOnLine` relation: "points a and b are distinct and on line L". It is indeed equivalent to our target clause.
+
+        It takes (a b : Point) (L : Line) as arguments in order, so we can formalize the clause as: `distinctPointsOnLine H F HF`
+
+        The following clause "G and I are distinct points on line GI" can be formalized in the exact same way.
+
+        Therefore, we can formalize the next 2 clauses as follows:
+        */
+        "distinctPointsOnLine H F HF",
+        "distinctPointsOnLine G I GI",
+
+        /*
+        The clause "The distinct lines GI and HF intersect at point J" doesn't have any potential direct formalization in the guidelines, so we have to formalize it equivalently using available operators, constants, and other formal relations.
+
+        We notice that these clause is equivalent to the conjunection of 4 sub-clauses: "GI and HF intersect", "J is on line GI", "J is on line HF", and "GI and HF are distinct", which have potential formalizationS in the guidelines using `intersectsLine`, `onLine`, and `≠`.
+
+        We double check the description of the `intersectsLine` relation: "two lines L and M intersect at some point. They can be the same line." It is indeed equivalent to our target sub-clause "GI and HF intersect".
+
+        We double check the description of the `onLine` relation: "point a is on line L." It is indeed equivalent to our target sub-clause "J is on line GI" and "J is on line HF".
+
+        The `intersectsLine` relation is defined in the namespace `Line` with the syntax `L.intersectsLine M`, so we can formalize the sub-clause "GI and HF intersect" as `GI.intersectsLine HF`.
+
+        The `onLine` relation is defined in the namespace `Point` with the syntax `a.onLine L`, so we can formalize the sub-clause "J is on line GI" and "J is on line HF" as `J.onLine GI` and `J.onLine HF` respectively.
+
+        Therefore, we can formalize the clause as follows:
+        */
+        "GI.intersectsLine HF ∧ J.onLine GI ∧ J.onLine HF ∧ GI ≠ HF",
+
+        /*
+        The clause "Among the distinct points G, J, I, the point J is between G and I" has a potential direct formalization in the guidelines: `between`.
+
+        We double check the description of the `between` relation: "mutually distinct points a, b and c are collinear and ordered. Point b is between point a and c". It is indeed equivalent to our target clause since it guarantees that the points are mutually distinct.
+
+        It takes (a b c : Point) as arguments in order, with Point b being the one that is between Point a and Point c, so we can formalize the clause as: `between G J I`.
+
+        The following clause "Among the distinct points H, J, F, the point J is between H and F" can be formalized in the exact same way.
+
+        Therefore, we can formalize the next 2 clauses as follows:
+        */
+        "between G J I",
+        "between H J F",
+
+        /*
+        The clause "The ratio of segment GJ to segment IJ equals the ratio of segment HJ to segment FJ, denoted as G J / I J = H J / F J" doesn't have any potential direct formalization in the guidelines, so we have to formalize it equivalently using available operators, constants, and other formal relations.
+
+        The definition of ratio is the quotient of two numbers. In our case, "The ratio of segment GJ to segment IJ" means "length of GJ / length of IJ".
+
+        We notice that, following the instructions, the formal notation of a line segment fromed by points a and b is `|(a─b)|`, so we can directly formalize the clause using the numerical operator `/` and the equality relation `=` as follows:
+        */
+        "|(G─J)| / |(I─J)| = |(H─J)| / |(F─J)|"
+    ],
+    "conclusions": [
+        /*
+        The clause "The triangles △ G H J and △ I F J are similar, denoted as △ G H J ~ △ I F J" doesn't have any potential direct formalization in the guidelines, so we have to formalize it equivalently using available operators, constants, and other formal relations.
+
+        The definition of similarity of triangles is that the corresponding angles are congruent and the corresponding sides are proportional.
+
+        Since we know that GJ and IJ, HJ and FJ are proportional, we know that the point G corresponds to the point I, the point H corresponds to the point F, and the point J corresponds to the point J.
+
+        Therefore, the angle ∠ G:H:J corresponds to the angle ∠ I:F:J, the angle ∠ H:J:G corresponds to the angle ∠ F:J:I, and the angle ∠ J:G:H corresponds to the angle ∠ J:I:F.
+
+        Therefore, we can formalize the clause as follows:
+        */
+        "∠ G:H:J = ∠ I:F:J ∧ ∠ H:J:G = ∠ F:J:I ∧ ∠ J:G:H = ∠ J:I:F ∧ |(G─H)| / |(I─F)| = |(H─J)| / |(F─J)| ∧ |(H─J)| / |(F─J)| = |(J─G)| / |(J─I)| ∧ |(J─G)| / |(J─I)| = |(G─H)| / |(I─F)|"
+    ]
+}

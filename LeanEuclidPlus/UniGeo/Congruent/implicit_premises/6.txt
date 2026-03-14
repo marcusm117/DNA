@@ -1,0 +1,5 @@
+Not Applicable, the original text is ambiguous.
+
+Disambiguating Premises based on the original formalization (for curation of clean text only):
+
+The lines SU and TR intersect at point V. The point V lies between S and U, and also lies between T and R.

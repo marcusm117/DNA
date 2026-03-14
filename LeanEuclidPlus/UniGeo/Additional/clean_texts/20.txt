@@ -1,0 +1,3 @@
+In the diagram, there are three lines FG, HI, JK. The lines FG and JK intersect at point C, and the lines HI and JK intersects at point D. The points H, K, I, D are on one side of line FG, and the point J is on the other side of FG. The points F, J, G, C are on one side of line HI, and the point K is on the other side of HI. The points F, H are on one side of line JK, and the points G, I are on the other side of line JK.
+
+Complete the proof that the quadrilateral □FJIK with the vertices arranged in the named order clockwise is convex.

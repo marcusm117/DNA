@@ -1,0 +1,3 @@
+There is a quadrilateral □PQSR with vertices P, Q, S, and R and diagonal QS. The points T and Q are on opposing sides of the line PS. PT and ST is formed by connecting T with P and S.
+
+Given S T ≅ R S and Q R ⟂ R S and ∠ Q S R ≅ ∠ P S T and P T ⟂ S T. Complete the proof that P T ≅ Q R.

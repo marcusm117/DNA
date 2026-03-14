@@ -1,0 +1,3 @@
+There are two overlapping triangles, △UXV and △VYW, with a common vertex V. U, V and W are collinear and ordered. X and Y are on the same side of UW.
+
+Given ∠Y ≅ ∠X and U X ≅ V Y. U X ∥ V Y. Complete the proof that △ V W Y ≅ △ U V X.

@@ -1,0 +1,3 @@
+There is a quadrilateral RSUT with vertices R, S, U, and T. There is a diagonal line segment RT drawn inside the quadrilateral, connecting vertices R and T.
+
+Given T U ≅ R S. R S ∥ T U. Complete the proof that △ R T U ≅ △ T R S.

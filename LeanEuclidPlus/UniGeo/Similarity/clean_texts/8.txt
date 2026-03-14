@@ -1,0 +1,3 @@
+Two triangles △GHI and △GJK share a common point G. KJ is inside △GHI intersecting GI at K and GH at J.
+
+G J / G H = G K / G I. Complete the proof that △ G J K ~ △ G H I.

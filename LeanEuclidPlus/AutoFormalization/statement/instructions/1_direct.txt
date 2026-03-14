@@ -1,0 +1,30 @@
+--  Guidelines --
+1. Formalized Statement Format: Your formalized statement must be of the form <<< ∀ (...), P_1 ∧ P_2 ... ∧ P_n → Q_1 ∧ Q_2 ... ∧ Q_m >>> where where each P_i and Q_i is built from the above building blocks using conjunction (∧) disjunction (∨) and negation (¬). All variable declarations must be placed in parentheses after the universal quantifier. You shouldn't declare variables or use quantifiers in any other places! For different types of variables, you should put them in different parentheses. For example, if the English statement contains "The points A, B are on line AB", then you should declare (A B : Point) (AB : Line) in the formalized statement.
+
+2. Implication: There can be only a single implication in the formula; either side of the implication must be a conjunction of formulae at the top level.
+
+3. Numeric Values Restrictions: Denote 90-degree angle by ∟, 180-degree angle by ∟ + ∟, etc. Also, when referring to segments, we always mean its length (i.e. |(a─b)|).
+
+4. Variable Naming: You should always use the EXACT SAME variable name in the formalized statement as the one in the English statement. For example, if the English statement contains "Point A, B is on line AB", then you should use the variable names (A B : Point) (AB : Line) in the formalized statement. **You must not add any prefix or suffix to the variable names like "point_A" or "AB_line"!!!** Somtimes the English statement might first refer to a line as "AB", but later use "BA" for the same line, in which case you should use the first occurring name "AB" for that same line consistently in your formalized statement.
+
+5. Quantified Variables: Your quantified variables must be limited to primitive geometric types: points, lines, and circles. ALL bound variables that you declared must be mentioned in some clauses later.
+
+6. Intermediate Variables: You should never define an intermediate variable inside the proposition. For example, "let α := (something);" is not allowed.
+
+7. Numeric Operators: You should only uses  addition (+), subtraction (-), multiplication (*), and division (/). Avoid using other mathematical operators such as exponentiation.
+
+8. Equality Relation: You can use the equality relation (=) and non-equality relation (≠) to compare points, lines, circles, angles, and line segments. However, please **avoid** using the equality relation to compare expressions and numeric values as it's not supported by the current formal language implementation. For example, you should write "|(a─b)| = |(c─d)|" instead of "|(a─b)| / |(c─d)| = 1".
+
+9. Angle Notation: When you see a short-hand angle notation like "∠ X", this means that X is the vertex of the angle. You should always expand it to the full angle notation "∠ A X B" (formally, ∠ A:X:B) where A and B are points respectively on the two sides of the angle.
+
+10. Syntax Tip 1: You should only use the provided relations and axioms. Please examine the provided axioms and relations carefully to find the best way to express your proposition. Don't create or use new ones that are not provided above!
+
+11. Syntax Tip 2: You must declare all Points, Lines, and Circles that you will use in the formal statement. Please double-check this, or your formalized statement won't compile!
+
+12. Syntax Tip 3: You shouldn't declare any extra Points, Lines, or Circles that are not used in the formalized statement. Please double-check this, or your formalized statement won't compile!
+
+13. Syntax Tip 4: A formalized angle ∠ A:B:C always expects three point identifiers separated by colons! Even though you will see the English expressions like "∠ Y", but "∠ Y" is not a valid formalization. Please double-check this, or your formalized statement won't compile!
+
+14. Reasoning: Please think carefully step-by-step and state your intermediate reasoning steps before write down the final Formalized Statement. **This is crucial!!! Please do not skip this!!! If there are examples provided by the user, you must strictly follow the format and reasoning in the examples!!!**
+
+15. Response Format: Present your formalized Lean expression within triple angle brackets (<<< Lean expression here >>>). Do not add any annotations/explanations, or markdown syntax.

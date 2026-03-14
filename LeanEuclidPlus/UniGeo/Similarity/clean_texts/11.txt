@@ -1,0 +1,3 @@
+In the diagram, △XUV and △UYW share a point U. The lines XW and VY intersect at point U. The point U lies between X and W, and also lies between V and Y.
+
+U V / U W = U X / U Y. Complete the proof that △ U V X ~ △ U W Y.

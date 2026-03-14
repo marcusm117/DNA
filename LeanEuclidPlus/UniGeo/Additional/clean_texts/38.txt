@@ -1,0 +1,3 @@
+There is a isosceles triangle △JKL with JK ≅ JL. There is an internal line UV cutting across JK at U and JL at V. R point W lies on the side KL such that W is between K and L. The line VW is fixed by the points V and W, and another line UW is fixed by the points U and W.
+
+Given that UV ∥ KL. Complete the proof that the points U, V, W forms a triangle that is isosceles at vertex W.

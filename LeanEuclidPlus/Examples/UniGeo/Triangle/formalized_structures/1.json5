@@ -1,0 +1,81 @@
+/*
+    To convert the Semi-Formalized Structure into a Formalized Structure, we will examine the natural language clauses in the Semi-Formalized Structure one by one, and formalize each into a formal clause that is well-formed and well-defined according to the guidelines.
+*/
+
+{
+    "premises": [
+        /*
+        The clause "The distinct points U, V, W form a triangle △ U V W" has a potential direct formalization in the guidelines: `formTriangle`.
+
+        We double check the description of the `formTriangle` relation: "mutually distinct points a, b and c form a triangle, where point a and b are on line AB, point b and c are on line BC, point a and c are on line CA. The lines AB, BC, and CA must be distinct".
+
+        The mutual distinctness of points in our target clause matches the description of "mutually distinct points a, b and c". By definition, the 3 points that form a triangle must be non-collinear, which matches the description "The lines AB, BC, and CA must be distinct". Therefore, this relation is indeed equivalent to our target clause.
+
+        `formTriangle` takes (a b c : Point) (AB BC CA : Line) as arguments in order, so we can formalize the clause as follows:
+        */
+        "formTriangle U V W UV VW WU",
+
+        /*
+        The clause "U and X are distinct points on line UX" has a potential direct formalization in the guidelines: `distinctPointsOnLine`.
+
+        We double check the description of the `distinctPointsOnLine` relation: "points a and b are distinct and on line L". It is indeed equivalent to our target clause.
+
+        It takes (a b : Point) (L : Line) as arguments in order, so we can formalize the clause as follows:
+        */
+        "distinctPointsOnLine U X UX",
+
+        /*
+        The clause "The distinct lines UX and VW intersect at point X" has a potential direct formalization in the guidelines: `twoLinesIntersectAtPoint`.
+
+        We double check the description of the `twoLinesIntersectAtPoint` relation: "distinct lines L1 and L2 intersect at point i". It is indeed equivalent to our target clause since it guarantees that the lines are distinct.
+
+        It takes (L1 L2 : Line) (i: Point) as arguments in order, so we can formalize the clause as follows:
+        */
+        "twoLinesIntersectAtPoint UX VW X",
+
+        /*
+        The clause "The line segment UX is inside the triangle △ U V W, and is distinct from the sides of the triangle" doesn't have any potential direct formalization in the guidelines, so we have to formalize it equivalently using available operators, constants, and other formal relations.
+
+        For a line segment to be inside a triangle, the two endpoints of it must be inside the triangle. Since the line is distinct from the sides of the triangle, they two endpoints can't be on the same side of the triangle.
+
+        The endpoint U is a vertex of the triangle △ U V W, which is definitely inside it, so it suffices for us to formalize the clause: "The point X is inside the triangle, and it's not on UV or UW"
+
+        Since X is the intersection point of UX and VW, we know that X is on line VW, but we still need to gaurantee that X is not outside the line segment VW, and X is not the same point as V or W. Therefore, the clause we want to formalize is equivalent to "X lies between V and W", which has a potential direct formalization in the guidelines: `between`.
+
+        We double check the description of the `between` relation: "mutually distinct points a, b and c are collinear and ordered. Point b is between point a and c". It is indeed equivalent to our target clause since it guarantees that the points are mutually distinct.
+
+        It takes (a b c : Point) as arguments in order, with Point b being the one that is between Point a and Point c.
+
+        Therefore, we can formalize the clause as follows:
+        */
+        "between V X W",
+
+        /*
+        The clause "The angles ∠ W U X and ∠ V U X are congruent, denoted as ∠ W U X ≅ ∠ V U X" doesn't have any potential direct formalization in the guidelines, so we have to formalize it equivalently using available operators, constants, and other formal relations.
+
+        The definition of congruence of angles is that the measure of the angles is equal.
+
+        We notice that, following the instructions, the formal notation of an angle fromed by vertex b and sides a and c is `∠ a:b:c`, so we can directly formalize the clause using the equality relation `=` as follows:
+        */
+        "∠ W:U:X = ∠ V:U:X",
+
+        /*
+        The clause "The lines VW and UX are perpendicular, denoted as V W ⟂ U X" doesn't have any potential direct formalization in the guidelines, so we have to formalize it equivalently using available operators, constants, and other formal relations.
+
+        The definition of perpendicular lines is that the angle at which the lines intersect is a right angle (90°). In our case, this means that "The angle ∠ V X U (or its supplementary angle ∠ W X U) is a right angle (90°)".
+        
+        We notice that, following the instructions, the formal notation of an angle fromed by vertex b and sides a and c is `∠ a:b:c`, so we can directly formalize the clause using the constant `∟` representing a right angle (90°), and the equality relation `=` as follows:
+        */
+        "∠ V:X:U = ∟"
+    ],
+    "conclusions": [
+        /*
+        The clause "The line segments WX and VX are congruent, denoted as W X ≅ V X" doesn't have any potential direct formalization in the guidelines, so we have to formalize it equivalently using available operators, constants, and other formal relations.
+
+        The definition of congruence of line segments is that the length of the line segments are equal.
+
+        We notice that, following the instructions, the formal notation of a line segment fromed by points a and b is `|(a─b)|`, so we can directly formalize the clause using the equality relation `=` as follows:
+        */
+        "|(W─X)| = |(V─X)|"
+    ]
+}

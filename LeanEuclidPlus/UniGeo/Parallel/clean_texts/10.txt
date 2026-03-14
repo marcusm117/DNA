@@ -1,0 +1,3 @@
+There are two triangles VZY and WXZ with a common vertex Z. The lines WY and XV intersect at point Z. The point Z lies between W and Y, and also lies between X and V.
+
+Given W X ∥ V Y and ∠ Y V Z ≅ ∠Y. Complete the proof that ∠ X W Z ≅ ∠ W X Z.

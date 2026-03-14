@@ -1,0 +1,3 @@
+In the diagram, lines HJ and SZ intersect at I. WY and SZ intersect at X, TV and SZ intersect at U. The points Z, I, X, U, and S are sequentially aligned. The points H, W, and T are on one side of line SZ, and the points J, Y, and V are on the other side of line SZ.
+
+Given H J ∥ W Y and T V ∥ H J. Complete the proof that ∠ S X Y ≅ ∠ T U Z.

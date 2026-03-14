@@ -1,0 +1,3 @@
+In the diagram, points U, W, and X form a triangle △UWX, and points S, T, and V form a triangle △STV.
+
+Given ∠X ≅ ∠V. W X / S V = U X / T V. Complete the proof that ∠ U W X ≅ ∠ T S V.

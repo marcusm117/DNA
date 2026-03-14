@@ -1,0 +1,3 @@
+Two triangles △VYZ and △WXZ share a point Z. Lines VY and WX are on opposing sides of Z.
+
+Given ∠W ≅ ∠Y. Complete the proof that △ W X Z ~ △ Y V Z.

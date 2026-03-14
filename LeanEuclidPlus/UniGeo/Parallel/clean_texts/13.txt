@@ -1,0 +1,3 @@
+There is a triangle STQ. Inside the triangle, Line RU intersects SQ at R and intersects TQ at U.
+
+Given ∠ Q R U ≅ ∠ Q U R and S T ∥ R U. Complete the proof that ∠ R S T ≅ ∠T.

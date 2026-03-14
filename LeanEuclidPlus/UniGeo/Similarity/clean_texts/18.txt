@@ -1,0 +1,3 @@
+There is a triangle △VWU with an internal line WT intersecting UV at T.
+
+Given V W ⟂ U W and T W ⟂ U V. Complete the proof that △ T U W ~ △ T W V.

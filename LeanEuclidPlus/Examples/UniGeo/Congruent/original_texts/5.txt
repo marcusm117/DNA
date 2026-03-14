@@ -1,0 +1,3 @@
+Two triangles △TSU and △VUS have a shared sides US. T and V are on opposing sides of US
+
+Given S T ≅ U V. U V ∥ S T. Complete the proof that S V ≅ T U.

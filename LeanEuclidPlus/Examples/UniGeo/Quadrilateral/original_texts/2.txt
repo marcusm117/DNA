@@ -1,0 +1,3 @@
+In the diagram, points V, W,Y, and X form a quadrilateral □VWYX with a diagonal VX
+
+W X ⟂ V W , X Y ⟂ V Y , and ∠ X V Y ≅ ∠ V X W. Complete the proof that X Y ≅ V W.

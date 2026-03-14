@@ -1,0 +1,3 @@
+There is a convex pentagon FGHIJ with vertices F, G, H, I, and J arranged in clockwise order. There are three diagonal lines FH, FI, and GJ. The diagonal lines FH and GJ intersect at point K. The diagonal lines FI and GJ intersect at point L. L is the midpoint of JK, and K is the midpoint of LG.
+
+Given ∠GFH ≅ ∠JFI and FG ≅ FJ. Complete the proof that △FGK ≅ △FJL.

@@ -1,0 +1,3 @@
+Two triangles TUW and VSW share a point W. UT and VS are on opposing sides of point W.
+
+Given ∠ T U W ≅ ∠ U T W and S V ∥ T U. Complete the proof that ∠V ≅ ∠S.

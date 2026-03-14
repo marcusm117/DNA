@@ -1,0 +1,76 @@
+/*
+    To convert the Semi-Formalized Structure into a Formalized Structure, we will examine the natural language clauses in the Semi-Formalized Structure one by one, and formalize each into a formal clause that is well-formed and well-defined according to the guidelines.
+*/
+
+{
+    /*
+    First of all, we notice that the premises and conclusions in the Semi-Formalized Structure are quantified by a universal quantifier over $U$. According to the guidelines, for outmost universally quantified statements, we should use the binder form as much as possible.
+
+    Therefore, we put no formal quantifier over $U$ in the Formalized Structure, but instead formalize the premises "$U$ is subset of the complex plane $\\mathbb{C}$", "$U$ is non-empty", "$U$ is connected", etc. as binders like `(U : some_type)`, `(hU_1 : some_property_of_U)`, etc.
+    */
+    "quantification": "omitted since we will use the binder form",
+    "premises": [
+        /*
+        Now we should formalize the premises one by one. The first premise is "$U$ is a subset of the complex plane $\\mathbb{C}$". Check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, there is no direct correspondents of "the set of all complex numbers", so we need to come up with an equivalent way to formalize this premise alternatively.
+
+        We notice that this premise is equivalent to just saying that $U$ is a set of complex numbers. Therefore, we can use the type former `Set` and the complex number type `ℂ` to say that $U$ is of type `Set ℂ`.
+
+        Therefore, we can formalize this premise as follows:
+        */
+        "(U : Set ℂ)",
+        /*
+        The next premise is "$U$ is non-empty". Check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, there is a direct corresponding formal relation `Nonempty`. Therefore, we can formalize this property of $U$ as follows:
+        */
+        "(hU_1 : Nonempty U)",
+        /*
+        The next premise is "$U$ is connected". Check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, there is a direct corresponding formal relation `IsConnected`. Therefore, we can formalize this property of $U$ as follows:
+        */
+        "(hU_2 : IsConnected U)",
+        /*
+        The next premise is "$U$ is open". Check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, there is a direct corresponding formal relation `IsOpen`. Therefore, we can formalize this property of $U$ as follows:
+        */
+        "(hU_3 : IsOpen U)",
+        /*
+        The next premise is "$f_n$ is a sequence of complex functions". Check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, since a sequence is countably indexed, we can say that $f_n$ is of the curried function type `ℕ → ℂ → ℂ`. When we want to talk about the $i$-th function in the sequence, we can use the function application notation `f_n i`.
+
+        Therefore, we can formalize this premise as follows:
+        */
+        "(f_n : ℕ → ℂ → ℂ)",
+        /*
+        The next premise is a universally quantified statement (a sub-structure in our semi-formalized structure) about each $f_i$ in the sequence $f_n$: "for all $i \\in \\mathbb{N}$" we have "$f_i$ in the sequence $f_n$ is holomorphic on $U$, which means that $f_i$ is complex-differentiable at every point of $U$".
+
+        For "$i$ being a natural number", check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, we can say that $i$ is of type `ℕ`, so we can formalize the quantification over $i$ as `∀ i : ℕ`.
+
+        For "$f_i$ is complex-differentiable at every point of $U$", check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, there is a direct corresponding formal relation `DifferentiableOn` to talk about complex-differentiability by passing ℂ as the first argument.
+
+        Therefore, we can formalize this property of $f_i$ as follows:
+        */
+        "(hf_n_1 : ∀ i : ℕ, DifferentiableOn ℂ (f_n i) U)",
+        /*
+        The next premise is "$f$ is a function from $\\mathbb{C}$ to $\\mathbb{C}$". Check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, we can say that $f$ is of the function type `ℂ → ℂ`.
+
+        Therefore, we can formalize this premise as follows:
+        */
+        "(f : ℂ → ℂ)",
+        /*
+        The next premise is a universally quantified statement (a sub-structure in our semi-formalized structure) about each subset $X$ of $U$: "for all subsets $X$ of $U$, if $X$ is compact, then the sequence $f_n$ converges uniformly to $f$ on $X$".
+
+        For "$X$ being a subset of $U$", check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, there is a direct corresponding formal notation `⊆`. However, according to the guidelines, we should always declare the type of any variable first. Therefore, we can formalize the quantificaiton over $X$ as `∀ X : Set ℂ` and the subset relation as `X ⊆ U`.
+
+        For "$X$ being compact", check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, there is a direct corresponding formal relation `IsCompact`. Therefore, we can formalize this property of $X$ as follows as `IsCompact X`.
+
+        For "the sequence $f_n$ converges uniformly to $f$ on $X$", check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, there is a direct corresponding relation `TendstoUniformlyOn F f l X` for `F : ι → α → β` and `f : α → β` along a filter `l`. Here `F` is our sequence of functions `λ n x, f_n n x`, the limit is `f`, the index filter is `atTop` (we can directly use this name since we opened the namespace `Filter`), and the set is `X`. We can formalize the conclusion of this quantified statement as `TendstoUniformlyOn (λ n x => f_n n x) f atTop X`.
+
+        Therefore, assembling every piece together, we can formalize this universally quantified statement as follows:
+        */
+        "(hf_1 : ∀ X : Set ℂ, X ⊆ U ∧ IsCompact X → TendstoUniformlyOn (λ n x => f_n n x) f atTop X)",
+    ],
+    "conclusions": [
+        /*
+        The conclusion is "$f$ is holomorphic on $U$, which means that $f$ is complex-differentiable at every point of $U$". Check the provided helpers and recall our knowledge of the required versions of Lean and Mathlib in the guidelines, there is a direct corresponding formal relation `DifferentiableOn` to talk about complex-differentiability by passing ℂ as the first argument.
+
+        Therefore, we can formalize this property of $f$ as follows:
+        */
+        "DifferentiableOn ℂ f U",
+    ]
+}

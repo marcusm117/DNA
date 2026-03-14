@@ -1,0 +1,150 @@
+-- Basic Geometric Sorts --
+axiom Point : Type
+axiom Line : Type
+axiom Circle : Type
+
+
+
+-- Inductive Types for Geometric Entities --
+inductive Angle | right | ofPoints (A B C : Point)
+inductive Segment | endpoints (a b : Point)
+inductive Triangle | ofPoints (a b c : Point)
+
+
+
+-- Notations and Macros for Geometric Entities --
+"|(a─b)|" means the length of the line segment (type ℝ, not type Segment) between point a and point b.
+
+"∠ a:b:c" means the degree of the angle (type ℝ, not type Angle) formed by points a, b, and c, where b is the vertex of the angle and a and c are points respectively on the two sides of the angle. Add parentheses around the angle notation like "(∠ a:b:c)" to avoid ambiguity.
+
+"∟" means the degree of the right angle (type ℝ, not type Angle).
+
+"△ a:b:c" means the triangle (type Triangle) formed from points a, b and c.
+"Triangle.area △ a:b:c" means the area of the triangle formed by points a, b and c. Add parentheses around the triangle notation like "(△ a:b:c)" to avoid ambiguity.
+
+
+
+-- Relations and Axioms for Geometric Sorts --
+namespace Point
+def onLine (a : Point) (L : Line) -- point a is on line L. The syntax is `a.onLine L`.
+
+def sameSide (a b : Point) (L : Line) -- point a and b are on the same side of line L. They both are not on line L, but can be the same point. The syntax is `a.sameSide b L`.
+
+def opposingSides (a b : Point) (L : Line) -- distinct point a and b are on opposite sides of line L. They both are not on line L. The syntax is `a.opposingSides b L`.
+
+def onCircle (a: Point) (C: Circle) -- point a is on circle C. The syntax is `a.onCircle C`.
+
+def insideCircle (a: Point) (C: Circle) -- point a is inside circle C. It can't be on the circle. The syntax is `a.insideCircle C`.
+
+def outsideCircle (a: Point) (C: Circle)-- point a is outside circle C. It can't be on the circle. The syntax is `a.outsideCircle C`.
+
+def isCentre (a: Point) (C: Circle) -- point a is on the unique center circle C. The syntax is `a.isCentre C`.
+
+def isMidpointOf (m a b : Point) -- point m is the midpoint of segment AB iff m, a, b are collinear with m between a and b, and the distances from m to the endpoints are equal (|(a─m)| = |(m─b)|). This implies that a, m, b are mutually distinct. The syntax is `m.isMidpointOf a b`.
+
+def isMidpointOfSegmentEndpoints (m a b : Point) (SP : Segment) -- same as `m.isMidpointOf a b`, additionally identifying the segment witness: SP = [a,b]. The syntax is `m.isMidpointOfSegmentEndpoints a b SP`.
+
+def onExtensionBeyondB (p a b : Point) -- p lies on the extension of segment AB beyond endpoint B iff B is between A and P (i.e., A–B–P). The syntax is `p.onExtensionBeyondB a b`.
+
+def onExtensionBeyondA (p a b : Point) -- p lies on the extension of segment AB beyond endpoint A iff A is between B and P (i.e., B–A–P). The syntax is `p.onExtensionBeyondA a b`.
+end Point
+
+
+namespace Line
+def intersectsLine (L M : Line) -- two lines L and M intersect at some point. They can be the same line. The syntax is `L.intersectsLine M`.
+
+def intersectsCircle (L : Line) (C : Circle) -- line L and circle C intersect. The syntax is `L.intersectsCircle C`.
+end Line
+
+
+namespace Circle
+def intersectsCircle (C1 C2: Circle) -- circle C1 and C2 intersect. The syntax is `C1.intersectsCircle C2`.
+end Circle
+
+
+namespace Triangle
+def sideAB (a b : Point) (_c : Point) -- the side AB of triangle ABC as a segment with endpoints a and b. The syntax is `Triangle.sideAB a b c`.
+
+def sideBC (_a : Point) (b c : Point) -- the side BC of triangle ABC as a segment with endpoints b and c. The syntax is `Triangle.sideBC a b c`.
+
+def sideCA (a : Point) (_b : Point) (c : Point) -- the side CA of triangle ABC as a segment with endpoints c and a. The syntax is `Triangle.sideCA a b c`.
+end Triangle
+
+
+-- Geometric Relations --
+def distinctPointsOnLine (a b : Point) (L : Line) -- points a and b are distinct and on line L. The syntax is `distinctPointsOnLine a b L`.
+
+def between (a b c : Point) -- mutually distinct points a, b and c are collinear and ordered. Point b is between point a and c. The syntax is `between a b c`.
+
+def formTriangle (a b c : Point) (AB BC CA : Line) -- mutually distinct points a, b and c form a triangle, where point a and b are on line AB, point b and c are on line BC, point a and c are on line CA. The lines AB, BC, and CA must be distinct. Note that the order and correspondence of arguments a, b, c, AB, BC, CA is strictly required i.e. a and b must be on AB, b and c must be on BC, a and c must be on CA, and they must be passed in the exact order! The syntax is `formTriangle a b c AB BC CA`.
+
+def formRectilinearAngle (a b c : Point) (AB BC : Line)  -- points a, b and c form a rectilinear angle, where b is the vertex of the angle and a and c are points respectively on the sides AB and BC. The sides AB and BC can be the same line, the points a and c can be the same point, but the vertex b must be distinct from a and c. The syntax is `formRectilinearAngle a b c AB BC`.
+
+def formParallelogram (a b c d : Point) (AB CD AC BD : Line) -- mutually distinct points a, b, d, and c (in clockwise/counterclockwise order i.e. ad is a diagonal) form a parallelogram, where points a and b are on line AB, points c and d are on line CD, points a and c are on line AC, and points b and d are on line BD. The lines AB, CD, AC, and BD must be distinct. Note that the order and correspondence of arguments a, b, c, d, AB, CD, AC, BD is strictly required i.e. a and b must be on AB, c and d must be on CD, a and c must be on AC, b and d must be on BD, and they must be passed in the exact order! The syntax is `formParallelogram a b c d AB CD AC BD`.
+
+def twoDistinctLinesIntersectAtPoint (L M : Line) (i : Point) -- two distinct lines L and M intersect exactly at a witness point i, where i lies on both L and M. Distinctness L ≠ M is required, and `L.intersectsLine M` must hold. The syntax is `twoDistinctLinesIntersectAtPoint L M i`.
+
+def sequentiallyAligned (pts : List Point) -- an ordered list of points is sequentially aligned if every consecutive triple realizes betweenness (for a,b,c, the condition uses `between a b c` and then continues along the list). For lists with fewer than three points the relation holds trivially; use `sequentiallyAlignedThreeOrMore` if you need at least three points. The syntax is `sequentiallyAligned [a, b, c, d]`.
+
+def sequentiallyAlignedThreeOrMore (pts : List Point) -- a list is sequentially aligned and contains at least three points. This strengthens `sequentiallyAligned` by requiring length ≥ 3. The syntax is `sequentiallyAlignedThreeOrMore [a, b, c, d]`.
+
+def twoSetsOpposingSidesOnLine (xs ys : List Point) (L : Line) -- two lists of points xs and ys lie on opposing sides of line L such that: (1) no point from either list lies on L; (2) for every x in xs and y in ys, x and y are on opposite sides of L. The syntax is `twoSetsOpposingSidesOnLine [x₁, x₂] [y₁, y₂, y₃] L`.
+
+def supplementaryAngles (a b c d e f : Point) -- the angles ∠ a:b:c and ∠ d:e:f are supplementary; their measures satisfy (∠ a:b:c) + (∠ d:e:f) = ∟ + ∟. The syntax is `supplementaryAngles a b c d e f`.
+
+def parallel (L M : Line) -- lines L and M are parallel iff they are distinct and do not intersect. Note the distinctness requirement L ≠ M. The syntax is `parallel L M`.
+
+def nonCollinearPoints (a b c : Point) -- points a, b, c are non-collinear iff Triangle.area (△ a:b:c) ≠ 0. The syntax is `nonCollinearPoints a b c`.
+
+def segmentFromVertexToOppositeSide (v s1 s2 p : Point) (SP : Segment) -- a segment SP connects vertex v to a point p on the opposite side s1s2, witnessed by betweenness s1–p–s2. This only asserts SP = [v,p] and `between s1 p s2`; it does not by itself assert that v,s1,s2 form a non-degenerate triangle. The syntax is `segmentFromVertexToOppositeSide v s1 s2 p SP`.
+
+def congruentSegments (a b c d : Point) -- segments AB and CD are congruent iff their lengths are equal: |AB| = |CD|. The syntax is `congruentSegments a b c d`.
+
+def perpendicularAt (L M : Line) (i a c : Point) -- lines L and M are perpendicular, witnessed at intersection point i with support points a on L and c on M, iff L and M intersect, points a–i–c form a rectilinear angle with sides on L and M, and ∠ AIC = ∟. The syntax is `perpendicularAt L M i a c`.
+
+def equalLengthRatios (a b c d e f g h : Point) -- equality of ratios of segment lengths: (|AB| / |CD|) = (|EF| / |GH|). No non-degeneracy (e.g., nonzero denominators) is asserted by this relation. The syntax is `equalLengthRatios a b c d e f g h`.
+
+def triangleAngleSum (a b c : Point) -- for a non-degenerate triangle ABC (nonCollinearPoints a b c), the sum of its interior angles equals a straight angle: ∠ BAC + ∠ ABC + ∠ ACB = ∟ + ∟. The syntax is `triangleAngleSum a b c`.
+
+def trianglesSimilar (a b c d e f : Point) -- triangles ABC and DEF are similar iff the three corresponding angles are equal and the corresponding sides are in proportion: ∠ BAC = ∠ EDF, ∠ ABC = ∠ DEF, ∠ ACB = ∠ DFE, and |AB|/|DE| = |BC|/|EF| = |CA|/|FD| (encoded as two equalities). The correspondence is A↔D, B↔E, C↔F and the order of arguments is strict. No non-degeneracy is assumed. The syntax is `trianglesSimilar a b c d e f`.
+
+def trianglesCongruent (a b c d e f : Point) -- triangles ABC and DEF are congruent iff the three corresponding angles are equal and the three corresponding sides have equal lengths: |AB| = |DE|, |BC| = |EF|, |CA| = |FD|. The correspondence is A↔D, B↔E, C↔F and the order of arguments is strict. The syntax is `trianglesCongruent a b c d e f`.
+
+def formConvexQuadrilateral (a b c d : Point) (AB BC CD DA : Line) -- four points a, b, c, d together with side lines AB, BC, CD, DA form a convex quadrilateral iff: (1) consecutive vertices lie on their side lines with distinct endpoints: distinctPointsOnLine a b AB, distinctPointsOnLine b c BC, distinctPointsOnLine c d CD, distinctPointsOnLine d a DA; (2) for each side line, the two nonincident vertices lie on the same side of that line: c.sameSide d AB, d.sameSide a BC, a.sameSide b CD, b.sameSide c DA. No additional constraints are imposed (e.g., side-line distinctness or diagonal intersection is not required by this relation). The arguments are strictly ordered and correspond as written: a,b on AB; b,c on BC; c,d on CD; d,a on DA. The syntax is `formConvexQuadrilateral a b c d AB BC CD DA`.
+
+def diagonalACOfQuadrilateral (a b c d : Point) (SP : Segment) -- SP is the diagonal AC of the ordered quadruple (a, b, c, d). Precisely, SP = [a,c]. The syntax is `diagonalACOfQuadrilateral a b c d SP`.
+
+def diagonalBDOfQuadrilateral (a b c d : Point) (SP : Segment) -- SP is the diagonal BD of the ordered quadruple (a, b, c, d). Precisely, SP = [b,d]. The syntax is `diagonalBDOfQuadrilateral a b c d SP`.
+
+def segmentBisectsAngleAtVertex (a b c p : Point) (SP : Segment) (AB BC BP : Line) -- segment BP bisects angle ABC at vertex b with the following requirements: a,b lie on AB; b,c lie on BC; b,p lie on BP; interior is witnessed by same-side constraints a.sameSide p BC and c.sameSide p AB; the sub-angles are equal: ∠ ABP = ∠ PBC; SP = [b,p]. The order and correspondence of all arguments is strict: AB is the side through A and B, BC is the side through B and C, and BP is the carrier line of the bisector through B and P. The syntax is `segmentBisectsAngleAtVertex a b c p SP AB BC BP`.
+
+def trianglesShareSideBy
+    (sel₁ : Point → Point → Point → Segment)
+    (sel₂ : Point → Point → Point → Segment)
+    (a b c d e f : Point) -- two triangles ABC and DEF share a common side as witnessed by segment selectors sel₁ and sel₂ when sel₁ a b c = sel₂ d e f. Typical choices are Triangle.sideAB, Triangle.sideBC, Triangle.sideCA. The syntax is `trianglesShareSideBy Triangle.sideAB Triangle.sideAB a b c d e f`.
+
+def equilateralTriangle (a b c : Point) -- triangle ABC is equilateral iff |AB| = |BC| and |BC| = |CA|. The syntax is `equilateralTriangle a b c`.
+
+def isoscelesAtA (a b c : Point) -- triangle ABC is isosceles at vertex A iff |AB| = |AC|. The syntax is `isoscelesAtA a b c`.
+
+def isoscelesAtB (a b c : Point) -- triangle ABC is isosceles at vertex B iff |BA| = |BC|. The syntax is `isoscelesAtB a b c`.
+
+def isoscelesAtC (a b c : Point) -- triangle ABC is isosceles at vertex C iff |CA| = |CB|. The syntax is `isoscelesAtC a b c`.
+
+def lineCutsTriangleOnABandACAt
+    (a b c p q : Point) (AB BC CA L : Line) -- line L intersects sides AB and AC of triangle ABC at points p and q, respectively, provided: (1) ABC is formed by lines AB, BC, CA using `formTriangle a b c AB BC CA`; (2) A–p–B and C–q–A betweenness hold; (3) p and q lie on L. The order and correspondence of arguments is strict. The syntax is `lineCutsTriangleOnABandACAt a b c p q AB BC CA L`.
+
+def lineCutsTriangleOnABandBCAt
+    (a b c p q : Point) (AB BC CA L : Line) -- line L intersects sides AB and BC of triangle ABC at points p and q, respectively, provided: (1) ABC is formed by lines AB, BC, CA; (2) A–p–B and B–q–C betweenness hold; (3) p and q lie on L. The order and correspondence of arguments is strict. The syntax is `lineCutsTriangleOnABandBCAt a b c p q AB BC CA L`.
+
+def lineCutsTriangleOnACandBCAt
+    (a b c p q : Point) (AB BC CA L : Line) -- line L intersects sides AC and BC of triangle ABC at points p and q, respectively, provided: (1) ABC is formed by lines AB, BC, CA; (2) C–p–A and B–q–C betweenness hold; (3) p and q lie on L. The order and correspondence of arguments is strict. The syntax is `lineCutsTriangleOnACandBCAt a b c p q AB BC CA L`.
+
+def lineCutsABandACParallelBC
+    (a b c p q : Point) (AB BC CA L : Line) -- line L cuts sides AB and AC of triangle ABC at p and q (as in `lineCutsTriangleOnABandACAt`) and is parallel to BC. The order and correspondence of arguments is strict. The syntax is `lineCutsABandACParallelBC a b c p q AB BC CA L`.
+
+def lineCutsABandBCParallelCA
+    (a b c p q : Point) (AB BC CA L : Line) -- line L cuts sides AB and BC of triangle ABC at p and q (as in `lineCutsTriangleOnABandBCAt`) and is parallel to CA. The order and correspondence of arguments is strict. The syntax is `lineCutsABandBCParallelCA a b c p q AB BC CA L`.
+
+def lineCutsACandBCParallelAB
+    (a b c p q : Point) (AB BC CA L : Line) -- line L cuts sides AC and BC of triangle ABC at p and q (as in `lineCutsTriangleOnACandBCAt`) and is parallel to AB. The order and correspondence of arguments is strict. The syntax is `lineCutsACandBCParallelAB a b c p q AB BC CA L`.

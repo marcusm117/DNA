@@ -1,0 +1,3 @@
+Lines UW and QX intersect at V. RT and QX intersect at S. The points X, V, S, and Q are sequentially aligned. The set of points U, R and the set of points T, W are on opposing sides of the line QX.
+
+Given ∠ T S V and ∠ S V W are supplementary. Complete the proof that U W ∥ R T.

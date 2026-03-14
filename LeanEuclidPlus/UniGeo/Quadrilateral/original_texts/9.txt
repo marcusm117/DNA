@@ -1,0 +1,3 @@
+In the diagram, points F, G,I, and H form a quadrilateral □FGIH with a diagonal line FH.
+
+H I ∥ F G , H I ⟂ F I , and F G ⟂ G H. Complete the proof that H I ≅ F G.

@@ -1,0 +1,3 @@
+In the diagram, points P, R, and T form a triangle △PRT, and points Q, S, and R form a triangle △QSR. The lines PQ and ST intersect at point R. The point R lies between P and Q, and also lies between S and T.
+
+Given ∠P ≅ ∠S. Complete the proof that △ P R T ~ △ S R Q.

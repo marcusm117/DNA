@@ -1,0 +1,3 @@
+There is a triangle △GHK with an extended point I on GH closer to H. There is another line HJ with J and K on the same side of GH.
+
+G K ∥ H J. Complete the proof that ∠G + ∠K + ∠ G H K = 180° without using the Triangle Angle Sum Theorem.

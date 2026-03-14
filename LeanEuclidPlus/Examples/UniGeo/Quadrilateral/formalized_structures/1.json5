@@ -1,0 +1,53 @@
+/*
+    To convert the Semi-Formalized Structure into a Formalized Structure, we will examine the natural language clauses in the Semi-Formalized Structure one by one, and formalize each into a formal clause that is well-formed and well-defined according to the guidelines.
+*/
+
+{
+    "premises": [
+        /*
+        The clause "The distinct points T, U, W, V form a quadrilateral □ T U W V with TV being a diagonal" has a potential direct formalization in the guidelines: `formConvexQuadrilateral`.
+
+        We double check the description of the `formConvexQuadrilateral` relation: "mutually distinct points a, b, d, and c (in clockwise/counterclockwise order i.e. ad is a diagonal) form a convex quadrilateral, where points a and b are on line AB, points c and d are on line CD, points a and c are on line AC, and points b and d are on line BD. The lines AB, CD, AC, and BD must be distinct".
+
+        The mutual distinctness of points in our target clause matches the description "mutually distinct points a, b, d, and c". By definition, the 4 points that form a quadrilateral, so any three of them must not be collinear, which matches the description "The lines AB, CD, AC, and BD must be distinct". Therefore, this relation is indeed equivalent to our target clause.
+
+        `formConvexQuadrilateral` takes (a b c d : Point) (AB CD AC BD : Line) as arguments in order with the 4 Lines being the sides of the quadrilateral and the 4 Points being the vertices of the quadrilateral.
+
+        More importantly, to uniquely determine the quadrilateral, we need to specify the order of the points correctly, in particular, specify that TV is a diagonal. The description "distinct points a, b, d, and c (in clockwise/counterclockwise order i.e. ad is a diagonal)" suggests T=a, U=b, W=c, V=d for TV=ad to be a diagonal. Therefore, we pass in the points in the order of T, U, W, V, and formalize the clause as follows:
+        */
+        "formConvexQuadrilateral T U W V TU WV TW UV",
+
+        /*
+        The clause "T and V are distinct points on line TV" has a potential direct formalization in the guidelines: `distinctPointsOnLine`.
+
+        We double check the description of the `distinctPointsOnLine` relation: "points a and b are distinct and on line L". It is indeed equivalent to our target clause.
+
+        It takes (a b : Point) (L : Line) as arguments in order, so we can formalize the clause as follows:
+        */
+        "distinctPointsOnLine T V TV",
+
+        /*
+        The clause "The angles ∠ U T V and ∠ T V W are congruent, denoted as ∠ U T V ≅ ∠ T V W" doesn't have any potential direct formalization in the guidelines, so we have to formalize it equivalently using available operators, constants, and other formal relations.
+
+        The definition of congruence of angles is that the measure of the angles is equal.
+
+        We notice that, following the instructions, the formal notation of an angle fromed by vertex b and sides a and c is `∠ a:b:c`, so we can directly formalize the clause using the equality relation `=` as: `∠ U:T:V = ∠ T:V:W`.
+
+        The following clause "The angles ∠ V T W and ∠ T V U are congruent, denoted as ∠ V T W ≅ ∠ T V U" can be formalized in the exact same way.
+
+        Therefore, we can formalize the next 2 clauses as follows:
+        */
+        "∠ U:T:V = ∠ T:V:W",
+        "∠ V:T:W = ∠ T:V:U"
+    ],
+    "conclusions": [
+        /*
+        The clause "The line segments TW and UV are congruent, denoted as T W ≅ U V" doesn't have any potential direct formalization in the guidelines, so we have to formalize it equivalently using available operators, constants, and other formal relations.
+
+        The definition of congruence of line segments is that the length of the line segments are equal.
+
+        We notice that, following the instructions, the formal notation of a line segment fromed by points a and b is `|(a─b)|`, so we can directly formalize the clause using the equality relation `=` as follows:
+        */
+        "|(T─W)| = |(U─V)|"
+    ]
+}

@@ -1,0 +1,8 @@
+There is a quadrilateral □PQSR with vertices P, Q, S, and R and diagonal QS. T is outside of the quadrilateral. PT and ST is formed by connecting T with P and S.
+
+
+This text description allows multiple spatial configurations, which doesn't align with the diagram. Even though the original proof would work, but the goal of `diagrams2texts` is to generate text descriptions that are faithful to the diagram.
+
+Changed "T is outside of the quadrilateral." to:
+
+The points T and Q are on opposing sides of the line PS.

@@ -1,0 +1,6 @@
+There are two non-overlapping triangles, △UXV and △VYW, with a common vertex V. U, V and W are collinear and ordered. X and Y are on the same side of UW.
+
+
+This text description "non-overlapping" is not accurate because the triangles share a common vertex V. This description is also not consistent with other diagram2text descriptions.
+
+Changed "non-overlapping" to "overlapping".

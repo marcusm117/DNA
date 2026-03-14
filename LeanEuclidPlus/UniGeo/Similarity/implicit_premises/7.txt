@@ -1,0 +1,5 @@
+Not Applicable, the original text is ambiguous.
+
+Disambiguating Premises based on the original formalization (for curation of clean text only):
+
+The lines FH and EI intersect at point G. The point G lies between F and H, and also lies between E and I.

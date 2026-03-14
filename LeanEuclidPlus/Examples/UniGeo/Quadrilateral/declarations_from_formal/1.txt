@@ -1,0 +1,15 @@
+Before converting the Formalized Structure into a Formalized statement, we first need to declare all the geometric objects that are mentioned in the clauses of the Formalized Structure as variables.
+
+According to the guidelines, since all our declared variables will be bounded by a universal quantifier ∀, we shouldn't declare any extra variables that are not mentioned in any clauses of Formalized Structure.
+
+We will examine the clauses in the Formalized Structure one by one, and declare variables for the mentioned geometric objects in order.
+
+The first clause, `formQuadrilateral T U W V TU WV TW UV`, requires the declaration of Points: T, U, W, V, and Lines: TU, WV, TW, UV.
+
+The next clause, `distinctPointsOnLine T V TV`, requires the additional declaration of Line: TV.
+
+The remaining clauses require no additional declarations.
+
+Therefore, we need to declare all and only the following geometric objects as variables:
+
+(T U W V : Point) (TU WV TW UV TV: Line)

@@ -1,0 +1,3 @@
+In the diagram, points R, S, and T form a triangle △RST with RU intersecting ST at U.
+
+U is the midpoint of S T and R T ≅ R S. Complete the proof that ∠S ≅ ∠T.

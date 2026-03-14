@@ -1,0 +1,3 @@
+In the diagram, there is a triangle XVY. Within the triangle, line WZ intersects VY at Z and intersects VX at W.
+
+Given X Y ∥ W Z and ∠Y ≅ ∠ W X Y. Complete the proof that ∠ V W Z ≅ ∠ V Z W.

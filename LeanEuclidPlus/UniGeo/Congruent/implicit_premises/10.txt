@@ -1,0 +1,5 @@
+Not Applicable, the original text is ambiguous.
+
+Disambiguating Premises based on the original formalization (for curation of clean text only):
+
+The lines QS and RT intersect at point U. The point U lies between R and T.

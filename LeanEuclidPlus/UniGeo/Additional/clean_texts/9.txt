@@ -1,0 +1,3 @@
+There are two circles a and b with centers P and Q. The line PQ is fixed by the two centers P and Q. It intersects a at point R and b at point S. The two circles intersect at points A and B with A and B on the opposite sides of the line PQ.
+
+Given that AS ∥ BR, and ∠QAS ≅ ∠PBR. Complete the proof that △QSA ~ △RPB.

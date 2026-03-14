@@ -1,0 +1,3 @@
+In the diagram, points W, V,X, and Y form a quadrilateral □WVXY with diagonal lines VX and WY. Z is extended from XY, and line VZ is formed by joining V and Z.
+
+Given X Y ∥ V W and V Z ∥ W Y and Y Z ∥ V W. V X ≅ W Y. Complete the proof that V Y ≅ W X.

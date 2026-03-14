@@ -1,0 +1,3 @@
+Two triangles △TRS and △VRU share a common point R. Points T and S are on one side of R, and points V and U are on another side of R.
+
+Given U V ∥ S T. Complete the proof that △ R U V ~ △ R T S.

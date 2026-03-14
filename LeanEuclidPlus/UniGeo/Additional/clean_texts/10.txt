@@ -1,0 +1,3 @@
+In the diagram, there are three lines AB, CD, EF. The lines AB and EF intersect at point X, and the lines CD and EF intersects at point Y. The points C, F, D, Y are on one side of line AB, and the point E is on the other side of AB. The points A, E, B, X are on one side of line CD, and the point F is on the other side of CD. The points A, C are on one side of line EF, and the points B, D are on the other side of line EF.
+
+Complete the proof that the quadrilateral □AEDF with the vertices arranged in the named order clockwise is convex.

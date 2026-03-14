@@ -1,0 +1,3 @@
+In the diagram, lines XV and RY intersect at W. SU and RY intersect at T, GI and RY intersect at H. The points Y, W, T, H, and R are sequentially aligned. The points X, U, and I are on one side of line RY, and the points V, S, and G are on the other side of line RY.
+
+Given V X ∥ G I and G I ∥ S U. Complete the proof that ∠ X W Y + ∠ R T U = 180°.

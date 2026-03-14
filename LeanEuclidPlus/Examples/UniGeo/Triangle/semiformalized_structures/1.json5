@@ -1,0 +1,62 @@
+/*
+    To semi-formalize the English Statement into a structure of premises and conclusions, we will examine the English Statement sentence by sentence, and break down each sentence into natural language clauses that are as atomic as possible.
+*/
+
+{
+    "premises": [
+        /*
+        The sentence "In the diagram, points U, V, and W form a triangle △UVW." first declares 3 points: U, V, W, and a triangle △ U V W formed by these points.
+
+        From the instructions, we know that all points and lines are distinct, so we know that the points U, V, W are all distinct and thus the triangle is properly formed.
+
+        Therefore, we can convert the sentence into the following premise:
+        */
+        "The distinct points U, V, W form a triangle △ U V W",
+        /*
+        For now, the premise above only partially express the fact that points U, V, W, X are all distinct, and the lines UX, VW, UV, UW are all distinct.
+
+        However, we might be able to incorporate and express this distinctness relation in later premises, so we don't create additional premises for them right now.
+
+        Instead, we will first examine all sentences in the English statement and eventually create premises for the remaining unexpressed distinctness relations if necessary.
+        */
+
+        /*
+        The sentence "There is an internal line UX in △UVW that intersects VW at X." first declares a line UX, and then specifies two constraints on it:
+
+        (1) The line UX intersects VW at X.
+        (2) The line segment UX is inside the triangle △ U V W.
+
+        From the instructions, we know that all points and lines are distinct, so we know that the line UX is distinct from the sides VW, UV, UW of the triangle △ U V W, and the point X is distinct from the vertices U, V, W of the triangle △ U V W.
+
+        However, if we don't explicitly state that UX is distinct from the sides of the triangle, it might be interpreted that UX can be the same line as VW, UV, or UW i.e. X is the same as V, U, or W, which is not what we want.
+
+        Therefore, we can incorporate the fact that the line UX is distinct from the sides of the triangle △ U V W, and have the following 3 premise:
+        */
+        "U and X are distinct points on line UX",
+        "The distinct lines UX and VW intersect at point X",
+        "The line segment UX is inside the triangle △ U V W, and is distinct from the sides of the triangle",
+        /*
+        Since we had explicitly expressed that the vertices and sides of the triangle △ U V W are all mutually distinct, we also expressed the fact that the points U, V, W, X and the lines UX, VW, UV, UW are all mutually distinct.
+
+        Therefore, we checked that all distinctness relations among points and lines are expressed.
+        */
+
+        /*
+        The sentence "∠ W U X ≅ ∠ V U X and V W ⟂ U X." first states a congruence relation between angles ∠ W U X and ∠ V U X.
+
+        It then states a perpendicular relation between lines VW and UX.
+
+        Therefore, we have the 2 following premises:
+        */
+        "The angles ∠ W U X and ∠ V U X are congruent, denoted as ∠ W U X ≅ ∠ V U X",
+        "The lines VW and UX are perpendicular, denoted as V W ⟂ U X"
+    ],
+    "conclusions": [
+        /*
+        The sentence "Complete the proof that W X ≅ V X." states the goal of the proof: to show that the line segments WX and VX are congruent.
+
+        Therefore, we have the following conclusion:
+        */
+        "The line segments WX and VX are congruent, denoted as W X ≅ V X"
+    ]
+}

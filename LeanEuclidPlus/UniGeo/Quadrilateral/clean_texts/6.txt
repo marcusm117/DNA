@@ -1,0 +1,3 @@
+In the diagram, points F, G,I, and H form a convex quadrilateral □FGIH with a diagonal line FH.
+
+F G ≅ H I and H I ∥ F G. Complete the proof that G H ≅ F I.

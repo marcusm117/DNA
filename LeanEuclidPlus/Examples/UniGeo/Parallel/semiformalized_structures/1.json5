@@ -1,0 +1,91 @@
+/*
+    To semi-formalize the English Statement into a structure of premises and conclusions, we will examine the English Statement sentence by sentence, and break down each sentence into natural language clauses that are as atomic as possible.
+*/
+
+{
+    "premises": [
+        /*
+        The sentence "Line WY and SZ intersect at X, TV and SZ intersect at U." first declares 3 lines: WY, SZ, TV.
+
+        From the instructions, we know that all points and lines distinct, so it also declares 6 distinct points on 3 distinct lines: W, Y on line WY, S, Z on line SZ, T, V on line TV.
+
+        It then states intersection relations between these 3 lines: WY and SZ intersect at point X, TV and SZ intersect at point U.
+
+        Therefore, we can break down the sentence into the following 5 premises:
+        */
+        "W and Y are distinct points on line WY",
+        "S and Z are distinct points on line SZ",
+        "T and V are distinct points on line TV",
+        "The distinct lines WY and SZ intersect at point X",
+        "The distinct lines TV and SZ intersect at point U",
+        /*
+        For now, the premises above only partially express the fact that the points W, Y, S, Z, T, V are all distinct, and the lines WY, SZ, TV are all distinct.
+
+        However, we might be able to incorporate and express the rest distinctness relations in later premises, so we don't create additional premises for them right now.
+
+        Instead, we will first examine all sentences in the English statement and eventually create premises for the rest unexpressed distinctness relations if necessary.
+        */
+
+        /*
+        The sentence "The points S, U, X, Z are collinear and ordered." states an order relation between the 4 points S, U, X, Z: they are on the same line SZ and ordered in this sequence.
+
+        For this order relation, if we don't explicitly state the distinctness of the points, it might be interpreted as X can be the same point as S or Z, which is not what we want.
+
+        Therefore, we can incorporate the fact that the points X, Z, U are mutually distinct, and the points U, S, X are mutually distinct.
+
+        Therefore, we have the following premise:
+        */
+        "The distinct points S, U, X, Z are collinear and ordered in this sequence from S to Z",
+        /*
+        Since we had explicitly expressed that S and Z are distinct points on line SZ, we also expressed the fact that the points S, U, X, Z are all mutally distinct.
+        */
+
+        /*
+        The sentences "The points T, W are on one side of line SZ. The points V, Y are on the other side of line SZ." state same-side / opposing-side relations between the points T, W, V, and Y with respect to line SZ: T and W are on the same side of line SZ, V and Y are on the same side of line SZ, T and V are on opposing sides of line SZ, W and Y are on opposing sides of line SZ.
+
+        For the same-side relation, if we don't explicitly state the distinctness of the points, it might be interpreted as T and W can be the same point. Also, if we don't explicitly state the non-collinearity of these points, it might be interpreted that at least one of T and W lie on line SZ, which is not what we want.
+
+        Therefore, we can incorporate the fact that the points T and W are mutually distinct, and that they don't lie on line SZ.
+
+        Similarly, we can incorporate the fact that the points V and Y are mutually distinct, and that they don't lie on line SZ.
+
+        For the opposing-side relation, if we don't explicitly state the distinctness of the points, it might be interpreted that one of T and V can lie on line SZ being the same as point U, which is not what we want.
+
+        Therefore, we can incorporate the fact that the points T and V are both not on line SZ.
+
+        Similarly, we can incorporate the fact that the points W and Y are both not on line SZ.
+
+        Therefore, we can break it down into the following 4 premises:
+        */
+        "The distinct points T and W are on the same side of line SZ, both not on line SZ",
+        "The distinct points V and Y are on the same side of line SZ, both not on line SZ",
+        "The distinct points T and V are on opposing sides of line SZ, both not on line SZ",
+        "The distinct points W and Y are on opposing sides of line SZ, both not on line SZ",
+        /*
+        Since we had explicitly expressed that T and V are distinct points on line TV, and W and Y are distinct points on line WY, we also expressed the fact that the points T, W, V, Y are all mutally distinct.
+
+        Since we had explicitly expressed that distinct points S, U, X, Z are on line SZ, and distinct points T, W, V, Y are not on line SZ, we also expressed the fact that S, U, X, Z, T, W, V, Y are all mutally distinct.
+
+        Now, we have checked that all distinctness relations among the points T, W, V, Y, S, U, X, Z are expressed. There is only one more distinctness relation left to check: the lines WY and TV are mutually distinct.
+
+        If WY were the same line as TV, then they should intersect at the same point with SZ, which makes X and U the same point. Since we had expressed that X and U are distinct points, we also expressed the fact that the lines WY and TV are mutually distinct.
+
+        Therefore, we checked that all distinctness relations among points and lines are expressed.
+        */
+
+        /*
+        The sentence "Given ∠ U X W and ∠ T U X are supplementary." states a metric relation between the angles ∠ U X W and ∠ T U X.
+
+        Therefore, we have the following premise:
+        */
+        "The angles ∠ U X W and ∠ T U X are supplementary"
+    ],
+    "conclusions": [
+        /*
+        The sentence "Complete the proof that W Y ∥ T V." states the goal of the proof: to show that lines WY and TV are parallel.
+
+        Therefore, we have the following conclusion:
+        */
+        "The lines WY and TV are parallel, denoted as W Y ∥ T V"
+    ]
+}

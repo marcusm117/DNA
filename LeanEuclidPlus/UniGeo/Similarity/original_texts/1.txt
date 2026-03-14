@@ -1,0 +1,3 @@
+Two triangles △HGI and △EGF share a common point G. Points H and I are on one side of G, and points E and F are on another side of G.
+
+Given ∠I ≅ ∠F. Complete the proof that △ G H I ~ △ G E F.

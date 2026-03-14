@@ -1,0 +1,3 @@
+There is a convex pentagon JKLMN with vertices J, K, L, M, and N arranged in clockwise order. There are three diagonal lines JL, JM, and KN. The diagonal lines JL and KN intersect at point O. The diagonal lines JM and KN intersect at point P. P is the midpoint of NO, and O is the midpoint of PK.
+
+Given ∠KJL ≅ ∠NJM and JK ≅ JN. Complete the proof that △JKO ≅ △JNP.

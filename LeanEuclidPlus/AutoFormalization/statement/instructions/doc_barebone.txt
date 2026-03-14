@@ -1,0 +1,70 @@
+-- Basic Geometric Sorts --
+axiom Point : Type
+axiom Line : Type
+axiom Circle : Type
+
+
+
+-- Inductive Types for Geometric Entities --
+inductive Angle | right | ofPoints (A B C : Point)
+inductive Segment | endpoints (a b : Point)
+inductive Triangle | ofPoints (a b c : Point)
+
+
+
+-- Notations and Macros for Geometric Entities --
+"|(a─b)|" means the length of the line segment (type ℝ, not type Segment) between point a and point b.
+
+"∠ a:b:c" means the degree of the angle (type ℝ, not type Angle) formed by points a, b, and c, where b is the vertex of the angle and a and c are points respectively on the two sides of the angle. Add parentheses around the angle notation like "(∠ a:b:c)" to avoid ambiguity.
+
+"∟" means the degree of the right angle (type ℝ, not type Angle).
+
+"△ a:b:c" means the triangle (type Triangle) formed from points a, b and c.
+"Triangle.area △ a:b:c" means the area of the triangle formed by points a, b and c. Add parentheses around the triangle notation like "(△ a:b:c)" to avoid ambiguity.
+
+
+
+-- Relations and Axioms for Geometric Sorts --
+namespace Point
+def onLine (a : Point) (L : Line) -- point a is on line L. The syntax is `a.onLine L`.
+
+def sameSide (a b : Point) (L : Line) -- point a and b are on the same side of line L. They both are not on line L, but can be the same point. The syntax is `a.sameSide b L`.
+
+def opposingSides (a b : Point) (L : Line) -- distinct point a and b are on opposite sides of line L. They both are not on line L. The syntax is `a.opposingSides b L`.
+
+def onCircle (a: Point) (C: Circle) -- point a is on circle C. The syntax is `a.onCircle C`.
+
+def insideCircle (a: Point) (C: Circle) -- point a is inside circle C. It can't be on the circle. The syntax is `a.insideCircle C`.
+
+def outsideCircle (a: Point) (C: Circle)-- point a is outside circle C. It can't be on the circle. The syntax is `a.outsideCircle C`.
+
+def isCentre (a: Point) (C: Circle) -- point a is on the unique center circle C. The syntax is `a.isCentre C`.
+end Point
+
+
+namespace Line
+def intersectsLine (L M : Line) -- two lines L and M intersect at some point. They can be the same line. The syntax is `L.intersectsLine M`.
+
+def intersectsCircle (L : Line) (C : Circle) -- line L and circle C intersect. The syntax is `L.intersectsCircle C`.
+end Line
+
+
+namespace Circle
+def intersectsCircle (C1 C2: Circle) -- circle C1 and C2 intersect. The syntax is `C1.intersectsCircle C2`.
+end Circle
+
+
+namespace Triangle
+end Triangle
+
+
+-- Geometric Relations --
+def distinctPointsOnLine (a b : Point) (L : Line) -- points a and b are distinct and on line L. The syntax is `distinctPointsOnLine a b L`.
+
+def between (a b c : Point) -- mutually distinct points a, b and c are collinear and ordered. Point b is between point a and c. The syntax is `between a b c`.
+
+def formTriangle (a b c : Point) (AB BC CA : Line) -- mutually distinct points a, b and c form a triangle, where point a and b are on line AB, point b and c are on line BC, point a and c are on line CA. The lines AB, BC, and CA must be distinct. Note that the order and correspondence of arguments a, b, c, AB, BC, CA is strictly required i.e. a and b must be on AB, b and c must be on BC, a and c must be on CA, and they must be passed in the exact order! The syntax is `formTriangle a b c AB BC CA`.
+
+def formRectilinearAngle (a b c : Point) (AB BC : Line)  -- points a, b and c form a rectilinear angle, where b is the vertex of the angle and a and c are points respectively on the sides AB and BC. The sides AB and BC can be the same line, the points a and c can be the same point, but the vertex b must be distinct from a and c. The syntax is `formRectilinearAngle a b c AB BC`.
+
+def formParallelogram (a b c d : Point) (AB CD AC BD : Line) -- mutually distinct points a, b, d, and c (in clockwise/counterclockwise order i.e. ad is a diagonal) form a parallelogram, where points a and b are on line AB, points c and d are on line CD, points a and c are on line AC, and points b and d are on line BD. The lines AB, CD, AC, and BD must be distinct. Note that the order and correspondence of arguments a, b, c, d, AB, CD, AC, BD is strictly required i.e. a and b must be on AB, c and d must be on CD, a and c must be on AC, b and d must be on BD, and they must be passed in the exact order! The syntax is `formParallelogram a b c d AB CD AC BD`.

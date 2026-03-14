@@ -1,0 +1,3 @@
+Two triangles TUW and VSW share a point W. The lines SU and TV intersect at point W. The lines SU and TV intersect at point W. The point W lies between S and U, and also lies between T and V.
+
+Given ∠ T U W ≅ ∠ U T W and S V ∥ T U. Complete the proof that ∠V ≅ ∠S.

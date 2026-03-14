@@ -1,0 +1,3 @@
+Implicit Premises:
+
+The points W, T, and P are on one side of line SZ, and the points Y, V, and R are on the other side of line SZ.

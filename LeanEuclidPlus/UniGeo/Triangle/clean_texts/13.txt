@@ -1,0 +1,3 @@
+In the diagram, points U, W, and X form a triangle △UWX, and points T, V, and Y form a triangle △TVY.
+
+Given ∠Y ≅ ∠U and ∠T ≅ ∠W. Complete the proof that V Y / U X = T V / W X.

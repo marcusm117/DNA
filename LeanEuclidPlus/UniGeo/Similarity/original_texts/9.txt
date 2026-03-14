@@ -1,0 +1,3 @@
+Two triangles △PRT and △QST share a common point T. Points P and R are on one side of T, and points Q and S are on another side of T.
+
+Given Q S ∥ P R. Complete the proof that △ Q S T ~ △ R P T.

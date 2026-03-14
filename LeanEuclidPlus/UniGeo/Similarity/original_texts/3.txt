@@ -1,0 +1,3 @@
+Points V, W and Z form a triangle △VWZ. The line XY is inside the triangle and intersects VZ and WZ at Y and X, respectively.
+
+Given X Y ∥ V W. Complete the proof that △ X Y Z ~ △ W V Z.

@@ -1,0 +1,3 @@
+There are two triangles, △RUV and △SVT that share a common vertex V. The lines SU and RT intersect at point V. The point V lies between S and U, and also lies between R and T.
+
+U V ≅ T V and S V ≅ R V. Complete the proof that R U ≅ S T.

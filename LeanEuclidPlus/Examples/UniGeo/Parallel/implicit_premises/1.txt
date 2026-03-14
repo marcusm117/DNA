@@ -1,0 +1,5 @@
+Not Applicable, the original text is ambiguous.
+
+Disambiguating Premises based on the original formalization (for curation of clean text only):
+
+The points S, U, X, Z are collinear and ordered. The points T, W are on one side of line SZ. The points V, Y are on the other side of line SZ.

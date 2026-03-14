@@ -1,0 +1,3 @@
+In the diagram, points Q, R, T, and S form a convex quadrilateral □QRTS with a diagonal line QS.
+
+∠ S Q T ≅ ∠ Q S R , S T ⟂ Q T , and Q R ⟂ R S. Complete the proof that R S ≅ Q T.

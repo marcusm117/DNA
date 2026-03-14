@@ -1,0 +1,3 @@
+There are two triangles △GHJ and △IFJ with a shared vertex J. IF and HG are on opposing sides of J.
+
+G J / I J = H J / F J. Complete the proof that △ G H J ~ △ I F J.

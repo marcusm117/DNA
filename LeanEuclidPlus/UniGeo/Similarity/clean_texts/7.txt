@@ -1,0 +1,3 @@
+Two triangles △EFG and △HIG share a common point G. The lines FH and EI intersect at point G. The point G lies between F and H, and also lies between E and I.
+
+F G / G H = E G / G I. Complete the proof that △ E F G ~ △ I H G.

@@ -1,0 +1,3 @@
+There are two convex quadrilaterals □OPQN and □OGHP with the vertices arranged in the named order clockwise. They share a common side OP. The points N, O, G are sequentially aligned on the line NG.
+
+Given OP ⟂ NG, OP ∥ NQ, and ∠QNP ≅ ∠PGO. Complete the proof that △PGO ~ △NPO.

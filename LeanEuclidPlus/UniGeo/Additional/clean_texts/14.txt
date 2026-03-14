@@ -1,0 +1,3 @@
+There are two convex quadrilaterals □FGHI and □JKLM with the vertices arranged in the named order clockwise. The quadrilateral □FGHI has diagonal lines FH and GI. The diagonal lines FH and GI intersect at point R. The vertices F, G, H, I of □FGHI are the midpoints of the sides JK, KL, LM, MJ of □JKLM, respectively.
+
+Complete the proof that R is the midpoint of FH and also the midpoint of GI.
