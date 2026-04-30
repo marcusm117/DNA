@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-green)](https://github.com/marcusm117/DNA/blob/main/LICENSE)
 
-The Divded & Abstract (DNA) Framework for Autoformalization of Mathematical Statements. Official implementation of the ICLR 2026 paper [Divide and Abstract: Autoformalization via Decomposition and Abstraction Learning](openreview.net/forum?id=NjgaeXNit3).
+The Divded & Abstract (DNA) Framework for Autoformalization of Mathematical Statements. Official implementation of the ICLR 2026 paper [Divide and Abstract: Autoformalization via Decomposition and Abstraction Learning](https://openreview.net/forum?id=NjgaeXNit3).
 
 DNA is a 2-phase framework:
 
@@ -25,8 +25,8 @@ conda activate dna
 Install from Source with all Dependencies.
 
 ``` bash
-git clone https://github.com/anonymousauthor567/DivdedAndAbstract.git
-cd DivdedAndAbstract
+git clone https://github.com/marcusm117/DNA
+cd DNA
 make develop
 ```
 
