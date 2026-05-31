@@ -39,13 +39,27 @@ BEDROCK_CLAUDE_MODEL_LIST = [
     "us.anthropic.claude-sonnet-4-20250514-v1:0",
     "us.anthropic.claude-opus-4-20250514-v1:0",
     "us.anthropic.claude-opus-4-1-20250805-v1:0",
+    # Claude Opus 4.8: bare ID (no date, no ":0"); temperature is deprecated and must be omitted.
+    "us.anthropic.claude-opus-4-8",
 ]
 BEDROCK_CLAUDE_THINKING_MODEL_LIST = [
     "us.anthropic.claude-3-7-sonnet-20250219-v1:0-thinking",
     "us.anthropic.claude-sonnet-4-20250514-v1:0-thinking",
     "us.anthropic.claude-opus-4-1-20250805-v1:0-thinking",
     "us.anthropic.claude-opus-4-20250514-v1:0-thinking",
+    # Claude Opus 4.8: one model ID per effort level (adaptive thinking + output_config effort).
+    "us.anthropic.claude-opus-4-8-thinking-low",
+    "us.anthropic.claude-opus-4-8-thinking-medium",
+    "us.anthropic.claude-opus-4-8-thinking-high",
+    "us.anthropic.claude-opus-4-8-thinking-xhigh",
+    "us.anthropic.claude-opus-4-8-thinking-max",
 ]
+
+# Claude Opus 4.8 base model ID. Variants extend this with a "-thinking-<effort>" suffix.
+# 4.8 differs from earlier Bedrock Claude models: temperature is deprecated (must be omitted),
+# and extended thinking uses {"type": "adaptive"} + output_config.effort instead of
+# {"type": "enabled", "budget_tokens": N}.
+BEDROCK_CLAUDE_OPUS_4_8_ID = "us.anthropic.claude-opus-4-8"
 
 
 class BedrockConfig(TypedDict, total=False):
@@ -240,8 +254,18 @@ class BedrockModel:
         if messages is None:
             messages = self.messages
 
+        # Handling Claude Opus 4.8 thinking models (adaptive thinking + effort level).
+        # The effort level is encoded as the suffix after "-thinking-" in the model ID
+        # (e.g. "...-thinking-high" -> effort "high"). 4.8 uses a different thinking shape
+        # than earlier models and must NOT receive a temperature (handled in the pipeline init).
+        if self.model_id.startswith(BEDROCK_CLAUDE_OPUS_4_8_ID) and "-thinking-" in self.model_id:
+            effort = self.model_id.rsplit("-thinking-", 1)[1]
+            self.inference_config["additional_request_fields"] = {
+                "thinking": {"type": "adaptive"},
+                "output_config": {"effort": effort},
+            }
         # Handling Anthropic reasoning/thinking models
-        if self.model_id in BEDROCK_CLAUDE_THINKING_MODEL_LIST:
+        elif self.model_id in BEDROCK_CLAUDE_THINKING_MODEL_LIST:
             self.inference_config["claude_thinking_type"] = self.inference_config.get("claude_thinking_type", "enabled")
             self.inference_config["claude_thinking_budget_tokens"] = self.inference_config.get("claude_thinking_budget_tokens", 16_384)
 
@@ -316,8 +340,18 @@ class BedrockModel:
                 logger.info("Skipping cache point addition - insufficient tokens: %d < %d for %s", total_tokens, min_tokens_required, self.model_id)
                 print(f"Skipping cache point addition - insufficient tokens: {total_tokens} < {min_tokens_required} for {self.model_id}")
 
+        # Strip the thinking suffix to obtain the bare model ID sent to converse().
+        # For 4.8 the suffix is the full "-thinking-<effort>" (e.g. "...-thinking-high");
+        # for earlier models it is just "-thinking".
+        if self.model_id.startswith(BEDROCK_CLAUDE_OPUS_4_8_ID):
+            converse_model_id = BEDROCK_CLAUDE_OPUS_4_8_ID
+        elif self.model_id in BEDROCK_CLAUDE_THINKING_MODEL_LIST:
+            converse_model_id = self.model_id.replace("-thinking", "")
+        else:
+            converse_model_id = self.model_id
+
         return {
-            "modelId": self.model_id.replace("-thinking", "") if self.model_id in BEDROCK_CLAUDE_THINKING_MODEL_LIST else self.model_id,
+            "modelId": converse_model_id,
             "messages": messages,
             "system": [
                 *([{"text": system_prompt}] if system_prompt else []),

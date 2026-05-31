@@ -7,6 +7,12 @@ LeanEuclidPlus/tmp/
 LeanEuclidPlus/ground_truth_validation
 .vscode/
 
+# Experiment outputs (autoformalization --result_dir_name dirs)
+result/
+result_*/
+**/result/
+**/result_*/
+
 # ProofNetHard env and output files
 ProofNetHard/outputs/
 ProofNetHard/result/

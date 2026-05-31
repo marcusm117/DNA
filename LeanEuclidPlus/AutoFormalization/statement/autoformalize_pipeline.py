@@ -1111,6 +1111,15 @@ def main() -> None:
             reasoning_effort=args.openai_reasoning_effort,
             reasoning_summary="detailed",
         )
+    elif args.model.startswith("us.anthropic.claude-opus-4-8"):
+        # Claude Opus 4.8 (plain or "-thinking-<effort>"). Routed before the generic Bedrock
+        # branches. 4.8 deprecates temperature (must NOT be passed); the thinking shape and
+        # effort level are derived from the model ID inside inference_bedrock.format_request.
+        llm = create_unified_model(
+            model_id=args.model,
+            max_tokens=16_384,
+            cache_prompt="default",
+        )
     elif args.model in BEDROCK_CLAUDE_MODEL_LIST:
         llm = create_unified_model(
             model_id=args.model,
