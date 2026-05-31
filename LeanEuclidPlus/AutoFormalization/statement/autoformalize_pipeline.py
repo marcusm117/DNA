@@ -536,6 +536,87 @@ def merge_usage_dicts(accumulated: dict[str, Any], new_usage: dict[str, Any]) ->
     return accumulated
 
 
+def extract_response_text_from_file(response_file: str) -> str | None:
+    """Extract the raw model `response_text` from a saved response .txt file.
+
+    Used by --reuse_responses to recover the LLM output without re-calling the model.
+    The .txt is written in autoformalize_single_instance as:
+        ...\n============(60)\nModel Response Text:\n\n{response_text}\n\n============(60)\nConversation History:\n\n...
+    We anchor on the surrounding labels rather than splitting on the `=` rule, because
+    `response_text` itself can contain a line of 60 `=`. Returns None on any miss so the
+    caller falls back to a normal LLM call (reuse-or-call semantics).
+    """
+    try:
+        with open(response_file, "r", encoding="utf-8") as f:
+            content = f.read()
+    except OSError:
+        return None
+
+    start_marker = "Model Response Text:\n\n"
+    end_marker = "\n" + ("=" * 60) + "\nConversation History:\n\n"
+    start = content.find(start_marker)
+    if start == -1:
+        return None
+    start += len(start_marker)
+    end = content.find(end_marker, start)
+    if end == -1:
+        return None
+    return content[start:end]
+
+
+# Fields in the saved `Arguments:` record that must match the current run for a
+# reused response to be a faithful sample. Plumbing/parallelism fields are excluded
+# because they cannot affect the model output or the validation verdict.
+REUSE_FINGERPRINT_FIELDS = (
+    "dataset",
+    "model",
+    "method",
+    "reasoning",
+    "num_examples",
+    "example_choices",
+    "example_format",
+    "temperature",
+    "openai_reasoning_effort",
+    "cot_for_reasoning_models",
+)
+
+
+def check_reuse_fingerprint(response_file: str, args: argparse.Namespace) -> None:
+    """Raise if a saved response was produced under a different (faithfulness-critical) config.
+
+    The .txt stores `Arguments:\\n\\n{str(args)}\\n\\n` (a Namespace repr). We parse the
+    faithfulness-critical fields out of that repr and compare against the current run.
+    A mismatch means reusing the file would silently mix incompatible samples, so we fail loudly.
+    """
+    try:
+        with open(response_file, "r", encoding="utf-8") as f:
+            content = f.read()
+    except OSError:
+        return
+
+    marker = "Arguments:\n\n"
+    start = content.find(marker)
+    if start == -1:
+        return  # no recorded args; cannot check, allow (older files)
+    start += len(marker)
+    end = content.find("\n\n", start)
+    saved_args_repr = content[start:end] if end != -1 else content[start:]
+
+    for field in REUSE_FINGERPRINT_FIELDS:
+        current = getattr(args, field, None)
+        # Match the field as it appears in the Namespace repr, e.g. model='...', temperature=0.2
+        m = re.search(rf"\b{re.escape(field)}=([^,)]+)", saved_args_repr)
+        if m is None:
+            continue
+        saved_raw = m.group(1).strip()
+        if saved_raw != repr(current) and saved_raw != str(current):
+            raise ValueError(
+                f"--reuse_responses config mismatch in {response_file}: "
+                f"field '{field}' saved={saved_raw} but current={current!r}. "
+                f"Refusing to reuse responses generated under a different config."
+            )
+
+
 async def autoformalize_single_instance(
     category: str,
     run_idx: int,
@@ -638,51 +719,75 @@ async def autoformalize_single_instance(
         print(f"⚠️  Method is direct, setting num_query from {args.num_query} to 1!")
         num_query = 1
 
+    # --reuse_responses is only sound for single-query methods: the saved .txt is
+    # overwritten each query and retains only the final response, so multi-query
+    # methods (2_self-refine, 4_formalized-structure) cannot be faithfully resumed.
+    if getattr(args, "reuse_responses", False) and num_query > 1:
+        raise ValueError(
+            f"--reuse_responses is only supported for single-query methods (num_query == 1), "
+            f"but method '{args.method}' resolved to num_query == {num_query}. "
+            f"Saved responses only retain the final query and cannot faithfully reconstruct a multi-query run."
+        )
+
     # Save the accumulated token usage from all queries
     usage_list: list[dict[str, Any]] = []
     accumulated_usage: dict[str, Any] = {}
 
+    response_file = os.path.join(response_dir, f"{instance_idx}.txt")
+
     for _ in range(num_query):
-        # Message format will be converted internally in the UnifiedModel
-        response_text, usage, reasoning_summary_list, _ = await llm.get_response_async(client, messages)
+        # Reuse a previously-saved response if requested and available (reuse-or-call).
+        # On a hit we skip the LLM call AND skip rewriting the .txt, preserving the
+        # original response + token-usage record byte-for-byte.
+        reused = False
+        if getattr(args, "reuse_responses", False) and os.path.exists(response_file):
+            check_reuse_fingerprint(response_file, args)
+            cached_text = extract_response_text_from_file(response_file)
+            if cached_text is not None:
+                response_text = cached_text
+                reused = True
+                print(f"♻️  Instance {instance_idx}: reusing saved response (no LLM call)")
 
-        # Save the token usage
-        usage_list.append(usage)
-        # Accumulate the token usage
-        accumulated_usage = merge_usage_dicts(accumulated_usage, usage)
+        if not reused:
+            # Message format will be converted internally in the UnifiedModel
+            response_text, usage, reasoning_summary_list, _ = await llm.get_response_async(client, messages)
 
-        # Save the response to a file
-        os.makedirs(response_dir, exist_ok=True)
-        response_file = os.path.join(response_dir, f"{instance_idx}.txt")
-        with open(response_file, "w", encoding="utf-8") as f:
-            f.write("=" * 60 + "\n")
-            # save all the arguments
-            f.write(f"Arguments:\n\n{str(args)}\n\n")
-            f.write("=" * 60 + "\n")
-            # save the English statement
-            f.write(f"English Statement:\n\n{problem_text}\n\n")
-            f.write("=" * 60 + "\n")
-            # save the dynamic example choices, if any
-            if example_choices_dynamic:
-                f.write(f"Dynamic Example Choices:\n\n{example_choices_dynamic}\n\n")
+            # Save the token usage
+            usage_list.append(usage)
+            # Accumulate the token usage
+            accumulated_usage = merge_usage_dicts(accumulated_usage, usage)
+
+            # Save the response to a file
+            os.makedirs(response_dir, exist_ok=True)
+            with open(response_file, "w", encoding="utf-8") as f:
                 f.write("=" * 60 + "\n")
-            # save the accumulated token usage
-            f.write(f"Accumulated Token Usage:\n\n{json.dumps(accumulated_usage, indent=4, ensure_ascii=False)}\n\n")
-            f.write("=" * 60 + "\n")
-            # save the list of reasoning summaries
-            f.write(f"Reasoning Summary List:\n\n{json.dumps(reasoning_summary_list, indent=4)}\n\n")
-            f.write("=" * 60 + "\n")
-            # save the flattened reasoning summary string
-            reasoning_summary_str = "\n\n".join(reasoning_summary_list)
-            f.write(f"Reasoning Summary String:\n\n{reasoning_summary_str}\n\n")
-            f.write("=" * 60 + "\n")
-            # save the model final response text
-            f.write(f"Model Response Text:\n\n{response_text}\n\n")
-            f.write("=" * 60 + "\n")
-            f.write(f"Conversation History:\n\n{json.dumps(messages, ensure_ascii=False, indent=4)}\n\n")
-            f.write("=" * 60 + "\n")
-            # save the token usage list for all queries
-            f.write(f"Token Usage List:\n\n{json.dumps(usage_list, indent=4, ensure_ascii=False)}")
+                # save all the arguments
+                f.write(f"Arguments:\n\n{str(args)}\n\n")
+                f.write("=" * 60 + "\n")
+                # save the English statement
+                f.write(f"English Statement:\n\n{problem_text}\n\n")
+                f.write("=" * 60 + "\n")
+                # save the dynamic example choices, if any
+                if example_choices_dynamic:
+                    f.write(f"Dynamic Example Choices:\n\n{example_choices_dynamic}\n\n")
+                    f.write("=" * 60 + "\n")
+                # save the accumulated token usage
+                f.write(f"Accumulated Token Usage:\n\n{json.dumps(accumulated_usage, indent=4, ensure_ascii=False)}\n\n")
+                f.write("=" * 60 + "\n")
+                # save the list of reasoning summaries
+                f.write(f"Reasoning Summary List:\n\n{json.dumps(reasoning_summary_list, indent=4)}\n\n")
+                f.write("=" * 60 + "\n")
+                # save the flattened reasoning summary string
+                reasoning_summary_str = "\n\n".join(reasoning_summary_list)
+                f.write(f"Reasoning Summary String:\n\n{reasoning_summary_str}\n\n")
+                f.write("=" * 60 + "\n")
+                # save the model final response text
+                f.write(f"Model Response Text:\n\n{response_text}\n\n")
+                f.write("=" * 60 + "\n")
+                f.write(f"Conversation History:\n\n{json.dumps(messages, ensure_ascii=False, indent=4)}\n\n")
+                f.write("=" * 60 + "\n")
+                # save the token usage list for all queries
+                f.write(f"Token Usage List:\n\n{json.dumps(usage_list, indent=4, ensure_ascii=False)}")
 
         # Add the assistant response to the context
         messages.append({"role": "assistant", "content": [{"type": "output_text", "text": response_text}]})
@@ -1014,6 +1119,16 @@ def main() -> None:
         default="doc_barebone.txt",
         help="Name of the DSL documentation file under the directory",
     )
+    parser.add_argument(
+        "--reuse_responses",
+        action="store_true",
+        default=False,
+        help=(
+            "Reuse saved response .txt files when present (skipping the LLM call) and only "
+            "call the LLM for missing instances. Preserves existing responses, re-runs only "
+            "validation. Only valid for single-query methods (e.g. 1_direct)."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -1276,8 +1391,19 @@ def main() -> None:
         example_choices_str,
     )
 
+    if args.reuse_responses:
+        # REUSE MODE: preserve saved responses (the inputs we reuse). Still clear the
+        # prediction dir (partial JSONs from a crashed run) and tmp dir (possibly
+        # OOM-poisoned Lean/SMT temp files) so re-validation starts from clean state.
+        print("♻️  REUSE MODE: preserving response dir, clearing predictions + tmp")
+        if os.path.exists(pred_dir_base):
+            print(f"🔨 Removing old prediction files in {pred_dir_base} ...")
+            shutil.rmtree(pred_dir_base)
+        if os.path.exists(tmp_dir_base):
+            print(f"🔨 Removing old tmp files in {tmp_dir_base} ...")
+            shutil.rmtree(tmp_dir_base)
     # If old predictions and responses exist, prompt the user to confirm the overwrite
-    if os.path.exists(pred_dir_base) and os.path.exists(response_dir_base):
+    elif os.path.exists(pred_dir_base) and os.path.exists(response_dir_base):
         print(f"Prediction directory: {pred_dir_base}")
         print(f"Response directory: {response_dir_base}")
         confirm = input("Do you want to remove old files in the prediction and response directories? (y/n): ")
