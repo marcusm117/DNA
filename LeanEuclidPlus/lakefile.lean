@@ -11,6 +11,9 @@ lean_lib SystemE {
 lean_lib Book {
 }
 
+lean_lib Book2 {
+}
+
 lean_lib UniGeo {
 }
 
