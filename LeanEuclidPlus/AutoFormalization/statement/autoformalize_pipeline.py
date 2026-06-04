@@ -1129,6 +1129,15 @@ def main() -> None:
             "validation. Only valid for single-query methods (e.g. 1_direct)."
         ),
     )
+    parser.add_argument(
+        "--max_instances",
+        type=int,
+        default=0,
+        help=(
+            "If > 0, only process the first N problem instances (for fast smoke tests). "
+            "0 (default) means all instances. Does NOT affect a normal full run."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -1176,6 +1185,11 @@ def main() -> None:
             raise ValueError(f"Invalid category: {args.category}")
     else:  # Book / Euclid's Elements
         args.testing_idx = [i for i in range(1, 49) if i not in [2, 6, 12, 32, 42]]
+
+    # Smoke-test knob: cap the number of instances. No effect on a full run (default 0).
+    if args.max_instances and args.max_instances > 0:
+        args.testing_idx = args.testing_idx[: args.max_instances]
+        print(f"⚡ --max_instances={args.max_instances}: limiting to instances {args.testing_idx}")
 
     print("------------------------------------------------------------")
     print("args: ", args)

@@ -505,6 +505,16 @@ def main() -> None:
         default="Relations_barebone",
         help="Name of the UniGeo-specific relations file under the directory, for simplification of the model prediction",
     )
+    parser.add_argument(
+        "--max_instances",
+        type=int,
+        default=0,
+        help=(
+            "If > 0, only evaluate the first N problem instances (for fast smoke tests). "
+            "Must match the value passed to autoformalize_pipeline.py so the rate denominator "
+            "is correct. 0 (default) means all instances; no effect on a normal full run."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -520,6 +530,12 @@ def main() -> None:
             raise ValueError(f"Invalid category: {args.category}")
     else:  # Book / Euclid"s Elements
         args.testing_idx = [i for i in range(1, 49) if i not in [2, 6, 12, 32, 42]]
+
+    # Smoke-test knob: must mirror autoformalize_pipeline.py so the rate denominator
+    # (len(testing_idx)) matches the number of instances actually produced.
+    if args.max_instances and args.max_instances > 0:
+        args.testing_idx = args.testing_idx[: args.max_instances]
+        print(f"⚡ --max_instances={args.max_instances}: limiting to instances {args.testing_idx}")
 
     print("------------------------------------------------------------")
     print(f"🔧 Set OMP_NUM_THREADS to {os.environ['OMP_NUM_THREADS']}")
