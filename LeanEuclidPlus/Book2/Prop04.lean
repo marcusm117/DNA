@@ -6,17 +6,32 @@ import SystemE
 namespace Elements.Book2
 
 /-
-TODO: formalize Proposition 2.4 in System E.
-See ../Book2/texts_proofs/4.txt for the statement + proof, and
-../Book2/WORKFLOW.md step 1 for conventions. Template:
+─────────────────────────────────────────────────────────────────────────────
+STATEMENT (Prop 2.4)        faithful statement only.
+Convention: "square on XY"            = |XY|·|XY|
+            "rectangle contained X,Y" = |X|·|Y|   (length-product)
+─────────────────────────────────────────────────────────────────────────────
+"If a straight-line is cut at random, (then) the square on the whole
+ (straight-line) is equal to the (sum of the) squares on the pieces (of the
+ straight-line), and twice the rectangle contained by the pieces."
 
-theorem proposition_4 : ∀ (…) , (hypotheses) → (conclusion) := by
-  euclid_intros
-  euclid_apply …
-  use …
-  euclid_finish
-
-Add diagrammatic-case variants (proposition_4', proposition_4'') as needed.
+Setup: straight-line AB cut at random at C (C between A and B).
+GOAL : square(AB) = square(AC) + square(CB) + 2·rect(AC,CB)
+       |AB|·|AB| = |AC|·|AC| + |CB|·|CB| + 2·(|AC|·|CB|)
 -/
+
+-- For let the straight-line $AB$ be cut, at random, at (point) $C$.
+-- I say that the square on $AB$ is equal to the (sum of the) squares on $AC$
+-- and $CB$, and twice the rectangle contained by $AC$ and $CB$.
+theorem proposition_4 : ∀ (a b c : Point) (AB : Line),
+  distinctPointsOnLine a b AB ∧ between a c b →
+  |(a─b)| * |(a─b)| =
+    |(a─c)| * |(a─c)| + |(c─b)| * |(c─b)| + 2 * (|(a─c)| * |(c─b)|) :=
+by
+  euclid_intros
+  -- NON-FAITHFUL proof (statement-correctness check only):
+  -- between a c b gives |ab| = |ac| + |cb|, then the identity is algebra.
+  have hsum : |(a─b)| = |(a─c)| + |(c─b)| := by euclid_finish
+  rw [hsum]; ring
 
 end Elements.Book2

@@ -1,0 +1,3 @@
+- all statements (in book 2) were verified manually to be faithful
+- statement 01 is arguably faithful though I still wanna try the "more" faithful approach with smt and experimtn before commiting to later proofs.
+- all other proofs are not faithful and later ones do not have proofs.

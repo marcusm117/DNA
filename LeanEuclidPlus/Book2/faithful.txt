@@ -1,0 +1,9 @@
+A statement faithful is human checked
+
+A proof faithful is:
+1. every statement of euclid, which is a sequence of NL words euclid wrote, maps to a have in lean code. in the end if we concatonate all the haves in order, then look at the corresponding text idea the haves map to, we recover EXACTLY the full original text.
+2. the have faithfulness is the same as sentence; check manually. this is the "atomic level" we just need to check or accept to be faithful.
+3. every dependency euclid uses for a statement, is also used in the proof.
+
+What faithfullness is NOT:
+- the exact same reasoning. The defense is that we can only be faithful to what is written, not what Euclid may or may not be thinking at the moment. Because of this, our "in-between" steps are considered reasoning steps that euclid may have missed, assumed implicitely, or for any other reason and is not part of our criteria.

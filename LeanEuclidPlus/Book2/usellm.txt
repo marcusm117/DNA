@@ -1,0 +1,114 @@
+═══════════════════════════════════════════════════════════════
+FAITHFUL FORMALIZATION PIPELINE  (Euclid → System E / Lean)
+═══════════════════════════════════════════════════════════════
+
+PRINCIPLES (learned from session)
+─────────────────────────────────
+P1. No one-shot. One atomic step at a time.
+P2. Two independent axes:
+      • CORRECT  = compiles / SMT accepts   → machine-checkable
+      • FAITHFUL = Lean steps map to Euclid's steps, visibly
+                   → NOT machine-checkable; needs review + human
+    Correct ⇏ Faithful (the "thin proof" compiles but skips Euclid).
+P3. Grounding rule: every "find lemmas" / "translate" step must
+    READ THE REPO (grep/Read real signatures). Never recall from
+    memory → that is what produced slop.
+P4. Machine-check every step, and keep it FAST:
+      import SystemE only + prebuilt .olean = ~5s
+      importing an unbuilt file = stalls forever
+P5. Step types (geometry has BOTH):
+      • CONSTRUCT : "let X be drawn with property P"
+                    → goal = objects + properties now in context
+      • ASSERT    : a proposition to show (WTS)
+P6. [E] tag: System-E-only lines with NO Euclid counterpart
+    (line_from_points, extend_point_longer, point→line split).
+    Schema must allow these as sub-lines, else mislabeling.
+
+═══════════════════════════════════════════════════════════════
+STAGE A — WHOLE-PROBLEM SCHEMA  (NL only, plain text)
+═══════════════════════════════════════════════════════════════
+From the NL proposition text, produce:
+
+  Step 0  PREMISES
+    • given objects (points/lines/circles)
+    • hypotheses (properties they satisfy)
+    • final GOAL (the theorem's conclusion)
+
+  Step i  (for each atomic step Euclid states)
+    • type        : CONSTRUCT | ASSERT
+    • text        : Euclid's verbatim sentence
+    • WTS/object  : CONSTRUCT → "object X with property P"
+                    ASSERT    → the proposition
+    • reasoning   : Euclid's justification (cites Prop x.y, etc.)
+    • depends_on  : which earlier steps' objects/facts it uses
+
+  Atomicity: smallest unit = one "construct X with prop" OR
+             one "show proposition". Schema (not this stage)
+             figures out HOW later.
+
+═══════════════════════════════════════════════════════════════
+STAGE B — REVIEW THE SCHEMA  (separate agent + human)
+═══════════════════════════════════════════════════════════════
+Gate before ANY Lean. Check:
+  B1. Faithful   : every step = a real Euclid step, none invented
+  B2. Atomic     : no step bundles two constructs/claims
+  B3. Follows    : each step's reasoning is valid given depends_on
+  B4. Complete   : final step's WTS == Step 0 GOAL  (exactly)
+  B5. Objects    : every object a step uses is built in an earlier step
+  → if any fail, fix Stage A. Do NOT proceed.
+
+═══════════════════════════════════════════════════════════════
+STAGE C — PER-STEP, ONE AT A TIME
+═══════════════════════════════════════════════════════════════
+For step i only (steps < i already verified in real Lean context):
+
+  C1. FIND (grounded)   : grep/Read repo for the theorems/axioms
+                          needed (some extra ok). Output: NL
+                          "use <lemma> to get <fact> ... until WTS_i".
+                          Allowed to ADD implicit diagrammatic steps
+                          NOT in Euclid's text (flag them).
+  C2. TRANSLATE         : NL → Lean (euclid_apply / euclid_assert).
+                          Tag [E] scaffolding lines.
+                          End step with the WTS_i made EXPLICIT
+                          (euclid_assert WTS_i if construct postcond).
+  C3. CHECK             : lake env lean <file>  (sorry after step i)
+                          must show only 'sorry', no errors.
+                          Confirm produced goal ≡ schema WTS_i.
+  C4. on pass → next step.  on fail → back to C1 for THIS step.
+
+═══════════════════════════════════════════════════════════════
+STAGE D — ASSEMBLY  (per P2/Step B4)
+═══════════════════════════════════════════════════════════════
+  • Steps accumulate in ONE real Lean context (not isolated).
+  • Final step discharges the theorem GOAL (remove last sorry).
+  • If every step verified AND final WTS == GOAL → proof correct.
+  • Faithful (Stage B passed) + correct (Stage C/D passed)
+    ⟹ done.
+
+═══════════════════════════════════════════════════════════════
+OPEN / DEFER
+═══════════════════════════════════════════════════════════════
+  • Multi-LLM-per-stage = OPTIONAL. Value is in stages+gates,
+    not who runs them. Separate agent only buys honest review.
+  • Build schema from 3–4 completed proofs, not 1. Expect it to
+    change on first case-split proof (by_cases) and first long
+    WTS chain.
+═══════════════════════════════════════════════════════════════
+
+
+would be nice to run these over many problems in parallel. the idea is NOTHING is wrong. if llm gets stuck (euclid mistake or need extra theorem) then it notifies me to intervene, but at the end of the day, everything should map 1-to-1 lean proof maps to the nl schema which maps to what euclid said. THIS is what I mean by faithful. Then the only thing that is 'subjective' is nl text to what euclid said. the proof does each of those steps so this is a mechanical procedure and if it does them, I say mapping between schema and text is faithful.
+
+Basically the onyly argument left would be what faithful means at a step level.
+
+- FOR STATEMETNS, I should check them. if that is wrong, everything is wrong. so on llm goes through all stamtetns while I check, another does proofs in this manenr and I can just do lots of checking so no time wasted.
+
+- some staetmetns ike the rectangle_area are "many atomic steps" in one sentence, so these must be seperate steps. The precise terminology is this: the scehma still parses it as steps. but some steps really are atomic, and others are really building multiple things. if it builds N things, there are N atomic steps. if it uses M reasoning steps (propostions, axiosm, reasoning etc.), there are M more atomic steps. So after the initla schema pass, we do a second pass of the exisitng schema (after the reveiw) and split steps into atomic steps if needed. if not it labels the step label atomic: true or false
+
+- after a step finishes, if it does not compile within acertain time like 20s, it suggests we are taking too many shortcuts. we need to get a search llm to search for ways to simplify, then impliemnter llm tries again without relying on smt too much.
+
+- we should always try the smt rout first. if it times out in x amount of time, it uses a different route. but we need to copy this file somewhere so we have evidence of the output and when it timed out and exactly at which step of the proof we are currently on so we know for sure and this is evidence of the claim. need some kind of rerunalbe artifact with smt seed and timeout so reproducable. Somehow we need to document everything that is not faithful. maybe comments can take form TEXT: euclid or take for NOTE: and at tis step not faithful because from this file... somehow need smt to be deterministi. try this on the prop01 with that step we skipped. can use rlimit
+
+deterministic (do both solvers though):
+z3 4.13.0 (or whatever `z3 --version` says)
+rlimit=5000000  seed=42
+→ unknown

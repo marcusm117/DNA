@@ -125,11 +125,26 @@ by
   euclid_apply (intersection_lines CH GH) as h
   have step4 : k.onLine DK ∧ k.onLine GH ∧ l.onLine EL ∧ l.onLine GH ∧ h.onLine CH ∧ h.onLine GH := by euclid_finish
 
-  -- NOTE: Euclid asserts this decomposition before identifying the rectangles. SMT could not
-  -- close it geometrically (sum_parallelograms_area) in time, so it is proved arithmetically
-  -- from step6–9 (ring) and therefore appears after them. Statement matches Euclid; order does not.
+  -- The three verticals DK, EL, CH are mutually parallel (each ∥ BG = BF, by 1.31; 1.30 chains them).
+  euclid_apply (proposition_30 DK EL BF)
+  euclid_apply (proposition_30 EL CH BF)
 
-  -- And $BH$ is the (rectangle contained) by $A$ and $BC$. For it is contained by $GB$ and $BC$, and $BG$ (is) equal to $A$.
+  -- The top edge GH inherits the base order b-d-e-c as g-k-l-h
+  -- (the verticals do not cross, so the cut points keep their order).
+  have htop : between g k l ∧ between g l h := by euclid_finish
+
+  -- ── STEP 5 (Euclid states this FIRST) ───────────────────────────────────────
+  -- "So the rectangle BH is equal to the rectangles BK, DL, and EH."
+  -- System E has only a TWO-part area split (sum_parallelograms_area), so the
+  -- three-part decomposition is two cuts: first cut BH at e/l into (BL, EH),
+  -- then cut the left piece BL at d/k into (BK, DL).  No new axiom is introduced.
+  euclid_apply (sum_parallelograms_area b c g h e l BC GH BF CH)   -- BH = BL + EH
+  euclid_apply (sum_parallelograms_area b e g l d k BC GH BF EL)   -- BL = BK + DL
+  have step5 : Triangle.area △ b:c:h + Triangle.area △ b:g:h =
+      (Triangle.area △ b:d:k + Triangle.area △ b:g:k)
+    + (Triangle.area △ d:e:l + Triangle.area △ d:k:l)
+    + (Triangle.area △ e:c:h + Triangle.area △ e:l:h) := by euclid_finish
+
   euclid_apply (proposition_29''''' g h b c BF CH BC)
   euclid_apply (rectangle_area b g c h BF CH BC GH)
   have step6 : Triangle.area △ b:c:h + Triangle.area △ b:g:h = |(a₁─a₂)| * |(b─c)| := by euclid_finish
@@ -153,20 +168,12 @@ by
   euclid_apply (rectangle_area e l c h EL CH BC GH)
   have step9 : Triangle.area △ e:c:h + Triangle.area △ e:l:h = |(a₁─a₂)| * |(e─c)| := by euclid_finish
 
-  have hadd : |(b─c)| = |(b─d)| + |(d─e)| + |(e─c)| := by euclid_finish
-
-  -- So the (rectangle) $BH$ is equal to the (rectangles) $BK$, $DL$, and $EH$.
-  have step5 : Triangle.area △ b:c:h + Triangle.area △ b:g:h =
-      (Triangle.area △ b:d:k + Triangle.area △ b:g:k)
-    + (Triangle.area △ d:e:l + Triangle.area △ d:k:l)
-    + (Triangle.area △ e:c:h + Triangle.area △ e:l:h) := by
-    rw [step6, step7, step8, step9, hadd]; ring
-
   -- Thus, the (rectangle contained) by $A$ and $BC$ is equal to the (rectangles contained) by
   -- $A$ and $BD$, by $A$ and $DE$, and, finally, by $A$ and $EC$.
   -- (substitute step6–step9 into the decomposition step5, exactly as Euclid does)
   show |(a₁─a₂)| * |(b─c)| =
     |(a₁─a₂)| * |(b─d)| + |(a₁─a₂)| * |(d─e)| + |(a₁─a₂)| * |(e─c)|
   rw [← step6, ← step7, ← step8, ← step9, step5]
+
 
 end Elements.Book2

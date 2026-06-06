@@ -1,0 +1,45 @@
+- idea is to have an agent try and formalize all statemtns
+- meanwhile I review, and can ask one agent questions one at a time. we do alls tatmetns first.
+
+
+Bottlenecks:
+- LLM thinking time. When I ask it a question it thinks a while. paralizing somehow would be nice. while it thinks, I can do something else
+
+- faithful proofs are the hard part. could have placeholder "easy" proofs. nice if we can label things accordingly. may want new repo with robust labeling + frontend stuff. mergin with lcs stuff may be easier acutally.
+
+- nice if we can have a reviewer agent to check for faithfullness, and a coder agent that keeps trying. they both dont' stop until done. another type of tag.
+
+Idea would be that at the end, all statents and proofs are there. likely correct (hopefully  80%), and I check through all manually. Can have a reviewed tag
+
+again, frontend would be nice. literaly I should use the autoform repo for this. I can just use diff branch if necessary. 
+
+
+AUTOMATION IDEAS;
+- the first thing llm should do is extract all questions into every step. what are all the steps in natural language.
+- in creating the steps, all it shoudl specify is the step number, and what it wants to show. The very "first" step is just a list of objects/premises of the natural language. by fixing the wts for each step, the proover llm will not start going off tracks hopefully. this schema can be "evidence" of the faithfullness and this is what we mean by faithful. each step is what euclid says.
+- then for each step, another llm finds all the theorems/lemmas needed and reasons about why in plain english. this should be fully structured
+
+
+- we need to do one step at a time. for every step euclid states, we need to write a proof of that one step. First identify the objects/theorems used, and if any are missing and why, second if any are missing, fill those in with sorry for now, and then we can try and proove this single step. if this single step goes without issue, then we can move onto next step. if there is issue, llm should make a note of why (if llm can find a reasonable way to go past, it should try it rather than give up).
+- the logical reasoning steps should be very clear. if any step fails, the final llm should be able to pinpoint where and why. is it missing theorem something else etc.
+- the actual proof should show reasoning comment and for each propostion euclid said it notes the propositon other llm thought was best +formalized lean version
+- finally review agent FOR NATURAL LANGUAGE STEP FIRST. then for formalized lean. is it faithful to what euclid wrote. what is not faithful and how "bad" is it. and how dos the quality compare to book 1.
+
+
+
+
+STEPS:
+1. get one theorem completely done with proof
+2. setup llm to do statement level declarations first so I can review without wasting time for all of book 2.
+3. after this, then we can do proofs for the ones I checked using the pipeline. can just manually write a checked list of statemts.
+4. finally check the proofs, and may need to fix some things and refine the pipelin. iideally keep the agentic proof pipline structured but easily modifialbe like in text and stuff like that. mostly just a guiding direction.
+
+finally review
+
+time:
+1. statmetn ai done in 1 hour after steup. 1 statement for each
+2. going over all 14 statents manually proobably a full day
+3. auto proof and refineing is a while. best case if my pipelin works for all (maybe skip those that don't work), the ai is done all in let's say a day
+4. Me reviewing all should be quick if it is correct. just match each goal to the assert. one proof probably takes 10 mins if it is correct. total 140 mins is doable.
+
+pipline creation may take a full day.
