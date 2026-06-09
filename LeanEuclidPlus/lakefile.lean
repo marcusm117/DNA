@@ -23,6 +23,14 @@ lean_lib Examples {
 lean_lib E3 {
 }
 
+/-- Reads faithfulness annotations back from a compiled module's `.olean` and dumps them as JSON
+for `scripts/check_faithful.py --olean`.  See `FaithfulExport.lean`. -/
+lean_exe faithful_export {
+  root := `FaithfulExport
+  -- needs interpreter support: it loads compiled modules via `importModules` (Lean/Init code).
+  supportInterpreter := true
+}
+
 require mathlib from git "https://github.com/leanprover-community/mathlib4"
 
 require smt from git "https://github.com/yangky11/lean-smt.git" @ "main"
