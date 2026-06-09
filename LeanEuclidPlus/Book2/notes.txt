@@ -43,3 +43,16 @@ time:
 4. Me reviewing all should be quick if it is correct. just match each goal to the assert. one proof probably takes 10 mins if it is correct. total 140 mins is doable.
 
 pipline creation may take a full day.
+
+
+WHAT I HAVE NOW:
+- prop 1 of book 2 is the golden standard. now just need to do this for all
+WHAT I NEED:
+- build book 1
+- for faithful proofs, consider setting the timeout to be 60s. idea is if this works 300s must work. the "long" proofs should always have 60s working or too many steps are skipped is the idea.
+
+
+- Book.Prop43
+- Book.Prop36
+- Book.Prop24
+- Book.Prop47

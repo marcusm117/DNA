@@ -1,13 +1,13 @@
 import SystemE
--- Add dependencies as needed, e.g.:
---   import Book.Prop47      -- a Book 1 result (lib `Book`)
---   import Book2.Prop04     -- an earlier Book 2 result
+import Book.Prop47
 
 namespace Elements.Book2
 
+open Elements.Book1
+
 /-
 ─────────────────────────────────────────────────────────────────────────────
-STATEMENT (Prop 2.13)        faithful statement only (proof deferred: sorry).
+STATEMENT (Prop 2.13)        faithful statement; proof below (Pythagoras x2 + algebra).
 Convention: "square on XY"            = |XY|·|XY|
             "rectangle contained X,Y" = |X|·|Y|   (length-product)
 ─────────────────────────────────────────────────────────────────────────────
@@ -40,6 +40,19 @@ theorem proposition_13 : ∀ (a b c d : Point) (AB BC CA : Line),
     |(c─b)| * |(c─b)| + |(b─a)| * |(b─a)| :=
 by
   euclid_intros
-  sorry
+  -- line from the foot d up to the apex a (d ≠ a since a ∉ BC but d ∈ BC)
+  euclid_apply (line_from_points d a) as DA
+  -- the perpendicular at d makes a right angle on BOTH sides (b,d,c collinear)
+  have hadb : (∠ a:d:b : ℝ) = ∟ := by euclid_finish
+  -- Pythagoras on the right triangle a–d–c (right angle at d):  |a─c|² = |a─d|² + |c─d|²
+  euclid_apply (proposition_47 d a c DA CA BC)
+  have hac : |(a─c)| * |(a─c)| = |(a─d)| * |(a─d)| + |(c─d)| * |(c─d)| := by euclid_finish
+  -- Pythagoras on the right triangle a–d–b (right angle at d):  |b─a|² = |a─d|² + |b─d|²
+  euclid_apply (proposition_47 d a b DA AB BC)
+  have hba : |(b─a)| * |(b─a)| = |(a─d)| * |(a─d)| + |(b─d)| * |(b─d)| := by euclid_finish
+  -- betweenness b–d–c gives |c─b| = |c─d| + |b─d|
+  have hcb : |(c─b)| = |(c─d)| + |(b─d)| := by euclid_finish
+  -- pure algebra (avoids SMT translation of the `2 * (...)` literal)
+  rw [hac, hba, hcb]; ring
 
 end Elements.Book2

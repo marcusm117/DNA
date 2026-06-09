@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+
+      "Edit(LeanEuclidPlus/Book/**)",
+      "Write(LeanEuclidPlus/Book/**)",
+      "Edit(LeanEuclidPlus/Book2/**)",
+      "Write(LeanEuclidPlus/Book2/**)",
+
+      "Bash(scripts/safe_build.sh:*)",
+      "Bash(./scripts/safe_build.sh:*)",
+      "Bash(lake build:*)",
+      "Bash(lake env:*)",
+
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(diff:*)",
+      "Bash(realpath:*)",
+      "Bash(dirname:*)",
+      "Bash(basename:*)",
+      "Bash(pwd)",
+      "Bash(cd:*)",
+      "Bash(echo:*)",
+
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git blame:*)",
+
+      "Bash(python scripts/check_faithful.py:*)",
+      "Bash(python3 scripts/check_faithful.py:*)",
+      "Bash(scripts/check_faithful.sh:*)",
+      "Bash(./scripts/check_faithful.sh:*)"
+    ]
+  }
+}

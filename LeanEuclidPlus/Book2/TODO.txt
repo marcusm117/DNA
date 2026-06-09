@@ -1,0 +1,22 @@
+- DONE: the .olean-reading checker is implemented. Two faithfulness criteria are now checked from
+  the COMPILED module (certain), superseding the source-regex stopgaps:
+    * CRITERION 1 (exact text): euclid_sentence / euclid_intro_sentence / euclid_conclude_sentence
+      texts are read back from faithfulExt in the .olean, concatenated in locator order, compared
+      char-for-char to Book{N}/texts_proofs/{prop}.txt.
+    * CRITERION 3 (deps, BOOK-AWARE, scope A): euclid_apply records each applied prop's
+      compiler-resolved fully-qualified name (e.g. Elements.Book1.proposition_34') into appliedExt
+      (defined in SystemE/Meta/Tactics/Util.lean; recorded in Solve.lean's EuclidApply). Each cited
+      [Prop.~B.N] is matched against the resolved names applied in the citing sentence's block
+      (same module, line between the previous sentence and this one). prop_N, prop_N', prop_N'' all
+      match so long as same book + same number.
+
+  Workflow:
+      lake build Book2
+      lake exe faithful_export Book2 > book2.json     # reads the built .olean, dumps JSON
+      python3 scripts/check_faithful.py --olean book2.json   # checks all props in the book
+
+  The exe takes any module name (Book2, an aggregate, etc.); the .olean folds in all transitive
+  imports, so loading an aggregate checks every book at once.
+
+  scripts/check_faithful.py also keeps a fast source/regex mode (no build needed) for quick edits;
+  that mode is NUMBER-only (not book-aware) and is just a sanity check — the --olean mode is final.

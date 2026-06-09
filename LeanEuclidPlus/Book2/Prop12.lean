@@ -1,7 +1,9 @@
 import SystemE
--- A faithful proof needs Pythagoras (Book.Prop47) + Prop 2.4; deferred for now.
+import Book.Prop47      -- 1.47 Pythagoras
 
 namespace Elements.Book2
+
+open Elements.Book1
 
 /-
 ═══════════════════════════════════════════════════════════════════════════════
@@ -21,14 +23,18 @@ outside (the triangle) by the perpendicular towards the obtuse angle.
              Triangle ABC, obtuse at A; BD ⊥ CA produced, foot D beyond A.
   premises : formTriangle a b c AB BC CA;  ∠ b:a:c > ∟  (obtuse at A);
              d.onLine CA ∧ between d a c ∧ ∠ b:d:c = ∟  (BD ⊥ CA produced at D)
-  GOAL : Euclid's STATEMENT is "the square on BC is GREATER THAN the squares on BA
-         and AC, BY twice rect(CA,AD)". The Greek idiom "greater than Y by Z" means
-         exactly X = Y + Z (Z names the excess); the strict ordering X > Y is then
-         entailed since Z = 2·rect(CA,AD) > 0. So the faithful translation is the
-         single equality (the "greater" is implied, not a separate clause):
-             square(BC) = square(BA) + square(AC) + 2 · rect(CA,AD)
-             |b─c|·|b─c| = |b─a|·|b─a| + |a─c|·|a─c| + 2 * (|c─a| * |a─d|)
+  GOAL : square(BC) = square(BA) + square(AC) + 2 · rect(CA,AD)
+         |b─c|·|b─c| = |b─a|·|b─a| + |a─c|·|a─c| + 2 * (|c─a| * |a─d|)
 ═══════════════════════════════════════════════════════════════════════════════
+
+PROOF (non-faithful but valid).  Draw BD (the given perpendicular line) and apply
+Pythagoras [1.47] to the two right triangles sharing the leg BD:
+    △BDC (right at D):  |bc|² = |bd|² + |dc|²
+    △BDA (right at D):  |ba|² = |bd|² + |da|²
+D─A─C collinear (between d a c) gives  |dc| = |da| + |ac|.  Substituting and
+expanding,  |bc|² = |ba|² + |ac|² + 2·|da|·|ac| = |ba|² + |ac|² + 2·|ca|·|ad|.
+The closing step is a `ring` identity (the SMT translator cannot handle the `2*`
+in the goal, so it is discharged in pure Lean once the lengths are pinned).
 -/
 
 -- Let $ABC$ be an obtuse-angled triangle, having the angle $BAC$ obtuse. And let
@@ -42,10 +48,17 @@ theorem proposition_12 : ∀ (a b c d : Point) (AB BC CA : Line),
     |(b─a)| * |(b─a)| + |(a─c)| * |(a─c)| + 2 * (|(c─a)| * |(a─d)|) :=
 by
   euclid_intros
-  -- STATEMENT-ONLY stage: proof deferred (`sorry`). A faithful proof follows Euclid:
-  -- Prop 2.4 on the cut CD, then Pythagoras [1.47] on the two right triangles △BDC,
-  -- △BDA (right angle at D), with D─A─C collinear giving |DC| = |DA| + |AC|.
-  -- See texts_proofs/12.txt. Correctness sanity-checked separately via 1.47.
-  sorry
+  -- the perpendicular line BD
+  euclid_apply (line_from_points b d) as BD
+  -- Pythagoras on the two right triangles (right angle at D)
+  euclid_apply (proposition_47 d b c BD BC CA)   -- |bc|² = |bd|² + |dc|²
+  euclid_apply (proposition_47 d b a BD AB CA)   -- |ba|² = |bd|² + |da|²
+  have h1 : |(b─c)| * |(b─c)| = |(b─d)| * |(b─d)| + |(d─c)| * |(d─c)| := by euclid_finish
+  have h2 : |(b─a)| * |(b─a)| = |(b─d)| * |(b─d)| + |(d─a)| * |(d─a)| := by euclid_finish
+  -- D─A─C collinear  ⟹  |dc| = |da| + |ac|
+  have hdc : |(d─c)| = |(d─a)| + |(a─c)| := by euclid_finish
+  have hda : |(d─a)| = |(a─d)| := by euclid_finish
+  have hac : |(a─c)| = |(c─a)| := by euclid_finish
+  rw [h1, h2, hdc, hda, hac]; ring
 
 end Elements.Book2
