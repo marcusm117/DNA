@@ -16,6 +16,17 @@ by
   euclid_apply (line_from_points c h) as CH
   euclid_apply (proposition_34' e h f g AH BG EF HG)
   euclid_assert (|(b─c)| = |(e─h)|)
+  -- proposition_33 below needs `e.sameSide b CH`. sameSide goals are hard for SMT,
+  -- so build it explicitly: e.sameSide a (Pasch on a–e–h with h on CH), then bridge to b.
+  euclid_assert ¬(e.onLine CH)
+  euclid_assert ¬(a.onLine CH)
+  euclid_assert ¬(b.onLine CH)
+  euclid_assert (between h e a)
+  euclid_apply (pasch_2 h e a CH)        -- e.sameSide a CH
+  euclid_assert (a.sameSide b CH)
+  euclid_apply (same_side_symm e a CH)   -- a.sameSide e CH
+  euclid_apply (same_side_trans a e b CH) -- e.sameSide b CH
+  euclid_assert (e.sameSide b CH)
   euclid_apply (proposition_33 e h b c AH BG BE CH)
   euclid_apply (proposition_35' a b c d e h AH BG AB CD BE CH)
   euclid_apply (proposition_35' g h e f c b BG AH HG EF CH BE)

@@ -46,7 +46,13 @@ by
         euclid_apply (proposition_4 e a b f d c AF AB EB AF CD FC)
         by_cases (f = a)
         · euclid_finish
-        · euclid_assert (Triangle.area △ e:a:b + Triangle.area △ g:b:c = Triangle.area △ f:d:c + Triangle.area △ g:b:c)
+        · -- ▵eab ≅ ▵fdc (from proposition_4 above); apply the area axioms
+          -- explicitly so euclid_finish only does the final arithmetic:
+          --   area-congruence of the corner triangles, plus each parallelogram's
+          --   diagonal split into two triangles.
+          euclid_apply (area_congruence e a b f d c)
+          euclid_apply (parallelogram_area a d b c AF BC AB CD)
+          euclid_apply (parallelogram_area e f b c AF BC EB FC)
           euclid_finish
 
 end Elements.Book1

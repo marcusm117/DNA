@@ -6,6 +6,38 @@ open Lean Elab Tactic Meta
 
 namespace SystemE.Tactics
 
+/-! ### Dependency tracking for faithfulness (criterion 3)
+
+`euclid_apply` records, for each applied proposition, the COMPILER-RESOLVED fully-qualified
+constant name (e.g. `Elements.Book1.proposition_11''`) together with its module and source line.
+This lives here in `Util` — the common ancestor of `Solve` (where `euclid_apply` is defined) and
+`Faithful` (where the sentence annotations live) — so both can reach it without an import cycle.
+
+The criterion-3 check is then done OUTSIDE Lean: a `lake exe` dumps these entries (and the
+`FaithfulEntry`s) from the compiled `.olean` as JSON, and `scripts/check_faithful.py --olean`
+associates each cited `[Prop.~B.N]` with the `euclid_apply`s in the citing sentence's block
+(same module, line between the previous sentence and this one) and matches them against the
+resolved, BOOK-AWARE names. -/
+
+/-- One recorded `euclid_apply` of a `proposition_*`: the resolved constant and where it occurred. -/
+structure AppliedEntry where
+  /-- Module the `euclid_apply` occurred in, e.g. `"Book2.Prop01"`. -/
+  mod  : String
+  /-- Resolved fully-qualified constant name, e.g. `"Elements.Book1.proposition_11''"`. -/
+  name : String
+  /-- Source line of the `euclid_apply`. -/
+  line : Nat
+  deriving Inhabited, Repr
+
+/-- Persistent env extension storing all `AppliedEntry`s (folded across imports, like `faithfulExt`).
+Serialized into the `.olean` so the external checker can read it back. -/
+initialize appliedExt :
+    SimplePersistentEnvExtension AppliedEntry (List AppliedEntry) ←
+  registerSimplePersistentEnvExtension {
+    addEntryFn := (·.cons)
+    addImportedFn := mkStateFromImportedEntries (·.cons) {}
+  }
+
 /--
 Return if the weak head norm form of `e` is a conjunction.
 -/

@@ -21,8 +21,8 @@ import Book.Prop20
 import Book.Prop21
 import Book.Prop22
 import Book.Prop23
--- import Book.Prop24
--- import Book.Prop25
+import Book.Prop24
+import Book.Prop25
 import Book.Prop26
 import Book.Prop27
 import Book.Prop28
@@ -33,16 +33,16 @@ import Book.Prop32
 import Book.Prop33
 import Book.Prop34
 import Book.Prop35
--- import Book.Prop36
+import Book.Prop36
 import Book.Prop37
--- import Book.Prop38
+import Book.Prop38
 import Book.Prop39
--- import Book.Prop40
+import Book.Prop40
 import Book.Prop41
--- import Book.Prop42
--- import Book.Prop43
--- import Book.Prop44
--- import Book.Prop45
--- import Book.Prop46
--- import Book.Prop47
--- import Book.Prop48
+import Book.Prop42
+import Book.Prop43
+import Book.Prop44
+import Book.Prop45
+import Book.Prop46
+import Book.Prop47
+import Book.Prop48

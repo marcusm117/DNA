@@ -6,6 +6,7 @@ import Book.Prop33
 import Book.Prop34
 import Book.Prop42
 import Book.Prop44
+import Book.Helper45_area_sum
 
 
 namespace Elements.Book1
@@ -35,7 +36,18 @@ by
   euclid_apply (proposition_30 FK LM GH)
   euclid_assert (|(f─l)| = |(k─m)|)
   euclid_apply (proposition_33 f l k m FG KH FK LM)
+  -- f,l opposite across GH:  l,m on LM ∥ GH ⟹ l.sameSide m GH; f.sameSide k GH and
+  --   k,m opposite across GH ⟹ f opposite m ⟹ (with l~m) f opposite l.
+  have hlm : l.sameSide m GH := by
+    by_contra
+    euclid_apply (intersection_lines_opposing l m GH LM)
+    euclid_finish
+  have hfl : ¬(f.sameSide l GH) := by euclid_finish
+  -- glue points: g between f,l (on FG); h between k,m (on KH), via pasch_4 across GH.
+  euclid_apply (pasch_4 f g l GH FG)
+  euclid_apply (pasch_4 k h m GH KH)
   use f, l, k, m, FG, KH, FK, LM
+  euclid_apply (helper_45_area_sum a b c d f g k h m l FG KH FK LM)
   euclid_finish
 
 end Elements.Book1

@@ -8,6 +8,11 @@ import Book.Prop30
 import Book.Prop31
 import Book.Prop41
 import Book.Prop46
+import Book.Helper47_e_sameSide_b_AC
+import Book.Helper47_angle_dba_eq_fbc
+import Book.Helper47_between_blc
+import Book.Helper47_between_dle
+import Book.Helper47_AL_perp_BC
 
 namespace Elements.Book1
 
@@ -56,6 +61,7 @@ by
     euclid_apply (extend_point AC a c) as c'
     euclid_apply (proposition_16 b a c c' AB AC BC)
     euclid_assert (∠ b:c:c' : ℝ) > ∟
+    euclid_apply (helper_47_e_sameSide_b_AC a b c d e c' AB BC AC BD CE DE)
     euclid_finish
 
   euclid_apply (proposition_31 a b d BD) as AL
@@ -66,6 +72,7 @@ by
   euclid_apply (line_from_points f c) as FC
   euclid_apply (proposition_14 b a c g AB AC AG)
   euclid_apply (proposition_14 c a b h AC AB AH)
+  euclid_apply (helper_47_angle_dba_eq_fbc a b c d f AB BC AC BD BF)
   euclid_assert ((∠ d:b:a : ℝ) = ∠ f:b:c)
   euclid_assert ((∠ c:b:a : ℝ) + ∟ = ∠ c:b:f)
   euclid_apply (proposition_4 b d a b c f BD AD AB BC FC BF)
@@ -86,6 +93,21 @@ by
   euclid_apply (rectangle_area b c d e BC DE BD CE)
   euclid_apply (rectangle_area b a f g AB FG BF AG)
   euclid_apply (rectangle_area a c h k AC HK AH CK)
+  -- AL ⊥ BC at the foot l' (AL ∥ BD ⊥ BC, and AL ∥ CE ⊥ BC), needed by between_blc.
+  -- a is off the square sides BD, CE: else a ∈ AL ∩ BD (resp. CE) would force AL to meet
+  -- the parallel BD (resp. CE) — proven explicitly, no SMT search.
+  have haBD : ¬(a.onLine BD) := by
+    by_contra
+    euclid_apply (intersection_lines_common_point a AL BD)
+    euclid_finish
+  have haCE : ¬(a.onLine CE) := by
+    by_contra
+    euclid_apply (intersection_lines_common_point a AL CE)
+    euclid_finish
+  euclid_apply (helper_47_AL_perp_BC a b c d l' BC BD AL)
+  euclid_apply (helper_47_AL_perp_BC a c b e l' BC CE AL)
+  euclid_apply (helper_47_between_blc a b c l' AB BC AC BD CE AL)
+  euclid_apply (helper_47_between_dle a b c d e l l' BC BD CE DE AL)
   euclid_apply sum_parallelograms_area b c d e l' l BC DE BD CE
   euclid_apply parallelogram_area b l' d l BC DE BD AL
   euclid_assert ((Triangle.area △ b:d:e : ℝ) + (Triangle.area △ b:e:c) = (Triangle.area △ g:f:b) + (Triangle.area △ g:b:a) + (Triangle.area △ k:c:a) + (Triangle.area △ k:a:h))

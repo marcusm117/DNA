@@ -20,6 +20,9 @@ by
     euclid_apply (line_from_points f c) as FC
     euclid_apply (proposition_15 b c a f e BC AE)
     euclid_apply (proposition_4 e b a e c f BC AB AE BC FC AE)
+    -- Congruence ▵ebа ≅ ▵ecf gives ∠e:b:a = ∠e:c:f; rewriting via `between b e c`
+    -- (rays b→e = b→c and c→e = c→b) yields the keystone link ∠c:b:a = ∠b:c:f.
+    euclid_assert (∠ c:b:a = ∠ b:c:f)
     euclid_apply (extend_point AC a c) as g
     euclid_apply (proposition_15 a g b d c AC BC)
     euclid_finish

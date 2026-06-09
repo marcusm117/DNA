@@ -3,6 +3,7 @@ import Book.Prop03
 import Book.Prop08
 import Book.Prop11
 import Book.Prop47
+import Book.Helper48_dc_eq_bc
 
 namespace Elements.Book1
 
@@ -20,7 +21,7 @@ by
   euclid_assert (|(d─a)| * |(d─a)| = |(a─b)| * |(a─b)|)
   euclid_assert (|(d─a)| * |(d─a)| + |(a─c)| * |(a─c)| = |(a─b)| * |(a─b)| + |(a─c)| * |(a─c)|)
   euclid_apply (proposition_47 a d c AD DC AC)
-  euclid_assert (|(d─c)| = |(b─c)|)
+  euclid_apply (helper_48_dc_eq_bc a b c d)
   euclid_apply (proposition_8 a b c a d c AB BC AC AD DC AC)
   euclid_finish
 

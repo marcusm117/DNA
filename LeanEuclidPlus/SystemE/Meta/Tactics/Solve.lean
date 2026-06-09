@@ -152,7 +152,22 @@ def EuclidApply (rule : Term) (idents : Array Ident)  : TacticM Unit := do
   if (← getGoals).length != 1 then
     throwError "euclid_apply only works when there is a single goal"
   let hnm ← getUnusedUserName `h
-  let τ ← inferType (← elabTerm rule none) >>= instantiateMVars
+  let ruleExpr ← elabTerm rule none
+  let τ ← inferType ruleExpr >>= instantiateMVars
+
+  -- Faithfulness (criterion 3): if the applied head is a `proposition_*` constant, record its
+  -- COMPILER-RESOLVED fully-qualified name, module, and source line into `appliedExt`. The name is
+  -- already resolved by `elabTerm` above, so this adds no elaboration cost. Non-proposition applies
+  -- (constructions like `line_from_points`, `intersection_lines`) are skipped.
+  if let .const declName _ := ruleExpr.getAppFn then
+    if declName.getString!.startsWith "proposition_" then
+      let fileMap ← getFileMap
+      let line := match (← getRef).getPos? with
+        | some p => (fileMap.toPosition p).line
+        | none   => 0
+      let modName := (← getMainModule).toString
+      modifyEnv fun env =>
+        appliedExt.addEntry env { mod := modName, name := declName.toString, line := line }
 
   match τ with
   | .forallE _ hole P _ => -- τ is an arrow
