@@ -155,19 +155,22 @@ def EuclidApply (rule : Term) (idents : Array Ident)  : TacticM Unit := do
   let ruleExpr ← elabTerm rule none
   let τ ← inferType ruleExpr >>= instantiateMVars
 
-  -- Faithfulness (criterion 3): if the applied head is a `proposition_*` constant, record its
-  -- COMPILER-RESOLVED fully-qualified name, module, and source line into `appliedExt`. The name is
-  -- already resolved by `elabTerm` above, so this adds no elaboration cost. Non-proposition applies
-  -- (constructions like `line_from_points`, `intersection_lines`) are skipped.
+  -- Faithfulness (criterion 3): record EVERY applied constant's COMPILER-RESOLVED fully-qualified
+  -- name, module, and source line into `appliedExt` (no name filter). The name is already resolved
+  -- by `elabTerm` above, so this adds no elaboration cost. We don't restrict to `proposition_*`/
+  -- `helper_*` because `faithful_export` follows each recorded constant's TRANSITIVE dependency
+  -- closure to find the `proposition_*` it (transitively) uses — so a prop cited inside ANY applied
+  -- function (a `helper_<book>_step<n>`, or a function inside that function) still satisfies the
+  -- citation. Pure-axiom constructions (`line_from_points`, `intersection_lines`) have empty
+  -- closures, so recording them is harmless.
   if let .const declName _ := ruleExpr.getAppFn then
-    if declName.getString!.startsWith "proposition_" then
-      let fileMap ← getFileMap
-      let line := match (← getRef).getPos? with
-        | some p => (fileMap.toPosition p).line
-        | none   => 0
-      let modName := (← getMainModule).toString
-      modifyEnv fun env =>
-        appliedExt.addEntry env { mod := modName, name := declName.toString, line := line }
+    let fileMap ← getFileMap
+    let line := match (← getRef).getPos? with
+      | some p => (fileMap.toPosition p).line
+      | none   => 0
+    let modName := (← getMainModule).toString
+    modifyEnv fun env =>
+      appliedExt.addEntry env { mod := modName, name := declName.toString, line := line }
 
   match τ with
   | .forallE _ hole P _ => -- τ is an arrow

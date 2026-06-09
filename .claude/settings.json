@@ -10,11 +10,15 @@
       "Write(LeanEuclidPlus/Book/**)",
       "Edit(LeanEuclidPlus/Book2/**)",
       "Write(LeanEuclidPlus/Book2/**)",
+      "Edit(LeanEuclidPlus/Scratch/**)",
+      "Write(LeanEuclidPlus/Scratch/**)",
 
       "Bash(scripts/safe_build.sh:*)",
       "Bash(./scripts/safe_build.sh:*)",
       "Bash(lake build:*)",
       "Bash(lake env:*)",
+      "Bash(lake exe faithful_export:*)",
+      "Bash(mkdir:*)",
 
       "Bash(ls:*)",
       "Bash(cat:*)",
@@ -45,7 +49,20 @@
       "Bash(python scripts/check_faithful.py:*)",
       "Bash(python3 scripts/check_faithful.py:*)",
       "Bash(scripts/check_faithful.sh:*)",
-      "Bash(./scripts/check_faithful.sh:*)"
+      "Bash(./scripts/check_faithful.sh:*)",
+      "Bash(python scripts/check_signatures.py:*)",
+      "Bash(python3 scripts/check_signatures.py:*)",
+      "Bash(python scripts/check_steps.py:*)",
+      "Bash(python3 scripts/check_steps.py:*)"
+    ],
+    "deny": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git restore:*)",
+      "Bash(git checkout:*)",
+      "Bash(git reset:*)",
+      "Bash(git stash:*)"
     ]
   }
 }

@@ -1,3 +1,9 @@
+LeanEuclidPlus/scripts/proposition_signatures.json
+LeanEuclidPlus/book2.json
+experiments/
+LeanEuclidPlus/scripts/step_signatures.json
+
+
 # Lake build files
 .lake/
 

@@ -10,6 +10,12 @@ description: >
 
 # Proving Euclid in System E — methodology
 
+> **Making a proof FAITHFUL?** If the task is to annotate a proof so it follows Euclid's sentence
+> structure (the `euclid_sentence` / faithfulness-criteria work, e.g. "make Book2/PropNN faithful"),
+> use the **`faithful-euclid`** skill — it owns the phase pipeline and step-lemma conventions and
+> delegates the actual proving back to THIS skill. Use `prove-euclid` alone when you just need to
+> prove/repair a proof and faithfulness convention is not required.
+
 System E proofs are checked by an SMT backend behind `euclid_finish` / `euclid_assert` /
 `euclid_apply`. The hard truth that governs everything below:
 
@@ -322,6 +328,12 @@ confirmation and encouraged; expensive Prop builds are never for exploration.
 - Hypotheses = exactly the facts the proof uses, copied from the goal-state dump. No more, no less.
 - While developing, put `set_option systemE.solverTime 30 in` above the theorem (fail-fast cap).
 - After proving, wire into the Prop with a single `euclid_apply`; the original proof body stays clean.
+- **Faithfulness pipeline (per `faithful-euclid`):** when a helper realizes ONE Euclid sentence,
+  name it `helper_<book>_step<n>` (sub-decompositions `helper_<book>_step<n>_<sub>`) and develop it
+  under `Scratch/Book<N>/Prop<NN>/` (the `Scratch` lean_lib builds each file in isolation). Reunite
+  by `euclid_apply (helper_<book>_step<n> …)` INSIDE the sentence's `euclid_sentence … := by` body,
+  then `euclid_finish`. **Never** discharge a cited step with term-mode `exact proposition_M …` — a
+  citation is only recorded for the faithfulness checker when the prop/helper enters via `euclid_apply`.
 
 ## DON'T
 

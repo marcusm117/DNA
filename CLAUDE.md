@@ -19,6 +19,32 @@ and hope" thrashing. The one-line summary, but read the skill for the rules and 
 
 Reference example of a finished, faithful proof: `LeanEuclidPlus/Book2/Prop01.lean`.
 
+## Making proofs faithful
+
+**Human operator guide (the simple "what do I do" loop):**
+[LeanEuclidPlus/FAITHFUL.md](LeanEuclidPlus/FAITHFUL.md) — read this first if you're driving the process.
+
+To make a proof FAITHFUL (annotate it with `euclid_sentence`s so it follows Euclid's sentence
+structure and passes the faithfulness criteria — e.g. "make Book2/PropNN faithful") use the
+**`faithful-euclid` skill** ([.claude/skills/faithful-euclid/SKILL.md](.claude/skills/faithful-euclid/SKILL.md)).
+It owns the phase-gated, per-step-isolated pipeline (A: sentence map → human review → B: prove each
+sentence in its own `Scratch/` file → C: reunite + `check_faithful.sh` gate) and delegates the actual
+proving to `prove-euclid`. Note: Prop01 was annotated by hand pre-pipeline, so it shows the OUTPUT
+shape, not the process.
+
+## Tool & shell hygiene (applies to ALL work here — avoids wasted turns and permission prompts)
+
+- **Read files with the Read tool; search with Grep/Glob. Never shell out to `cat`/`head`/`tail`/
+  `sed`/`awk`/`find -exec` to read or slice a file** — `sed -n '76,100p' f` is just `Read(f, offset 76,
+  limit 25)`, `grep -n foo Book/*.lean` is just `Grep`. These are allowed, faster, clickable, never prompt.
+- **Never chain shell commands** with `;`, `&&`, or pipes in one Bash call (e.g.
+  `cd …; echo …; grep …; sed …`). Permissions match the WHOLE command string, so a multi-command blob
+  can't match a simple allow rule and pops a prompt even when each piece alone is fine. One lookup per
+  call — and prefer Read/Grep over Bash for lookups.
+- Run `safe_build.sh` / `check_faithful.*` **bare** (no pipes, no `timeout` wrapper). To inspect their
+  output, just read what they print.
+- git mutations are denied by policy (the human owns git — it's the safety net). Read-only git is fine.
+
 ## Building
 
 - `scripts/safe_build.sh Book.<Target>` — serialized `lake build` (multiple agents build at once;

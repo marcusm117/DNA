@@ -1,5 +1,11 @@
 # Book 2 — extension workflow
 
+> **⚠ HISTORICAL / SUPERSEDED for the faithfulness workflow.** This doc describes the original
+> hand-built setup (how Book 2's texts/diagrams/statements were created). For **making proofs
+> faithful**, use [`../FAITHFUL.md`](../FAITHFUL.md) (the human operator guide) + the `faithful-euclid`
+> skill — NOT the annotation approach sketched here. The dataset-extraction parts below are still
+> accurate; the per-prop annotation guidance is outdated.
+
 How to extend the LeanEuclid benchmark to Book 2 of Euclid's *Elements*, mirroring how
 Book 1 (`../Book/`) was built. Book 2 ("Fundamentals of Geometric Algebra") has **14
 propositions** plus 2 definitions.

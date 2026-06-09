@@ -10,93 +10,6 @@ namespace Elements.Book2
 
 open Elements.Book1
 
-/-
-═══════════════════════════════════════════════════════════════════════════════
-STAGE A — DECOMPOSITION  (Prop 2.1)        NL schema; reference for translation.
-Convention: "rectangle contained by X and Y" = length-product |X|·|Y|
-            (LeanEuclid, cf. Book 1 Prop 47/48). A = straight-line, endpoints a₁ a₂.
-            [E] = System-E-only scaffolding with no Euclid counterpart.
-───────────────────────────────────────────────────────────────────────────────
-STEP 0 — PREMISES
-  objects   : line A (endpoints a₁ a₂); line BC; points b,c,d,e on BC
-  hyps      : distinctPointsOnLine a₁ a₂ A ; distinctPointsOnLine b c BC ;
-              d,e on BC ; b-d-e-c in order (between b d e, between d e c)
-  GOAL      : |A|·|bc| = |A|·|bd| + |A|·|de| + |A|·|ec|
-              (rect(A,BC) = rect(A,BD) + rect(A,DE) + rect(A,EC))
-
-STEP 1 — CONSTRUCT                                    [text: "let BF be drawn
-  from B at right-angles to BC" — Prop. 1.11]
-  object    : line BF, with point f off BC and ∠f:b:c = ∟
-  reasoning : Prop 1.11 (erect perpendicular at endpoint b)
-  depends   : Step 0 (b,c,BC)
-  [E]       : 1.11 returns POINT f; form line BF via line_from_points
-
-STEP 2 — CONSTRUCT                                    [text: "let BG be made
-  equal to A" — Prop. 1.3]
-  object    : point g on BF with |bg| = |A|   (BG is the segment b–g along BF)
-  reasoning : Prop 1.3 (cut off a segment equal to a given one)
-  depends   : Step 1 (BF), Step 0 (A)
-  [E]       : extend f' on BF with |bf'|>|A| first (1.3 needs source > target)
-
-STEP 3 — CONSTRUCT                                    [text: "let GH be drawn
-  through G parallel to BC" — Prop. 1.31]
-  object    : line GH through g, parallel to BC
-  reasoning : Prop 1.31 (parallel through a point)
-  depends   : Step 2 (g), Step 0 (BC)
-
-STEP 4 — CONSTRUCT                                    [text: "let DK, EL, CH be
-  drawn through D, E, C parallel to BG" — Prop. 1.31]
-  object    : lines DK, EL, CH through d,e,c, parallel to BG (= line BF)
-              and corner points  k = DK∩GH, l = EL∩GH, h = CH∩GH
-  reasoning : Prop 1.31 (×3)
-  depends   : Step 2 (g/BG), Step 3 (GH), Step 0 (d,e,c)
-  [E]       : intersection_lines to name corners k,l,h
-
-  -- Resulting rectangles (parallelogram + right angle):
-  --   BH = b,g,h,c   BK = b,g,k,d   DL = d,k,l,e   EH = e,l,h,c
-
-STEP 5 — ASSERT                                       [text: "the rectangle BH
-  is equal to the rectangles BK, DL, EH"]
-  WTS       : area(BH) = area(BK) + area(DL) + area(EH)
-  reasoning : whole rectangle = sum of its parts (area decomposition)
-  depends   : Step 4 (all rectangles)
-
-STEP 6 — ASSERT                                       [text: "BH is the rectangle
-  contained by A and BC; for it is contained by GB and BC, and BG = A"]
-  WTS       : area(BH) = |A|·|bc|
-  reasoning : sides of BH are GB and BC; |GB| = |A|  (Step 2)
-  depends   : Step 4 (BH), Step 2
-
-STEP 7 — ASSERT                                       [text: "BK is rect(A,BD);
-  contained by GB and BD, BG = A"]
-  WTS       : area(BK) = |A|·|bd|
-  reasoning : sides GB, BD; |GB| = |A|
-  depends   : Step 4 (BK), Step 2
-
-STEP 8 — ASSERT                                       [text: "DL is rect(A,DE);
-  for DK = BG = A" — Prop. 1.34]
-  WTS       : area(DL) = |A|·|de|
-  reasoning : sides DK, DE; |DK| = |BG| = |A| (opp. sides of parallelogram, 1.34)
-  depends   : Step 4 (DL), Step 2
-
-STEP 9 — ASSERT                                       [text: "similarly EH is
-  rect(A,EC)"]
-  WTS       : area(EH) = |A|·|ec|
-  reasoning : sides (parallel to A), |·| = |A|; as Step 8
-  depends   : Step 4 (EH), Step 2
-
-STEP 10 — ASSERT  (conclusion = GOAL)                 [text: "thus rect(A,BC) =
-  rect(A,BD) + rect(A,DE) + rect(A,EC)"]
-  WTS       : |A|·|bc| = |A|·|bd| + |A|·|de| + |A|·|ec|     (== Step 0 GOAL)
-  reasoning : substitute Steps 6–9 into Step 5
-  depends   : Steps 5,6,7,8,9
-═══════════════════════════════════════════════════════════════════════════════
--/
-
--- 2.1.0 (enunciation) maps to the THEOREM STATEMENT below — verified by statement-faithfulness:
---   "Let $A$ and $BC$ be the two straight-lines, and let $BC$ be cut, at random, at points $D$
---    and $E$. I say that the rectangle contained by $A$ and $BC$ is equal to the rectangle(s)
---    contained by $A$ and $BD$, by $A$ and $DE$, and, finally, by $A$ and $EC$"
 theorem proposition_1 : ∀ (a₁ a₂ b c d e : Point) (A BC : Line),
   distinctPointsOnLine a₁ a₂ A ∧ distinctPointsOnLine b c BC ∧
   d.onLine BC ∧ e.onLine BC ∧ between b d e ∧ between d e c →
@@ -171,7 +84,7 @@ by
   euclid_apply (proposition_29''''' l h e c EL CH BC)
   euclid_apply (rectangle_area e l c h EL CH BC GH)
   euclid_sentence "2.1.9"
-  
+
     "Similarly, $EH$ (is) also the (rectangle contained) by $A$ and $EC$."
     (step9 : Triangle.area △ e:c:h + Triangle.area △ e:l:h = |(a₁─a₂)| * |(e─c)|) := by euclid_finish
 

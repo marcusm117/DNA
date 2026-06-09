@@ -47,6 +47,21 @@ def norm(s: str) -> str:
 # A citation in Euclid's text, e.g. [Prop.~1.11]  →  (book, num) = ("1", "11").
 CITE = re.compile(r'\[Prop\.~(\d+)\.(\d+)\]')
 
+# Bulk goal-closing tactics that must NOT appear in a faithful proof's MAIN body. A faithful proof
+# closes its goal ONLY through the per-sentence `euclid_sentence` steps + their `euclid_apply`s (and
+# `euclid_finish`/`euclid_intros`/`rw`/`exact`/`refine`/`constructor`). Any of these in the main file
+# means the goal was likely cheat-closed by a leftover tactic from the old (unfaithful) proof, not by
+# the faithful step chain. Helper files (`*_steps.lean`, `Scratch/`) are EXEMPT — scoped algebra is
+# allowed there. Matched as whole words to avoid false hits inside identifiers.
+FORBIDDEN_TACTICS = ["linarith", "nlinarith", "ring", "ring_nf", "simp", "omega",
+                     "linear_combination", "norm_num", "field_simp", "polyrith"]
+FORBIDDEN_RE = re.compile(r'(?<![\w.])(' + "|".join(FORBIDDEN_TACTICS) + r')(?![\w.])')
+
+def is_helper_file(path: str) -> bool:
+    """Helper/scratch files are exempt from the forbidden-tactic lint (scoped algebra allowed)."""
+    p = path.replace("\\", "/")
+    return p.endswith("_steps.lean") or "/Scratch/" in p or p.startswith("Scratch/")
+
 def loc_key(loc: str):
     return [int(x) for x in loc.split(".") if x.isdigit()]
 
@@ -169,7 +184,7 @@ def check_source(path: str) -> int:
         anns.append({'loc': m.group(2), 'text': m.group(3).replace('\\"', '"'),
                      'start': m.start(), 'ref': f"{path}:{ln}"})
     print(f"=== {os.path.basename(path)} — MODE: source/regex (no build) ===")
-    print("    criterion 1 (text map): EXACT   |   criterion 3 (deps): NUMBER-ONLY, not book-aware")
+    print("    quick offline sanity check (text is EXACT; dependency match is number-only, not book-aware)")
     if not anns:
         print("  [FAIL] no (uncommented) euclid_sentence annotations found")
         return 1
@@ -177,11 +192,20 @@ def check_source(path: str) -> int:
     # Structural check: contiguous locators, no duplicates.
     dg = report_dup_and_gap(anns, lambda it: it['ref'])
     if dg:
-        return report("locators (contiguous, no dups)", False, ["see message above"])
-    report("locators (contiguous, no dups)", True, [f"{len(anns)} sentences"])
+        return report("sentence locators are contiguous with no duplicates", False, ["see message above"])
+    report("sentence locators are contiguous with no duplicates", True, [f"{len(anns)} sentences"])
 
-    # CRITERION 3 (regex stopgap, NOT book-aware): each cited [Prop.~B.N] referenced by a
-    # `proposition_N` in the sentence's block (between the previous annotation and this one).
+    # TEXT MAP (faithful.txt criterion 1): all sentences present + concatenation reproduces the
+    # original text exactly. Report this FIRST — it's the primary thing this mode verifies.
+    book, prop, *_ = anns[0]['loc'].split(".")
+    canon_rel, canon_path = canon_path_for(book, prop)
+    ok1, lines1 = criterion1_exact(anns, canon_rel, canon_path)
+    rc = report("all sentences present + concatenation reproduces the original text exactly",
+                ok1, lines1)
+
+    # DEPENDENCIES (faithful.txt criterion 3; regex stopgap, NOT book-aware): each cited [Prop.~B.N]
+    # referenced by a `proposition_N` in the sentence's block (between the previous annotation and
+    # this one). The olean mode does this book-aware + transitively.
     by_src = sorted(anns, key=lambda a: a['start'])
     dep_lines, n_cites = [], 0
     for idx, a in enumerate(by_src):
@@ -192,15 +216,25 @@ def check_source(path: str) -> int:
             if not re.search(rf'proposition_{num}(?!\d)', block):
                 dep_lines.append(f"{a['loc']} ({a['ref']}) cites [Prop.~{book}.{num}] but no "
                                  f"`proposition_{num}` in its block")
-    rc = report("criterion 3 — dependencies (number-only)",
-                not dep_lines,
-                dep_lines or [f"all {n_cites} citation(s) referenced in their block"])
+    rc |= report("every cited [Prop.~B.M] is referenced in its sentence's block (number-only)",
+                 not dep_lines,
+                 dep_lines or [f"all {n_cites} citation(s) referenced in their block"])
 
-    # CRITERION 1.
-    book, prop, *_ = anns[0]['loc'].split(".")
-    canon_rel, canon_path = canon_path_for(book, prop)
-    ok1, lines1 = criterion1_exact(anns, canon_rel, canon_path)
-    rc |= report("criterion 1 — exact text map", ok1, lines1)
+    # NO CHEAT-CLOSED GOAL: a faithful MAIN proof must not close its goal with a bulk tactic left
+    # over from the old proof. Lint the (comment-stripped) source for forbidden tactics. Helper/
+    # scratch files are exempt. This is a heuristic guard, not a proof of faithfulness.
+    if not is_helper_file(path):
+        bad = []
+        for m in FORBIDDEN_RE.finditer(src):
+            ln = src.count("\n", 0, m.start()) + 1
+            bad.append(f"`{m.group(1)}` at {path}:{ln} — bulk goal-closer not allowed in main "
+                       f"(use the per-sentence euclid_sentence/euclid_apply chain; algebra goes in a helper)")
+        rc |= report("no forbidden bulk goal-closing tactics in the main proof body",
+                     not bad, bad or ["none found"])
+
+    # Reminder: the third faithfulness criterion (each step's TYPE honestly captures its sentence)
+    # is HUMAN-checked — no machine verifies it.
+    print("  [note] not machine-checked: that each step's type honestly captures its sentence (review by hand)")
 
     # Soft warning: identical sentence texts (intro enunciation ≈ conclusion restatement is expected).
     seen = {}
@@ -222,8 +256,8 @@ def check_olean(json_path: str) -> int:
     data = json.load(open(json_path, encoding="utf-8"))
     sentences = data.get("sentences", [])
     applied   = data.get("applied", [])
-    print(f"=== {os.path.basename(json_path)} — MODE: --olean (compiled, CERTAIN) ===")
-    print("    criterion 1 (text map): EXACT   |   criterion 3 (deps): BOOK-AWARE (resolved names)")
+    print(f"=== {os.path.basename(json_path)} — MODE: --olean (compiled, AUTHORITATIVE) ===")
+    print("    text reproduction is EXACT; dependency match is BOOK-AWARE + transitive (resolved names)")
     if not sentences:
         print("  [FAIL] no sentences in JSON (did you build the module before faithful_export?)")
         return 1
@@ -246,7 +280,7 @@ def check_olean(json_path: str) -> int:
             s['ref'] = f"{s['mod']}:{s['line']}"
 
         dg = report_dup_and_gap(sents, lambda it: it['ref'])
-        rc |= report("locators (contiguous, no dups)", not dg,
+        rc |= report("sentence locators are contiguous with no duplicates", not dg,
                      ["see message above"] if dg else [f"{len(sents)} sentences"])
 
         # CRITERION 3 (book-aware, scope A): block = applies in the SAME module with line strictly
@@ -260,19 +294,30 @@ def check_olean(json_path: str) -> int:
                      if prev_line < ap['line'] <= s['line']]
             for cbook, num in cites:
                 n_cites += 1
-                if not any(name_matches(ap['name'], cbook, num) for ap in block):
+                # A citation is satisfied by the applied head OR by any `proposition_*` in that
+                # constant's transitive dependency closure (`deps`, emitted by faithful_export) — so
+                # a prop cited INSIDE an applied `helper_<book>_step<n>` lemma still counts. Matched
+                # by resolved constant identity, book-aware.
+                def sat(ap):
+                    return (name_matches(ap['name'], cbook, num)
+                            or any(name_matches(dn, cbook, num) for dn in ap.get('deps', [])))
+                if not any(sat(ap) for ap in block):
                     names = ", ".join(sorted({ap['name'] for ap in block})) or "(none)"
                     dep_lines.append(f"{s['loc']} ({s['ref']}) cites [Prop.~{cbook}.{num}] but no "
-                                     f"matching applied prop in block; block applies: {names}")
-        rc |= report("criterion 3 — dependencies (book-aware)",
+                                     f"matching applied prop (or helper dependency) in block; "
+                                     f"block applies: {names}")
+        rc |= report("every cited [Prop.~B.M] is referenced in its sentence's block (book-aware, transitive)",
                      not dep_lines,
                      dep_lines or [f"all {n_cites} citation(s) resolve to the cited book+number"])
 
         canon_rel, canon_path = canon_path_for(book, prop)
         ok1, lines1 = criterion1_exact(sents, canon_rel, canon_path)
-        rc |= report("criterion 1 — exact text map", ok1, lines1)
+        rc |= report("all sentences present + concatenation reproduces the original text exactly",
+                     ok1, lines1)
 
-    print(f"  => {'ALL PASS' if rc == 0 else 'FAILED'} (--olean mode, criteria 1 + 3)")
+    # Reminder: that each step's TYPE honestly captures its sentence is HUMAN-checked — not here.
+    print("  [note] not machine-checked: that each step's type honestly captures its sentence (review by hand)")
+    print(f"  => {'ALL PASS' if rc == 0 else 'FAILED'} (--olean mode, authoritative)")
     return rc
 
 # ─────────────────────────────────────────────────────────────────────────────
