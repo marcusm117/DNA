@@ -215,7 +215,7 @@ def main():
     prop_loc  = "Book%d/PropNN.lean" % book if book == 1 else "Book%d/PropNN/Main.lean" % book
     print(
         "\nNext (manual, per proposition): write %s and the statement-only %s with the <prf> marker. "
-        "For making proofs faithful, see ../FAITHFUL.md + the faithful-euclid skill (not WORKFLOW.md)."
+        "For making proofs faithful, see ../FAITHFUL.md + the faithful-map / faithful-prove skills (not WORKFLOW.md)."
         % (prop_loc, texts_loc)
     )
 

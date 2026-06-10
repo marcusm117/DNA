@@ -14,20 +14,19 @@ python3 scripts/check_signatures.py --save
 
 ## PER PROP (e.g. Prop04) — the loop
 
-**1.  Start the agent:**   `/faithful-euclid Book2/Prop04/Main.lean`
+**1.  Phase A (translation):**   `/faithful-map Book2/Prop04/Main.lean`
 
-**2.  Phase A runs, then STOPS.**  The agent wipes the old proof and writes the *sentence map* in
+**2.  faithful-map runs, then STOPS.**  It wipes the old proof and writes the *sentence map* in
      `Main.lean`: each Euclid sentence → an `euclid_sentence` with its Lean claim type (proofs are
-     `sorry`-stubbed step files). It reports the map and waits.
+     `sorry`-stubbed step files). It reports the map and waits. (Pure translation — no proving.)
 
 **3.  ▶ HUMAN: review + approve.**
    - Read each claim type — does it honestly say what that Euclid sentence says? (Only you can judge
      this. Use `Book2/data/diagrams/4.png` if helpful.)
    - When happy, freeze it:  `python3 scripts/check_steps.py --save Book2/Prop04/Main.lean`
-   - Tell the agent to continue.
 
-**4.  Phase B → final gate runs end-to-end, no stops.**  The agent proves each `stepN.lean`, builds
-     the prop, and runs the authoritative check.
+**4.  Phase B (proving):**   `/faithful-prove Book2/Prop04/Main.lean`
+     Runs end-to-end, no stops: proves each `stepN.lean`, builds the prop, runs the authoritative check.
 
 **5.  ▶ HUMAN: sign off.**  Confirm nothing was fudged:
 ```

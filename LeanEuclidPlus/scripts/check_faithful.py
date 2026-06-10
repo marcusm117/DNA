@@ -5,7 +5,8 @@ Checks two of the three `Book2/faithful.txt` criteria (the third — statement-f
 human-checked):
 
   CRITERION 1 (exact text recovery).  Concatenate the sentence texts in locator order and require
-  the result to equal the canonical proposition source `Book{N}/texts_proofs/{prop}.txt`
+  the result to equal the canonical proposition source (Book 1: `Book/texts_proofs/{prop}.txt`;
+  Book 2+: `Book{N}/data/texts_proofs/{prop}.txt`)
   CHARACTER-FOR-CHARACTER (only tolerance: a trailing newline at EOF). Three annotation forms
   participate, joined by a single space:
       euclid_sentence          — a logical proof step (emits a `have`)
@@ -20,7 +21,7 @@ human-checked):
 TWO MODES:
 
   (default, source/regex — fast, offline, but NOT book-aware)
-      python3 scripts/check_faithful.py "Book2/Prop01.lean"
+      python3 scripts/check_faithful.py "Book2/Prop01/Main.lean"
   Reads the annotations + `euclid_apply` lines straight from the .lean source. The criterion-3 check
   only matches the proposition NUMBER (`[Prop.~1.34]` is satisfied by any `proposition_34`); it does
   not authenticate the book B. Use for quick edits before a build.
@@ -51,16 +52,26 @@ CITE = re.compile(r'\[Prop\.~(\d+)\.(\d+)\]')
 # closes its goal ONLY through the per-sentence `euclid_sentence` steps + their `euclid_apply`s (and
 # `euclid_finish`/`euclid_intros`/`rw`/`exact`/`refine`/`constructor`). Any of these in the main file
 # means the goal was likely cheat-closed by a leftover tactic from the old (unfaithful) proof, not by
-# the faithful step chain. Helper files (`*_steps.lean`, `Scratch/`) are EXEMPT — scoped algebra is
-# allowed there. Matched as whole words to avoid false hits inside identifiers.
+# the faithful step chain. Only the proposition's MAIN file is linted; the per-sentence step files
+# (`Book<N>/PropNN/stepN.lean`, theorem helper_<book>_stepN) are EXEMPT — scoped algebra is allowed in
+# a step's own proof. Matched as whole words to avoid false hits inside identifiers.
 FORBIDDEN_TACTICS = ["linarith", "nlinarith", "ring", "ring_nf", "simp", "omega",
                      "linear_combination", "norm_num", "field_simp", "polyrith"]
 FORBIDDEN_RE = re.compile(r'(?<![\w.])(' + "|".join(FORBIDDEN_TACTICS) + r')(?![\w.])')
 
 def is_helper_file(path: str) -> bool:
-    """Helper/scratch files are exempt from the forbidden-tactic lint (scoped algebra allowed)."""
+    """A file is a STEP/helper file (exempt from the forbidden-tactic lint) unless it is a proposition
+    MAIN file. New layout: `Book<N>/PropNN/Main.lean` is linted; `Book<N>/PropNN/stepN.lean` (and any
+    other non-Main file in a prop folder) is exempt. Legacy flat layouts (`PropNN.lean`,
+    `*_steps.lean`, `Scratch/`) are still handled for safety."""
     p = path.replace("\\", "/")
-    return p.endswith("_steps.lean") or "/Scratch/" in p or p.startswith("Scratch/")
+    base = p.rsplit("/", 1)[-1]
+    if "/Scratch/" in p or p.startswith("Scratch/") or p.endswith("_steps.lean"):
+        return True
+    # In a per-prop folder (.../PropNN/<file>.lean), only Main.lean is the linted proposition file.
+    if re.search(r"/Prop\d+/", p):
+        return base != "Main.lean"
+    return False
 
 def loc_key(loc: str):
     return [int(x) for x in loc.split(".") if x.isdigit()]

@@ -80,7 +80,7 @@ by
 
   euclid_sentence "2.4.9"
     "So I say that (it is) also right-angled."
-    (step9 : True) := by sorry
+    (step9 : ∠ b:c:g = ∟ ∧ ∠ c:g:k = ∟ ∧ ∠ g:k:b = ∟ ∧ ∠ k:b:c = ∟) := by sorry
 
   euclid_sentence "2.4.10"
     "For since $CG$ is parallel to $BK$ [and the straight-line $CB$ has fallen across them], the angles $KBC$ and $GCB$ are thus equal to two right-angles [Prop.~1.29]."
@@ -113,7 +113,7 @@ by
 
   euclid_sentence "2.4.17"
     "And it is on $CB$."
-    (step17 : |(c─b)| = |(b─c)|) := by sorry
+    (step17 : |(c─g)| = |(c─b)|) := by sorry
 
   euclid_sentence "2.4.18"
     "So, for the same (reasons), $HF$ is also a square."

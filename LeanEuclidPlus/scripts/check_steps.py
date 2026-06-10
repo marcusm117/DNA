@@ -10,12 +10,12 @@ does NOT guard is the claim TYPE. This script fills that gap, mirroring `check_s
 Per-prop incremental baseline (you approve Phase A one prop at a time):
 
   SNAPSHOT (run right AFTER you approve a prop's sentence map):
-      python3 scripts/check_steps.py --save Book2/Prop03.lean
+      python3 scripts/check_steps.py --save Book2/Prop03/Main.lean
   Merges that prop's {locator -> claim type} into scripts/step_signatures.json (other props kept).
 
   DIFF (run anytime — exits non-zero on any change to an approved claim):
       python3 scripts/check_steps.py                  # all recorded props
-      python3 scripts/check_steps.py Book2/Prop03.lean # just one
+      python3 scripts/check_steps.py Book2/Prop03/Main.lean # just one
 
 Changing a claim type is ALLOWED — but never SILENTLY: the diff flags CHANGED/ADDED/REMOVED so the
 human adjudicates (and re-runs --save once the new map is approved). Source-based, no build, instant.
@@ -126,7 +126,7 @@ def diff(prop_arg: str = None):
 
     changed = [k for k in keys if k in cur and base[k]["claim"] != cur[k]["claim"]]
     removed = [k for k in keys if k not in cur]
-    added   = [k for k in cur if k not in base and (not prop_arg or True)]
+    added   = [k for k in cur if k not in base]   # locators present in source but never approved
 
     for k in sorted(changed):
         print(f"CHANGED  {k}  ({cur[k]['file']}:{cur[k]['line']})")

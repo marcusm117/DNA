@@ -25,9 +25,14 @@ Reference example of a finished, faithful proof: `LeanEuclidPlus/Book2/Prop01.le
 [LeanEuclidPlus/FAITHFUL.md](LeanEuclidPlus/FAITHFUL.md) — read this first if you're driving the process.
 
 To make a proof FAITHFUL (annotate it with `euclid_sentence`s so it follows Euclid's sentence
-structure and passes the faithfulness criteria — e.g. "make Book2/PropNN faithful") use the
-**`faithful-euclid` skill** ([.claude/skills/faithful-euclid/SKILL.md](.claude/skills/faithful-euclid/SKILL.md)).
-It owns the phase-gated, per-step-isolated pipeline and delegates the actual proving to `prove-euclid`.
+structure — e.g. "make Book2/PropNN faithful") the pipeline is **two skills**, run in order with a
+human review between:
+1. **`faithful-map`** ([.claude/skills/faithful-map/SKILL.md](.claude/skills/faithful-map/SKILL.md)) —
+   Phase A: TRANSLATE each sentence into a Lean claim type in `PropNN/Main.lean` (sorry-stub step
+   files). Pure translation, stops for human review + `check_steps.py --save`.
+2. **`faithful-prove`** ([.claude/skills/faithful-prove/SKILL.md](.claude/skills/faithful-prove/SKILL.md)) —
+   Phase B + final gate: prove each `PropNN/stepN.lean` (delegates to `prove-euclid`), then
+   `check_faithful.sh`. (These two replaced an earlier single combined skill.)
 
 **Layout: one folder per Book-2 proposition** — `Book2/PropNN/Main.lean` (the proposition + its
 `euclid_sentence`s) and `Book2/PropNN/stepN.lean` (one proof file per sentence, theorem

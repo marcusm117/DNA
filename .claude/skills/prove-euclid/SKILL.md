@@ -11,10 +11,10 @@ description: >
 # Proving Euclid in System E — methodology
 
 > **Making a proof FAITHFUL?** If the task is to annotate a proof so it follows Euclid's sentence
-> structure (the `euclid_sentence` / faithfulness-criteria work, e.g. "make Book2/PropNN faithful"),
-> use the **`faithful-euclid`** skill — it owns the phase pipeline and step-lemma conventions and
-> delegates the actual proving back to THIS skill. Use `prove-euclid` alone when you just need to
-> prove/repair a proof and faithfulness convention is not required.
+> structure (e.g. "make Book2/PropNN faithful"), that's a two-skill pipeline: **`faithful-map`**
+> (Phase A — translate sentences to claim types, stops for human review) then **`faithful-prove`**
+> (Phase B — prove each step file; it delegates the actual proving back to THIS skill). Use
+> `prove-euclid` alone when you just need to prove/repair a proof and faithfulness is not required.
 
 System E proofs are checked by an SMT backend behind `euclid_finish` / `euclid_assert` /
 `euclid_apply`. The hard truth that governs everything below:
@@ -329,12 +329,14 @@ confirmation and encouraged; expensive Prop builds are never for exploration.
 - Hypotheses = exactly the facts the proof uses, copied from the goal-state dump. No more, no less.
 - While developing, put `set_option systemE.solverTime 30 in` above the theorem (fail-fast cap).
 - After proving, wire into the Prop with a single `euclid_apply`; the original proof body stays clean.
-- **Faithfulness pipeline (per `faithful-euclid`):** when a helper realizes ONE Euclid sentence,
-  name it `helper_<book>_step<n>` (sub-decompositions `helper_<book>_step<n>_<sub>`) and develop it
-  under `Scratch/Book<N>/Prop<NN>/` (the `Scratch` lean_lib builds each file in isolation). Reunite
-  by `euclid_apply (helper_<book>_step<n> …)` INSIDE the sentence's `euclid_sentence … := by` body,
-  then `euclid_finish`. **Never** discharge a cited step with term-mode `exact proposition_M …` — a
-  citation is only recorded for the faithfulness checker when the prop/helper enters via `euclid_apply`.
+- **Faithfulness pipeline (per `faithful-prove`):** when a helper realizes ONE Euclid sentence, it
+  lives in the prop's folder as `Book<N>/PropNN/stepN.lean`, theorem `helper_<book>_stepN`
+  (sub-decompositions `Book<N>/PropNN/stepN_<sub>.lean` → `helper_<book>_stepN_<sub>`); build each
+  alone via `scripts/safe_build.sh Book<N>.PropNN.stepN`. `Main.lean` discharges the sentence by
+  `euclid_apply (helper_<book>_stepN …)` INSIDE the `euclid_sentence … := by` body, then
+  `euclid_finish`. (No `Scratch/`, no `_steps.lean`, no merge step.) **Never** discharge a cited step
+  with term-mode `exact proposition_M …` — a citation is only recorded when the prop/helper enters
+  via `euclid_apply`.
 
 ## DON'T
 

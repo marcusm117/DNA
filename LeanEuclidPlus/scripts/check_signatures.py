@@ -12,7 +12,8 @@ that independently of any agent.
   DIFF (run AFTER agents finish — exits non-zero on any change):
       python3 scripts/check_signatures.py
 
-It scans `Book/Prop*.lean` and `Book2/Prop*.lean` for `theorem proposition_<name> : <type> :=`,
+It scans `Book/Prop*.lean` (Book 1, flat) and `Book2/Prop*/Main.lean` (Book 2, foldered) for
+`theorem proposition_<name> : <type> :=`,
 extracts <type> (whitespace-normalized), and stores `{key: {file, line, sig}}` keyed by
 `<relfile>::proposition_<name>` (primes and per-file identity unambiguous). All such decls are
 `theorem`s that split cleanly on the first top-level `:=` (no `:=` inside the type, no `where`, no
@@ -28,6 +29,26 @@ DECL = re.compile(r"theorem\s+(proposition_\w*'*)\s*:(.*?):=", re.DOTALL)
 
 BOOK_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # LeanEuclidPlus/
 BASELINE  = os.path.join(BOOK_ROOT, "scripts", "proposition_signatures.json")
+
+
+def strip_comments(src: str) -> str:
+    """Blank out Lean `--` line and nested `/- … -/` block comments (replace with spaces, keep
+    newlines) so a COMMENTED-OUT `theorem proposition_…` is not matched. Mirrors check_faithful.py."""
+    out, i, n, depth = [], 0, len(src), 0
+    while i < n:
+        two = src[i:i+2]
+        if depth == 0 and two == "--":
+            while i < n and src[i] != "\n":
+                out.append(" "); i += 1
+            continue
+        if two == "/-":
+            depth += 1; out.append("  "); i += 2; continue
+        if two == "-/" and depth > 0:
+            depth -= 1; out.append("  "); i += 2; continue
+        if depth > 0:
+            out.append("\n" if src[i] == "\n" else " "); i += 1; continue
+        out.append(src[i]); i += 1
+    return "".join(out)
 
 
 def norm(s: str) -> str:
@@ -53,7 +74,7 @@ def extract():
     sigs = {}
     for rel in _prop_files():
         path = os.path.join(BOOK_ROOT, rel)
-        src  = open(path, encoding="utf-8").read()
+        src  = strip_comments(open(path, encoding="utf-8").read())
         for m in DECL.finditer(src):
             name = m.group(1)
             line = src.count("\n", 0, m.start()) + 1
