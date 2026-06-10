@@ -10,8 +10,6 @@
       "Write(LeanEuclidPlus/Book/**)",
       "Edit(LeanEuclidPlus/Book2/**)",
       "Write(LeanEuclidPlus/Book2/**)",
-      "Edit(LeanEuclidPlus/Scratch/**)",
-      "Write(LeanEuclidPlus/Scratch/**)",
 
       "Bash(scripts/safe_build.sh:*)",
       "Bash(./scripts/safe_build.sh:*)",

@@ -20,7 +20,7 @@ same-line `:= by`) — verified across the 63 declaring files.
 
 Helper lemmas (`helper_*`) are intentionally NOT tracked — they are allowed to change.
 """
-import re, sys, os, json
+import re, sys, os, json, glob
 
 # `theorem proposition_<name> : <type> :=` — name allows trailing primes; type runs to the first
 # `:=` (DOTALL so multi-line types match). `:=` never occurs inside these types (verified).
@@ -34,26 +34,33 @@ def norm(s: str) -> str:
     return " ".join(s.split())
 
 
+def _prop_files():
+    """Every proposition source file, flat OR folder layout, relative to BOOK_ROOT:
+      Book 1 (flat):    Book/Prop*.lean
+      Book 2 (folders): Book2/Prop*/Main.lean   (post-refactor)
+      Book 2 (flat):    Book2/Prop*.lean         (any not-yet-migrated, for safety)
+    De-duplicated, sorted."""
+    pats = ["Book/Prop*.lean", "Book2/Prop*/Main.lean", "Book2/Prop*.lean"]
+    rels = []
+    for pat in pats:
+        for path in glob.glob(os.path.join(BOOK_ROOT, pat)):
+            rels.append(os.path.relpath(path, BOOK_ROOT))
+    return sorted(set(rels))
+
+
 def extract():
-    """Return {key -> {file, line, sig}} for every proposition signature under Book/ and Book2/."""
+    """Return {key -> {file, line, sig}} for every proposition signature (flat or folder layout)."""
     sigs = {}
-    for sub in ("Book", "Book2"):
-        d = os.path.join(BOOK_ROOT, sub)
-        if not os.path.isdir(d):
-            continue
-        for fn in sorted(os.listdir(d)):
-            if not (fn.startswith("Prop") and fn.endswith(".lean")):
-                continue
-            path = os.path.join(d, fn)
-            rel  = os.path.join(sub, fn)
-            src  = open(path, encoding="utf-8").read()
-            for m in DECL.finditer(src):
-                name = m.group(1)
-                line = src.count("\n", 0, m.start()) + 1
-                key  = f"{rel}::{name}"
-                if key in sigs:
-                    print(f"WARNING: duplicate {key} (lines {sigs[key]['line']}, {line})")
-                sigs[key] = {"file": rel, "line": line, "sig": norm(m.group(2))}
+    for rel in _prop_files():
+        path = os.path.join(BOOK_ROOT, rel)
+        src  = open(path, encoding="utf-8").read()
+        for m in DECL.finditer(src):
+            name = m.group(1)
+            line = src.count("\n", 0, m.start()) + 1
+            key  = f"{rel}::{name}"
+            if key in sigs:
+                print(f"WARNING: duplicate {key} (lines {sigs[key]['line']}, {line})")
+            sigs[key] = {"file": rel, "line": line, "sig": norm(m.group(2))}
     return sigs
 
 

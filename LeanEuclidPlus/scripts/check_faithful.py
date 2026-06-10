@@ -66,8 +66,13 @@ def loc_key(loc: str):
     return [int(x) for x in loc.split(".") if x.isdigit()]
 
 def canon_path_for(book: str, prop: str):
-    """Resolve Book{N}/texts_proofs/{prop}.txt relative to LeanEuclidPlus/."""
-    rel = os.path.join("Book" if book == "1" else f"Book{book}", "texts_proofs", f"{prop}.txt")
+    """Resolve the canonical proof text relative to LeanEuclidPlus/.
+    Book 1 is flat:       Book/texts_proofs/{prop}.txt
+    Book 2+ is foldered:  Book{N}/data/texts_proofs/{prop}.txt  (data/ holds the generated corpus)."""
+    if book == "1":
+        rel = os.path.join("Book", "texts_proofs", f"{prop}.txt")
+    else:
+        rel = os.path.join(f"Book{book}", "data", "texts_proofs", f"{prop}.txt")
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # LeanEuclidPlus/
     return rel, os.path.join(base, rel)
 

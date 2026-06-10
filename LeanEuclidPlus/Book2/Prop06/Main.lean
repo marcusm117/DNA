@@ -40,7 +40,7 @@ by
   euclid_intros
   -- NON-FAITHFUL proof (statement-correctness check only; a faithful proof follows
   -- Euclid via Prop 1.46 square CEFD on CD, Prop 1.31 parallels, 1.36/1.43 gnomon —
-  -- see texts_proofs/6.txt). The collinear order A─C─B─D reduces the goal to a ring
+  -- see data/texts_proofs/6.txt). The collinear order A─C─B─D reduces the goal to a ring
   -- identity once segment lengths are decomposed.
   have h1 : |(a─d)| = |(a─c)| + |(c─b)| + |(b─d)| := by euclid_finish
   have h2 : |(c─d)| = |(c─b)| + |(b─d)| := by euclid_finish

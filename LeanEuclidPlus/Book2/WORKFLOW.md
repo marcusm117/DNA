@@ -22,12 +22,14 @@ cd ../AutoFormalization/statement
 python3 extract_book.py --book 2
 ```
 
-This produced (re-runnable / idempotent):
+This produced (re-runnable / idempotent) — now under `Book2/data/` (the generated corpus was moved
+into a `data/` subfolder so the per-prop `PropNN/` folders aren't cluttered; `extract_book.py` writes
+there for Book 2+):
 
-- `texts_proofs/1.txt … 14.txt` — the **full** English statement + proof + conclusion for
+- `data/texts_proofs/1.txt … 14.txt` — the **full** English statement + proof + conclusion for
   each proposition, with `$...$` math and `[Prop.~1.11]` / `[Post.~3]` / `[Def.~1.15]`
   citations kept verbatim. Greek, figures, headings, and footnotes are stripped.
-- `diagrams/1.png … 14.png` — the English-side figure (`figNNe.eps`) rasterized to PNG,
+- `data/diagrams/1.png … 14.png` — the English-side figure (`figNNe.eps`) rasterized to PNG,
   matching Book 1's style (~120 DPI, white bg, trimmed).
 
 Everything below is **manual, per proposition** — this is exactly the part of Book 1 that

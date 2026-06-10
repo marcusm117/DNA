@@ -1,7 +1,12 @@
 import SystemE
 import Book.Prop31
 import Book.Prop46
-import Book2.Prop02_steps
+import Book2.Prop02.step1
+import Book2.Prop02.step2
+import Book2.Prop02.step3
+import Book2.Prop02.step4
+import Book2.Prop02.step5
+import Book2.Prop02.step6
 
 namespace Elements.Book2
 

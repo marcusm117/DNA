@@ -23,17 +23,6 @@ lean_lib Examples {
 lean_lib E3 {
 }
 
-/-- Staging area for the faithful-euclid pipeline (Phase B). Each Euclid sentence is proved as its
-OWN isolated file `Scratch/Book<N>/Prop<NN>/helper_<book>_step<n>.lean`, so it builds alone in ~30s
-instead of re-paying the whole proof; if one builds, we reunite them in Phase C.
-`.submodules` makes EACH file its own buildable module — `scripts/safe_build.sh
-Scratch.Book2.Prop02.helper_2_step3` builds that one file and nothing else. This is a SEPARATE lib
-from Book/Book2, so `lake build Book2` and `faithful_export` never touch scratch; finished step
-lemmas are moved into `Book<N>/Prop<NN>_steps.lean` in Phase C. -/
-lean_lib Scratch {
-  globs := #[.submodules `Scratch]
-}
-
 /-- Reads faithfulness annotations back from a compiled module's `.olean` and dumps them as JSON
 for `scripts/check_faithful.py --olean`.  See `FaithfulExport.lean`. -/
 lean_exe faithful_export {

@@ -168,8 +168,12 @@ def main():
     src_dir = os.path.join(ELEMENTS_ROOT, "Book%02d" % book)
     tex_path = os.path.join(src_dir, "Book%d.tex" % book)
     out_dir = os.path.join(LEANEUCLID_ROOT, "Book%d" % book)
-    texts_proofs_dir = os.path.join(out_dir, "texts_proofs")
-    diagrams_dir = os.path.join(out_dir, "diagrams")
+    # Book 1 is FLAT (texts_proofs/, diagrams/ directly under Book/); Book 2+ keep the generated
+    # corpus under a `data/` subfolder so the prop folders (PropNN/) aren't cluttered. (Book 1 lives
+    # in `Book/` not `Book1/`, so it isn't produced here anyway; the `data/` split applies to 2+.)
+    data_dir = out_dir if book == 1 else os.path.join(out_dir, "data")
+    texts_proofs_dir = os.path.join(data_dir, "texts_proofs")
+    diagrams_dir = os.path.join(data_dir, "diagrams")
 
     if not os.path.isfile(tex_path):
         sys.exit("source tex not found: %s" % tex_path)
@@ -207,10 +211,12 @@ def main():
 
     print("Wrote %d text files to %s" % (len(regions), texts_proofs_dir))
     print("Wrote diagrams to %s" % diagrams_dir)
+    texts_loc = "Book%d/texts/N.txt" % book if book == 1 else "Book%d/data/texts/N.txt" % book
+    prop_loc  = "Book%d/PropNN.lean" % book if book == 1 else "Book%d/PropNN/Main.lean" % book
     print(
-        "\nNext (manual, per proposition): write Book%d/PropNN.lean and the "
-        "statement-only Book%d/texts/N.txt with the <prf> marker. See WORKFLOW.md."
-        % (book, book)
+        "\nNext (manual, per proposition): write %s and the statement-only %s with the <prf> marker. "
+        "For making proofs faithful, see ../FAITHFUL.md + the faithful-euclid skill (not WORKFLOW.md)."
+        % (prop_loc, texts_loc)
     )
 
 

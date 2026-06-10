@@ -139,8 +139,9 @@ This is how every proof BEGINS — whether formalizing a new proposition or repa
 discipline that prevents the wasteful "write it all, run it, watch it fail" start.
 
 ```
-1. READ THE SOURCE. The Euclid proof text (Book{N}/texts_proofs/{prop}.txt) and the reference
-   format Book2/Prop01.lean. Understand the mathematical argument before formalizing.
+1. READ THE SOURCE. The Euclid proof text (Book 1: `Book/texts_proofs/{prop}.txt`; Book 2:
+   `Book2/data/texts_proofs/{prop}.txt`) and the reference format `Book2/Prop01/Main.lean`.
+   Understand the mathematical argument before formalizing.
 
 2. DECOMPOSE (STAGE-A). Write the numbered step-structure as a comment block, exactly like
    Prop01's STAGE-A: each step has objects / hypotheses / WTS (what-to-show) / reasoning /

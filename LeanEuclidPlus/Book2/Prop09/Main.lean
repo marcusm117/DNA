@@ -39,7 +39,7 @@ by
   euclid_intros
   -- NON-FAITHFUL proof (statement-correctness check only; a faithful proof follows
   -- Euclid via Prop 1.11 perpendicular CE, 1.3, 1.31 parallels, 1.5/1.6/1.29/1.32
-  -- half-right-angles, and 1.47 Pythagoras — see texts_proofs/9.txt). The collinear
+  -- half-right-angles, and 1.47 Pythagoras — see data/texts_proofs/9.txt). The collinear
   -- order A─C─D─B reduces the goal to a ring identity once lengths are decomposed.
   have hac : |(a─c)| = |(c─d)| + |(d─b)| := by euclid_finish
   have had : |(a─d)| = |(a─c)| + |(c─d)| := by euclid_finish

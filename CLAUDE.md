@@ -27,10 +27,17 @@ Reference example of a finished, faithful proof: `LeanEuclidPlus/Book2/Prop01.le
 To make a proof FAITHFUL (annotate it with `euclid_sentence`s so it follows Euclid's sentence
 structure and passes the faithfulness criteria — e.g. "make Book2/PropNN faithful") use the
 **`faithful-euclid` skill** ([.claude/skills/faithful-euclid/SKILL.md](.claude/skills/faithful-euclid/SKILL.md)).
-It owns the phase-gated, per-step-isolated pipeline (A: sentence map → human review → B: prove each
-sentence in its own `Scratch/` file → C: reunite + `check_faithful.sh` gate) and delegates the actual
-proving to `prove-euclid`. Note: Prop01 was annotated by hand pre-pipeline, so it shows the OUTPUT
-shape, not the process.
+It owns the phase-gated, per-step-isolated pipeline and delegates the actual proving to `prove-euclid`.
+
+**Layout: one folder per Book-2 proposition** — `Book2/PropNN/Main.lean` (the proposition + its
+`euclid_sentence`s) and `Book2/PropNN/stepN.lean` (one proof file per sentence, theorem
+`helper_<book>_stepN`). The pipeline is: A = sentence map in Main + sorry-stub step files (human
+review) → B = prove each `stepN.lean` in the folder → final gate (`check_faithful.sh` + cleanup).
+There is NO `Scratch/` dir and NO "reunite" step — files are written where they belong and stay.
+Book 1 (`Book/Prop*.lean`) is FLAT and untouched. Book-2 props are all relocated into folders;
+already-done props keep their proofs in `PropNN/Main.lean` — to make one faithful, add `stepN.lean`
+files in its folder (don't recreate scratch/merge). Prop01 shows the OUTPUT shape (annotated by hand,
+monolithic), `Book2/Prop02/` shows the real pipeline output.
 
 ## Tool & shell hygiene (applies to ALL work here — avoids wasted turns and permission prompts)
 
