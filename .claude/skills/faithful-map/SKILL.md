@@ -12,8 +12,11 @@ description: >
 # Phase A — translate Euclid's sentences into claim types (THIS IS TRANSLATION, NOT PROVING)
 
 Your only job: turn each of Euclid's sentences into one `euclid_sentence` annotation whose Lean type
-says **exactly what that sentence asserts**. You write the skeleton of `Book<N>/PropNN/Main.lean` and
-sorry-stub `stepN.lean` files. You do **NOT** prove anything. When done you STOP for human review.
+says **exactly what that sentence asserts**. You write `Book<N>/PropNN/Main.lean` ONLY: the proposition
+signature (untouched) + `euclid_intros` + the object-producing constructions + one `euclid_sentence`
+per sentence with a real claim type and a `:= by sorry` body + the intro/conclude bookends + the
+trailing `exact`/`rw` chain. You create **NO step files** (those are Phase B). You do **NOT** prove
+anything and you do **NOT** wire any `euclid_apply (helper…)`. When done you STOP for human review.
 
 This is genuinely easy — it's translation. The mistakes come from drifting into proving or
 over-thinking. The three rules below exist to stop exactly that.
@@ -82,17 +85,20 @@ writing facts the sentence didn't state (vacuous fillers, construction incidence
 
 ---
 
-## ENVIRONMENT (minimal — this skill only edits Main.lean + creates stub step files)
+## ENVIRONMENT (minimal — this skill edits Main.lean ONLY; no step files are created in Phase A)
 
 - **First Bash call: `cd LeanEuclidPlus`** (the session starts at repo root `DNA/`; all paths below
   and the permission allow-rules are relative to `LeanEuclidPlus/`). The cwd persists; then run bare
   commands. Do NOT chain `cd … && …`.
 - Read files with the Read tool, search with Grep — never `cat`/`sed`/`find -exec`, never chain shell
   commands (see CLAUDE.md).
-- Build (skeleton elaboration only) via `scripts/safe_build.sh Book<N>.PropNN.Main` — bare, no pipes.
+- Build (skeleton elaboration only) via `python3 scripts/check_step.py Book<N>/PropNN --provable`
+  with NO node argument = "build Main, tolerate sorry" (Main has no parent, so it gets the build/
+  provable check, not SF/SP). (Raw `lake`/`safe_build.sh` are hard-denied to the agent; `check_step`
+  owns every build.)
 - Each prop is a folder: `Book<N>/PropNN/Main.lean` (the proposition) + `Book<N>/PropNN/stepN.lean`
-  (one per sentence). You create Main's skeleton + the sorry-stub step files. Book 1 (`Book/`) is flat
-  and untouched.
+  (one per sentence, created in PHASE B). In Phase A you write Main ONLY — no step files. Book 1
+  (`Book/`) is flat and untouched.
 
 ## INPUTS for each proposition (keyed by prop number `<N>`)
 - `Book<N>/data/texts_proofs/<N>.txt` — the canonical English statement + proof + conclusion. THE
@@ -158,23 +164,34 @@ For each chunk of sentences, for each `step_n`:
    the sentence's words, not the diagram's geometry. Match the Prop02 style (one sentence → one
    compact claim). Earlier steps' claims are available as context.
 
-2. Wire the discharge + stub the step file (so Main elaborates):
-     - in Main:  (step_n : <claim>) := by euclid_apply (helper_<book>_stepN <args>); euclid_finish
-     - create Book<N>/PropNN/stepN.lean:
-         import SystemE   (+ namespace Elements.Book<N> ; open Elements.Book1 only if it cites a Book-1 prop)
-         set_option systemE.solverTime 30 in
-         theorem helper_<book>_stepN (<args>) : <claim> := by sorry
-   (helper_<book>_stepN, file stepN.lean. NEVER name a step theorem proposition_*.)
+2. The Main sentence body STAYS `:= by sorry` (do NOT wire `euclid_apply (helper …)` into Main in
+   Phase A — wiring is temporary in Phase B's per-step script and permanent only in Phase C):
+       euclid_sentence "<loc>" "<verbatim text>" (step_n : <CLAIM TYPE>) := by sorry
+   Because every body is `sorry`, the Main build here is cheap and SMT-FREE (it only type-checks the
+   `have step_n : <claim>`; no helper is discharged). Keeping Main sorry is what lets Phase B revise a
+   step's hypotheses freely and cheaply — nothing in Main is committed until C.
 
 3. CONSTRUCTIONS go in Main, BEFORE the sentence that needs the object: object-producing applies like
    euclid_apply (proposition_46 a b AB) as (d,e,DE,AD,BE) / (proposition_31 …) / (intersection_lines …)
    / (line_from_points …). The claim types reference these objects, so they must be in scope. (These
-   are the ONLY things that "run" in Phase A; their tiny precondition SMT is fine. Step PROOFs are sorry.)
+   ARE wired in Main and DO run a tiny precondition SMT — that's fine and expected. Only the step
+   discharges (`euclid_apply (helper …)`) are NOT wired yet.)
+   IMPORTS: Main imports ONLY `SystemE` + the CONSTRUCTION props it uses (e.g. `import Book.Prop46`,
+   `import Book.Prop31`). NEVER `import Book<N>.PropNN.stepK` — step files don't exist yet, and a
+   step's import (like its wiring) is added transiently by the Phase-B/C SCRIPTS, never by you.
 
-4. After the chunk, BUILD to confirm Main elaborates: scripts/safe_build.sh Book<N>.PropNN.Main
-   (sorry runs no heavy SMT; a non-elaborating type is a vocabulary/missing-object problem — fix now.)
-   Then next chunk, until no True placeholders remain.
+4. After the chunk, BUILD to confirm Main elaborates: python3 scripts/check_step.py Book<N>/PropNN --provable
+   (all step bodies are sorry, so NO helper discharge runs — cheap; a non-elaborating claim is a
+   vocabulary/missing-object problem — fix now.) Then next chunk, until no True placeholders remain.
 ```
+
+> **NOTE — step files / signatures are created in PHASE B, not here.** Phase A's deliverable is just
+> `Main.lean`: the `euclid_sentence`s with real claim types, `:= by sorry` bodies, and the
+> object-producing constructions. The `Book<N>/PropNN/stepN.lean` files (with their candidate
+> `theorem helper_<book>_stepN <args> : <claim>` signatures) are written and verified in Phase B
+> (`faithful-prove`), because choosing a step's hypotheses is part of proving it — and the per-step
+> script is what certifies those hypotheses are suppliable. EVERY logical sentence will get its own
+> `stepN.lean` (one step = one file, never inlined, never merged) — but that's Phase B's job.
 
 ### GATE A — SELF-REVIEW, then STOP for human review
 When every claim is a real type and `Main.lean` elaborates (all step files are sorry-stubs), FIRST do

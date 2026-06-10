@@ -1,0 +1,583 @@
+#!/usr/bin/env python3
+"""Shared library for the faithful pipeline (Phase B verify + Phase C wire). NO CLI — imported by
+`check_step.py` and `wire_main.py`.
+
+THE MODEL (see the plan / the faithful-prove skill). Everything is ONE recursive atom:
+  * CONTAINER  = any .lean file with a tactic proof holding goal nodes (Main.lean, stepN.lean, a
+                 sub-file, …). A container may also hold REAL euclid_apply proof work — that is not a
+                 node and is never touched.
+  * GOAL NODE  = a named `:= by sorry` body. Two surface forms, identical at the proof level:
+                   - Main only:  euclid_sentence "loc" "txt" (stepN : C) := by sorry
+                   - anywhere :  have <name> : C := by sorry
+  * BACKING FILE = the helper proving a node.  NAMING LAW (enforced, abort-loud):
+                   node name  ≡  <name>.lean basename  ≡  theorem helper_<book>_<name>.
+  * WIRING     = a node's `sorry` replaced by the canonical
+                   euclid_apply (helper_<book>_<name> <objs>); euclid_finish
+                 where <objs> = the Point/Line/Circle binder names of the backing theorem, in order.
+                 ONLY scripts ever write wiring; the agent only writes proof bodies + adds sorry-`have`s.
+
+Bodies on disk are ALWAYS one canonical single-line shape (the only shapes this lib reads/writes):
+    := by sorry
+    := by trace_state; sorry                              (transient, --context only)
+    := by euclid_apply (helper_<book>_<name> …); euclid_finish
+A fixed-shape text swap on these (no tactic parsing) ⟹ false positives are structurally impossible.
+
+Caps: every file carries `set_option systemE.solverTime 30 in` above its theorem in the dev state.
+Phase C (`wire_main`) deletes it (→ System E's 300s default — strictly MORE time, never less).
+"""
+import os, re, sys, glob, signal, subprocess, fcntl
+
+# ── locations / constants ─────────────────────────────────────────────────────────────────────────
+# realpath (not just abspath): the repo is reachable via both /h/56/taddmao/… and /u/taddmao/… (a
+# symlink). If BOOK_ROOT and an incoming path resolve through different roots, os.path.relpath yields a
+# garbage `../../../u/…` Lean target. Canonicalizing both ends here makes every relpath/target_of sound.
+BOOK_ROOT = os.path.realpath(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # LeanEuclidPlus/
+DEFAULT_VENV = os.path.expanduser("~/.venvs/leaneuclid")
+GEOMETRIC_SORTS = {"Point", "Line", "Circle"}      # the only `axiom … : Type` object sorts (Sorts/Primitives.lean)
+CAP_LINE = "set_option systemE.solverTime 30 in"
+CAP_SECONDS = 30                                    # the ONE allowed dev SMT cap (also the wall, below)
+# CAP_RE matches ANY solverTime line (used to strip/detect a cap regardless of value).
+CAP_RE   = re.compile(r"^[ \t]*set_option[ \t]+systemE\.solverTime[ \t]+\d+[ \t]+in[ \t]*\r?\n", re.MULTILINE)
+# CAP_RE_EXACT matches ONLY the canonical 30s cap — `--check` requires this exact value so a bumped
+# `solverTime 300` is flagged (the wall still kills it, but the structural guard should catch it too).
+CAP_RE_EXACT = re.compile(r"^[ \t]*set_option[ \t]+systemE\.solverTime[ \t]+" + str(CAP_SECONDS) +
+                          r"[ \t]+in[ \t]*\r?\n", re.MULTILINE)
+WALL = CAP_SECONDS                                  # seconds — the per-build wall timeout (dev only)
+
+
+class FaithfulError(Exception):
+    """Any structural/naming/canonical-shape violation. Callers print it and exit non-zero — the
+    scripts ABORT LOUDLY rather than guess or proceed on a malformed prop."""
+
+
+def natural_key(s):
+    """Sort key so `step2` < `step10` (numeric runs compared as ints, not lexicographically)."""
+    return [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", s)]
+
+
+# ── path / target helpers ─────────────────────────────────────────────────────────────────────────
+def resolve(arg):
+    """A path relative to LeanEuclidPlus/ (or absolute) → absolute, REALPATH-canonicalized (so an
+    alternate symlinked root collapses onto BOOK_ROOT — see the BOOK_ROOT note)."""
+    return os.path.realpath(arg if os.path.isabs(arg) else os.path.join(BOOK_ROOT, arg))
+
+
+def propdir_of(arg):
+    """Accept `Book2/Prop04`, `Book2/Prop04/`, or `Book2/Prop04/Main.lean` → absolute prop dir."""
+    p = resolve(arg)
+    if p.endswith(".lean"):
+        p = os.path.dirname(p)
+    p = p.rstrip("/")
+    if not os.path.isdir(p):
+        raise FaithfulError(f"no such prop directory: {arg}")
+    if not os.path.exists(os.path.join(p, "Main.lean")):
+        raise FaithfulError(f"{os.path.relpath(p, BOOK_ROOT)} has no Main.lean — not a prop folder")
+    return p
+
+
+def book_num(propdir):
+    """`…/Book2/Prop04` → 2.  The <book> in helper_<book>_<name>."""
+    for part in os.path.relpath(propdir, BOOK_ROOT).split(os.sep):
+        m = re.fullmatch(r"Book(\d+)", part)
+        if m:
+            return int(m.group(1))
+    raise FaithfulError(f"cannot determine book number from {os.path.relpath(propdir, BOOK_ROOT)}")
+
+
+def main_file(propdir):
+    return os.path.join(propdir, "Main.lean")
+
+
+def prop_files(propdir):
+    """Every .lean file in the prop folder tree (Main + all backing/sub files), sorted."""
+    return sorted(glob.glob(os.path.join(propdir, "**", "*.lean"), recursive=True))
+
+
+def target_of(path):
+    """File path → Lean build target: rel to BOOK_ROOT, '/'→'.', drop '.lean'.
+    Book2/Prop04/step27.lean → Book2.Prop04.step27 ; nested step27/big.lean → Book2.Prop04.step27.big."""
+    rel = os.path.relpath(os.path.realpath(path), BOOK_ROOT)
+    return rel[:-len(".lean")].replace(os.sep, ".")
+
+
+def depth_of(path, propdir):
+    """How deep below the prop folder a file sits (Main = 0)."""
+    rel = os.path.relpath(os.path.realpath(path), os.path.realpath(propdir))
+    return rel.count(os.sep)
+
+
+def audit_order(propdir):
+    """Return the prop's nodes in BOTTOM-UP order: a node whose backing file contains sub-nodes comes
+    AFTER all of those sub-nodes (so the FIRST failure in an --all sweep is always the DEEPEST broken
+    node, never an ancestor that merely inherits a sub-node's sorry). This is a topological sort over
+    the backing-file containment relation — the real proof-tree depth, NOT the directory depth (a
+    sub-node often lives in a sibling file like step6.lean). Main's sentence nodes, having no
+    sub-structure, sort first; their containers (the leaf backing files) are audited before them."""
+    nodes = parse_all_nodes(propdir)
+    book = book_num(propdir)
+    # children[name] = nodes defined INSIDE name's backing file (its sub-nodes).
+    children = {}
+    for name, nd in nodes.items():
+        bf = backing_file(propdir, name)
+        kids = [k.name for k in parse_nodes_in_file(bf, book)] if bf else []
+        children[name] = [k for k in kids if k in nodes]
+    ordered, seen = [], set()
+    def visit(name, stack):
+        if name in seen:
+            return
+        if name in stack:
+            raise FaithfulError(f"cyclic backing-file dependency through '{name}'")
+        for kid in children.get(name, []):
+            visit(kid, stack | {name})
+        seen.add(name)
+        ordered.append(nodes[name])
+    for name in sorted(nodes, key=natural_key):     # natural order: step2 before step10 (not lexicographic)
+        visit(name, frozenset())
+    return ordered
+
+
+# ── low-level scanners (mirror scripts/check_steps.py) ──────────────────────────────────────────────
+def _skip_string(src, i, n):
+    """`src[i]` is the opening `"` — return the index just past the closing quote."""
+    i += 1
+    while i < n and src[i] != '"':
+        i += 2 if src[i] == "\\" else 1
+    return i + 1
+
+
+def balanced_paren(src, start):
+    """`start` is the index just AFTER an already-open `(` (depth 1). Return the index of its matching
+    `)` (the close), skipping nested parens + string literals."""
+    depth, i, n = 1, start, len(src)
+    while i < n:
+        c = src[i]
+        if c == '"':
+            i = _skip_string(src, i, n); continue
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    raise FaithfulError("unbalanced parentheses while scanning")
+
+
+def type_until_assign(src, start):
+    """For a bare `have name : <type> := …`: `start` is just after the type-separator `:`. Scan to the
+    first top-level `:=` (respecting () [] {} and strings; angle/area colons like `∠ b:a:d` are plain
+    `:` and ignored). Return (type_text, index_of_`:=`)."""
+    depth, i, n = 0, start, len(src)
+    while i < n:
+        c = src[i]
+        if c == '"':
+            i = _skip_string(src, i, n); continue
+        if c in "([{":
+            depth += 1
+        elif c in ")]}":
+            depth -= 1
+        elif depth == 0 and c == ":" and i + 1 < n and src[i + 1] == "=":
+            return src[start:i], i
+        i += 1
+    raise FaithfulError("no `:=` found for a `have` (malformed node?)")
+
+
+# ── canonical body matching / swapping ──────────────────────────────────────────────────────────────
+def _body_regexes(book, name):
+    """The three canonical body shapes for a node, anchored at the `:=`. The WIRED shape requires the
+    called helper to be THIS node's own helper (helper_<book>_<name>) — so a real proof-local `have`
+    that merely calls some *other* helper is NOT mistaken for a wired node."""
+    helper = re.escape(f"helper_{book}_{name}")
+    # Separators between successive tactics may be `;`, a newline, or both — so a wired body is
+    # recognized whether it was written single-line (canonical, by wire_main) or multiline (legacy
+    # finished props). The helper-name anchor keeps a *different* helper's call from matching.
+    return [
+        ("sorry", re.compile(r":=[ \t]*by[ \t\r\n]+sorry\b")),
+        ("trace", re.compile(r":=[ \t]*by[ \t\r\n]+trace_state[ \t\r\n]*;[ \t\r\n]*sorry\b")),
+        ("wired", re.compile(r":=[ \t]*by[ \t\r\n]+euclid_apply[ \t]*\(\s*" + helper +
+                             r"\b[^()]*\)[ \t\r\n]*;?[ \t\r\n]*euclid_finish\b")),
+    ]
+
+
+def find_body(src, sep_idx, book, name):
+    """`sep_idx` is the index of a node's `:=`. Match the canonical body anchored there. Return
+    (state, start, end) where state ∈ {sorry,trace,wired} and src[start:end] is the whole body
+    (from `:=`). Return None if no canonical shape matches (⟹ not a pipeline node)."""
+    for state, rx in _body_regexes(book, name):
+        m = rx.match(src, sep_idx)
+        if m:
+            return state, m.start(), m.end()
+    return None
+
+
+# ── node model ────────────────────────────────────────────────────────────────────────────────────
+SENTENCE_HEAD = re.compile(
+    r'euclid_sentence\s*"((?:[^"\\]|\\.)*)"\s*"(?:[^"\\]|\\.)*"\s*\(\s*(\w+)\s*:')
+HAVE_HEAD = re.compile(r'\bhave\s+(\w+)\s*:')
+
+
+class Node:
+    __slots__ = ("name", "file", "kind", "loc", "claim", "state", "body_start", "body_end")
+
+    def __init__(self, name, file, kind, loc, claim, state, body_start, body_end):
+        self.name, self.file, self.kind = name, file, kind
+        self.loc, self.claim, self.state = loc, claim, state
+        self.body_start, self.body_end = body_start, body_end   # span of the `:= by …` body in `file`
+
+    def __repr__(self):
+        return f"<Node {self.name} ({self.kind}) {os.path.relpath(self.file, BOOK_ROOT)} [{self.state}]>"
+
+
+def parse_nodes_in_file(path, book):
+    """Every goal node in one file: euclid_sentence steps (Main) and canonical `have` nodes (any file).
+    A `have` whose body is a REAL proof (not one of the three canonical shapes) is skipped — it is not
+    a pipeline node. An euclid_sentence with a non-canonical body is a hard error (Phase A guarantees
+    `:= by sorry`)."""
+    src = open(path, encoding="utf-8").read()
+    nodes = []
+    for m in SENTENCE_HEAD.finditer(src):
+        loc, name = m.group(1), m.group(2)
+        close = balanced_paren(src, m.end())                    # close of the (name : type) annotation
+        claim = src[m.end():close]
+        am = re.compile(r"\s*:=").match(src, close + 1)
+        if not am:
+            raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: euclid_sentence \"{loc}\" has no "
+                                f"`:=` body")
+        sep = src.index(":=", close + 1)
+        body = find_body(src, sep, book, name)
+        if not body:
+            raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: euclid_sentence \"{loc}\" "
+                                f"({name}) body is not canonical (expected `:= by sorry` or the wired "
+                                f"shape). The agent must NEVER hand-write a sentence body.")
+        state, bs, be = body
+        nodes.append(Node(name, path, "sentence", loc, claim.strip(), state, bs, be))
+    for m in HAVE_HEAD.finditer(src):
+        name = m.group(1)
+        try:
+            claim, sep = type_until_assign(src, m.end())
+        except FaithfulError:
+            continue
+        body = find_body(src, sep, book, name)
+        if not body:
+            continue                                            # a real proof-local `have`, not a node
+        state, bs, be = body
+        nodes.append(Node(name, path, "have", None, claim.strip(), state, bs, be))
+    return nodes
+
+
+def parse_all_nodes(propdir):
+    """All nodes across the prop tree, keyed by name. Enforces GLOBAL name uniqueness (the naming law
+    makes node-name ≡ file-basename, so a clash is a real error)."""
+    book = book_num(propdir)
+    out = {}
+    for path in prop_files(propdir):
+        for nd in parse_nodes_in_file(path, book):
+            if nd.name in out:
+                raise FaithfulError(f"duplicate node name '{nd.name}' in "
+                                    f"{os.path.relpath(out[nd.name].file, BOOK_ROOT)} and "
+                                    f"{os.path.relpath(nd.file, BOOK_ROOT)} — names must be unique")
+            out[nd.name] = nd
+    return out
+
+
+# ── backing files + object args ─────────────────────────────────────────────────────────────────────
+def backing_file(propdir, name):
+    """The file `<name>.lean` anywhere in the prop tree, or None."""
+    hits = [p for p in prop_files(propdir) if os.path.basename(p) == f"{name}.lean"]
+    if len(hits) > 1:
+        raise FaithfulError(f"more than one '{name}.lean' in the prop tree: "
+                            f"{[os.path.relpath(h, BOOK_ROOT) for h in hits]}")
+    return hits[0] if hits else None
+
+
+def parse_helper_objs(path, book, name):
+    """Parse `theorem helper_<book>_<name> (binders…) : claim :=` in its backing file and return the
+    ordered list of OBJECT argument names — exactly the binders whose type is a geometric sort
+    (Point/Line/Circle). Hypotheses (Prop-typed binders) are dropped. ABORT LOUD if the theorem is
+    missing/misnamed, or a binder's type LOOKS like a sort but isn't a known one (don't guess)."""
+    src = open(path, encoding="utf-8").read()
+    expected = f"helper_{book}_{name}"
+    m = re.search(r"\btheorem\s+(helper_\w+)", src)
+    if not m:
+        raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: no `theorem helper_…` found")
+    if m.group(1) != expected:
+        raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: theorem is '{m.group(1)}' but the "
+                            f"naming law requires '{expected}' (file ↔ node ↔ helper must match)")
+    i, n = m.end(), len(src)
+    objs = []
+    while i < n:
+        while i < n and src[i] in " \t\r\n":
+            i += 1
+        if i >= n:
+            break
+        if src[i] == ":":            # the result-type separator — binders are done
+            break
+        if src[i] == "(":
+            close = balanced_paren(src, i + 1)
+            group = src[i + 1:close]                            # `idents : type`
+            ci = group.find(":")
+            if ci < 0:
+                raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: malformed binder '({group})'")
+            idents, btype = group[:ci].split(), group[ci + 1:].strip()
+            if btype in GEOMETRIC_SORTS:
+                objs.extend(idents)
+            elif re.fullmatch(r"[A-Z]\w*", btype):              # sort-shaped but not a known sort
+                raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: binder '({group})' has "
+                                    f"unrecognized sort '{btype}' — known object sorts are "
+                                    f"{sorted(GEOMETRIC_SORTS)}. Refusing to guess.")
+            # else: a Prop-typed hypothesis — not passed as an object argument
+            i = close + 1
+        else:
+            raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: unexpected token before the "
+                                f"result type of {expected} (only `(binder)` groups are supported)")
+    return objs
+
+
+def wired_body(book, name, objs):
+    """The canonical wired body string (single line)."""
+    return f":= by euclid_apply ({f'helper_{book}_{name}'} {' '.join(objs)}); euclid_finish"
+
+
+# ── the swap primitive (operates on a source STRING; callers handle disk + restore) ─────────────────
+def swap_node_body(src, node, new_body_after_assign):
+    """Return `src` with `node`'s body (src[node.body_start:node.body_end]) replaced by
+    `new_body_after_assign` (a full `:= by …` string). Pure text; the span came from canonical
+    matching so this cannot corrupt anything else. Body-only — import is handled by `set_node_state`."""
+    return src[:node.body_start] + new_body_after_assign + src[node.body_end:]
+
+
+def set_node_state(src, node, state, propdir, book):
+    """Return `src` with `node` put into `state` ∈ {'sorry','trace','wired'}, managing BOTH the body
+    AND the node's helper import together (wiring is body+import; reverting removes both). 'trace' is
+    `trace_state; sorry` and, like 'sorry', needs NO helper import; 'wired' adds it.
+    The body span is edited FIRST (its indices are valid for the current `src`); the import edit, being
+    line-based and idempotent, is applied to the result."""
+    if state == "sorry":
+        body = ":= by sorry"
+    elif state == "trace":
+        body = ":= by trace_state; sorry"
+    elif state == "wired":
+        bf = backing_file(propdir, node.name)
+        if bf is None:
+            raise FaithfulError(f"node '{node.name}' has no backing file '{node.name}.lean'")
+        body = wired_body(book, node.name, parse_helper_objs(bf, book, node.name))
+    else:
+        raise FaithfulError(f"unknown node state '{state}'")
+    out = swap_node_body(src, node, body)
+    module = target_of(backing_file(propdir, node.name)) if backing_file(propdir, node.name) else None
+    if module:
+        out = add_import(out, module) if state == "wired" else remove_import(out, module)
+    return out
+
+
+# ── caps ────────────────────────────────────────────────────────────────────────────────────────────
+def strip_caps(src):
+    """Remove every `set_option systemE.solverTime N in` line (whole line). For Phase C."""
+    return CAP_RE.sub("", src)
+
+
+def add_cap(src):
+    """Insert the canonical 30s cap line immediately above the file's theorem, if not already capped.
+    For Phase-C --unwire (restore the dev state)."""
+    if CAP_RE.search(src):
+        return src
+    m = re.search(r"^theorem\s", src, re.MULTILINE)
+    if not m:
+        raise FaithfulError("no top-level `theorem` to cap")
+    return src[:m.start()] + CAP_LINE + "\n" + src[m.start():]
+
+
+# ── helper-import management (the OTHER half of wiring — script-owned, transient) ────────────────────
+# Wiring a node = body swap + an `import <backing-module>` so `helper_<book>_<name>` resolves. In the
+# dev/sorry state a container imports NONE of its pipeline backing files; the script adds the import
+# when it wires a node and removes it when it reverts. The LLM never writes a helper/step import.
+def prop_prefix(propdir):
+    """The Lean module prefix of a prop's own files, e.g. `Book2.Prop04`. Used to detect/strip the
+    pipeline (helper/step) imports — those under the prop's OWN prefix — vs. legitimate SystemE /
+    cited-proposition imports (which are LLM-written proof content and are left alone)."""
+    return os.path.relpath(os.path.realpath(propdir), BOOK_ROOT).replace(os.sep, ".")
+
+
+def _import_re(module):
+    return re.compile(r"^[ \t]*import[ \t]+" + re.escape(module) + r"[ \t]*\r?\n", re.MULTILINE)
+
+
+def has_import(src, module):
+    return _import_re(module).search(src) is not None
+
+
+def add_import(src, module):
+    """Insert `import <module>` if absent, on its own line, right after the LAST existing `import` line
+    (imports must precede any declaration in Lean). Idempotent."""
+    if has_import(src, module):
+        return src
+    last = None
+    for m in re.finditer(r"^[ \t]*import[ \t]+\S+[ \t]*\r?\n", src, re.MULTILINE):
+        last = m
+    line = f"import {module}\n"
+    if last:
+        return src[:last.end()] + line + src[last.end():]
+    return line + src                                   # no imports yet (unusual) — prepend
+
+
+def remove_import(src, module):
+    """Remove an `import <module>` line if present. Idempotent."""
+    return _import_re(module).sub("", src)
+
+
+def pipeline_imports(src, propdir):
+    """Every import in `src` that targets a file UNDER this prop's own prefix (i.e. a helper/step
+    import). In a clean dev state this list is empty; --check flags any as 'stray helper imports'."""
+    pre = prop_prefix(propdir)
+    return [m.group(1) for m in re.finditer(r"^[ \t]*import[ \t]+(\S+)", src, re.MULTILINE)
+            if m.group(1) == pre or m.group(1).startswith(pre + ".")]
+
+
+# ── build under flock + optional wall timeout (replicates safe_build.sh's two jobs) ──────────────────
+def _clean_output(out):
+    """Drop lake's giant `trace: .> LEAN_PATH=… lean … --json` command-echo line (it can be 4 000+
+    chars of dynlib flags and otherwise swamps the actual error/goal lines callers tail)."""
+    if not out:
+        return out
+    keep = [ln for ln in out.splitlines()
+            if not (ln.lstrip().startswith("trace: .>") or "LEAN_PATH=" in ln)]
+    return "\n".join(keep)
+
+
+def warm_build(target):
+    """Build `target` with NO wall timeout, just to populate its .olean (so a later WALLED build that
+    imports it measures only its own work, not this dependency's compile). Returns (ok, output)."""
+    return lake_build(target, wall=None)
+
+
+def lake_build(target, wall=WALL):
+    """Run `lake build <target>` with the venv bin on PATH (z3/cvc5) and an exclusive flock on
+    .lake/build.lock (parallel-agent safe). If `wall` is not None, kill the whole process group at
+    `wall` seconds. Return (ok: bool, output: str). The agent never types `lake`/`timeout` directly —
+    this owns it, prompt-free."""
+    env = dict(os.environ)
+    venv_bin = os.path.join(os.environ.get("LEANEUCLID_VENV", DEFAULT_VENV), "bin")
+    if os.path.isdir(venv_bin):
+        env["PATH"] = venv_bin + os.pathsep + env.get("PATH", "")
+    lock_path = os.path.join(BOOK_ROOT, ".lake", "build.lock")
+    os.makedirs(os.path.dirname(lock_path), exist_ok=True)
+    with open(lock_path, "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        proc = None
+
+        def _killpg():
+            if proc and proc.poll() is None:
+                try:
+                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+
+        # The child runs in its OWN session (needed for clean timeout-kill), so a terminal Ctrl-C does
+        # NOT reach it. Install handlers for the build's duration that kill the child's process group,
+        # then re-raise — so Ctrl-C doesn't leave an orphaned `lake` holding the build lock. (The outer
+        # restore_files handler still restores the file bytes.)
+        prev = {}
+
+        def _handler(signum, frame):
+            _killpg()
+            signal.signal(signum, prev.get(signum, signal.SIG_DFL))
+            os.kill(os.getpid(), signum)
+
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            prev[sig] = signal.getsignal(sig)
+            signal.signal(sig, _handler)
+        try:
+            proc = subprocess.Popen(["lake", "build", target], cwd=BOOK_ROOT, env=env,
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                    text=True, start_new_session=True)
+            try:
+                out, _ = proc.communicate(timeout=wall)
+                return proc.returncode == 0, _clean_output(out)
+            except subprocess.TimeoutExpired:
+                try:
+                    _killpg()
+                finally:
+                    proc.communicate()
+                return False, (f"[faithful_lib] build of {target} exceeded {wall}s wall clock — the "
+                               f"node is TOO BIG. DECOMPOSE into more backing files; NEVER raise the cap.")
+        finally:
+            for sig, h in prev.items():
+                signal.signal(sig, h)
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
+def has_sorry(output):
+    """True iff a build emitted a `declaration uses 'sorry'` warning (a 'green' build with sorry is NOT
+    proven)."""
+    return "declaration uses 'sorry'" in output
+
+
+# ── atomic restore guard ────────────────────────────────────────────────────────────────────────────
+class restore_files:
+    """Context manager: snapshot the exact bytes of `paths`, and restore them on __exit__ (success OR
+    exception) AND on SIGINT/SIGTERM. Guarantees a killed/timed-out swap never leaves a file wired or
+    trace_state'd — the real Main/step files always end byte-identical to how they started."""
+    def __init__(self, paths):
+        self.snap = {p: open(p, "rb").read() for p in paths}
+        self._prev = {}
+
+    def restore(self):
+        for p, b in self.snap.items():
+            with open(p, "wb") as f:
+                f.write(b)
+
+    def _handler(self, signum, frame):
+        self.restore()
+        signal.signal(signum, self._prev.get(signum, signal.SIG_DFL))
+        os.kill(os.getpid(), signum)
+
+    def __enter__(self):
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            self._prev[sig] = signal.getsignal(sig)
+            signal.signal(sig, self._handler)
+        return self
+
+    def __exit__(self, *exc):
+        self.restore()
+        for sig, h in self._prev.items():
+            signal.signal(sig, h)
+        return False
+
+
+# ── shared structural pre-check (used by --check and as the abort-loud preamble of build ops) ────────
+def integrity_scan(propdir):
+    """Source-only, NO builds. Verify the naming law and dev-state invariants. Returns a list of
+    human-readable problem strings (empty ⟹ structurally sound). Raises FaithfulError only on a parse
+    failure so malformed source is never silently accepted."""
+    book = book_num(propdir)
+    problems = []
+    nodes = parse_all_nodes(propdir)
+    for name, nd in sorted(nodes.items()):
+        bf = backing_file(propdir, name)
+        if bf is None:
+            problems.append(f"node '{name}' ({os.path.relpath(nd.file, BOOK_ROOT)}) has NO backing "
+                            f"file '{name}.lean' — every sorry node must have one (the naming law).")
+            continue
+        try:
+            parse_helper_objs(bf, book, name)                   # validates theorem name == helper_<book>_<name>
+        except FaithfulError as e:
+            problems.append(str(e))
+        if nd.state == "wired":
+            problems.append(f"node '{name}' is already WIRED on disk — the dev state must be "
+                            f"`:= by sorry` (only Phase C wires; check_step never leaves wiring).")
+    # every file in the dev state should carry the EXACT 30s cap, and import NO pipeline file
+    for path in prop_files(propdir):
+        src = open(path, encoding="utf-8").read()
+        if not CAP_RE_EXACT.search(src):
+            if CAP_RE.search(src):
+                problems.append(f"{os.path.relpath(path, BOOK_ROOT)} has a `solverTime` cap that is NOT "
+                                f"the required `{CAP_LINE}` — the dev cap is exactly {CAP_SECONDS}s; "
+                                f"don't raise it (decompose instead).")
+            else:
+                problems.append(f"{os.path.relpath(path, BOOK_ROOT)} is missing "
+                                f"`{CAP_LINE}` above its theorem.")
+        for mod in pipeline_imports(src, propdir):
+            problems.append(f"{os.path.relpath(path, BOOK_ROOT)} has a STRAY helper import "
+                            f"`import {mod}` — only the script may add pipeline imports (transiently "
+                            f"when wiring). Remove it; the dev state imports no helper/step file.")
+    return problems

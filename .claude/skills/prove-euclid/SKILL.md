@@ -10,11 +10,17 @@ description: >
 
 # Proving Euclid in System E — methodology
 
-> **Making a proof FAITHFUL?** If the task is to annotate a proof so it follows Euclid's sentence
-> structure (e.g. "make Book2/PropNN faithful"), that's a two-skill pipeline: **`faithful-map`**
-> (Phase A — translate sentences to claim types, stops for human review) then **`faithful-prove`**
-> (Phase B — prove each step file; it delegates the actual proving back to THIS skill). Use
-> `prove-euclid` alone when you just need to prove/repair a proof and faithfulness is not required.
+> **This repo is FAITHFUL-PROOF only.** This skill is the PROVING-METHODOLOGY reference invoked WITHIN
+> `faithful-prove`'s **P (Provable)** step — the decision procedure for actually closing a goal. The
+> pipeline is A → gate → B → gate → C: **`faithful-map`** (A — translate sentences to claim types) →
+> **`faithful-prove`** (B — prove each step with the recursive SF/SP/P atom via `check_step.py`, which
+> delegates the proving to THIS skill) → Phase C (mechanical: the human runs `scripts/wire_main.py` +
+> faithfulness checks — not a skill).
+> **HOW YOU BUILD:** the agent is HARD-DENIED raw `lake build` / `safe_build.sh`. You build a backing
+> file ONLY through `python3 scripts/check_step.py <propdir> --provable <node>` — it builds that node's
+> `.lean`, wall-capped at 30s, holds the build lock, puts z3/cvc5 on PATH, and reports zero-sorry (done)
+> or the remaining sorry file:lines. The no-flag `check_step <propdir> <node>` runs SF→SP→P. You never
+> type `lake`/`safe_build`/`timeout` — `check_step` owns all of that.
 
 System E proofs are checked by an SMT backend behind `euclid_finish` / `euclid_assert` /
 `euclid_apply`. The hard truth that governs everything below:
@@ -37,18 +43,13 @@ the **how**: how to produce that structure and then discharge each step without 
 
 - **Work from the `LeanEuclidPlus/` directory** (`<repo>/LeanEuclidPlus/`). All `scripts/...` paths
   and `lake` targets below are relative to it. `Book/` = Book 1, `Book2/` = Book 2.
-- **`euclid_finish` shells out to the SMT solvers `z3` and `cvc5` by bare name** — they MUST be on
-  PATH or every proof build fails with `FileNotFoundError: 'z3'`. They live only in the project venv
-  `~/.venvs/leaneuclid/bin`. **You do NOT need to `source` anything**: `scripts/safe_build.sh`
-  prepends that venv's bin to PATH itself, so just call it bare and z3/cvc5 are found. (If you ever
-  invoke `lake build` directly — don't, but if — you would need the venv bin on PATH yourself.)
-- **Build ONLY via `scripts/safe_build.sh <Target>`** — never bare `lake build` (see the BUILDING
-  section for why: concurrent agents + a build lock). Invoke it **bare and alone**:
-  `scripts/safe_build.sh Book.HelperNN_<name>`. Do NOT prefix with `source ~/.venvs/... &&` (the
-  script handles the solver PATH) and do NOT wrap in `timeout` (cap SMT time inside the file instead
-  — see the SMT TIME CAP section). Avoid `| grep`/`| head` pipelines on the build command: a
-  piped/chained command is matched as one whole string and will trip the permission prompt even
-  though the bare build is allowed. Run it bare and read the output.
+- **`euclid_finish` shells out to the SMT solvers `z3` and `cvc5` by bare name** — they live only in
+  the project venv `~/.venvs/leaneuclid/bin`. `check_step.py` puts that venv bin on PATH itself, so
+  builds find z3/cvc5 with no `source` needed. (You never invoke `lake`/`safe_build` directly — they're
+  hard-denied; `check_step` is your only build path.)
+- **Build ONLY via `python3 scripts/check_step.py <propdir> --provable <node>`** (or the no-flag
+  `<node>` for SF→SP→P). It holds the build lock (parallel-agent safe), wall-caps at 30s, and reads the
+  output for you. Do NOT pipe it (`| grep`/`| head`) — run it bare and read what it prints.
 - Lean/`lake` themselves are elan-managed (`leanprover/lean4:v4.8.0-rc2` per `lean-toolchain`), on PATH.
 - **Faithfulness check** `scripts/check_faithful.py "Book2/PropNN.lean"` is pure Python 3 stdlib —
   no venv. The book-aware variant `scripts/check_faithful.sh Book2` needs a built `.olean` first.
@@ -63,9 +64,10 @@ A green build that hides a hole is **worse than an honest failure**, because the
 builds." These are absolute:
 
 - **Never leave `sorry`, `admit`, `sorryAx`, or `native_decide` in a finished proof, and never
-  declare a hard fact as an `axiom` to make the build pass.** `lake build` prints "Build completed
-  successfully" *even with `sorry` warnings* — so "it builds" is NOT proof. After any build, check
-  the output for `sorry`/`warning` and for `declaration uses 'sorry'`. **Success = zero sorry, zero
+  declare a hard fact as an `axiom` to make the build pass.** A build prints "Build completed
+  successfully" *even with `sorry` warnings* — so "it builds" is NOT proof. `check_step --provable`
+  reports remaining sorries explicitly (file:lines), and `--all` FAILS on any sorry. **Success = zero
+  sorry, zero
   errors.** Report honestly: if a `sorry` remains, the step is NOT done — say so.
 - **Never alter a proposition's STATEMENT** (its `theorem proposition_N : ∀ … → …` signature) to
   make it provable. The statement is ground truth (and is statement-faithfulness-checked). Weakening
@@ -165,36 +167,38 @@ the skeleton elaborates do you enter Phase 2 to discharge each leaf.
 ## PHASE 2 — THE LOOP (discharge one `sorry` / failing step at a time)
 
 ```
-1. GET THE GOAL STATE. Put a `sorry` at the failing point; read the info-view context
-   (or ask the human to paste it). You need: the exact goal, and every named hypothesis.
+1. GET THE GOAL STATE. You can't see the info-view — use `python3 scripts/check_step.py <propdir>
+   --context <node>` (the script inserts trace_state, builds, prints the real hypotheses, reverts).
+   You need: the exact goal, and every named hypothesis available at that node.
 
 2. ISOLATE THE ONE FAILING GOAL. A timeout at the end of a long proof is almost always
    "huge context", not "hard logic". Identify the single conjunct/assert that fails.
 
-3. TRIM TO A HELPER LEMMA. Create Book/HelperNN_<name>.lean with `import SystemE` (+ only the
-   PropNN it truly needs). State the failing goal as a theorem whose hypotheses are ONLY the
-   facts relevant to it, copied from the goal state. ~10 facts, not ~60. This alone fixes most
-   timeouts (smaller context = no search blowup).
+3. TRIM TO A SUB-LEMMA — as a `have` NODE + its backing file. Add `have F : <failing goal> := by
+   sorry` where it's needed, and create the backing file `<propdir>/F.lean` (`import SystemE` + only
+   the PropMM it cites — NEVER a helper/step import; `set_option systemE.solverTime 30 in`; theorem
+   `helper_<book>_F` whose hyps are ONLY the ~10 facts relevant to it, from step 1). Smaller context =
+   no search blowup. Run SF (`check_step <propdir> --sufficient F`) to confirm the claim closes the
+   parent, then SP (`--suppliable F`) to confirm its hyps are present.
 
 4. TRACE THE PROOF BY HAND. Decide the axiom chain. For each `euclid_apply (axiom args)`:
      - read the axiom's signature (grep SystemE/Theory/Inferences/*.lean),
      - map every argument and every PRECONDITION to a fact you have,
-     - if a precondition isn't present, that's your next sub-goal (recurse).
+     - if a precondition isn't present, that's your next sub-goal (recurse: another `have`+backing file).
    Prefer explicit axiom applications over `euclid_finish` for anything non-trivial.
 
-5. BUILD THE HELPER (cheap, ~30s). `scripts/safe_build.sh Book.HelperNN_<name>`.
-   If a step is slow (>30s) or fails: it's too big or not entailed — go to 4 and decompose.
+5. PROVE + BUILD THE BACKING FILE (cheap, ~30s): `python3 scripts/check_step.py <propdir>
+   --provable F`. If it's slow (>30s) or fails: it's too big or not entailed — go to 4 and decompose
+   into more `have`+backing files. NEVER raise the cap.
 
-6. WIRE INTO THE PROP. Add the import; replace the failing line with
-   `euclid_apply (helper... args)`. The call site must discharge the helper's hypotheses — verify
-   EACH helper hypothesis is a NAMED fact in the Prop's context (from the dump), or is cheaply
-   derivable there. If a hypothesis isn't available, you've moved the problem, not solved it:
-   either narrow the helper's hypotheses to context-present facts, or derive the missing one
-   explicitly in the Prop first.
+6. SUPPLIABILITY is already covered by SP (step 3) — the SCRIPT wires the node + its import
+   transiently; you NEVER hand-write `euclid_apply (helper…)` or an import. If SP failed, a hypothesis
+   isn't available at the call site: narrow the signature to context-present facts, or hoist the
+   missing one to an earlier `have`+backing file — don't just move the problem.
 
-7. CONFIRM with one build of the Prop. "Build completed successfully" is necessary but NOT
-   sufficient — also confirm NO `sorry`/`declaration uses 'sorry'` warnings remain (grep the source
-   and the build output). Zero sorry + zero errors = done; anything less is not.
+7. CONFIRM the node with the no-flag `check_step <propdir> F` (SF→SP→P). A build "completes" even with
+   `sorry` warnings, so that's NOT proof — `--provable` reports any remaining sorry file:lines, and the
+   final `--all` FAILS on any sorry. Zero sorry + suppliable = node done.
 ```
 
 ---
@@ -293,22 +297,22 @@ stays (harmless). Only if a *legitimate, irreducible* step genuinely needs more 
 remove the cap — and then say so, because a committed proof relying on a near-300s solve is fragile.
 Never raise the cap merely to make a thrashing step pass.
 
-## BUILDING — always go through `safe_build.sh`
+## BUILDING — always go through `check_step.py`
 
-**Always build with `scripts/safe_build.sh <Target>`, NEVER bare `lake build`.** Multiple agents
-edit and build different files concurrently; `safe_build.sh` holds an exclusive `flock` so only one
-`lake build` runs at a time. Bare `lake build` from two agents at once corrupts `.lake/build/` and
-Lake's trace DB, which breaks the build for everyone. This is a correctness requirement, not a
-convenience.
+**Build ONLY with `python3 scripts/check_step.py <propdir> <node>` (SF→SP→P) or `--provable <node>`
+(just the build).** Raw `lake build` / `safe_build.sh` are hard-denied to the agent. `check_step` holds
+an exclusive `flock` (so concurrent agents can't corrupt `.lake/build/` + Lake's trace DB), puts
+z3/cvc5 on PATH, wall-caps each build at 30s, and prints the result (zero-sorry, or the sorry
+file:lines). This is a correctness requirement, not a convenience.
 
 ```bash
-scripts/safe_build.sh Book.HelperNN_<name>      # cheap isolated helper, ~30s — build freely to confirm
-scripts/safe_build.sh Book.PropNN               # heavier; some (e.g. Prop47) ~10 min — build only to CONFIRM
-scripts/safe_build.sh Book.A Book.B             # multiple targets ok
+python3 scripts/check_step.py Book2/PropNN <node>             # SF → SP → P (the everyday command)
+python3 scripts/check_step.py Book2/PropNN --provable <node>  # just build that node's backing file
+python3 scripts/check_step.py Book2/PropNN --provable         # (no node) build Main, tolerate sorry
 ```
 
-Exit code is lake's, so you can branch on success/failure. Per Rule 5: cheap helper builds are for
-confirmation and encouraged; expensive Prop builds are never for exploration.
+A node's backing file is cheap (~30s); if it won't build in 30s it's TOO BIG → decompose into more
+`have`+backing files (the recursive rule). Never explore by building; build to confirm a step.
 
 ## WORKING ALONGSIDE OTHER AGENTS
 
@@ -327,16 +331,17 @@ confirmation and encouraged; expensive Prop builds are never for exploration.
   (or `Book2`). Doc comment: which Prop line it serves, the NL geometry, and the proof strategy.
 - Import only what's needed (`SystemE` + specific `Book.PropMM`). Keeps builds fast.
 - Hypotheses = exactly the facts the proof uses, copied from the goal-state dump. No more, no less.
-- While developing, put `set_option systemE.solverTime 30 in` above the theorem (fail-fast cap).
-- After proving, wire into the Prop with a single `euclid_apply`; the original proof body stays clean.
+- Always put `set_option systemE.solverTime 30 in` above the theorem (the dev cap — `--check` requires
+  exactly 30; `wire_main` strips it at Phase C).
+- You NEVER wire the helper into its parent or add its import — the SCRIPT does both, transiently
+  (SP) and permanently (Phase C `wire_main`). You only write the backing file's proof body.
 - **Faithfulness pipeline (per `faithful-prove`):** when a helper realizes ONE Euclid sentence, it
   lives in the prop's folder as `Book<N>/PropNN/stepN.lean`, theorem `helper_<book>_stepN`
-  (sub-decompositions `Book<N>/PropNN/stepN_<sub>.lean` → `helper_<book>_stepN_<sub>`); build each
-  alone via `scripts/safe_build.sh Book<N>.PropNN.stepN`. `Main.lean` discharges the sentence by
-  `euclid_apply (helper_<book>_stepN …)` INSIDE the `euclid_sentence … := by` body, then
-  `euclid_finish`. (No `Scratch/`, no `_steps.lean`, no merge step.) **Never** discharge a cited step
-  with term-mode `exact proposition_M …` — a citation is only recorded when the prop/helper enters
-  via `euclid_apply`.
+  (sub-decompositions `Book<N>/PropNN/stepN_<sub>.lean` → `helper_<book>_stepN_<sub>`); build/verify
+  each via `python3 scripts/check_step.py Book<N>/PropNN stepN`. The script discharges the sentence in
+  `Main.lean` by `euclid_apply (helper_<book>_stepN …); euclid_finish` (you never type it). (No
+  `Scratch/`, no `_steps.lean`, no merge step.) **Never** discharge a cited step with term-mode
+  `exact proposition_M …` — a citation is only recorded when the prop/helper enters via `euclid_apply`.
 
 ## DON'T
 

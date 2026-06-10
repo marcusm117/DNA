@@ -11,9 +11,6 @@
       "Edit(LeanEuclidPlus/Book2/**)",
       "Write(LeanEuclidPlus/Book2/**)",
 
-      "Bash(scripts/safe_build.sh:*)",
-      "Bash(./scripts/safe_build.sh:*)",
-      "Bash(lake build:*)",
       "Bash(lake env:*)",
       "Bash(lake exe faithful_export:*)",
       "Bash(mkdir:*)",
@@ -51,9 +48,17 @@
       "Bash(python scripts/check_signatures.py:*)",
       "Bash(python3 scripts/check_signatures.py:*)",
       "Bash(python scripts/check_steps.py:*)",
-      "Bash(python3 scripts/check_steps.py:*)"
+      "Bash(python3 scripts/check_steps.py:*)",
+      "Bash(python scripts/check_step.py:*)",
+      "Bash(python3 scripts/check_step.py:*)",
+      "Bash(python scripts/wire_main.py:*)",
+      "Bash(python3 scripts/wire_main.py:*)"
     ],
     "deny": [
+      "Bash(scripts/safe_build.sh:*)",
+      "Bash(./scripts/safe_build.sh:*)",
+      "Bash(lake build:*)",
+
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",

@@ -24,6 +24,7 @@ GOAL : square(AB) = square(AC) + square(CB) + 2·rect(AC,CB)
 -- For let the straight-line $AB$ be cut, at random, at (point) $C$.
 -- I say that the square on $AB$ is equal to the (sum of the) squares on $AC$
 -- and $CB$, and twice the rectangle contained by $AC$ and $CB$.
+set_option systemE.solverTime 30 in
 theorem proposition_4 : ∀ (a b c : Point) (AB : Line),
   distinctPointsOnLine a b AB ∧ between a c b →
   |(a─b)| * |(a─b)| =
@@ -119,6 +120,7 @@ by
     "So, for the same (reasons), $HF$ is also a square."
     (step18 : (|(h─g)| = |(g─f)| ∧ |(g─f)| = |(f─d)| ∧ |(f─d)| = |(d─h)|) ∧
               (∠ d:h:g = ∟ ∧ ∠ h:g:f = ∟ ∧ ∠ g:f:d = ∟ ∧ ∠ f:d:h = ∟)) := by sorry
+
 
   euclid_sentence "2.4.19"
     "And it is on $HG$, that is to say [on] $AC$ [Prop.~1.34]."

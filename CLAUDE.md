@@ -25,20 +25,38 @@ Reference example of a finished, faithful proof: `LeanEuclidPlus/Book2/Prop01.le
 [LeanEuclidPlus/FAITHFUL.md](LeanEuclidPlus/FAITHFUL.md) — read this first if you're driving the process.
 
 To make a proof FAITHFUL (annotate it with `euclid_sentence`s so it follows Euclid's sentence
-structure — e.g. "make Book2/PropNN faithful") the pipeline is **two skills**, run in order with a
-human review between:
+structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate → B → gate → C** (two
+skills + one mechanical step):
 1. **`faithful-map`** ([.claude/skills/faithful-map/SKILL.md](.claude/skills/faithful-map/SKILL.md)) —
-   Phase A: TRANSLATE each sentence into a Lean claim type in `PropNN/Main.lean` (sorry-stub step
-   files). Pure translation, stops for human review + `check_steps.py --save`.
+   Phase A: TRANSLATE each sentence into a Lean claim type in `PropNN/Main.lean`. Bodies are **all
+   `:= by sorry`; NO step files; NO `euclid_apply (helper…)` wiring** (the all-sorry Main elaborates
+   cheap/SMT-free). STOPS for **human review** + `check_steps.py --save`.
 2. **`faithful-prove`** ([.claude/skills/faithful-prove/SKILL.md](.claude/skills/faithful-prove/SKILL.md)) —
-   Phase B + final gate: prove each `PropNN/stepN.lean` (delegates to `prove-euclid`), then
-   `check_faithful.sh`. (These two replaced an earlier single combined skill.)
+   Phase B: prove each step with the **recursive SF/SP/P atom** (delegates to `prove-euclid`). The agent
+   creates/proves `stepN.lean` (recursing into `have`+backing files until every build ≤30s) and
+   verifies each node with `scripts/check_step.py <propdir> <node>` (runs SF→SP→P, stops at first fail).
+   **Main's bodies stay `:= by sorry`
+   throughout — the agent NEVER wires Main; the script does all wiring/`trace_state` transiently and
+   reverts.** Dev-state files import NO pipeline (helper/step) files — only `SystemE` + cited
+   propositions; the script adds/removes a helper import alongside its wiring (so per-node checks pull
+   in only that node's olean — fast + isolated). Ends when `scripts/check_step.py <propdir> --all` exits 0.
+3. **Phase C — mechanical, NOT a skill (the human runs it):**
+   `python3 scripts/wire_main.py <propdir>` (commits the wiring, strips the 30s caps → 300s default,
+   builds Main once — guaranteed green if `--all` passed) then `scripts/check_faithful.sh Book2` +
+   `check_steps.py` + `check_signatures.py`. `wire_main.py --unwire` reverses it back to Phase B.
+
+The certainty model: every node **suppliable** (its `euclid_apply` discharges in its container) +
+**provable** (its backing file builds isolated, zero-sorry), audited bottom-up by `--all`, ⟹ the final
+wired build cannot fail. Correctness/suppliability are mechanical (Lean); only the claim-matches-the-
+English check (gate A) is human. **Caps are uniformly 30s during dev** (SMT `set_option` + a 30s wall
+in `check_step`); exceed either ⟹ DECOMPOSE into more backing files, never raise a cap.
 
 **Layout: one folder per Book-2 proposition** — `Book2/PropNN/Main.lean` (the proposition + its
-`euclid_sentence`s) and `Book2/PropNN/stepN.lean` (one proof file per sentence, theorem
-`helper_<book>_stepN`). The pipeline is: A = sentence map in Main + sorry-stub step files (human
-review) → B = prove each `stepN.lean` in the folder → final gate (`check_faithful.sh` + cleanup).
-There is NO `Scratch/` dir and NO "reunite" step — files are written where they belong and stay.
+`euclid_sentence`s) and `Book2/PropNN/stepN.lean` (one backing file per sentence, theorem
+`helper_<book>_stepN`; a hard step adds sub-files, same naming law `node ≡ file ≡ helper_<book>_node`).
+The pipeline is: A = sentence map in Main, all-sorry (human review) → B = prove each backing file in
+the folder via `check_step.py` → C = `wire_main.py` + checks. There is NO `Scratch/` dir and NO
+"reunite" step — files are written where they belong and stay.
 Book 1 (`Book/Prop*.lean`) is FLAT and untouched. Book-2 props are all relocated into folders;
 already-done props keep their proofs in `PropNN/Main.lean` — to make one faithful, add `stepN.lean`
 files in its folder (don't recreate scratch/merge). Prop01 shows the OUTPUT shape (annotated by hand,
@@ -53,15 +71,17 @@ monolithic), `Book2/Prop02/` shows the real pipeline output.
   `cd …; echo …; grep …; sed …`). Permissions match the WHOLE command string, so a multi-command blob
   can't match a simple allow rule and pops a prompt even when each piece alone is fine. One lookup per
   call — and prefer Read/Grep over Bash for lookups.
-- Run `safe_build.sh` / `check_faithful.*` **bare** (no pipes, no `timeout` wrapper). To inspect their
-  output, just read what they print.
+- Run `check_faithful.*` **bare** (no pipes, no `timeout` wrapper). To inspect output, read what it prints.
 - git mutations are denied by policy (the human owns git — it's the safety net). Read-only git is fine.
 
 ## Building
 
-- `scripts/safe_build.sh Book.<Target>` — serialized `lake build` (multiple agents build at once;
-  the lock prevents `.lake` corruption). Cheap helper files (`import SystemE` only) build in ~30s;
-  heavy area proofs (e.g. Prop47) can take ~10 min — build those only to confirm, never to explore.
+- **The agent is HARD-DENIED raw `lake build` / `scripts/safe_build.sh`** (faithful-only repo). All
+  agent builds go through the faithful scripts, which spawn `lake` internally under the build lock +
+  a 30s wall: `python3 scripts/check_step.py <propdir> <node>` (Phase B) / `--sufficient` (Phase A,
+  build Main) and `python3 scripts/wire_main.py <propdir>` (Phase C). See FAITHFUL.md for the surface.
+- `scripts/safe_build.sh Book.<Target>` — serialized `lake build`, **for HUMANS** (the one-time full
+  `lake build Book Book2`, ad-hoc checks). The lock prevents `.lake` corruption when many build at once.
 - Faithfulness check: `scripts/check_faithful.sh Book2` (needs built `.olean`).
 
 ## Committing Book work
