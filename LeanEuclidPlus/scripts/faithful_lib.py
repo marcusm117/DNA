@@ -113,14 +113,15 @@ def audit_order(propdir):
     the backing-file containment relation — the real proof-tree depth, NOT the directory depth (a
     sub-node often lives in a sibling file like step6.lean). Main's sentence nodes, having no
     sub-structure, sort first; their containers (the leaf backing files) are audited before them."""
-    nodes = parse_all_nodes(propdir)
+    occs = parse_occurrences(propdir)
     book = book_num(propdir)
-    # children[name] = nodes defined INSIDE name's backing file (its sub-nodes).
+    # children[name] = node-names defined INSIDE name's backing file (its sub-nodes). Keyed by NAME, so
+    # a shared helper's single backing file is visited ONCE even though the name has many occurrences.
     children = {}
-    for name, nd in nodes.items():
+    for name in occs:
         bf = backing_file(propdir, name)
         kids = [k.name for k in parse_nodes_in_file(bf, book)] if bf else []
-        children[name] = [k for k in kids if k in nodes]
+        children[name] = [k for k in kids if k in occs]
     ordered, seen = [], set()
     def visit(name, stack):
         if name in seen:
@@ -130,8 +131,8 @@ def audit_order(propdir):
         for kid in children.get(name, []):
             visit(kid, stack | {name})
         seen.add(name)
-        ordered.append(nodes[name])
-    for name in sorted(nodes, key=natural_key):     # natural order: step2 before step10 (not lexicographic)
+        ordered.append((name, occs[name]))           # (name, [all occurrences]) in bottom-up order
+    for name in sorted(occs, key=natural_key):       # natural order: step2 before step10 (not lexicographic)
         visit(name, frozenset())
     return ordered
 
@@ -214,18 +215,38 @@ def find_body(src, sep_idx, book, name):
 SENTENCE_HEAD = re.compile(
     r'euclid_sentence\s*"((?:[^"\\]|\\.)*)"\s*"(?:[^"\\]|\\.)*"\s*\(\s*(\w+)\s*:')
 HAVE_HEAD = re.compile(r'\bhave\s+(\w+)\s*:')
+# A per-node call-args override: `-- @args: a b CF` on its OWN line just above the node head. Supplies
+# the EXACT object arguments for this call site's wiring (for a helper reused with DIFFERENT objects per
+# parent). Absent ⟹ the wiring defaults to the helper's own binder names. Only the SOURCE of the args
+# changes; SP still BUILDS the call, so wrong args fail loudly. The body-swap never touches this line.
+ARGS_ANNOT = re.compile(r'(?m)^[ \t]*--[ \t]*@args:[ \t]*(.*?)[ \t]*$')
 
 
 class Node:
-    __slots__ = ("name", "file", "kind", "loc", "claim", "state", "body_start", "body_end")
+    __slots__ = ("name", "file", "kind", "loc", "claim", "state", "body_start", "body_end", "args")
 
-    def __init__(self, name, file, kind, loc, claim, state, body_start, body_end):
+    def __init__(self, name, file, kind, loc, claim, state, body_start, body_end, args=None):
         self.name, self.file, self.kind = name, file, kind
         self.loc, self.claim, self.state = loc, claim, state
         self.body_start, self.body_end = body_start, body_end   # span of the `:= by …` body in `file`
+        self.args = args                                        # [tok,…] from a `-- @args:` line, or None
 
     def __repr__(self):
-        return f"<Node {self.name} ({self.kind}) {os.path.relpath(self.file, BOOK_ROOT)} [{self.state}]>"
+        a = f" @args={self.args}" if self.args is not None else ""
+        return f"<Node {self.name} ({self.kind}) {os.path.relpath(self.file, BOOK_ROOT)} [{self.state}]{a}>"
+
+
+def _args_above(src, head_start):
+    """If the line IMMEDIATELY above the node head (at index `head_start`) is a `-- @args: …` line,
+    return its tokens (a list, possibly empty); else None. Only the line directly above counts, so a
+    stray @args comment elsewhere is never silently attached."""
+    line_start = src.rfind("\n", 0, head_start) + 1          # start of the head's own line
+    if line_start == 0:
+        return None
+    prev_start = src.rfind("\n", 0, line_start - 1) + 1      # start of the previous line
+    prev_line = src[prev_start:line_start - 1]
+    m = ARGS_ANNOT.match(prev_line)
+    return m.group(1).split() if m else None
 
 
 def parse_nodes_in_file(path, book):
@@ -250,7 +271,8 @@ def parse_nodes_in_file(path, book):
                                 f"({name}) body is not canonical (expected `:= by sorry` or the wired "
                                 f"shape). The agent must NEVER hand-write a sentence body.")
         state, bs, be = body
-        nodes.append(Node(name, path, "sentence", loc, claim.strip(), state, bs, be))
+        nodes.append(Node(name, path, "sentence", loc, claim.strip(), state, bs, be,
+                          _args_above(src, m.start())))
     for m in HAVE_HEAD.finditer(src):
         name = m.group(1)
         try:
@@ -261,23 +283,38 @@ def parse_nodes_in_file(path, book):
         if not body:
             continue                                            # a real proof-local `have`, not a node
         state, bs, be = body
-        nodes.append(Node(name, path, "have", None, claim.strip(), state, bs, be))
+        nodes.append(Node(name, path, "have", None, claim.strip(), state, bs, be,
+                          _args_above(src, m.start())))
     return nodes
 
 
-def parse_all_nodes(propdir):
-    """All nodes across the prop tree, keyed by name. Enforces GLOBAL name uniqueness (the naming law
-    makes node-name ≡ file-basename, so a clash is a real error)."""
+def parse_occurrences(propdir):
+    """All node OCCURRENCES across the prop tree, keyed by name → [Node, …]. A `have` reused as a
+    shared helper appears (identically) in several containers, so a name maps to ONE-OR-MORE
+    occurrences. The naming law still holds: name ≡ ONE backing FILE ≡ helper_<book>_<name> — so the
+    same name appearing in two DIFFERENT places is fine (they're the same node, called from each
+    parent), and what would be illegal (two different backing files for one name) is caught by
+    backing_file(). euclid_sentence step names are unique by construction (one per sentence)."""
     book = book_num(propdir)
     out = {}
     for path in prop_files(propdir):
         for nd in parse_nodes_in_file(path, book):
-            if nd.name in out:
-                raise FaithfulError(f"duplicate node name '{nd.name}' in "
-                                    f"{os.path.relpath(out[nd.name].file, BOOK_ROOT)} and "
-                                    f"{os.path.relpath(nd.file, BOOK_ROOT)} — names must be unique")
-            out[nd.name] = nd
+            out.setdefault(nd.name, []).append(nd)
+    # A `have` may recur, but an euclid_sentence STEP must be unique (one realization per sentence).
+    for name, occs in out.items():
+        sentences = [o for o in occs if o.kind == "sentence"]
+        if len(sentences) > 1 or (sentences and len(occs) > 1):
+            where = ", ".join(os.path.relpath(o.file, BOOK_ROOT) for o in occs)
+            raise FaithfulError(f"node '{name}' is an euclid_sentence step but occurs more than once "
+                                f"({where}) — sentence steps must be unique (only `have` helpers may "
+                                f"be reused across containers).")
     return out
+
+
+def parse_all_nodes(propdir):
+    """Back-compat: one representative Node per name (the first occurrence). Use for name→backing-file /
+    P (once-per-name) work; use parse_occurrences() when you need EVERY call site (SF/SP per parent)."""
+    return {name: occs[0] for name, occs in parse_occurrences(propdir).items()}
 
 
 # ── backing files + object args ─────────────────────────────────────────────────────────────────────
@@ -338,6 +375,28 @@ def wired_body(book, name, objs):
     return f":= by euclid_apply ({f'helper_{book}_{name}'} {' '.join(objs)}); euclid_finish"
 
 
+def resolve_call_args(propdir, book, node):
+    """The object arguments to pass when wiring `node`'s call:
+       - if the node carries a `-- @args:` annotation → its tokens VERBATIM (validated: token count ==
+         the helper's object-binder count, else FaithfulError — catches arity slips before any build).
+         This is how a helper reused with DIFFERENT objects per parent supplies each site's actuals.
+       - else → the helper's own object-binder names (the default; correct when names already match).
+    SP still BUILDS the resulting call, so wrong/misordered/out-of-scope tokens fail loudly there — the
+    annotation only changes WHICH call is attempted, never whether it is accepted."""
+    bf = backing_file(propdir, node.name)
+    if bf is None:
+        raise FaithfulError(f"node '{node.name}' has no backing file '{node.name}.lean'")
+    binders = parse_helper_objs(bf, book, node.name)
+    if node.args is None:
+        return binders
+    if len(node.args) != len(binders):
+        raise FaithfulError(
+            f"node '{node.name}' in {os.path.relpath(node.file, BOOK_ROOT)}: `-- @args:` lists "
+            f"{len(node.args)} arg(s) {node.args} but helper_{book}_{node.name} takes {len(binders)} "
+            f"object binder(s) {binders}. The override must list EXACTLY the object args, in order.")
+    return node.args
+
+
 # ── the swap primitive (operates on a source STRING; callers handle disk + restore) ─────────────────
 def swap_node_body(src, node, new_body_after_assign):
     """Return `src` with `node`'s body (src[node.body_start:node.body_end]) replaced by
@@ -357,10 +416,7 @@ def set_node_state(src, node, state, propdir, book):
     elif state == "trace":
         body = ":= by trace_state; sorry"
     elif state == "wired":
-        bf = backing_file(propdir, node.name)
-        if bf is None:
-            raise FaithfulError(f"node '{node.name}' has no backing file '{node.name}.lean'")
-        body = wired_body(book, node.name, parse_helper_objs(bf, book, node.name))
+        body = wired_body(book, node.name, resolve_call_args(propdir, book, node))
     else:
         raise FaithfulError(f"unknown node state '{state}'")
     out = swap_node_body(src, node, body)
@@ -551,20 +607,27 @@ def integrity_scan(propdir):
     failure so malformed source is never silently accepted."""
     book = book_num(propdir)
     problems = []
-    nodes = parse_all_nodes(propdir)
-    for name, nd in sorted(nodes.items()):
+    occ = parse_occurrences(propdir)
+    for name, occs in sorted(occ.items()):
         bf = backing_file(propdir, name)
         if bf is None:
-            problems.append(f"node '{name}' ({os.path.relpath(nd.file, BOOK_ROOT)}) has NO backing "
+            problems.append(f"node '{name}' ({os.path.relpath(occs[0].file, BOOK_ROOT)}) has NO backing "
                             f"file '{name}.lean' — every sorry node must have one (the naming law).")
             continue
         try:
             parse_helper_objs(bf, book, name)                   # validates theorem name == helper_<book>_<name>
         except FaithfulError as e:
             problems.append(str(e))
-        if nd.state == "wired":
-            problems.append(f"node '{name}' is already WIRED on disk — the dev state must be "
-                            f"`:= by sorry` (only Phase C wires; check_step never leaves wiring).")
+        for nd in occs:                                          # check EVERY call site, not just one
+            if nd.state == "wired":
+                problems.append(f"node '{name}' is already WIRED on disk in "
+                                f"{os.path.relpath(nd.file, BOOK_ROOT)} — the dev state must be "
+                                f"`:= by sorry` (only Phase C wires; check_step never leaves wiring).")
+            if nd.args is not None:                              # validate `-- @args:` token count
+                try:
+                    resolve_call_args(propdir, book, nd)
+                except FaithfulError as e:
+                    problems.append(str(e))
     # every file in the dev state should carry the EXACT 30s cap, and import NO pipeline file
     for path in prop_files(propdir):
         src = open(path, encoding="utf-8").read()
@@ -580,4 +643,17 @@ def integrity_scan(propdir):
             problems.append(f"{os.path.relpath(path, BOOK_ROOT)} has a STRAY helper import "
                             f"`import {mod}` — only the script may add pipeline imports (transiently "
                             f"when wiring). Remove it; the dev state imports no helper/step file.")
+        # ORPHAN `-- @args:` guard: every @args line must sit DIRECTLY above a node head (`have <n> :`
+        # or `euclid_sentence …`); otherwise it's silently ignored (e.g. a blank line crept between).
+        # Flag it loudly so the override never silently no-ops.
+        for m in ARGS_ANNOT.finditer(src):
+            nl = src.find("\n", m.end())
+            nxt = src[nl + 1:] if nl != -1 else ""
+            if not (re.match(r'[ \t]*have\s+\w+\s*:', nxt) or
+                    re.match(r'[ \t]*euclid_sentence\b', nxt)):
+                ln = src.count("\n", 0, m.start()) + 1
+                problems.append(f"{os.path.relpath(path, BOOK_ROOT)}:{ln} has a `-- @args:` line that "
+                                f"is NOT directly above a node head (`have …`/`euclid_sentence …`) — it "
+                                f"would be silently ignored. Put it on the line immediately above the "
+                                f"node, or remove it.")
     return problems

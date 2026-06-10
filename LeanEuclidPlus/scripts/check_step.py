@@ -62,10 +62,7 @@ def _build_with_node_state(propdir, node, state, wall=L.WALL):
 def check_suppliable(propdir, node):
     """S: wire ONLY this node in its container (body + helper import) → build → revert."""
     book = L.book_num(propdir)
-    bf = L.backing_file(propdir, node.name)
-    if bf is None:
-        raise L.FaithfulError(f"node '{node.name}' has no backing file '{node.name}.lean'")
-    objs = L.parse_helper_objs(bf, book, node.name)
+    objs = L.resolve_call_args(propdir, book, node)     # the ACTUAL args wired (annotation or defaults)
     ok, out = _build_with_node_state(propdir, node, "wired")
     return ok, out, objs
 
@@ -142,8 +139,9 @@ def _sorry_locations(output):
 
 
 # ── modes ────────────────────────────────────────────────────────────────────────────────────────────
-def _run_SF(propdir, node):
+def _run_SF(propdir, node, *, site=""):
     """SF — Sufficient. Build the node's CONTAINER with the node's body as `sorry`. Returns ok.
+    `site` is an optional " @ <file>" suffix used when a shared `have` is checked at multiple parents.
     NOTE on discrimination: for a `have` node, the have is USED to close its container's goal, so SF
     genuinely tests "this claim is well-typed AND closes the goal." For a MAIN SENTENCE node, Main's
     sentences are independent `have`s that don't consume each other (the final `exact`/`rw` does), so
@@ -152,32 +150,37 @@ def _run_SF(propdir, node):
     sentences. We say so rather than over-claim."""
     ok, out = check_sufficient(propdir, node)
     if not ok:
-        print(f"FAIL (SF — sufficient): {os.path.relpath(node.file, L.BOOK_ROOT)} did not build with "
-              f"`{node.name}`'s claim as `sorry`. The claim is ill-typed in scope OR doesn't close the "
-              f"goal it's used for (or the build hit the 30s cap). Fix the CLAIM before proving it.\n")
+        print(f"FAIL (SF — sufficient{site}): {os.path.relpath(node.file, L.BOOK_ROOT)} did not build "
+              f"with `{node.name}`'s claim as `sorry`. The claim is ill-typed in scope OR doesn't close "
+              f"the goal it's used for (or the build hit the 30s cap). Fix the CLAIM before proving it.\n")
         print(_tail(out))
         return False
     if node.kind == "sentence":
         print(f"  SF ok — `{node.name}`'s claim is well-typed in Main. (Main sentences don't consume "
               f"each other, so SF only checks well-typedness here; SP isolates this sentence.)")
     else:
-        print(f"  SF ok — claim well-typed in {os.path.relpath(node.file, L.BOOK_ROOT)} and sufficient "
-              f"(closes the goal with `{node.name}` as sorry).")
+        print(f"  SF ok{site} — claim well-typed in {os.path.relpath(node.file, L.BOOK_ROOT)} and "
+              f"sufficient (closes the goal with `{node.name}` as sorry).")
     return True
 
 
-def _run_SP(propdir, node):
-    """SP — Suppliable. Returns ok."""
+def _run_SP(propdir, node, *, site=""):
+    """SP — Suppliable. Returns ok. `site` is an optional " @ <file>" suffix for multi-parent haves."""
     ok, out, objs = check_suppliable(propdir, node)
     if not ok:
-        print(f"FAIL (SP — suppliable): wiring `euclid_apply (helper_{L.book_num(propdir)}_{node.name} "
-              f"{' '.join(objs)})` in {os.path.relpath(node.file, L.BOOK_ROOT)} did not build.")
+        print(f"FAIL (SP — suppliable{site}): wiring `euclid_apply (helper_{L.book_num(propdir)}_"
+              f"{node.name} {' '.join(objs)})` in {os.path.relpath(node.file, L.BOOK_ROOT)} did not build.")
         print("  → either a hypothesis isn't available at the call site (fix the signature: drop it / "
               "derive it in-body / hoist it to an earlier `have`), or the build hit the 30s cap "
               "(decompose). Build output:\n")
+        if node.args is None and "unknown identifier" in (out or ""):
+            print("  HINT: an `unknown identifier` above means an arg name isn't in THIS parent's "
+                  "scope. If this helper is reused with DIFFERENT objects per parent, add a "
+                  "`-- @args: <objs in order>` line directly above this node to pass this site's "
+                  "actuals.\n")
         print(_tail(out))
         return False
-    print(f"  SP ok — hyps suppliable (objects: {' '.join(objs) or '(none)'}).")
+    print(f"  SP ok{site} — hyps suppliable (objects: {' '.join(objs) or '(none)'}).")
     return True
 
 
@@ -202,47 +205,59 @@ def _run_P(propdir, node, *, verbose=True):
     return status
 
 
+def _require_occurrences(propdir, node_name):
+    """Return [Node, …] (one per call site) for node_name, or None (printing a FAIL) if unknown."""
+    occs = L.parse_occurrences(propdir)
+    if node_name not in occs:
+        print(f"FAIL: no node '{node_name}' in {os.path.relpath(propdir, L.BOOK_ROOT)}. "
+              f"Known: {', '.join(sorted(occs, key=L.natural_key))}")
+        return None
+    return occs[node_name]
+
+
 def mode_node(propdir, node_name):
-    """No-flag: run SF → SP → P in order, stopping at the first failure (the agent's default command)."""
-    nodes = L.parse_all_nodes(propdir)
-    node = _require_node(propdir, nodes, node_name)
-    if node is None:
+    """No-flag: run SF → SP → P in order, stopping at the first failure (the agent's default command).
+    A `have` reused in several parents runs SF+SP at EVERY call site (each parent must independently
+    supply it); P runs ONCE on the single backing file."""
+    occs = _require_occurrences(propdir, node_name)
+    if occs is None:
         return 2
-    print(f"[check_step] {node_name}  ({node.kind} in {os.path.relpath(node.file, L.BOOK_ROOT)})")
-    if not _run_SF(propdir, node):
-        return 1
-    if not _run_SP(propdir, node):
-        return 1
-    status = _run_P(propdir, node)
+    multi = len(occs) > 1
+    where = f"{len(occs)} call sites" if multi else f"{occs[0].kind} in {os.path.relpath(occs[0].file, L.BOOK_ROOT)}"
+    print(f"[check_step] {node_name}  ({where})")
+    for nd in occs:                                   # SF + SP per call site
+        site = f" @ {os.path.relpath(nd.file, L.BOOK_ROOT)}" if multi else ""
+        if not _run_SF(propdir, nd, site=site):
+            return 1
+        if not _run_SP(propdir, nd, site=site):
+            return 1
+    status = _run_P(propdir, occs[0])                 # P once
     if status == "fail":
         return 1
     if status == "sorry":
         return 0                                    # SF+SP certified; body still to prove — not an error
-    print(f"PASS: {node_name} CERTIFIED (SF + SP + P).")
+    print(f"PASS: {node_name} CERTIFIED (SF + SP{' ×'+str(len(occs)) if multi else ''} + P).")
     return 0
 
 
-def _require_node(propdir, nodes, node_name):
-    if node_name not in nodes:
-        print(f"FAIL: no node '{node_name}' in {os.path.relpath(propdir, L.BOOK_ROOT)}. "
-              f"Known: {', '.join(sorted(nodes, key=L.natural_key))}")
-        return None
-    return nodes[node_name]
-
-
 def mode_one(propdir, node_name, which):
-    """Single-flag diagnostics: --sufficient / --suppliable / --provable for one node."""
-    nodes = L.parse_all_nodes(propdir)
-    node = _require_node(propdir, nodes, node_name)
-    if node is None:
+    """Single-flag diagnostics: --sufficient / --suppliable / --provable for one node. SF/SP run for
+    every call site; P runs once."""
+    occs = _require_occurrences(propdir, node_name)
+    if occs is None:
         return 2
-    print(f"[check_step --{which}] {node_name}  ({os.path.relpath(node.file, L.BOOK_ROOT)})")
-    if which == "sufficient":
-        return 0 if _run_SF(propdir, node) else 1
-    if which == "suppliable":
-        return 0 if _run_SP(propdir, node) else 1
-    # provable
-    status = _run_P(propdir, node)
+    multi = len(occs) > 1
+    print(f"[check_step --{which}] {node_name}"
+          f"{f' ({len(occs)} call sites)' if multi else f'  ({os.path.relpath(occs[0].file, L.BOOK_ROOT)})'}")
+    if which in ("sufficient", "suppliable"):
+        runner = _run_SF if which == "sufficient" else _run_SP
+        for nd in occs:
+            site = f" @ {os.path.relpath(nd.file, L.BOOK_ROOT)}" if multi else ""
+            if not runner(propdir, nd, site=site):
+                return 1
+        return 0
+    # provable — once
+    status = _run_P(propdir, occs[0])
     return 1 if status == "fail" else 0             # 'sorry' is reported, not a hard fail in diag mode
 
 
@@ -278,17 +293,25 @@ def mode_all(propdir):
         return 1
     # bottom-up over the backing-file containment relation: sub-nodes before the nodes that contain
     # them, so the first failure is always the DEEPEST broken node.
-    nodes = L.audit_order(propdir)
-    print(f"[check_step --all] bottom-up audit of {len(nodes)} node(s) in "
+    order = L.audit_order(propdir)                    # [(name, [occurrences]) …] bottom-up
+    n_names = len(order)
+    n_occ = sum(len(occs) for _, occs in order)
+    print(f"[check_step --all] bottom-up audit of {n_names} node(s)"
+          f"{f' / {n_occ} call-site(s)' if n_occ != n_names else ''} in "
           f"{os.path.relpath(propdir, L.BOOK_ROOT)} (sub-nodes before their parents):")
-    for nd in nodes:
-        tag = f"{nd.name} ({os.path.relpath(nd.file, L.BOOK_ROOT)})"
-        ok, out, objs = check_suppliable(propdir, nd)
-        if not ok:
-            print(f"  ✗ {tag}: SP FAILED (see below) — this is the deepest failure; fix it first.\n")
-            print(_tail(out))
-            return 1
-        status, pout = check_provable(propdir, nd)
+    for name, occs in order:
+        # SP per OCCURRENCE: every parent that calls this node must supply its hyps at ITS call site.
+        for nd in occs:
+            ok, out, objs = check_suppliable(propdir, nd)
+            site = f" @ {os.path.relpath(nd.file, L.BOOK_ROOT)}" if len(occs) > 1 else ""
+            if not ok:
+                print(f"  ✗ {name}{site}: SP FAILED (see below) — deepest failure; fix it first.\n")
+                print(_tail(out))
+                return 1
+        # P ONCE per name: a single backing file, regardless of how many parents call it.
+        rep = occs[0]
+        status, pout = check_provable(propdir, rep)
+        tag = f"{name} ({os.path.relpath(L.backing_file(propdir, name), L.BOOK_ROOT)})"
         if status == "fail":
             print(f"  ✗ {tag}: P FAILED — backing file did not build (or hit the 30s cap).\n")
             print(_tail(pout))
@@ -298,10 +321,12 @@ def mode_all(propdir):
                   f"(a node or bare tactic left unproven).\n")
             print(_tail(pout))
             return 1
-        print(f"  ✓ {tag}: SP + P (builds zero-sorry)")
-    print(f"\nPASS: all {len(nodes)} node(s) certified — every backing file builds with ZERO sorry "
-          f"(sub-nodes wired) and every node's type discharges ⇒ the Phase-C wired build is GUARANTEED "
-          f"green AND sorry-free. Run `python3 scripts/wire_main.py {os.path.relpath(propdir, L.BOOK_ROOT)}`.")
+        nsite = f" [{len(occs)} call sites]" if len(occs) > 1 else ""
+        print(f"  ✓ {name}: SP{nsite} + P (builds zero-sorry)")
+    print(f"\nPASS: all {n_names} node(s) certified — every backing file builds with ZERO sorry "
+          f"(sub-nodes wired) and every call site supplies its hyps ⇒ the Phase-C wired build is "
+          f"GUARANTEED green AND sorry-free. Run `python3 scripts/wire_main.py "
+          f"{os.path.relpath(propdir, L.BOOK_ROOT)}`.")
     return 0
 
 

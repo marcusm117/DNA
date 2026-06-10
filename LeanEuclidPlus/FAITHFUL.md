@@ -84,6 +84,12 @@ python3 scripts/check_signatures.py --save
 The agent builds ONLY through `check_step`/`wire_main` (raw `lake build`/`safe_build.sh` are
 hard-denied in `.claude/settings.json`); humans run `safe_build.sh` in their own terminal.
 
+**What you may see (shared helpers).** A `have` helper reused by several sentences shows in `--all` as
+`name: SP [N call sites] + P` (suppliability checked at each parent, proof built once). If it's reused
+on *different* objects per site, each call carries a `-- @args: …` comment line above it naming that
+site's actuals — committed and harmless (the guards ignore comments). Nothing for you to do; it's the
+agent's mechanism for generic reuse.
+
 **Convention — `Main` is NOT a node.** Nodes are the `euclid_sentence`s *inside* Main and the `have`s;
 each has a backing file, a claim, and a parent. Main is the root container — no backing file, no
 parent — so it has no SF/SP, only a build. Therefore: build Main with `check_step <propdir> --provable`
