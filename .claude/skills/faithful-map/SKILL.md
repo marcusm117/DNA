@@ -44,8 +44,41 @@ types in one giant think. Take a small CHUNK (you pick the size — 3–6 relate
 claim types + any constructions, BUILD to confirm they elaborate, then the next chunk. A long single
 think over all sentences is the failure mode.
 
-If you find yourself reading axioms, planning the whole proof at once, or writing facts the sentence
-didn't state — you have left Phase A's lane.
+**RULE 3 — EVERY CLAIM IS NON-VACUOUS AND CONTAINS ONLY WHAT THE SENTENCE ASSERTS.** Two failure modes
+this rule kills:
+- **No vacuous / trivially-true types.** `True`, or a claim that holds by definition regardless of the
+  geometry (`|(c─b)| = |(b─c)|` — distance symmetry; `x = x`) is a faithfulness FAIL even though it
+  compiles, because it doesn't capture the sentence. EVERY non-structural sentence asserts something —
+  state THAT. In particular an **announcement** like "So I say that (it is) also right-angled" asserts
+  the thing announced — write the right angles (`∠…=∟ ∧ …`), NOT `True`. (Only `euclid_intro_sentence`
+  and `euclid_conclude_sentence` carry no claim.) If you can't think of a non-vacuous claim, you've
+  misread the sentence — re-read it.
+- **No construction byproducts.** Facts that a construction `euclid_apply` already deposits in Main's
+  context (incidences like `k.onLine BE`, `f.onLine CF`, `g.onLine BD` from `intersection_lines`, or
+  `b.onLine BD` from `line_from_points`) do NOT belong in a claim type unless the SENTENCE asserts them.
+  They're already in scope for later steps for free; echoing them into `step_n` both bloats the claim
+  and states things Euclid didn't. A "let X be drawn / described" sentence asserts the FIGURE's defining
+  properties (lengths, parallelism, right angles), not every incidence its construction happens to yield.
+
+If you find yourself reading axioms, planning the whole proof at once, building a coordinate model, or
+writing facts the sentence didn't state (vacuous fillers, construction incidences, diagram-read geometry)
+— you have left Phase A's lane.
+
+### SENTENCE-SHAPE → CLAIM-TYPE (the common patterns — translate by matching the shape)
+- **"Let the square FOO be described on XY" / "let PQ be drawn parallel to …"** → the figure's defining
+  facts from the cited construction's signature (the lengths, `∠…=∟`, `¬(L.intersectsLine M)`). NOT the
+  intersection incidences the construction also produces.
+- **"X is a square"** → either its definition `(sides equal) ∧ (angles right)`, OR — matching Prop02
+  `step3` "AE is the square on AB" — the single area equation `area(figure) = |side|*|side|`. Pick the
+  ONE the sentence states; do not also invent the other.
+- **"figure F is the rectangle contained by P and Q"** → `area(F) = |(p…)| * |(q…)|`.
+- **"So I say that … is <property>" (announcement)** → assert the property itself (e.g. the right angles).
+- **"angle ABC = angle DEF"** → `∠ a:b:c = ∠ d:e:f`. **"side XY = side ZW"** → `|(x─y)| = |(z─w)|`.
+- **"it is on XY" / "on HG, that is to say XY"** → the square's side equals that segment,
+  `|(side)| = |(x─y)|` (a locating sentence; keep it the single side-equality, flag to human if unsure).
+- **"the figures … are equal to the whole of BIG"** → linear equation summing the sub-figure areas
+  `= area(BIG)`. Use the figure's REAL corners (from the diagram label-resolution) so you don't
+  double-count one region or omit another.
 
 ---
 
@@ -143,9 +176,19 @@ For each chunk of sentences, for each `step_n`:
    Then next chunk, until no True placeholders remain.
 ```
 
-### GATE A — STOP for human review
-When every claim is a real type and `Main.lean` elaborates (all step files are sorry-stubs):
-- Report the sentence map: for each locator → its text → its `step_n` claim type.
+### GATE A — SELF-REVIEW, then STOP for human review
+When every claim is a real type and `Main.lean` elaborates (all step files are sorry-stubs), FIRST do
+this self-review pass over your own map (these are the exact issues humans keep catching — catch them
+yourself):
+  □ No `True` and no vacuous/definitional claim (`|ab|=|ba|`, `x=x`) on any non-structural sentence (Rule 3).
+  □ No construction-byproduct incidences in any claim type (Rule 3) — only what the sentence asserts.
+  □ Every figure-area claim uses the figure's REAL corners; no region double-counted or omitted (Rule 0/3).
+  □ No claim expanded into facts the sentence didn't state (one sentence → one compact claim).
+  □ You did not open any `SystemE/Theory/Inferences/**` file (Rule 1).
+Fix anything the checklist flags. THEN:
+- Report the sentence map: for each locator → its text → its `step_n` claim type, and call out any
+  sentence whose faithful claim you were genuinely unsure of (e.g. near-structural "it is on XY"
+  locating sentences) so the human can focus there.
 - STOP. The human reviews that each claim honestly captures its sentence (the one thing no script
   checks), then runs `python3 scripts/check_steps.py --save Book<N>/PropNN/Main.lean` to freeze the
   claims. Proving happens next via the `faithful-prove` skill.
