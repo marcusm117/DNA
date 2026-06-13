@@ -28,6 +28,16 @@ Snapshot the trusted statements so any later change to a `theorem proposition_*`
 ```
 python3 scripts/check_signatures.py --save
 ```
+**Also build ALL dependencies once, so every cited olean is WARM:**
+```
+scripts/safe_build.sh Book Book2
+```
+This matters for speed AND robustness: with deps warm, a per-node `check_step` build compiles only
+the target itself (≤30s), so the 30s wall never has to eat a cold dependency compile. It also makes
+the interrupt self-heal exact — if a `check_step` build is wall-killed or Ctrl-C'd, `check_step` now
+auto-purges THAT target's stale artifact (so its next build recompiles clean) without touching the
+warm deps. The only case needing a manual `lake clean`/delete is the rare one where a *dependency*
+itself was mid-compile at the kill — which warm deps prevent.
 
 ## PER PROP (e.g. Prop04) — three phases, two human gates (▶)
 

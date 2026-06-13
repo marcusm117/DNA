@@ -100,6 +100,15 @@ time you reach stepN every fact it can rely on is already settled and correctly 
 order makes a step's suppliable context unstable. Within each step, recurse the same way over every
 backing file you create. (Run `--all` ONLY at the very end — see THE LOOP — never to drive this.)
 
+> **⛔ START WITH step1 ONLY — do NOT pre-stub the other steps.** Your literal first action is: create
+> `step1.lean`, prove its WHOLE cone, and `check_step --subtree step1`-confirm it GREEN — *before you
+> create `step2.lean` or write/stub ANY other step's backing file*. The Main sentence bodies are
+> already `:= by sorry` from Phase A (leave them); what you must NOT do is lay down step2…stepN's
+> backing files up front "to see the shape." Finish step1's file and cone, then and only then create
+> step2's. ("Fully finishing each before the next" means the step's backing FILE + its sub-cone, not
+> just the recursion inside it.) At any moment the ONLY new backing file(s) on disk are for the single
+> step you are currently on.
+
 ```
 Can I close this goal directly (real euclid_apply chain, no new node) and build it ≤30s?
   YES → write that proof; verify it green with `check_step Book<N>/PropNN --provable <thisnode>` → DONE.
@@ -171,6 +180,18 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
   exactly two SMT places, both diagnosable:
   - **(i) A LEAF body is too big** — its `euclid_apply` chain + `euclid_finish`/`euclid_assert`s do too
     much. Seen as P >30s. Remedy: pull work into more `have`+backing-file sub-nodes (the usual decompose).
+    > **⛔ A SINGLE oversized `euclid_apply (axiom …)` is STILL decomposed — NOT re-permuted.** The most
+    > common >30s leaf is one axiom whose PRECONDITION is fat: e.g. `rectangle_area` needs
+    > `formParallelogram a b c d …`, which unfolds to ~10 conjuncts (incidences + `distinctPointsOnLine`
+    > + a `sameSide` + two non-intersections), and `euclid_finish` blows the wall SEARCHING for them at
+    > the call. The fix is to DECOMPOSE the precondition, not to guess a cheaper call: **establish the
+    > precondition (or just its hard conjunct) as its OWN `have`+backing sub-node, then `euclid_apply`
+    > the axiom with that fact in hand** (prove-euclid rule #8 — replace SMT search with explicit
+    > application; e.g. derive the lone `a.sameSide f CD` via `intersection_lines_opposing` in its own
+    > leaf, then the `formParallelogram` closes from atoms, then `rectangle_area` fires with nothing to
+    > search). **Re-running the SAME axiom with a different argument/vertex/line ORDER — hoping one
+    > orientation is cheaper — is the forbidden restate-and-hope: it is NOT decomposing.** If you've
+    > rewritten a leaf twice without adding a sub-node, STOP permuting and extract the precondition.
   - **(ii) A CONTAINER's trailing tactics are too big** — the proof work AFTER its `have`s (the
     `euclid_finish`/`linarith` that assembles sub-node claims into the container's goal). These run when
     the container is built with its sub-nodes as sorry (the SF-side build that SF and `--all`/`--subtree`

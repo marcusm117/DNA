@@ -726,6 +726,45 @@ FLAKE_RE = re.compile(r"failed to map segment from shared object|"
 FLAKE_RETRIES = 3
 
 
+def _invalidate_target(target):
+    """SELF-HEAL: delete the build artifacts of `target` so its NEXT build recompiles CLEAN. Called
+    ONLY when a build was SIGKILL'd (wall-timeout or Ctrl-C/SIGTERM) — a kill can land mid-write of the
+    `.olean`, leaving a stale/corrupt artifact that the incremental `lake build` would then trust (the
+    phantom `tactic 'assumption' failed` on all-sorry source: an interrupted SP build left a WIRED olean
+    while `restore_files` reverted the SOURCE to sorry). `restore_files` guards source bytes, NOT
+    `.lake/build/`, so we purge the artifact here instead.
+
+    TARGET-ONLY (never a blanket `lake clean`): builds are serialized per-prop (build.lock), so exactly
+    ONE `lake build <target>` is in flight at a kill — only THAT target can be half-written. With deps
+    already warm, a walled build compiles only `target` itself, so invalidating `target` fully
+    self-heals while every other olean (SystemE, cited props) stays cached. (A dependency itself
+    mid-compile at the kill is the lone residual case — rare, deps are warm — recovered by a manual
+    `lake clean`; we do NOT auto-clean deps, which would nuke warm SystemE.)
+
+    Best-effort: any failure here is swallowed so it can NEVER mask the real timeout/interrupt result.
+    Per-target glob `<base>.*` in both lib/ and ir/ → sibling targets in the same dir are untouched."""
+    try:
+        rel = target.replace(".", os.sep)              # Book2.Prop03.Main → Book2/Prop03/Main
+        base = os.path.basename(rel)
+        sub = os.path.dirname(rel)
+        for kind in ("lib", "ir"):
+            d = os.path.join(BOOK_ROOT, ".lake", "build", kind, sub)
+            for p in glob.glob(os.path.join(d, base + ".*")):
+                try:
+                    os.remove(p)
+                except OSError:
+                    pass
+        # SILENT by design: this is internal cache hygiene (like lake's own incremental caching), not a
+        # result the agent acts on. Printing it on every SP/--context only adds noise and has misled
+        # readers into treating routine purges as "interrupted build" failures. Set LEANEUCLID_DEBUG=1
+        # to surface it when diagnosing the cache itself.
+        if os.environ.get("LEANEUCLID_DEBUG"):
+            print(f"[faithful_lib] purged stale artifacts for {target} (transient/interrupted build) — "
+                  f"next build recompiles clean.", flush=True)
+    except Exception:
+        pass                                           # invalidation is cleanup; never raise
+
+
 def _lake_build_once(target, wall, env, lock_handlers_proc):
     """One `lake build <target>` attempt. Returns (ok, output, timed_out)."""
     proc = subprocess.Popen(["lake", "build", target], cwd=BOOK_ROOT, env=env,
@@ -742,6 +781,7 @@ def _lake_build_once(target, wall, env, lock_handlers_proc):
             except ProcessLookupError:
                 pass
         partial, _ = proc.communicate()
+        _invalidate_target(target)                     # SIGKILL may have left a half-written olean
         return False, _clean_output(partial or ""), True
 
 
@@ -773,6 +813,7 @@ def lake_build(target, wall=WALL):
                     os.killpg(os.getpgid(p.pid), signal.SIGKILL)
                 except ProcessLookupError:
                     pass
+                _invalidate_target(target)             # Ctrl-C/SIGTERM also kills mid-write → purge
             signal.signal(signum, prev.get(signum, signal.SIG_DFL))
             os.kill(os.getpid(), signum)
 
@@ -810,7 +851,15 @@ def has_sorry(output):
 class restore_files:
     """Context manager: snapshot the exact bytes of `paths`, and restore them on __exit__ (success OR
     exception) AND on SIGINT/SIGTERM. Guarantees a killed/timed-out swap never leaves a file wired or
-    trace_state'd — the real Main/step files always end byte-identical to how they started."""
+    trace_state'd — the real Main/step files always end byte-identical to how they started.
+
+    On restore, ALSO invalidate each reverted file's compiled artifact. `restore_files` wraps ONLY the
+    transient-swap builds (SP / `--context`): the file was momentarily WIRED or `trace_state`'d on disk,
+    lake compiled an olean against THAT transient source, and we then revert the source. That olean is
+    stale by construction — if left in `.lake/`, the next incremental build trusts it and an all-sorry
+    container fails with a phantom `tactic 'assumption' failed` (a wired-body tactic) against clean
+    source. Purging it here (every revert path: normal exit, exception, signal) makes a transient-built
+    olean impossible to inherit, regardless of whether the build completed or was interrupted."""
     def __init__(self, paths):
         self.snap = {p: open(p, "rb").read() for p in paths}
         self._prev = {}
@@ -819,6 +868,8 @@ class restore_files:
         for p, b in self.snap.items():
             with open(p, "wb") as f:
                 f.write(b)
+            _invalidate_target(target_of(p))   # olean was built against transient (wired/trace) source
+                                               # we just reverted → stale by construction; never trust it
 
     def _handler(self, signum, frame):
         self.restore()
