@@ -142,11 +142,26 @@ sentence — you're probably trying to prove it, not state it.
 
 3. SLICE the text into contiguous locators "<book>.<prop>.0 … k":
      .0     = euclid_intro_sentence  (enunciation + "Let …" + "I say that …")
-     1..k-1 = euclid_sentence        (each one of Euclid's sentences)
+     1..k-1 = euclid_sentence        (each ATOMIC IDEA — see below)
      last   = euclid_conclude_sentence ("Thus, …" + QED)
-   ONE Euclid sentence (period-delimited) = ONE annotation. Do not split or merge. A trailing
-   "For …"/"since …" justification clause STAYS in its sentence (it's the reason, not a new claim).
-   Each annotation text is a VERBATIM slice; the slices tile the WHOLE file, joined by single spaces.
+
+   ONE STEP = ONE ATOMIC IDEA, not mechanically one sentence. Euclid often packs several assertions
+   into one sentence ("But CB is equal to GK, and CG to KB"); SPLIT such a sentence into one step per
+   atomic idea (here: a step for `|CB|=|GK|`, a step for `|CG|=|KB|`). More, smaller steps = more
+   systematic and far easier to prove/isolate in Phase B. Use judgement for what's "atomic" (one
+   equality, one angle fact, one figure's defining properties).
+
+   TWO HARD CONSTRAINTS on splitting (both mechanical — a bad split FAILS `check_faithful` criterion 1):
+   - **Verbatim tiling.** Each step's text is a CONTIGUOUS slice of the original; the slices, joined by
+     single spaces in locator order, reproduce the WHOLE file CHAR-FOR-CHAR. Nothing reworded, dropped,
+     duplicated, or reordered. So you may split a sentence ONLY at clause boundaries that leave clean
+     contiguous slices. If an atomic idea is NOT a clean contiguous span (two facts interleaved in the
+     wording), you CANNOT split it — keep it ONE step with a conjunction claim (`… ∧ …`).
+   - **Split-only, never merge.** A step covers AT MOST one Euclid sentence. A sentence boundary is
+     ALWAYS at least a step boundary — never combine text from two sentences into one step. (If one
+     idea spans two sentences, they stay separate steps; the later can use the earlier as a hypothesis.)
+   A trailing "For …"/"since …" justification clause STAYS in its idea's step (it's the reason, not a
+   new claim).
 
 4. Stub every logical sentence as:  euclid_sentence "<loc>" "<verbatim text>" (step_n : True) := by sorry
    (True = placeholder; structural intro/conclude take no claim/body.)
@@ -160,9 +175,10 @@ sentence — you're probably trying to prove it, not state it.
 
 For each chunk of sentences, for each `step_n`:
 ```
-1. Replace True with the CLAIM TYPE: what the sentence asserts, in the VOCABULARY above. Rule 0 —
-   the sentence's words, not the diagram's geometry. Match the Prop02 style (one sentence → one
-   compact claim). Earlier steps' claims are available as context.
+1. Replace True with the CLAIM TYPE: what THIS STEP's atomic idea asserts, in the VOCABULARY above.
+   Rule 0 — the step's words, not the diagram's geometry. One step → one compact claim for its atomic
+   idea (a sentence you split into several steps gives several small claims). Earlier steps' claims are
+   available as context.
 
 2. The Main sentence body STAYS `:= by sorry` (do NOT wire `euclid_apply (helper …)` into Main in
    Phase A — wiring is temporary in Phase B's per-step script and permanent only in Phase C):
@@ -200,7 +216,9 @@ yourself):
   □ No `True` and no vacuous/definitional claim (`|ab|=|ba|`, `x=x`) on any non-structural sentence (Rule 3).
   □ No construction-byproduct incidences in any claim type (Rule 3) — only what the sentence asserts.
   □ Every figure-area claim uses the figure's REAL corners; no region double-counted or omitted (Rule 0/3).
-  □ No claim expanded into facts the sentence didn't state (one sentence → one compact claim).
+  □ No claim expanded into facts the text didn't state (one step → its one atomic idea; split a
+    multi-idea sentence into multiple steps rather than cramming, but never invent facts).
+  □ Splits tile verbatim (slices reproduce the original char-for-char) and never merge across sentences.
   □ You did not open any `SystemE/Theory/Inferences/**` file (Rule 1).
 Fix anything the checklist flags. THEN:
 - Report the sentence map: for each locator → its text → its `step_n` claim type, and call out any

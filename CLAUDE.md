@@ -34,7 +34,10 @@ skills + one mechanical step):
 2. **`faithful-prove`** ([.claude/skills/faithful-prove/SKILL.md](.claude/skills/faithful-prove/SKILL.md)) —
    Phase B: prove each step with the **recursive SF/SP/P atom** (delegates to `prove-euclid`). The agent
    creates/proves `stepN.lean` (recursing into `have`+backing files until every build ≤30s) and
-   verifies each node with `scripts/check_step.py <propdir> <node>` (runs SF→SP→P, stops at first fail).
+   verifies each node with `scripts/check_step.py <propdir> <node>` (runs SF→SP→P, stops at first fail;
+   this checks ONLY that node). Driving order: certify leaves, confirm each container/step with
+   `--subtree <node>` (audits that node's whole cone, scoped — not the rest of the prop), bottom-up;
+   `--all` is the single FINAL audit, run ONCE — NEVER mid-work to hunt a failure.
    **Main's bodies stay `:= by sorry`
    throughout — the agent NEVER wires Main; the script does all wiring/`trace_state` transiently and
    reverts.** Dev-state files import NO pipeline (helper/step) files — only `SystemE` + cited
@@ -45,11 +48,17 @@ skills + one mechanical step):
    builds Main once — guaranteed green if `--all` passed) then `scripts/check_faithful.sh Book2` +
    `check_steps.py` + `check_signatures.py`. `wire_main.py --unwire` reverses it back to Phase B.
 
-The certainty model: every node **suppliable** (its `euclid_apply` discharges in its container) +
-**provable** (its backing file builds isolated, zero-sorry), audited bottom-up by `--all`, ⟹ the final
-wired build cannot fail. Correctness/suppliability are mechanical (Lean); only the claim-matches-the-
-English check (gate A) is human. **Caps are uniformly 30s during dev** (SMT `set_option` + a 30s wall
-in `check_step`); exceed either ⟹ DECOMPOSE into more backing files, never raise a cap.
+The certainty model: every node **suppliable** (SP — the zero-SMT `(by assumption)` wire discharges its
+hyps in its container) + every **container**'s trailing tactics close from its sub-node claim types (the
+SF-side build: sub-`have`s `sorry`, real tail present) + every **leaf** backing file **provable** (P —
+builds isolated, zero-sorry) + **no stray sorry**, audited bottom-up by `--all`, ⟹ the final wired build
+cannot fail. (A **container** backing file — one with its own `have` sub-nodes — is NOT P-built: its
+trailing tactics are certified by that container build, its leaves by their P; re-building it to "prove"
+it would just redundantly re-run those ≤30s queries bundled past the wall. NOTE: SP does NOT run a
+container's trailing tactics — it stubs them to `sorry` and checks only hypothesis presence.)
+Correctness/suppliability are mechanical (Lean); only the claim-matches-the-English check (gate A) is
+human. **Caps are uniformly 30s during dev** (SMT `set_option` + a 30s wall in `check_step`); exceed
+either ⟹ DECOMPOSE into more backing files, never raise a cap.
 
 **Layout: one folder per Book-2 proposition** — `Book2/PropNN/Main.lean` (the proposition + its
 `euclid_sentence`s) and `Book2/PropNN/stepN.lean` (one backing file per sentence, theorem

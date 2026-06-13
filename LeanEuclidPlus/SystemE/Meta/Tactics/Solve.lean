@@ -185,7 +185,14 @@ def EuclidApply (rule : Term) (idents : Array Ident)  : TacticM Unit := do
     | (``Exists, _) =>  -- τ is `∃ x, ...`
       evalTactic $ ← `(tactic| obtain ⟨$idents,*, ($(mkIdent hnm))⟩ := $rule)
     | _ =>
-      evalTactic $ ← `(tactic| obtain ⟨$(mkIdent hnm)⟩ := $rule)
+      -- Try the destructuring `obtain ⟨h⟩` FIRST — byte-for-byte the previous behavior, so every proof
+      -- where it currently succeeds is UNCHANGED. Only if it FAILS (an `Eq`/atom with nothing to take
+      -- apart — `obtain ⟨h⟩` forces dependent elimination and errors) fall back to plain `obtain h`,
+      -- which just introduces the fact. The fallback fires only for cases that crash today (fast fail,
+      -- no slow backtrack). `elimAllConjunctions` below still splits any conjunction.
+      evalTactic $ ← `(tactic| first
+        | (obtain ⟨$(mkIdent hnm)⟩ := $rule)
+        | (obtain $(mkIdent hnm) := $rule))
 
   elimAllConjunctions
 

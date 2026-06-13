@@ -8,10 +8,18 @@ sub-files a hard step decomposes into).
 
 **Why you can trust it (no LLM-trust for correctness).** Everything reduces to ONE operation on a
 **node** (a named `:= by sorry` body — a sentence step or a `have`): *swap its sorry for its
-`euclid_apply (helper…)`, build, revert.* If that builds, the node's hypotheses are **suppliable**;
-if the node's backing file builds in isolation zero-sorry, it's **provable**. Both green for every
-node (the `--all` audit, run bottom-up) ⟹ the final wired build **cannot fail** — Lean is the judge,
-not the model. The ONLY human judgement is gate A: does each claim type match the English.
+`euclid_apply (helper… (by assumption)…); (try split_ands) <;> assumption`, build, revert.* The helper
+is FULLY applied — objects, then one `(by assumption)` per hypothesis, and the goal is closed
+structurally (NOT `euclid_finish`) — so the wire does ZERO SMT: each hyp is a <1s core-Lean type-match
+against the call-site context. If that builds, the node's hypotheses are all present (**suppliable**, SP).
+A **leaf** backing file (no sub-`have`s) is **provable** (P) iff it builds in isolation zero-sorry; a
+**container** (has sub-`have`s) is NOT re-built to prove it — instead its trailing tactics (the
+`linarith [...]`/`euclid_finish` after the `have`s) are checked by building the container with sorries
+tolerated (the SF-side build — SP does NOT run them; it stubs them to `sorry`), and its leaves by their
+P. The `--all` audit = {SP every node} + {container build every container} + {P every leaf} +
+{no stray sorry} ⟹ the final wired build **cannot fail** (every SMT query in it lives in a leaf body or
+a container's trailing tactics, each already measured ≤30s; the wires themselves are SMT-free) — Lean is
+the judge, not the model. The ONLY human judgement is gate A: does each claim type match the English.
 
 ---
 
@@ -29,6 +37,17 @@ python3 scripts/check_signatures.py --save
    := by sorry` per sentence + the intro/conclude bookends. **Every body is `:= by sorry`; no step
    files yet.** Elaborates cheap (all-sorry, SMT-free). STOPS for you.
 
+   **Sanity-check Criterion 1 (concatenated sentence texts == the canonical original) — both must PASS:**
+   - regex (quick, no build):
+   ```
+   python3 scripts/check_faithful.py "Book2/Prop04/Main.lean"
+   ```
+   - olean (authoritative, book-aware):
+   ```
+   lake build Book2.Prop04.Main
+   scripts/check_faithful.sh Book2.Prop04.Main
+   ```
+
 **▶ 2. HUMAN GATE A — review + freeze the claims.**
    Read each claim type: does it honestly say what that Euclid sentence says? (The one thing no
    machine checks; use `Book2/data/diagrams/4.png` to resolve labels.) When happy:
@@ -41,8 +60,10 @@ python3 scripts/check_signatures.py --save
    files) until every build is ≤30s. **Main stays all-sorry the whole time** — the agent never wires
    it; `check_step.py` does all wiring transiently and reverts. **Dev-state files import no pipeline
    (helper/step) files** — only `SystemE` + cited propositions; the script adds/removes a helper import
-   alongside its wiring (this is why per-node checks are fast and isolated). The agent's last action is
-   `check_step.py Book2/Prop04 --all` (exit 0). No human action needed mid-phase.
+   alongside its wiring (this is why per-node checks are fast and isolated). Driving order: leaves first
+   (`check_step <leaf>`) → confirm each container/step with `check_step --subtree <node>` (scoped to its
+   cone) → `--all` ONCE at the very end. The agent's last action is `check_step.py Book2/Prop04 --all`
+   (exit 0); it never runs `--all` mid-work. No human action needed mid-phase.
 
 **▶ 4. HUMAN GATE B — re-run the audit.**
    ```
@@ -69,12 +90,13 @@ python3 scripts/check_signatures.py --save
 |---|---|---|
 | `check_signatures.py` `[--save]` | guard proposition **statements** (must never change) | human, once + gate C |
 | `check_steps.py [--save] <Main>` | guard approved **claim types** (frozen after gate A) | human, gate A + gate C |
-| `check_step.py <propdir> <node>` | certify one node: **SF** sufficient → **SP** suppliable → **P** provable (stops at first fail) | agent (Phase B) |
+| `check_step.py <propdir> <node>` | certify ONLY that one node (SF→SP→P, stops at first fail) — does NOT check its sub-nodes | agent (Phase B) |
+| `check_step.py <propdir> --subtree <node>` | certify a node's WHOLE CONE (it + every sub-node it transitively contains), bottom-up, scoped — doesn't touch other steps; confirms a container/step is done | agent (Phase B) |
 | `check_step.py <propdir> --sufficient/--suppliable/--provable <node>` | run just one of SF/SP/P (diagnostics; `--provable` reports remaining-sorry file:lines) | agent (Phase B) |
 | `check_step.py <propdir> --provable` (no node) | build Main tolerating sorry — the Phase-A skeleton-elaborates check (Main has no parent ⟹ no SF/SP) | agent (Phase A) |
 | `check_step.py <propdir> --context <node>` | print the real hypotheses available at a node | agent (Phase B) |
-| `check_step.py <propdir> --check` | instant, no-build integrity scan (naming law, caps, no stray imports) | agent (Phase B) |
-| `check_step.py <propdir> --all` | bottom-up audit (SP+P) of every node; exit 0 ⟹ Phase C guaranteed | agent (end of B) + human (gate B) |
+| `check_step.py <propdir> --check` | instant, no-build integrity scan (naming law, caps, no stray imports, no stray sorry) | agent (Phase B) |
+| `check_step.py <propdir> --all` | WHOLE-prop bottom-up audit (SP every node + P every LEAF + no-stray-sorry); the FINAL gate, run ONCE; exit 0 ⟹ Phase C guaranteed | agent (end of B) + human (gate B) |
 | `wire_main.py <propdir> [--unwire]` | commit the wiring + build once (the ONLY script that keeps Main changed) | human (Phase C) |
 | `check_faithful.sh Book2` | authoritative faithfulness (text + deps); needs a build first | human (gate C) |
 | `safe_build.sh <target>` | serialized `lake build` (parallel-safe) | **human only** (agents are hard-denied raw builds; they use `check_step`) |
@@ -104,11 +126,16 @@ One agent per prop folder; approve each at gate A independently. Book 1 (`Book/`
   re-`--save`.
 - **`--check` fails** → a structural problem (a node with no backing file, a name that breaks the
   naming law `node ≡ file ≡ helper_<book>_node`, a missing 30s cap, a pre-wired node). Fix the file.
-- **`--all` SP-fail** → a node's hypotheses aren't suppliable by its container (or the build hit 30s).
-  Fix that backing file's signature: drop the hyp / derive it in-body / hoist it to an earlier `have`;
-  or decompose if it timed out. **Never raise a cap.**
-- **`--all` P-fail** → a backing file doesn't build zero-sorry (a leaf with a `sorry`, a container with
-  a sub-node/bare sorry, or a 30s timeout). Finish/decompose it.
+- **`--all` SP-fail** → a hypothesis the node declares isn't present at its call site, so its
+  `(by assumption)` failed (`tactic 'assumption' failed`) — the wire is SMT-free, so this is NOT a
+  timeout, it's a signature mismatch. Fix that backing file's signature: drop the hyp and derive it
+  in-body (`euclid_assert` before use), or match its form to the literal atom the context has (take the
+  atoms of a packaged abbrev, fix an orientation). **Never raise a cap** (caps are irrelevant here).
+  (If the *combine* above the node times out instead, that's a P/combine cost — decompose it.)
+- **`--all` P-fail** → a LEAF backing file doesn't build zero-sorry (still has a `sorry`, or a 30s
+  timeout → decompose into more `have`+backing files). Containers aren't P-built.
+- **`--check` stray-sorry** → a `sorry`/`admit`/`axiom` that isn't a declared node body (e.g. a faked
+  combine). Replace with real tactics (`euclid_finish`), or make it a proper `have`+backing node.
 - **Gate C build fails** → a step left unproven slipped through; `wire_main --unwire` and return to
   Phase B. `check_faithful.sh`/`check_steps.py`/`check_signatures.py` fail → a text/dep/claim/statement
   drifted; the message says which.

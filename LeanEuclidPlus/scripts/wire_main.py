@@ -107,7 +107,8 @@ def main(argv):
         return 2
     try:
         propdir = L.propdir_of(argv[0])
-        return wire(propdir, unwire=(len(argv) == 2 and argv[1] == "--unwire"))
+        with L.prop_lock(propdir):                   # serialize with check_step/wire_main on the SAME prop
+            return wire(propdir, unwire=(len(argv) == 2 and argv[1] == "--unwire"))
     except L.FaithfulError as e:
         print(f"ABORT (structural/naming error — refusing to proceed): {e}")
         return 2

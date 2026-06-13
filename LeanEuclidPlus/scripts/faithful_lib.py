@@ -50,6 +50,31 @@ class FaithfulError(Exception):
     scripts ABORT LOUDLY rather than guess or proceed on a malformed prop."""
 
 
+# tokens that "fake" a proof — none may appear except a node's own canonical `:= by sorry` body.
+CHEAT_RE = re.compile(r"\b(sorry|admit|native_decide|sorryAx)\b|@\[[^\]]*\]\s*axiom\b|^\s*axiom\b", re.MULTILINE)
+
+
+def blank_comments(src: str) -> str:
+    """Replace Lean `--` line and `/- … -/` block comments with same-length spaces (newlines kept), so
+    a token inside a comment (e.g. the word 'sorry' in a `-- @args:`/explanatory note) is not matched
+    while character offsets stay aligned with the original. Mirrors check_signatures.py:strip_comments."""
+    out, i, n, depth = [], 0, len(src), 0
+    while i < n:
+        two = src[i:i+2]
+        if depth == 0 and two == "--":
+            while i < n and src[i] != "\n":
+                out.append(" "); i += 1
+            continue
+        if two == "/-":
+            depth += 1; out.append("  "); i += 2; continue
+        if two == "-/" and depth > 0:
+            depth -= 1; out.append("  "); i += 2; continue
+        if depth > 0:
+            out.append("\n" if src[i] == "\n" else " "); i += 1; continue
+        out.append(src[i]); i += 1
+    return "".join(out)
+
+
 def natural_key(s):
     """Sort key so `step2` < `step10` (numeric runs compared as ints, not lexicographically)."""
     return [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", s)]
@@ -73,6 +98,45 @@ def propdir_of(arg):
     if not os.path.exists(os.path.join(p, "Main.lean")):
         raise FaithfulError(f"{os.path.relpath(p, BOOK_ROOT)} has no Main.lean — not a prop folder")
     return p
+
+
+import contextlib
+
+
+@contextlib.contextmanager
+def prop_lock(propdir, *, block=True):
+    """An exclusive PER-PROP lock so only ONE check_step/wire_main runs against a given prop at a time.
+    Different props lock on different files → still fully parallel; the SAME prop serializes (a second
+    runner waits, or aborts loudly if block=False). This guards the WHOLE swap→build→revert window
+    (the file edits, not just the `lake build`), closing the lost-update race where two runs editing the
+    same Main.lean clobber each other. The lock lives under `.lake/` (already git-ignored, so no stray
+    file in the prop folder), keyed by the prop's path."""
+    key = os.path.relpath(propdir, BOOK_ROOT).replace(os.sep, "_")
+    lock_dir = os.path.join(BOOK_ROOT, ".lake", "faithful-locks")
+    os.makedirs(lock_dir, exist_ok=True)
+    lock_path = os.path.join(lock_dir, f"{key}.lock")
+    rel = os.path.relpath(propdir, BOOK_ROOT)
+    f = open(lock_path, "w")
+    try:
+        if block:
+            try:                                          # fast path: grab it immediately if free
+                fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:                       # contended → announce, then wait
+                print(f"[lock] {rel} is held by another check_step/wire_main — waiting for it to "
+                      f"finish (only one runner per prop)…", flush=True)
+                fcntl.flock(f, fcntl.LOCK_EX)
+                print(f"[lock] acquired {rel} — proceeding.", flush=True)
+        else:
+            try:
+                fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise FaithfulError(
+                    f"another check_step/wire_main is already running on {rel} — only one at a time "
+                    f"per prop. Wait for it to finish, or run a DIFFERENT prop.")
+        yield
+    finally:
+        fcntl.flock(f, fcntl.LOCK_UN)
+        f.close()
 
 
 def book_num(propdir):
@@ -106,22 +170,25 @@ def depth_of(path, propdir):
     return rel.count(os.sep)
 
 
-def audit_order(propdir):
-    """Return the prop's nodes in BOTTOM-UP order: a node whose backing file contains sub-nodes comes
-    AFTER all of those sub-nodes (so the FIRST failure in an --all sweep is always the DEEPEST broken
-    node, never an ancestor that merely inherits a sub-node's sorry). This is a topological sort over
-    the backing-file containment relation — the real proof-tree depth, NOT the directory depth (a
-    sub-node often lives in a sibling file like step6.lean). Main's sentence nodes, having no
-    sub-structure, sort first; their containers (the leaf backing files) are audited before them."""
+def _containment(propdir):
+    """Return (occs, children, book): the node occurrences, and `children[name]` = the sub-node NAMES
+    defined inside name's backing file (the backing-file containment relation). Keyed by NAME, so a
+    shared helper's single backing file is visited ONCE even though the name has many occurrences."""
     occs = parse_occurrences(propdir)
     book = book_num(propdir)
-    # children[name] = node-names defined INSIDE name's backing file (its sub-nodes). Keyed by NAME, so
-    # a shared helper's single backing file is visited ONCE even though the name has many occurrences.
     children = {}
     for name in occs:
         bf = backing_file(propdir, name)
         kids = [k.name for k in parse_nodes_in_file(bf, book)] if bf else []
         children[name] = [k for k in kids if k in occs]
+    return occs, children, book
+
+
+def _bottom_up(occs, children, roots):
+    """Topological (post-order) bottom-up walk over `children` from `roots`: a node whose backing file
+    contains sub-nodes comes AFTER all of those sub-nodes, so the FIRST failure in a sweep is always the
+    DEEPEST broken node. Returns the REACHABLE node NAMES in bottom-up order (each once). Deterministic
+    via natural_key. Raises on a cyclic containment."""
     ordered, seen = [], set()
     def visit(name, stack):
         if name in seen:
@@ -131,10 +198,52 @@ def audit_order(propdir):
         for kid in children.get(name, []):
             visit(kid, stack | {name})
         seen.add(name)
-        ordered.append((name, occs[name]))           # (name, [all occurrences]) in bottom-up order
-    for name in sorted(occs, key=natural_key):       # natural order: step2 before step10 (not lexicographic)
+        ordered.append(name)
+    for name in sorted(roots, key=natural_key):
         visit(name, frozenset())
     return ordered
+
+
+def audit_order(propdir):
+    """ALL nodes, bottom-up: `[(name, [all occurrences]) …]`. (sub-nodes before their parents; the real
+    proof-tree depth, NOT directory depth — a sub-node often lives in a sibling file.)"""
+    occs, children, _ = _containment(propdir)
+    return [(name, occs[name]) for name in _bottom_up(occs, children, occs.keys())]
+
+
+def cone_names(propdir, root):
+    """The set of node names in Cone(root): root + everything transitively contained in root's backing
+    file (its sub-nodes, recursively). Raises FaithfulError if `root` isn't a node."""
+    occs, children, _ = _containment(propdir)
+    if root not in occs:
+        raise FaithfulError(f"no node '{root}' in {os.path.relpath(propdir, BOOK_ROOT)}")
+    return set(_bottom_up(occs, children, {root}))
+
+
+def subtree_order(propdir, root):
+    """Cone(root) in bottom-up order, with each node's occurrences SCOPED TO THE CONE: a shared helper's
+    SP is checked only at call sites whose container file is INSIDE this cone (root's backing file or a
+    descendant's), NOT at its uses in other steps. So `--subtree step27` checks `positions@step27` but
+    not `positions@step9`. Returns `[(name, [in-cone occurrences]) …]`; P (once per name) is unaffected
+    (same single backing file regardless of cone). Raises if `root` isn't a node."""
+    occs, children, _ = _containment(propdir)
+    if root not in occs:
+        raise FaithfulError(f"no node '{root}' in {os.path.relpath(propdir, BOOK_ROOT)}")
+    names = _bottom_up(occs, children, {root})
+    # An occurrence is IN THE CONE iff its container file is the backing file of some cone node (root's
+    # backing file or a descendant's) — that's where all sub-node call sites live. The ROOT node itself
+    # is wired at ITS OWN call site (e.g. step27 in Main), so root keeps all its occurrences. This is
+    # what scopes a shared helper to this cone: `positions@step27` (container step27.lean ∈ cone) is
+    # checked; `positions@step9` (container step9.lean ∉ cone) is not.
+    cone_files = {os.path.realpath(backing_file(propdir, n)) for n in names if backing_file(propdir, n)}
+    out = []
+    for name in names:
+        if name == root:
+            scoped = occs[name]                       # root: checked at its own call site(s)
+        else:
+            scoped = [nd for nd in occs[name] if os.path.realpath(nd.file) in cone_files]
+        out.append((name, scoped))
+    return out
 
 
 # ── low-level scanners (mirror scripts/check_steps.py) ──────────────────────────────────────────────
@@ -195,8 +304,15 @@ def _body_regexes(book, name):
     return [
         ("sorry", re.compile(r":=[ \t]*by[ \t\r\n]+sorry\b")),
         ("trace", re.compile(r":=[ \t]*by[ \t\r\n]+trace_state[ \t\r\n]*;[ \t\r\n]*sorry\b")),
+        # The arg list may contain ONE level of nested parens — the `(by assumption)` hypothesis args
+        # the wire emits (full application). `(?:[^()]|\([^()]*\))*` matches flat chars OR a nested
+        # `(…)` group, so the closing `)` is the helper-call's own. Without this, a wired body with
+        # `(by assumption)` would not be recognized and integrity_scan/wire_main would mis-handle it.
+        # The trailer is the STRUCTURAL closer `(try split_ands) <;> assumption` (SMT-free); also accept
+        # a bare `euclid_finish` so legacy/hand-wired bodies still recognize as wired.
         ("wired", re.compile(r":=[ \t]*by[ \t\r\n]+euclid_apply[ \t]*\(\s*" + helper +
-                             r"\b[^()]*\)[ \t\r\n]*;?[ \t\r\n]*euclid_finish\b")),
+                             r"\b(?:[^()]|\([^()]*\))*\)[ \t\r\n]*;?[ \t\r\n]*"
+                             r"(?:\(try split_ands\)[ \t]*<;>[ \t]*assumption|euclid_finish\b)")),
     ]
 
 
@@ -328,9 +444,11 @@ def backing_file(propdir, name):
 
 
 def parse_helper_objs(path, book, name):
-    """Parse `theorem helper_<book>_<name> (binders…) : claim :=` in its backing file and return the
-    ordered list of OBJECT argument names — exactly the binders whose type is a geometric sort
-    (Point/Line/Circle). Hypotheses (Prop-typed binders) are dropped. ABORT LOUD if the theorem is
+    """Parse `theorem helper_<book>_<name> (binders…) : claim :=` in its backing file and return
+    `(objs, n_hyps)`: the ordered list of OBJECT argument names (binders whose type is a geometric
+    sort Point/Line/Circle) and the COUNT of hypothesis (Prop-typed) binders, grouped-binder aware
+    (`(h1 h2 : T)` counts 2). The wire fully-applies the helper by passing `objs` positionally and one
+    `(by assumption)` per hypothesis binder (see `wired_body`). ABORT LOUD if the theorem is
     missing/misnamed, or a binder's type LOOKS like a sort but isn't a known one (don't guess)."""
     src = open(path, encoding="utf-8").read()
     expected = f"helper_{book}_{name}"
@@ -341,7 +459,7 @@ def parse_helper_objs(path, book, name):
         raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: theorem is '{m.group(1)}' but the "
                             f"naming law requires '{expected}' (file ↔ node ↔ helper must match)")
     i, n = m.end(), len(src)
-    objs = []
+    objs, n_hyps = [], 0
     while i < n:
         while i < n and src[i] in " \t\r\n":
             i += 1
@@ -362,39 +480,58 @@ def parse_helper_objs(path, book, name):
                 raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: binder '({group})' has "
                                     f"unrecognized sort '{btype}' — known object sorts are "
                                     f"{sorted(GEOMETRIC_SORTS)}. Refusing to guess.")
-            # else: a Prop-typed hypothesis — not passed as an object argument
+            else:                                               # a Prop-typed hypothesis binder
+                n_hyps += len(idents)
             i = close + 1
         else:
             raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: unexpected token before the "
                                 f"result type of {expected} (only `(binder)` groups are supported)")
-    return objs
+    return objs, n_hyps
 
 
-def wired_body(book, name, objs):
-    """The canonical wired body string (single line)."""
-    return f":= by euclid_apply ({f'helper_{book}_{name}'} {' '.join(objs)}); euclid_finish"
+def wired_body(book, name, objs, n_hyps):
+    """The canonical wired body string (single line). The helper is FULLY applied: its object binders
+    positionally (`objs`) and one `(by assumption)` per hypothesis binder. Full application makes the
+    `euclid_apply` term carry no remaining antecedent arrow, so it takes the no-SMT `obtain` branch
+    (SystemE/Meta/Tactics/Solve.lean) — every hypothesis is discharged by core-Lean `assumption`
+    (type-match over the local context, including unnamed hyps), NEVER by the SMT solver. A hypothesis
+    not present in context makes its `(by assumption)` fail loudly: that signals the helper signature is
+    wrong — drop that hyp and derive it inside the helper body.
+    The goal is then closed STRUCTURALLY — NOT with `euclid_finish` (which would fall through to the SMT
+    solver over the parent's full context and blow the 30s wall even for a trivial leaf). `euclid_apply`
+    already `obtain`s the helper's conclusion and `elimAllConjunctions` (Solve.lean:190) recursively
+    destructs it into the claim's atoms in context, so `(try split_ands) <;> assumption` closes the goal
+    with ZERO SMT: `split_ands` splits a conjunctive claim into conjuncts, each matched by `assumption`
+    against a destructed atom (the `try` makes it a no-op for a single-atom claim). The citation is
+    recorded by the helper's `euclid_apply` (Solve.lean:166-173, before any branch), so dropping
+    `euclid_finish` loses nothing. Net: a leaf wire adds ~0 build time."""
+    args = " ".join(objs + ["(by assumption)"] * n_hyps)
+    return f":= by euclid_apply ({f'helper_{book}_{name}'} {args}); (try split_ands) <;> assumption"
 
 
 def resolve_call_args(propdir, book, node):
-    """The object arguments to pass when wiring `node`'s call:
-       - if the node carries a `-- @args:` annotation → its tokens VERBATIM (validated: token count ==
-         the helper's object-binder count, else FaithfulError — catches arity slips before any build).
-         This is how a helper reused with DIFFERENT objects per parent supplies each site's actuals.
+    """Return `(objs, n_hyps)` for wiring `node`'s call — the OBJECT arguments to pass and the number
+    of hypothesis binders (each wired as `(by assumption)`; see `wired_body`). The `@args` override is
+    OBJECT-ONLY (hyps are matched by type via `assumption`, never named per call site):
+       - if the node carries a `-- @args:` annotation → its tokens VERBATIM as the objects (validated:
+         token count == the helper's object-binder count, else FaithfulError — catches arity slips
+         before any build). This is how a helper reused with DIFFERENT objects per parent supplies each
+         site's actuals.
        - else → the helper's own object-binder names (the default; correct when names already match).
     SP still BUILDS the resulting call, so wrong/misordered/out-of-scope tokens fail loudly there — the
-    annotation only changes WHICH call is attempted, never whether it is accepted."""
+    annotation only changes WHICH objects are passed, never whether the call is accepted."""
     bf = backing_file(propdir, node.name)
     if bf is None:
         raise FaithfulError(f"node '{node.name}' has no backing file '{node.name}.lean'")
-    binders = parse_helper_objs(bf, book, node.name)
+    binders, n_hyps = parse_helper_objs(bf, book, node.name)
     if node.args is None:
-        return binders
+        return binders, n_hyps
     if len(node.args) != len(binders):
         raise FaithfulError(
             f"node '{node.name}' in {os.path.relpath(node.file, BOOK_ROOT)}: `-- @args:` lists "
             f"{len(node.args)} arg(s) {node.args} but helper_{book}_{node.name} takes {len(binders)} "
             f"object binder(s) {binders}. The override must list EXACTLY the object args, in order.")
-    return node.args
+    return node.args, n_hyps
 
 
 # ── the swap primitive (operates on a source STRING; callers handle disk + restore) ─────────────────
@@ -416,13 +553,86 @@ def set_node_state(src, node, state, propdir, book):
     elif state == "trace":
         body = ":= by trace_state; sorry"
     elif state == "wired":
-        body = wired_body(book, node.name, resolve_call_args(propdir, book, node))
+        objs, n_hyps = resolve_call_args(propdir, book, node)
+        body = wired_body(book, node.name, objs, n_hyps)
     else:
         raise FaithfulError(f"unknown node state '{state}'")
     out = swap_node_body(src, node, body)
     module = target_of(backing_file(propdir, node.name)) if backing_file(propdir, node.name) else None
     if module:
         out = add_import(out, module) if state == "wired" else remove_import(out, module)
+    return out
+
+
+# ── isolated-SP transforms (wire ONLY this node; sorry the combine tail; signature-only warm) ─────────
+def combine_tail_span(src, nodes):
+    """Return (tail_start, tail_end): the COMBINE TAIL of a container — the region from the END of the
+    LAST node's body to the END of the theorem's `by` block (the namespace `end` / next top-level
+    `theorem` / EOF). The tail is the proof work AFTER the last `have` (e.g. `linarith [...]`, or Main's
+    `exact step28; euclid_conclude_sentence …`). Returns None if `nodes` is empty (a pure leaf — no
+    tail). Invariant: ONE `theorem helper_…` per backing file (enforced by parse_helper_objs); Main has
+    one theorem too. Uses a comment-blanked copy so a commented `end`/`theorem` is ignored."""
+    if not nodes:
+        return None
+    tail_start = max(nd.body_end for nd in nodes)
+    clean = blank_comments(src)
+    end = None
+    for m in re.finditer(r"^(?:end|theorem)\b", clean, re.MULTILINE):
+        if m.start() >= tail_start:
+            end = m.start()
+            break
+    tail_end = end if end is not None else len(src)
+    return (tail_start, tail_end)
+
+
+def set_theorem_body_sorry(src):
+    """Return `src` with the file's single top-level theorem body replaced by `:= by sorry` — a
+    SIGNATURE-ONLY form (proof-irrelevant: the exported `helper_… : ∀ objs, hyps → claim` type is
+    unchanged). Used to warm a backing-file olean WITHOUT building its real proof, so an isolated-SP
+    build never depends on the node's body. Scans from the theorem's first top-level `:=` to the
+    namespace `end`/EOF (comment-blanked) and swaps that whole proof region for ` := by sorry`."""
+    m = re.search(r"^theorem\s", src, re.MULTILINE)
+    if not m:
+        raise FaithfulError("set_theorem_body_sorry: no top-level `theorem`")
+    # find the theorem's top-level `:=` (the proof separator), respecting brackets/strings
+    depth, i, n = 0, m.end(), len(src)
+    assign = None
+    while i < n:
+        c = src[i]
+        if c == '"':
+            i = _skip_string(src, i, n); continue
+        if c in "([{":
+            depth += 1
+        elif c in ")]}":
+            depth -= 1
+        elif depth == 0 and src.startswith(":=", i):
+            assign = i; break
+        i += 1
+    if assign is None:
+        raise FaithfulError("set_theorem_body_sorry: no top-level `:=` for the theorem")
+    clean = blank_comments(src)
+    em = re.search(r"^end\b", clean[assign:], re.MULTILINE)
+    body_end = assign + em.start() if em else len(src)
+    return src[:assign] + ":= by sorry\n\n" + src[body_end:]
+
+
+def set_node_isolated_sp(src, node, nodes, propdir, book):
+    """Return `src` transformed for an ISOLATED SP build of `node` in its container:
+      - the COMBINE TAIL (everything after the last node's body) → `sorry`, so the combine NEVER runs;
+      - `node` → WIRED (its `(by assumption)` call + helper import);
+      - ALL OTHER nodes: untouched (they are already dev `:= by sorry`, contributing only their claim
+        TYPES as context — that IS the parent's supply).
+    Edits are applied HIGHEST-offset first so earlier spans stay valid. `nodes` = parse_nodes_in_file of
+    the container. The result wires exactly ONE node ⟹ SP is O(1) and exercises only THIS node's wire."""
+    out = src
+    tail = combine_tail_span(src, nodes)
+    # tail edit first (it is at the highest offset — after every node body)
+    if tail is not None:
+        ts, te = tail
+        # only truncate if the tail is AFTER this node (it always is: tail_start = last node's body_end)
+        out = out[:ts] + "\n  sorry\n" + out[te:]
+    # then wire THIS node (its body_start/body_end are < ts, so unaffected by the tail edit)
+    out = set_node_state(out, node, "wired", propdir, book)
     return out
 
 
@@ -506,11 +716,41 @@ def warm_build(target):
     return lake_build(target, wall=None)
 
 
+# INFRA-FLAKE signature: the smt-portfolio python (miniforge/conda on a networked FS) intermittently
+# fails to LOAD AT STARTUP — `failed to map segment from shared object` / an ImportError on a stdlib
+# `.so`. This is NOT a proof result (z3/cvc5 never ran) and NOT a timeout; it's a launch hiccup. We
+# RETRY the build a few times on this signature only — never on a real error (wrong proof) or a wall
+# timeout (a genuine TOO-BIG verdict), so retrying can never mask a real failure.
+FLAKE_RE = re.compile(r"failed to map segment from shared object|"
+                      r"ImportError:.*\.so|cannot? (?:open|load) shared object|Error relocating", re.I)
+FLAKE_RETRIES = 3
+
+
+def _lake_build_once(target, wall, env, lock_handlers_proc):
+    """One `lake build <target>` attempt. Returns (ok, output, timed_out)."""
+    proc = subprocess.Popen(["lake", "build", target], cwd=BOOK_ROOT, env=env,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            text=True, start_new_session=True)
+    lock_handlers_proc[0] = proc                       # expose for the signal handler / killpg
+    try:
+        out, _ = proc.communicate(timeout=wall)
+        return proc.returncode == 0, _clean_output(out), False
+    except subprocess.TimeoutExpired:
+        if proc.poll() is None:
+            try:
+                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        partial, _ = proc.communicate()
+        return False, _clean_output(partial or ""), True
+
+
 def lake_build(target, wall=WALL):
     """Run `lake build <target>` with the venv bin on PATH (z3/cvc5) and an exclusive flock on
     .lake/build.lock (parallel-agent safe). If `wall` is not None, kill the whole process group at
-    `wall` seconds. Return (ok: bool, output: str). The agent never types `lake`/`timeout` directly —
-    this owns it, prompt-free."""
+    `wall` seconds. Auto-RETRIES (same target, deps stay cached) on the INFRA-FLAKE signature only —
+    never on a real error or a timeout. Return (ok: bool, output: str). The agent never types
+    `lake`/`timeout` directly — this owns it, prompt-free."""
     env = dict(os.environ)
     venv_bin = os.path.join(os.environ.get("LEANEUCLID_VENV", DEFAULT_VENV), "bin")
     if os.path.isdir(venv_bin):
@@ -519,23 +759,20 @@ def lake_build(target, wall=WALL):
     os.makedirs(os.path.dirname(lock_path), exist_ok=True)
     with open(lock_path, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        proc = None
-
-        def _killpg():
-            if proc and proc.poll() is None:
-                try:
-                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
+        box = [None]                                   # box[0] = current Popen, for the signal handler
 
         # The child runs in its OWN session (needed for clean timeout-kill), so a terminal Ctrl-C does
-        # NOT reach it. Install handlers for the build's duration that kill the child's process group,
-        # then re-raise — so Ctrl-C doesn't leave an orphaned `lake` holding the build lock. (The outer
-        # restore_files handler still restores the file bytes.)
+        # NOT reach it. Install handlers that kill the current child's process group, then re-raise — so
+        # Ctrl-C doesn't leave an orphaned `lake` holding the build lock.
         prev = {}
 
         def _handler(signum, frame):
-            _killpg()
+            p = box[0]
+            if p and p.poll() is None:
+                try:
+                    os.killpg(os.getpgid(p.pid), signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
             signal.signal(signum, prev.get(signum, signal.SIG_DFL))
             os.kill(os.getpid(), signum)
 
@@ -543,19 +780,20 @@ def lake_build(target, wall=WALL):
             prev[sig] = signal.getsignal(sig)
             signal.signal(sig, _handler)
         try:
-            proc = subprocess.Popen(["lake", "build", target], cwd=BOOK_ROOT, env=env,
-                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                    text=True, start_new_session=True)
-            try:
-                out, _ = proc.communicate(timeout=wall)
-                return proc.returncode == 0, _clean_output(out)
-            except subprocess.TimeoutExpired:
-                try:
-                    _killpg()
-                finally:
-                    proc.communicate()
-                return False, (f"[faithful_lib] build of {target} exceeded {wall}s wall clock — the "
-                               f"node is TOO BIG. DECOMPOSE into more backing files; NEVER raise the cap.")
+            for attempt in range(1, FLAKE_RETRIES + 1):
+                ok, out, timed_out = _lake_build_once(target, wall, env, box)
+                if timed_out:
+                    tail = "\n".join((out or "").rstrip().splitlines()[-25:])
+                    msg = (f"[faithful_lib] build of {target} exceeded {wall}s wall clock — TOO BIG. "
+                           f"DECOMPOSE into more backing files; NEVER raise the cap. Last output before "
+                           f"the kill (what it was elaborating when it stalled):")
+                    return False, (msg + "\n" + tail if tail.strip() else msg)
+                if not ok and FLAKE_RE.search(out or "") and attempt < FLAKE_RETRIES:
+                    print(f"[faithful_lib] {target}: SMT-portfolio launch flake (not a proof failure) — "
+                          f"retrying build (attempt {attempt + 1}/{FLAKE_RETRIES})…", flush=True)
+                    continue
+                return ok, out
+            return ok, out                             # exhausted retries: report the last (flaky) output
         finally:
             for sig, h in prev.items():
                 signal.signal(sig, h)
@@ -656,4 +894,21 @@ def integrity_scan(propdir):
                                 f"is NOT directly above a node head (`have …`/`euclid_sentence …`) — it "
                                 f"would be silently ignored. Put it on the line immediately above the "
                                 f"node, or remove it.")
+        # NO STRAY `sorry` / cheat token. The ONLY sorries allowed are declared NODE bodies (`:= by
+        # sorry`, which become wired). A `sorry`/`admit`/`native_decide`/`axiom` ANYWHERE ELSE — e.g. a
+        # faked container combine written `… := by sorry` as a bare tactic, or a leaf that cheats — is a
+        # hard error. This is what lets P be LEAF-ONLY and `--all` still GUARANTEE Phase C: SP doesn't
+        # catch a stray sorry (a build with a sorry warning still "succeeds"), so the guarantee depends
+        # on this source scan. Node bodies (their canonical `:= by sorry` spans) are the only exemption.
+        clean = blank_comments(src)
+        node_body_spans = [(nd.body_start, nd.body_end) for nd in parse_nodes_in_file(path, book)]
+        for cm in CHEAT_RE.finditer(clean):
+            pos = cm.start()
+            if any(s <= pos < e for s, e in node_body_spans):
+                continue                                        # a declared node's own `:= by sorry` — fine
+            ln = clean.count("\n", 0, pos) + 1
+            problems.append(f"{os.path.relpath(path, BOOK_ROOT)}:{ln} has a STRAY `{cm.group(0).strip()}` "
+                            f"that is NOT a declared node body — proofs may not be faked. (A container's "
+                            f"combine must be real tactics, e.g. `euclid_finish`, never `sorry`; only a "
+                            f"node's canonical `:= by sorry` is allowed, and only because the script wires it.)")
     return problems

@@ -339,7 +339,8 @@ A node's backing file is cheap (~30s); if it won't build in 30s it's TOO BIG →
   lives in the prop's folder as `Book<N>/PropNN/stepN.lean`, theorem `helper_<book>_stepN`
   (sub-decompositions `Book<N>/PropNN/stepN_<sub>.lean` → `helper_<book>_stepN_<sub>`); build/verify
   each via `python3 scripts/check_step.py Book<N>/PropNN stepN`. The script discharges the sentence in
-  `Main.lean` by `euclid_apply (helper_<book>_stepN …); euclid_finish` (you never type it). (No
+  `Main.lean` by `euclid_apply (helper_<book>_stepN … (by assumption)…); (try split_ands) <;> assumption`
+  — a zero-SMT structural wire, NOT `euclid_finish` (you never type it). (No
   `Scratch/`, no `_steps.lean`, no merge step.) **Never** discharge a cited step with term-mode
   `exact proposition_M …` — a citation is only recorded when the prop/helper enters via `euclid_apply`.
 
