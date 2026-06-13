@@ -55,6 +55,9 @@ def _rewrite_file_bodies(path, propdir, book, *, wire):
             src = L.remove_import(src, mod)
     # caps: wire strips them, unwire restores
     src = L.strip_caps(src) if wire else (L.add_cap(src) if "theorem" in src else src)
+    # linter suppression: wire ADDS the two `set_option linter.… false` lines (silence the cosmetic
+    # unused-variable / unnecessary-`<;>` warnings the generated wired form trips), unwire STRIPS them.
+    src = L.add_linter_opts(src) if wire else L.strip_linter_opts(src)
     open(path, "w", encoding="utf-8").write(src)
     return changed
 

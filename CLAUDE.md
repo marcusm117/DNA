@@ -62,7 +62,7 @@ either ⟹ DECOMPOSE into more backing files, never raise a cap.
 
 **Layout: one folder per Book-2 proposition** — `Book2/PropNN/Main.lean` (the proposition + its
 `euclid_sentence`s) and `Book2/PropNN/stepN.lean` (one backing file per sentence, theorem
-`helper_<book>_stepN`; a hard step adds sub-files, same naming law `node ≡ file ≡ helper_<book>_node`).
+`helper_<book>_<prop>_stepN`; a hard step adds sub-files, same naming law `node ≡ file ≡ helper_<book>_<prop>_node`).
 The pipeline is: A = sentence map in Main, all-sorry (human review) → B = prove each backing file in
 the folder via `check_step.py` → C = `wire_main.py` + checks. There is NO `Scratch/` dir and NO
 "reunite" step — files are written where they belong and stay.

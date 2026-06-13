@@ -1,18 +1,13 @@
 import SystemE
 import Book.Prop31
 import Book.Prop46
-import Book2.Prop02.step1
-import Book2.Prop02.step2
-import Book2.Prop02.step3
-import Book2.Prop02.step4
-import Book2.Prop02.step5
-import Book2.Prop02.step6
 
 namespace Elements.Book2
 
 open Elements.Book1
 
 
+set_option systemE.solverTime 30 in
 theorem proposition_2 : ∀ (a b c : Point) (AB : Line),
   distinctPointsOnLine a b AB ∧ c.onLine AB ∧ between a c b →
   |(a─b)| * |(b─c)| + |(b─a)| * |(a─c)| = |(a─b)| * |(a─b)| :=
@@ -29,41 +24,29 @@ by
     (step1 : |(a─d)| = |(a─b)| ∧ |(b─e)| = |(a─b)| ∧
              (∠ b:a:d = ∟) ∧ (∠ a:d:e = ∟) ∧ (∠ a:b:e = ∟) ∧
              c.onLine CF ∧ ¬(CF.intersectsLine AD) ∧
-             f.onLine DE ∧ f.onLine CF ∧ between d f e) := by
-    euclid_apply (helper_2_step1 a b c d e f AB DE AD BE CF)
-    euclid_finish
+             f.onLine DE ∧ f.onLine CF ∧ between d f e) := by sorry
 
   euclid_sentence "2.2.2"
     "So the (square) $AE$ is equal to the (rectangles) $AF$ and $CE$."
     (step2 : Triangle.area △ d:a:b + Triangle.area △ d:b:e =
              (Triangle.area △ d:a:c + Triangle.area △ d:c:f)
-           + (Triangle.area △ f:c:b + Triangle.area △ f:b:e)) := by
-    euclid_apply (helper_2_step2 a b c d e f AB DE AD BE)
-    euclid_finish
+           + (Triangle.area △ f:c:b + Triangle.area △ f:b:e)) := by sorry
 
   euclid_sentence "2.2.3"
     "And $AE$ is the square on $AB$."
-    (step3 : Triangle.area △ d:a:b + Triangle.area △ d:b:e = |(a─b)| * |(a─b)|) := by
-    euclid_apply (helper_2_step3 a b d e AB DE AD BE)
-    euclid_finish
+    (step3 : Triangle.area △ d:a:b + Triangle.area △ d:b:e = |(a─b)| * |(a─b)|) := by sorry
 
   euclid_sentence "2.2.4"
     "And $AF$ (is) the rectangle contained by the (straight-lines) $BA$ and $AC$. For it is contained by $DA$ and $AC$, and $AD$ (is) equal to $AB$."
-    (step4 : Triangle.area △ d:a:c + Triangle.area △ d:c:f = |(b─a)| * |(a─c)|) := by
-    euclid_apply (helper_2_step4 a b c d e f AB DE AD BE CF)
-    euclid_finish
+    (step4 : Triangle.area △ d:a:c + Triangle.area △ d:c:f = |(b─a)| * |(a─c)|) := by sorry
 
   euclid_sentence "2.2.5"
     "And $CE$ (is) the (rectangle contained) by $AB$ and $BC$. For $BE$ (is) equal to $AB$."
-    (step5 : Triangle.area △ f:c:b + Triangle.area △ f:b:e = |(a─b)| * |(b─c)|) := by
-    euclid_apply (helper_2_step5 a b c d e f AB DE AD BE CF)
-    euclid_finish
+    (step5 : Triangle.area △ f:c:b + Triangle.area △ f:b:e = |(a─b)| * |(b─c)|) := by sorry
 
   euclid_sentence "2.2.6"
     "Thus, the (rectangle contained) by $BA$ and $AC$, plus the (rectangle contained) by $AB$ and $BC$, is equal to the square on $AB$."
-    (step6 : |(b─a)| * |(a─c)| + |(a─b)| * |(b─c)| = |(a─b)| * |(a─b)|) := by
-    euclid_apply (helper_2_step6 a b c d e f)
-    euclid_finish
+    (step6 : |(b─a)| * |(a─c)| + |(a─b)| * |(b─c)| = |(a─b)| * |(a─b)|) := by sorry
 
   rw [add_comm]; exact step6
   euclid_conclude_sentence "2.2.7"

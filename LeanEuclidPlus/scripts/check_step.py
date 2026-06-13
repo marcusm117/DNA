@@ -207,8 +207,9 @@ def _run_SP(propdir, node, *, site=""):
     """SP — Suppliable. Returns ok. `site` is an optional " @ <file>" suffix for multi-parent haves."""
     ok, out, objs = check_suppliable(propdir, node)
     if not ok:
-        print(f"FAIL (SP — suppliable{site}): wiring `euclid_apply (helper_{L.book_num(propdir)}_"
-              f"{node.name} {' '.join(objs)})` in {os.path.relpath(node.file, L.BOOK_ROOT)} did not build.")
+        print(f"FAIL (SP — suppliable{site}): wiring "
+              f"`euclid_apply ({L.helper_name(L.book_num(propdir), L.prop_num(propdir), node.name)} "
+              f"{' '.join(objs)})` in {os.path.relpath(node.file, L.BOOK_ROOT)} did not build.")
         print("  → The wire FULLY applies the helper: objects positionally + one `(by assumption)` per "
               "hypothesis binder (zero SMT). SP failed for ONE of these reasons:\n"
               "    (a) a HYPOTHESIS is NOT present in the parent context → its `(by assumption)` fails "

@@ -1,5 +1,8 @@
 import SystemE
 import Book.Prop30
+import Book2.Prop03.step5_edf
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
@@ -8,8 +11,7 @@ open Elements.Book1
 /- 2.3.5: AE is the rectangle contained by AB and BC. AE is contained by AB and BE, and BE = BC.
    With between e d f (step5_edf), the corner f of the whole rectangle b a e f sits so ∠b:e:f =
    ∠b:e:d = ∟; rectangle_area gives △b:a:e + △b:f:e = |b─a|*|b─e|, and |b─e| = |c─b| = |b─c|. -/
-set_option systemE.solverTime 30 in
-theorem helper_2_step5 (a b c d e f : Point) (AB DE CD BE AF : Line)
+theorem helper_2_3_step5 (a b c d e f : Point) (AB DE CD BE AF : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)
     (hfDE : f.onLine DE) (heDE : e.onLine DE) (hdDE : d.onLine DE)
@@ -22,7 +24,7 @@ theorem helper_2_step5 (a b c d e f : Point) (AB DE CD BE AF : Line)
     (hAFCD : ¬(AF.intersectsLine CD)) (heb : e ≠ b) :
     Triangle.area △ a:f:e + Triangle.area △ a:e:b = |(a─b)| * |(b─c)| := by
   euclid_intros
-  have step5_edf : between e d f := by sorry
+  have step5_edf : between e d f := by euclid_apply (helper_2_3_step5_edf a b c d e f AB DE CD BE AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (proposition_30 AF BE CD)
   euclid_apply (rectangle_area b a e f AB DE BE AF)
   have hba : |(a─b)| = |(b─a)| := by euclid_finish

@@ -4,7 +4,7 @@ namespace Elements.Book2
 
 /- 2.2.6: rect(BA,AC) + rect(AB,BC) = square on AB. Substitution of steps 2–5. -/
 set_option systemE.solverTime 30 in
-theorem helper_2_step6 (a b c d e f : Point)
+theorem helper_2_2_step6 (a b c d e f : Point)
     (step2 : Triangle.area △ d:a:b + Triangle.area △ d:b:e =
              (Triangle.area △ d:a:c + Triangle.area △ d:c:f)
            + (Triangle.area △ f:c:b + Triangle.area △ f:b:e))

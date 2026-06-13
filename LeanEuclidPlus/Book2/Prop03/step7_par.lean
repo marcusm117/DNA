@@ -1,12 +1,13 @@
 import SystemE
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
 /- sub-fact for 2.3.7: the square CDEB as formParallelogram c b d e AB DE CD BE (top C-B on AB,
    bottom D-E on DE, verticals CD and BE), repackaged from the proposition_46 construction atoms.
    Minimal context so it is fast. -/
-set_option systemE.solverTime 30 in
-theorem helper_2_step7_par (a b c d e : Point) (AB DE CD BE : Line)
+theorem helper_2_3_step7_par (a b c d e : Point) (AB DE CD BE : Line)
     (hacb : between a c b) (hbelen : |(b─e)| = |(c─b)|)
     (hcAB : c.onLine AB) (hbAB : b.onLine AB)
     (hdDE : d.onLine DE) (heDE : e.onLine DE)

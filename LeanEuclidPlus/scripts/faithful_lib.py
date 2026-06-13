@@ -44,6 +44,19 @@ CAP_RE_EXACT = re.compile(r"^[ \t]*set_option[ \t]+systemE\.solverTime[ \t]+" + 
                           r"[ \t]+in[ \t]*\r?\n", re.MULTILINE)
 WALL = CAP_SECONDS                                  # seconds — the per-build wall timeout (dev only)
 
+# Phase-C linter suppression: the WIRED build's machine-generated form trips two cosmetic linters that
+# are simply the wrong lint for generated faithful proofs — (1) `unusedVariables`: a helper signature
+# declares EVERY context-suppliable hypothesis (so the zero-SMT wire can discharge it), but a given proof
+# body need not reference all of them; (2) `unnecessarySeqFocus`: the uniform closer `(try split_ands)
+# <;> assumption` uses `<;>`, which the linter flags as unnecessary on single-atom (non-conjunctive)
+# claims. Neither indicates a defect. wire_main prepends these `set_option … false` lines on WIRE and
+# strips them on --unwire (mirroring caps), so ONLY the committed wired files are silenced — hand-written
+# code and dev-state builds keep both lints.
+LINTER_LINES = ("set_option linter.unusedVariables false\n"
+                "set_option linter.unnecessarySeqFocus false\n")
+LINTER_RE = re.compile(r"^[ \t]*set_option[ \t]+linter\.(?:unusedVariables|unnecessarySeqFocus)[ \t]+"
+                       r"(?:true|false)[ \t]*\r?\n", re.MULTILINE)
+
 
 class FaithfulError(Exception):
     """Any structural/naming/canonical-shape violation. Callers print it and exit non-zero — the
@@ -140,12 +153,29 @@ def prop_lock(propdir, *, block=True):
 
 
 def book_num(propdir):
-    """`…/Book2/Prop04` → 2.  The <book> in helper_<book>_<name>."""
+    """`…/Book2/Prop04` → 2.  The <book> in helper_<book>_<prop>_<name>."""
     for part in os.path.relpath(propdir, BOOK_ROOT).split(os.sep):
         m = re.fullmatch(r"Book(\d+)", part)
         if m:
             return int(m.group(1))
     raise FaithfulError(f"cannot determine book number from {os.path.relpath(propdir, BOOK_ROOT)}")
+
+
+def prop_num(path):
+    """`…/Book2/Prop04` or `…/Book2/Prop04/step5.lean` → 4.  The <prop> in helper_<book>_<prop>_<name>.
+    Works on a propdir OR any file path under it (a `Prop<NN>` segment must be present). The prop number
+    in the helper name is what makes `helper_2_2_step1` (Prop02) and `helper_2_3_step1` (Prop03) distinct
+    constants, so the whole book builds without an `environment already contains` collision."""
+    for part in os.path.relpath(os.path.realpath(path), BOOK_ROOT).split(os.sep):
+        m = re.fullmatch(r"Prop(\d+)", part)
+        if m:
+            return int(m.group(1))
+    raise FaithfulError(f"cannot determine prop number from {os.path.relpath(path, BOOK_ROOT)}")
+
+
+def helper_name(book, prop, name):
+    """The canonical helper theorem name: `helper_<book>_<prop>_<name>` (the ONE place it's built)."""
+    return f"helper_{book}_{prop}_{name}"
 
 
 def main_file(propdir):
@@ -293,11 +323,11 @@ def type_until_assign(src, start):
 
 
 # ── canonical body matching / swapping ──────────────────────────────────────────────────────────────
-def _body_regexes(book, name):
+def _body_regexes(book, prop, name):
     """The three canonical body shapes for a node, anchored at the `:=`. The WIRED shape requires the
-    called helper to be THIS node's own helper (helper_<book>_<name>) — so a real proof-local `have`
-    that merely calls some *other* helper is NOT mistaken for a wired node."""
-    helper = re.escape(f"helper_{book}_{name}")
+    called helper to be THIS node's own helper (helper_<book>_<prop>_<name>) — so a real proof-local
+    `have` that merely calls some *other* helper is NOT mistaken for a wired node."""
+    helper = re.escape(helper_name(book, prop, name))
     # Separators between successive tactics may be `;`, a newline, or both — so a wired body is
     # recognized whether it was written single-line (canonical, by wire_main) or multiline (legacy
     # finished props). The helper-name anchor keeps a *different* helper's call from matching.
@@ -316,11 +346,11 @@ def _body_regexes(book, name):
     ]
 
 
-def find_body(src, sep_idx, book, name):
+def find_body(src, sep_idx, book, prop, name):
     """`sep_idx` is the index of a node's `:=`. Match the canonical body anchored there. Return
     (state, start, end) where state ∈ {sorry,trace,wired} and src[start:end] is the whole body
     (from `:=`). Return None if no canonical shape matches (⟹ not a pipeline node)."""
-    for state, rx in _body_regexes(book, name):
+    for state, rx in _body_regexes(book, prop, name):
         m = rx.match(src, sep_idx)
         if m:
             return state, m.start(), m.end()
@@ -371,6 +401,7 @@ def parse_nodes_in_file(path, book):
     a pipeline node. An euclid_sentence with a non-canonical body is a hard error (Phase A guarantees
     `:= by sorry`)."""
     src = open(path, encoding="utf-8").read()
+    prop = prop_num(path)
     nodes = []
     for m in SENTENCE_HEAD.finditer(src):
         loc, name = m.group(1), m.group(2)
@@ -381,7 +412,7 @@ def parse_nodes_in_file(path, book):
             raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: euclid_sentence \"{loc}\" has no "
                                 f"`:=` body")
         sep = src.index(":=", close + 1)
-        body = find_body(src, sep, book, name)
+        body = find_body(src, sep, book, prop, name)
         if not body:
             raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: euclid_sentence \"{loc}\" "
                                 f"({name}) body is not canonical (expected `:= by sorry` or the wired "
@@ -395,7 +426,7 @@ def parse_nodes_in_file(path, book):
             claim, sep = type_until_assign(src, m.end())
         except FaithfulError:
             continue
-        body = find_body(src, sep, book, name)
+        body = find_body(src, sep, book, prop, name)
         if not body:
             continue                                            # a real proof-local `have`, not a node
         state, bs, be = body
@@ -444,14 +475,14 @@ def backing_file(propdir, name):
 
 
 def parse_helper_objs(path, book, name):
-    """Parse `theorem helper_<book>_<name> (binders…) : claim :=` in its backing file and return
+    """Parse `theorem helper_<book>_<prop>_<name> (binders…) : claim :=` in its backing file and return
     `(objs, n_hyps)`: the ordered list of OBJECT argument names (binders whose type is a geometric
     sort Point/Line/Circle) and the COUNT of hypothesis (Prop-typed) binders, grouped-binder aware
     (`(h1 h2 : T)` counts 2). The wire fully-applies the helper by passing `objs` positionally and one
     `(by assumption)` per hypothesis binder (see `wired_body`). ABORT LOUD if the theorem is
     missing/misnamed, or a binder's type LOOKS like a sort but isn't a known one (don't guess)."""
     src = open(path, encoding="utf-8").read()
-    expected = f"helper_{book}_{name}"
+    expected = helper_name(book, prop_num(path), name)
     m = re.search(r"\btheorem\s+(helper_\w+)", src)
     if not m:
         raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: no `theorem helper_…` found")
@@ -489,7 +520,7 @@ def parse_helper_objs(path, book, name):
     return objs, n_hyps
 
 
-def wired_body(book, name, objs, n_hyps):
+def wired_body(book, prop, name, objs, n_hyps):
     """The canonical wired body string (single line). The helper is FULLY applied: its object binders
     positionally (`objs`) and one `(by assumption)` per hypothesis binder. Full application makes the
     `euclid_apply` term carry no remaining antecedent arrow, so it takes the no-SMT `obtain` branch
@@ -506,7 +537,7 @@ def wired_body(book, name, objs, n_hyps):
     recorded by the helper's `euclid_apply` (Solve.lean:166-173, before any branch), so dropping
     `euclid_finish` loses nothing. Net: a leaf wire adds ~0 build time."""
     args = " ".join(objs + ["(by assumption)"] * n_hyps)
-    return f":= by euclid_apply ({f'helper_{book}_{name}'} {args}); (try split_ands) <;> assumption"
+    return f":= by euclid_apply ({helper_name(book, prop, name)} {args}); (try split_ands) <;> assumption"
 
 
 def resolve_call_args(propdir, book, node):
@@ -529,8 +560,9 @@ def resolve_call_args(propdir, book, node):
     if len(node.args) != len(binders):
         raise FaithfulError(
             f"node '{node.name}' in {os.path.relpath(node.file, BOOK_ROOT)}: `-- @args:` lists "
-            f"{len(node.args)} arg(s) {node.args} but helper_{book}_{node.name} takes {len(binders)} "
-            f"object binder(s) {binders}. The override must list EXACTLY the object args, in order.")
+            f"{len(node.args)} arg(s) {node.args} but {helper_name(book, prop_num(propdir), node.name)} "
+            f"takes {len(binders)} object binder(s) {binders}. The override must list EXACTLY the object "
+            f"args, in order.")
     return node.args, n_hyps
 
 
@@ -554,7 +586,7 @@ def set_node_state(src, node, state, propdir, book):
         body = ":= by trace_state; sorry"
     elif state == "wired":
         objs, n_hyps = resolve_call_args(propdir, book, node)
-        body = wired_body(book, node.name, objs, n_hyps)
+        body = wired_body(book, prop_num(propdir), node.name, objs, n_hyps)
     else:
         raise FaithfulError(f"unknown node state '{state}'")
     out = swap_node_body(src, node, body)
@@ -651,6 +683,25 @@ def add_cap(src):
     if not m:
         raise FaithfulError("no top-level `theorem` to cap")
     return src[:m.start()] + CAP_LINE + "\n" + src[m.start():]
+
+
+def strip_linter_opts(src):
+    """Remove the Phase-C linter-suppression lines (whole line each). For --unwire (back to dev state)."""
+    return LINTER_RE.sub("", src)
+
+
+def add_linter_opts(src):
+    """Insert the two `set_option linter.… false` lines once, right after the LAST import (file-level
+    options apply to the rest of the file). Idempotent. For Phase-C wire — silences the cosmetic
+    unused-variable / unnecessary-`<;>` warnings the generated wired form produces."""
+    if LINTER_RE.search(src):
+        return src
+    last = None
+    for m in re.finditer(r"^[ \t]*import[ \t]+\S+[ \t]*\r?\n", src, re.MULTILINE):
+        last = m
+    if last:
+        return src[:last.end()] + LINTER_LINES + src[last.end():]
+    return LINTER_LINES + src                            # no imports (unusual) — prepend
 
 
 # ── helper-import management (the OTHER half of wiring — script-owned, transient) ────────────────────

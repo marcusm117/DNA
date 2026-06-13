@@ -1,12 +1,13 @@
 import SystemE
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
 /- sub-fact for 2.3.6: the left rectangle ACDF is a parallelogram (top A,C on AB; bottom F,D on DE;
    verticals AF and CD). Its only non-obvious conjunct, a.sameSide f CD, is supplied (step6_sameside);
    between e d f pins the bottom layout. -/
-set_option systemE.solverTime 30 in
-theorem helper_2_step6_par (a c d e f : Point) (AB DE CD AF : Line)
+theorem helper_2_3_step6_par (a c d e f : Point) (AB DE CD AF : Line)
     (hedf : between e d f) (hasf : a.sameSide f CD)
     (hcd : c ≠ d) (hfd : f ≠ d)
     (haAB : a.onLine AB) (hcAB : c.onLine AB)

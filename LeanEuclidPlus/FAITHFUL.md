@@ -135,7 +135,7 @@ One agent per prop folder; approve each at gate A independently. Book 1 (`Book/`
 - **Gate A** never "fails" — it's your judgement. If a claim is wrong, fix it in `Main.lean` and
   re-`--save`.
 - **`--check` fails** → a structural problem (a node with no backing file, a name that breaks the
-  naming law `node ≡ file ≡ helper_<book>_node`, a missing 30s cap, a pre-wired node). Fix the file.
+  naming law `node ≡ file ≡ helper_<book>_<prop>_node`, a missing 30s cap, a pre-wired node). Fix the file.
 - **`--all` SP-fail** → a hypothesis the node declares isn't present at its call site, so its
   `(by assumption)` failed (`tactic 'assumption' failed`) — the wire is SMT-free, so this is NOT a
   timeout, it's a signature mismatch. Fix that backing file's signature: drop the hyp and derive it

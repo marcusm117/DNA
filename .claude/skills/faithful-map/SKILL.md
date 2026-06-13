@@ -204,7 +204,7 @@ For each chunk of sentences, for each `step_n`:
 > **NOTE — step files / signatures are created in PHASE B, not here.** Phase A's deliverable is just
 > `Main.lean`: the `euclid_sentence`s with real claim types, `:= by sorry` bodies, and the
 > object-producing constructions. The `Book<N>/PropNN/stepN.lean` files (with their candidate
-> `theorem helper_<book>_stepN <args> : <claim>` signatures) are written and verified in Phase B
+> `theorem helper_<book>_<prop>_stepN <args> : <claim>` signatures) are written and verified in Phase B
 > (`faithful-prove`), because choosing a step's hypotheses is part of proving it — and the per-step
 > script is what certifies those hypotheses are suppliable. EVERY logical sentence will get its own
 > `stepN.lean` (one step = one file, never inlined, never merged) — but that's Phase B's job.

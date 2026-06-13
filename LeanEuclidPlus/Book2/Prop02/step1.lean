@@ -9,7 +9,7 @@ open Elements.Book1
    The crux `between d f e` follows from `between a c b` and the parallel verticals
    (CF ∥ AD given, CF ∥ BE via proposition_30). -/
 set_option systemE.solverTime 30 in
-theorem helper_2_step1 (a b c d e f : Point) (AB DE AD BE CF : Line)
+theorem helper_2_2_step1 (a b c d e f : Point) (AB DE AD BE CF : Line)
     (hab : distinctPointsOnLine a b AB) (hc : c.onLine AB) (hacb : between a c b)
     (hsq : formParallelogram d e a b DE AB AD BE)
     (hde : |(d─e)| = |(a─b)|) (had : |(a─d)| = |(a─b)|) (hbe : |(b─e)| = |(a─b)|)

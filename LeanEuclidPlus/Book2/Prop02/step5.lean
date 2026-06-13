@@ -7,7 +7,7 @@ open Elements.Book1
 
 /- 2.2.5: CE = rect(AB,BC). rectangle_area on the sub-rectangle b,c,f,e; |b─e| = |a─b|. -/
 set_option systemE.solverTime 30 in
-theorem helper_2_step5 (a b c d e f : Point) (AB DE AD BE CF : Line)
+theorem helper_2_2_step5 (a b c d e f : Point) (AB DE AD BE CF : Line)
     (hsq : formParallelogram d e a b DE AB AD BE)
     (hbe : |(b─e)| = |(a─b)|) (habe : ∠ a:b:e = ∟)
     (hcAB : c.onLine AB) (hacb : between a c b)

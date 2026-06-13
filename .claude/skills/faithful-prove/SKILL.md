@@ -42,12 +42,16 @@ all of that.
   - **Main only:** `euclid_sentence "loc" "txt" (stepN : C) := by sorry`  (from Phase A — don't add these).
   - **anywhere:** `have <name> : C := by sorry`  (you add these when decomposing).
 - **Backing file** = the helper that proves a node. **NAMING LAW (the script enforces it, abort-loud):**
-  > node name  ≡  `<name>.lean` basename  ≡  `theorem helper_<book>_<name>`.
-  > `have step27_bigsq : … := by sorry` ↔ `step27_bigsq.lean` ↔ `theorem helper_2_step27_bigsq`.
+  > node name  ≡  `<name>.lean` basename  ≡  `theorem helper_<book>_<prop>_<name>`.
+  > `have step27_bigsq : … := by sorry` ↔ `step27_bigsq.lean` ↔ `theorem helper_2_4_step27_bigsq` (book 2,
+  > prop 4). The `<prop>` segment is what keeps `helper_2_2_step1` (Prop02) and `helper_2_3_step1`
+  > (Prop03) DISTINCT constants — so the whole book builds without an `environment already contains
+  > 'helper_…'` collision. (The node/file basenames stay the short `step27_bigsq`; only the theorem name
+  > carries the book+prop prefix.)
   Each name maps to exactly ONE backing FILE; a `have` of that name may OCCUR in several parents (a
   reused helper — see "Shared logic" below). An `euclid_sentence` step name is unique (one per sentence).
 - **Wiring** = a node's `sorry` replaced by
-  `euclid_apply (helper_<book>_<name> <objs> (by assumption)…); (try split_ands) <;> assumption` **PLUS
+  `euclid_apply (helper_<book>_<prop>_<name> <objs> (by assumption)…); (try split_ands) <;> assumption` **PLUS
   the `import Book<N>.PropNN.<name>` that makes that helper resolve** — wiring is BOTH halves. The helper
   is **FULLY APPLIED**: its objects positionally, then **one `(by assumption)` per hypothesis binder**.
   Full application means the `euclid_apply` term has no remaining antecedent arrow, so **the wire does
@@ -211,7 +215,7 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
   BUT ONLY WHILE its full signature is suppliable at EVERY site** (i.e. every hyp it declares is present,
   by type, at each call site — the assumption-wire's requirement). If the same fact recurs, write a
   `have <name> : <claim> := by sorry` in each parent, backed by ONE `<name>.lean` (theorem
-  `helper_<book>_<name>`, quantified over its own binders). The scripts handle it: SF/SP run at EVERY
+  `helper_<book>_<prop>_<name>`, quantified over its own binders). The scripts handle it: SF/SP run at EVERY
   call site, P runs ONCE on the single backing file, `--all` shows "SP [N call sites] + P".
   > **The no-duplicate rule is NARROW: it forbids copy-pasting an IDENTICAL proof BODY into two files
   > (two `<name>.lean` for one name is a hard error). It does NOT force one fat lemma to stay monolithic
@@ -289,11 +293,11 @@ cited inside your backing file counts. The one rule inside backing files: cite a
 ---
 
 ## THE FILE STRUCTURE (where backing/sub files go)
-- One Euclid sentence = one `Book<N>/PropNN/stepN.lean` (theorem `helper_<book>_stepN`). NEVER inline a
+- One Euclid sentence = one `Book<N>/PropNN/stepN.lean` (theorem `helper_<book>_<prop>_stepN`). NEVER inline a
   sentence's proof into Main, never merge two sentences — each must build in isolation.
 - A hard step decomposes into more files (never fewer):
   - a few subs → flat in the prop folder: `Book<N>/PropNN/stepN_<sub>.lean` (module
-    `Book<N>.PropNN.stepN_<sub>`, theorem `helper_<book>_stepN_<sub>`), referenced as a `have stepN_<sub>`
+    `Book<N>.PropNN.stepN_<sub>`, theorem `helper_<book>_<prop>_stepN_<sub>`), referenced as a `have stepN_<sub>`
     node inside `stepN.lean` — the script wires + imports it. NEVER a hand-written
     `euclid_apply (helper_…)` + manual import; every helper call is a node.
   - a MASSIVE step with many subs → its own subfolder `Book<N>/PropNN/stepN/<sub>.lean` (module

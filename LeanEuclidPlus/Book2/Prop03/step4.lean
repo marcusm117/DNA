@@ -1,5 +1,7 @@
 import SystemE
 import Book.Prop30
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
@@ -9,8 +11,7 @@ open Elements.Book1
    The big rectangle f e a b (bottom F E, top A B, verticals AF, BE) is cut by the middle
    vertical CD at d (bottom, between f e) and c (top, between a b); sum_parallelograms_area
    gives the area split. AF ∥ BE comes from proposition_30 (AF ∥ CD ∥ BE). -/
-set_option systemE.solverTime 30 in
-theorem helper_2_step4 (a b c d e f : Point) (AB DE CD BE AF : Line)
+theorem helper_2_3_step4 (a b c d e f : Point) (AB DE CD BE AF : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)
     (hfDE : f.onLine DE) (heDE : e.onLine DE) (hdDE : d.onLine DE)

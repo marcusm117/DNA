@@ -1,5 +1,7 @@
 import SystemE
 import Book.Prop30
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
@@ -9,8 +11,7 @@ open Elements.Book1
    parallel verticals CD, BE, AF on the bottom line DE preserve the order between a c b of their
    tops a, c, b, giving between e d f. AF ∥ CD is given; AF ∥ BE follows by proposition_30 from
    AF ∥ CD and CD ∥ BE. The sameSide / non-intersection atoms (the square's) pin the order. -/
-set_option systemE.solverTime 30 in
-theorem helper_2_step2 (a b c d e f : Point) (AB DE CD BE AF : Line)
+theorem helper_2_3_step2 (a b c d e f : Point) (AB DE CD BE AF : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hcAB : c.onLine AB) (hbAB : b.onLine AB)
     (haAF : a.onLine AF) (hcCD : c.onLine CD) (hbBE : b.onLine BE)

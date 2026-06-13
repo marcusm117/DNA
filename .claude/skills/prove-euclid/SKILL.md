@@ -336,10 +336,10 @@ A node's backing file is cheap (~30s); if it won't build in 30s it's TOO BIG →
 - You NEVER wire the helper into its parent or add its import — the SCRIPT does both, transiently
   (SP) and permanently (Phase C `wire_main`). You only write the backing file's proof body.
 - **Faithfulness pipeline (per `faithful-prove`):** when a helper realizes ONE Euclid sentence, it
-  lives in the prop's folder as `Book<N>/PropNN/stepN.lean`, theorem `helper_<book>_stepN`
-  (sub-decompositions `Book<N>/PropNN/stepN_<sub>.lean` → `helper_<book>_stepN_<sub>`); build/verify
+  lives in the prop's folder as `Book<N>/PropNN/stepN.lean`, theorem `helper_<book>_<prop>_stepN`
+  (sub-decompositions `Book<N>/PropNN/stepN_<sub>.lean` → `helper_<book>_<prop>_stepN_<sub>`); build/verify
   each via `python3 scripts/check_step.py Book<N>/PropNN stepN`. The script discharges the sentence in
-  `Main.lean` by `euclid_apply (helper_<book>_stepN … (by assumption)…); (try split_ands) <;> assumption`
+  `Main.lean` by `euclid_apply (helper_<book>_<prop>_stepN … (by assumption)…); (try split_ands) <;> assumption`
   — a zero-SMT structural wire, NOT `euclid_finish` (you never type it). (No
   `Scratch/`, no `_steps.lean`, no merge step.) **Never** discharge a cited step with term-mode
   `exact proposition_M …` — a citation is only recorded when the prop/helper enters via `euclid_apply`.

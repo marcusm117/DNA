@@ -1,12 +1,13 @@
 import SystemE
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
 /- sub-fact for 2.3.6: the left-rectangle area identity △a:f:d + △a:d:c = |a─c|*|a─f|. Given the
    parallelogram a c f d (step6_par), rectangle_area fires; its right-angle precondition ∠a:f:d
    follows from ∠c:d:e = ∟ and the parallel verticals. -/
-set_option systemE.solverTime 30 in
-theorem helper_2_step6_area (a c d e f : Point) (AB DE CD AF : Line)
+theorem helper_2_3_step6_area (a c d e f : Point) (AB DE CD AF : Line)
     (hpar : formParallelogram a c f d AB DE AF CD)
     (hedf : between e d f) (hcde : ∠ c:d:e = ∟)
     (heDE : e.onLine DE) :
