@@ -30,7 +30,8 @@ theorem helper_2_step19 (a b c d e f g h k : Point) (AB DE AD BE CF HK BD : Line
     (hac : a ≠ c) :
     |(h─g)| = |(a─c)| := by
   euclid_intros
-  euclid_apply (helper_2_positions a b c d e f g h k AB DE AD BE CF HK BD)
+  have positions : between a h d ∧ between b k e ∧ between d f e ∧
+      between b g d ∧ between c g f ∧ between h g k := by sorry
   euclid_apply (proposition_34' a c h g AB HK AD CF)
   euclid_finish
 

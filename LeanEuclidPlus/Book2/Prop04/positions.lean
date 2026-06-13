@@ -20,7 +20,6 @@ theorem helper_2_positions (a b c d e f g h k : Point) (AB DE AD BE CF HK BD : L
     (hgHK : g.onLine HK) (hHKAB : ¬(HK.intersectsLine AB))
     (hhHK : h.onLine HK) (hhAD : h.onLine AD)
     (hkHK : k.onLine HK) (hkBE : k.onLine BE)
-    -- distinctness facts (all from the figure; supplied by Main)
     (hbd : b ≠ d) (hbg : b ≠ g) (hdg : d ≠ g) (hCFBD : CF ≠ BD)
     (hah : a ≠ h) (hdh : d ≠ h) (hADHK : AD ≠ HK)
     (hbk : b ≠ k) (hek : e ≠ k) (hBEHK : BE ≠ HK)

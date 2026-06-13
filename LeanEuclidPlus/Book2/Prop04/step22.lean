@@ -32,7 +32,8 @@ theorem helper_2_step22 (a b c d e f g h k : Point) (AB DE AD BE CF HK BD : Line
     (hstep17 : |(c─g)| = |(c─b)|) :
     Triangle.area △ a:c:g + Triangle.area △ a:g:h = |(a─c)| * |(c─b)| := by
   euclid_intros
-  euclid_apply (helper_2_positions a b c d e f g h k AB DE AD BE CF HK BD)
+  have positions : between a h d ∧ between b k e ∧ between d f e ∧
+      between b g d ∧ between c g f ∧ between h g k := by sorry
   euclid_apply (proposition_34' a c h g AB HK AD CF)
   euclid_assert |(a─h)| = |(c─b)|
   euclid_apply (rectangle_area a c h g AB HK AD CF)

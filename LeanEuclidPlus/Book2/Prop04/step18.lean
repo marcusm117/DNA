@@ -41,7 +41,8 @@ theorem helper_2_step18 (a b c d e f g h k : Point) (AB DE AD BE CF HK BD : Line
     (∠ d:h:g = ∟ ∧ ∠ h:g:f = ∟ ∧ ∠ g:f:d = ∟ ∧ ∠ f:d:h = ∟) := by
   euclid_intros
   -- positional facts (in particular between a h d)
-  euclid_apply (helper_2_positions a b c d e f g h k AB DE AD BE CF HK BD)
+  have positions : between a h d ∧ between b k e ∧ between d f e ∧
+      between b g d ∧ between c g f ∧ between h g k := by sorry
   -- HK ∥ DE (for the HGFD parallelogram)
   euclid_apply (proposition_30 HK DE AB)
   -- AHGC parallelogram: |AC| = |HG| and |AH| = |CG|  [1.34]

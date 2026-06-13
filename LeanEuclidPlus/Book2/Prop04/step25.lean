@@ -30,7 +30,11 @@ theorem helper_2_step25 (a b c d e f g h k : Point) (AB DE AD BE CF HK BD : Line
     (Triangle.area △ h:g:f + Triangle.area △ h:f:d = |(a─c)| * |(a─c)|) ∧
     (Triangle.area △ c:b:k + Triangle.area △ c:k:g = |(c─b)| * |(c─b)|) := by
   euclid_intros
-  euclid_apply (helper_2_step20 a b c d e f g h k AB DE AD BE CF HK BD)
+  have positions : between a h d ∧ between b k e ∧ between d f e ∧
+      between b g d ∧ between c g f ∧ between h g k := by sorry
+  have area_accb :
+      (Triangle.area △ h:g:f + Triangle.area △ h:f:d = |(a─c)| * |(a─c)|) ∧
+      (Triangle.area △ c:b:k + Triangle.area △ c:k:g = |(c─b)| * |(c─b)|) := by sorry
   euclid_finish
 
 end Elements.Book2

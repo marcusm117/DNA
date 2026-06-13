@@ -63,6 +63,7 @@ by
     "Thus, angle $CGB$ is also equal to $GBC$."
     (step4 : ∠ c:g:b = ∠ g:b:c) := by sorry
 
+  -- @args: b c g CF BD AB
   euclid_sentence "2.4.5"
     "So the side $BC$ is equal to the side $CG$ [Prop.~1.6]."
     (step5 : |(b─c)| = |(c─g)|) := by sorry
@@ -147,7 +148,8 @@ by
   euclid_sentence "2.4.24"
     "Thus, the (rectangles) $AG$ and $GE$ are equal to twice the (rectangle contained) by $AC$ and $CB$."
     (step24 : (Triangle.area △ a:c:g + Triangle.area △ a:g:h) +
-              (Triangle.area △ g:k:e + Triangle.area △ g:e:f) = 2 * (|(a─c)| * |(c─b)|)) := by sorry
+              (Triangle.area △ g:k:e + Triangle.area △ g:e:f) =
+              (|(a─c)| * |(c─b)|) + (|(a─c)| * |(c─b)|)) := by sorry
 
   euclid_sentence "2.4.25"
     "And $HF$ and $CK$ are the squares on $AC$ and $CB$ (respectively)."
@@ -160,7 +162,8 @@ by
               (Triangle.area △ c:b:k + Triangle.area △ c:k:g) +
               (Triangle.area △ a:c:g + Triangle.area △ a:g:h) +
               (Triangle.area △ g:k:e + Triangle.area △ g:e:f) =
-              |(a─c)| * |(a─c)| + |(c─b)| * |(c─b)| + 2 * (|(a─c)| * |(c─b)|)) := by sorry
+              |(a─c)| * |(a─c)| + |(c─b)| * |(c─b)| +
+                ((|(a─c)| * |(c─b)|) + (|(a─c)| * |(c─b)|))) := by sorry
 
   euclid_sentence "2.4.27"
     "But, the (figures) $HF$, $CK$, $AG$, and $GE$ are (equivalent to) the whole of $ADEB$, which is the square on $AB$."

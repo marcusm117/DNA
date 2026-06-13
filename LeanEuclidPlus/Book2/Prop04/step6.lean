@@ -14,12 +14,13 @@ theorem helper_2_step6 (a b c d e g k : Point) (AB DE AD BE CF HK : Line)
     (hsq : formParallelogram d e a b DE AB AD BE)
     (hcb : distinctPointsOnLine c b AB) (hgk : distinctPointsOnLine g k HK)
     (hcCF : c.onLine CF) (hgCF : g.onLine CF) (hbBE : b.onLine BE) (hkBE : k.onLine BE)
-    (hcg_side : c.sameSide g BE)
-    (hADCF : AD ≠ CF) (hbk : b ≠ k)
+    (hADCF : AD ≠ CF) (hbk : b ≠ k) (hcg : c ≠ g)
     (hCFAD : ¬(CF.intersectsLine AD)) (hABHK : ¬(AB.intersectsLine HK)) :
     |(c─b)| = |(g─k)| ∧ |(c─g)| = |(k─b)| := by
   euclid_intros
+  -- CF ∥ BE (from CF ∥ AD, step1, and AD ∥ BE, opposite sides of square ADEB).
   euclid_apply (proposition_30 CF BE AD)
+  -- c,g both on CF, which does not cross BE ⟹ c.sameSide g BE (intersection_lines_opposing, contra).
   euclid_apply (proposition_34' c b g k AB HK CF BE)
   euclid_finish
 

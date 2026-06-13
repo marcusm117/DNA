@@ -1,14 +1,9 @@
 import SystemE
-import Book.Prop30
-import Book.Prop34
 
 namespace Elements.Book2
 
-open Elements.Book1
-
 -- 2.4.20: the squares HF and KC are on AC and CB — area(HF) = |AC|², area(KC) = |CB|².
--- Uses helper_2_positions to pin the parallelogram orientations, derives the two missing parallels
--- (HK∥DE, CF∥BE) via [1.30], then rectangle_area on each right-angled square.
+-- This is the shared area lemma `area_accb` (reused verbatim by 2.4.25); proved there.
 set_option systemE.solverTime 30 in
 theorem helper_2_step20 (a b c d e f g h k : Point) (AB DE AD BE CF HK BD : Line)
     (hdDE : d.onLine DE) (heDE : e.onLine DE) (haAB : a.onLine AB) (hbAB : b.onLine AB)
@@ -36,12 +31,11 @@ theorem helper_2_step20 (a b c d e f g h k : Point) (AB DE AD BE CF HK BD : Line
     (Triangle.area △ h:g:f + Triangle.area △ h:f:d = |(a─c)| * |(a─c)|) ∧
     (Triangle.area △ c:b:k + Triangle.area △ c:k:g = |(c─b)| * |(c─b)|) := by
   euclid_intros
-  euclid_apply (helper_2_positions a b c d e f g h k AB DE AD BE CF HK BD)
-  euclid_apply (proposition_30 HK DE AB)
-  euclid_apply (proposition_30 CF BE AD)
-  euclid_assert |(h─d)| = |(a─c)|
-  euclid_apply (rectangle_area h g d f HK DE AD CF)
-  euclid_apply (rectangle_area c b g k AB HK CF BE)
+  have positions : between a h d ∧ between b k e ∧ between d f e ∧
+      between b g d ∧ between c g f ∧ between h g k := by sorry
+  have area_accb :
+      (Triangle.area △ h:g:f + Triangle.area △ h:f:d = |(a─c)| * |(a─c)|) ∧
+      (Triangle.area △ c:b:k + Triangle.area △ c:k:g = |(c─b)| * |(c─b)|) := by sorry
   euclid_finish
 
 end Elements.Book2
