@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- Helper for 2.1.8 (length): d ≠ k. d is on BC, k is on GH, GH ∦ BC and GH ≠ BC (g on GH is off
    BC), so a common point would force GH and BC to intersect. Hence d ≠ k. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step8_len_neq (d g k : Point) (BC GH : Line)
     (hdBC : d.onLine BC) (hgGH : g.onLine GH) (hgoffBC : ¬(g.onLine BC)) (hkGH : k.onLine GH)
     (hGHBC : ¬(GH.intersectsLine BC)) :

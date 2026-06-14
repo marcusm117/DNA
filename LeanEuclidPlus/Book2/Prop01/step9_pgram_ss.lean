@@ -9,7 +9,6 @@ namespace Elements.Book2
    l ≠ h: l on EL, h on CH; if l = h it would lie on both EL and CH and on GH and BF-side… it
    suffices that l on EL while h is the foot of CH; the feet differ because c ≠ e on BC give
    distinct verticals — established via the off-BC anchors. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step9_pgram_ss (b c d e f g h l : Point) (BC BF EL CH GH : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (heBC : e.onLine BC)
     (hbde : between b d e) (hdec : between d e c)

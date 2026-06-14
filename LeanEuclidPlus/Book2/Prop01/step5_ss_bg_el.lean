@@ -8,7 +8,6 @@ namespace Elements.Book2
    vertical. b,g are off EL (a common point of EL and BF would force them to meet, contradicting
    EL ∦ BF — EL ≠ BF since e ≠ b sits on EL∩BC while b on BF is off EL). Being off EL and not
    separable across it (BF ∦ EL), b and g share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step5_ss_bg_el (b e f g : Point) (BC BF EL : Line)
     (hbBC : b.onLine BC) (heBC : e.onLine BC) (hbe : b ≠ e)
     (hbBF : b.onLine BF) (hgBF : g.onLine BF) (hfBF : f.onLine BF) (hfoffBC : ¬(f.onLine BC))

@@ -9,7 +9,6 @@ namespace Elements.Book2
    g shares b's side (b.sameSide g EL), h shares c's side (c.sameSide h EL), and b,c are on
    opposite sides of EL because e (between b and c on BC) lies on EL (pasch_3). Then pasch_4
    on g, l, h across EL and GH gives between g l h. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step5_btw_glh (b c d e g h l : Point) (BC GH EL : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (heBC : e.onLine BC)
     (hbde : between b d e) (hdec : between d e c)

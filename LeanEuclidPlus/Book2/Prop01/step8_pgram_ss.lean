@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- Helper for 2.1.8: d and e (both on BC) are on the same side of GH, and k ≠ l. d,e are off GH
    (GH ∦ BC, GH ≠ BC since k on GH is off BC), so not separable across GH ⟹ same side. k ≠ l
    since k on DK, l on EL, and the feet differ (d ≠ e give distinct verticals). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step8_pgram_ss (b c d e f g k l : Point) (BC BF DK EL GH : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (hdBC : d.onLine BC) (heBC : e.onLine BC)
     (hbde : between b d e) (hdec : between d e c)

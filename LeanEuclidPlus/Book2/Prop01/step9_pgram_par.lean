@@ -10,7 +10,6 @@ open Elements.Book1
 /- Helper for 2.1.9: EL ∦ CH, because both are parallel to BF (proposition_30). The line
    distinctness preconditions are established from the BC anchor points b,e,c (distinct, from the
    order b-d-e-c) and the off-BC anchors f on BF, l on EL, h on CH. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step9_pgram_par (b c d e f h l : Point) (BC BF EL CH : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (heBC : e.onLine BC)
     (hbde : between b d e) (hdec : between d e c)

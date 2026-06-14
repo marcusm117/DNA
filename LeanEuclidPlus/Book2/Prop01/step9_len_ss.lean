@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- Helper for 2.1.9 (length): b and g (both on BF) are on the same side of EL. b,g are off EL
    (a common point of EL and BF would force them to meet, contradicting EL ∦ BF — EL ≠ BF since
    e ≠ b on EL∩BC while f on BF is off BC). Being off EL and not separable across it, share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step9_len_ss (b d e f g : Point) (BC BF EL : Line)
     (hbBC : b.onLine BC) (hdBC : d.onLine BC) (heBC : e.onLine BC) (hbde : between b d e)
     (hbBF : b.onLine BF) (hgBF : g.onLine BF) (hfBF : f.onLine BF) (hfoffBC : ¬(f.onLine BC))

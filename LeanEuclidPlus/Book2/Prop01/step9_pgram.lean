@@ -1,4 +1,6 @@
 import SystemE
+import Book2.Prop01.step9_pgram_par
+import Book2.Prop01.step9_pgram_ss
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +10,6 @@ namespace Elements.Book2
    and rail GH (l,h). The two non-incidence facts are supplied by sub-nodes: step9_pgram_par
    (EL ∦ CH, via proposition_30) and step9_pgram_ss (e.sameSide c GH and l ≠ h). The assembly is
    then a direct ⟨…⟩ (the BC ∦ GH conjunct is an orientation flip of the given). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step9_pgram (b c d e f g h l : Point) (BC BF EL CH GH : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (heBC : e.onLine BC)
     (hbde : between b d e) (hdec : between d e c)
@@ -20,8 +21,8 @@ theorem helper_2_1_step9_pgram (b c d e f g h l : Point) (BC BF EL CH GH : Line)
     (hGHBC : ¬(GH.intersectsLine BC)) :
     formParallelogram e l c h EL CH BC GH := by
   euclid_intros
-  have step9_pgram_par : ¬(EL.intersectsLine CH) := by sorry
-  have step9_pgram_ss : e.sameSide c GH ∧ l ≠ h := by sorry
+  have step9_pgram_par : ¬(EL.intersectsLine CH) := by euclid_apply (helper_2_1_step9_pgram_par b c d e f h l BC BF EL CH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_pgram_ss : e.sameSide c GH ∧ l ≠ h := by euclid_apply (helper_2_1_step9_pgram_ss b c d e f g h l BC BF EL CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   obtain ⟨hesc, hlh⟩ := step9_pgram_ss
   refine ⟨heEL, hlEL, hcCH, hhCH, heBC, hcBC, ⟨hlGH, hhGH, hlh⟩, hesc, step9_pgram_par, ?_⟩
   euclid_finish

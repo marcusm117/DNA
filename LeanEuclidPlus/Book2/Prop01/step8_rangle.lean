@@ -11,7 +11,6 @@ open Elements.Book1
    b and e; the co-interior angles sum to two right angles (proposition_29'''''):
    ∠g:b:e + ∠b:e:l = ∟ + ∟. With ∠g:b:e = ∠f:b:c = ∟ (g on ray b→f', e on segment b-c) this gives
    ∠b:e:l = ∟; and d lies on segment b-e (between b d e), on e's b-side, so ∠d:e:l = ∠b:e:l = ∟. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step8_rangle (b c d e f f' g l : Point) (BC BF EL GH : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (hdBC : d.onLine BC) (heBC : e.onLine BC)
     (hbde : between b d e) (hdec : between d e c)

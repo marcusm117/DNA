@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.1.10: the rectangle A·BC equals A·BD + A·DE + A·EC. Pure linear arithmetic: step5 says the big
    rectangle's area = the three sub-rectangles' areas; step6 ties the big area to |A|·|BC|, and
    step7,8,9 tie each sub-area to |A|·|BD|, |A|·|DE|, |A|·|EC|. Chaining gives the conclusion. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step10 (a₁ a₂ b c d e g h k l : Point)
     (step5 : Triangle.area △ b:c:h + Triangle.area △ b:g:h =
       (Triangle.area △ b:d:k + Triangle.area △ b:g:k)

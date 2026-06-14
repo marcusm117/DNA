@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop01.step5_ss_el_dk_par
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -9,7 +10,6 @@ namespace Elements.Book2
    (a common point of DK and EL would force them to meet, contradicting DK ∦ EL — DK ≠ EL since
    d ≠ e sits on DK∩BC while e on EL is off DK). Being off DK and not separable across it, e and
    l share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step5_ss_el_dk (b d e f k l : Point) (BC BF DK EL : Line)
     (hbBC : b.onLine BC) (hdBC : d.onLine BC) (heBC : e.onLine BC)
     (hbd : b ≠ d) (hbe : b ≠ e) (hde : d ≠ e)
@@ -19,7 +19,7 @@ theorem helper_2_1_step5_ss_el_dk (b d e f k l : Point) (BC BF DK EL : Line)
     (hDKBF : ¬(DK.intersectsLine BF)) (hELBF : ¬(EL.intersectsLine BF)) :
     e.sameSide l DK := by
   euclid_intros
-  have step5_ss_el_dk_par : ¬(EL.intersectsLine DK) := by sorry
+  have step5_ss_el_dk_par : ¬(EL.intersectsLine DK) := by euclid_apply (helper_2_1_step5_ss_el_dk_par b d e f k l BC BF DK EL (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   have heoff : ¬(e.onLine DK) := by
     by_contra heon
     euclid_apply (intersection_lines_common_point e DK EL)

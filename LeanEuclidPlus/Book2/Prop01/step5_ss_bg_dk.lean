@@ -8,7 +8,6 @@ namespace Elements.Book2
    vertical. b,g are off DK (a common point of DK and BF would force them to meet, contradicting
    DK ∦ BF — DK ≠ BF since d ≠ b sits on DK∩BC while b on BF is off DK). Being off DK and not
    separable across it (BF ∦ DK), b and g share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step5_ss_bg_dk (b d f g : Point) (BC BF DK : Line)
     (hbBC : b.onLine BC) (hdBC : d.onLine BC) (hbd : b ≠ d)
     (hbBF : b.onLine BF) (hgBF : g.onLine BF) (hfBF : f.onLine BF) (hfoffBC : ¬(f.onLine BC))

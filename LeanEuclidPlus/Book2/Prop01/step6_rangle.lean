@@ -12,7 +12,6 @@ open Elements.Book1
    ∠g:b:c + ∠b:c:h = ∟ + ∟. Since g lies on the ray b→f (between b g f', between b f f'),
    ∠g:b:c = ∠f:b:c = ∟, hence ∠b:c:h = ∟. g.sameSide h BC (both feet's verticals rise to GH on
    one side of BC). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step6_rangle (b c f f' g h : Point) (BC BF CH GH : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (hbc : b ≠ c)
     (hbBF : b.onLine BF) (hfBF : f.onLine BF) (hf'BF : f'.onLine BF)

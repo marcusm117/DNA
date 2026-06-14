@@ -8,7 +8,6 @@ namespace Elements.Book2
    GH (g,k). The incidences are given; the remaining facts: g ≠ k on GH (distinct feet),
    b.sameSide d GH (both on BC, which is parallel to GH so does not cross it), BF ∦ DK (given),
    BC ∦ GH (given). f anchors BF ≠ BC; the off-GH facts come from BC ∥ GH; b ≠ d from between b d e. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step7_pgram (b d e f f' g k : Point) (BC BF DK GH : Line)
     (hbBC : b.onLine BC) (hdBC : d.onLine BC) (hbde : between b d e)
     (hbBF : b.onLine BF) (hfBF : f.onLine BF) (hfoffBC : ¬(f.onLine BC))

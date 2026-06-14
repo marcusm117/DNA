@@ -9,7 +9,6 @@ namespace Elements.Book2
    g shares b's side (b.sameSide g DK), l shares e's side (e.sameSide l DK), and b,e are on
    opposite sides of DK because d (between b and e on BC) lies on DK (pasch_3). Then pasch_4
    on g, k, l across DK and GH gives between g k l. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step5_btw_gkl (b d e g k l : Point) (BC GH DK : Line)
     (hbBC : b.onLine BC) (hdBC : d.onLine BC) (heBC : e.onLine BC)
     (hbde : between b d e)

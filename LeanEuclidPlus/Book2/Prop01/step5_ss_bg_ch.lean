@@ -8,7 +8,6 @@ namespace Elements.Book2
    vertical CH. b,g are off CH (a common point of CH and BF would force them to meet, contradicting
    CH ∦ BF — CH ≠ BF since c ≠ b on CH∩BC while f on BF is off BC). Being off CH and not separable
    across it (BF ∦ CH), b and g share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step5_ss_bg_ch (b c f g : Point) (BC BF CH : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (hbc : b ≠ c)
     (hbBF : b.onLine BF) (hgBF : g.onLine BF) (hfBF : f.onLine BF) (hfoffBC : ¬(f.onLine BC))

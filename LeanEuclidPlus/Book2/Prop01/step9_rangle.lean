@@ -12,7 +12,6 @@ open Elements.Book1
    ∠g:b:c + ∠b:c:h = ∟ + ∟. With ∠g:b:c = ∠f:b:c = ∟ (g on ray b→f', d,e,c collinear) this gives
    ∠b:c:h = ∟; and e lies on segment b-c (between b d e, between d e c), on c's b-side, so
    ∠e:c:h = ∠b:c:h = ∟. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step9_rangle (b c d e f f' g h : Point) (BC BF CH GH : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (hdBC : d.onLine BC) (heBC : e.onLine BC)
     (hbde : between b d e) (hdec : between d e c)

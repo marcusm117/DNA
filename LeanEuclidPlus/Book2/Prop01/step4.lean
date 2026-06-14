@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.1.4: DK, EL, CH drawn through D, E, C parallel to BG (line BF) [Prop.~1.31]. Each line's
    through-point incidence and parallelism are produced by the proposition_31 constructions in
    Main; this helper repackages them. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step4 (d e c : Point) (DK EL CH BF : Line)
     (hdDK : d.onLine DK) (hDKBF : ¬(DK.intersectsLine BF))
     (heEL : e.onLine EL) (hELBF : ¬(EL.intersectsLine BF))

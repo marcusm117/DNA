@@ -1,4 +1,6 @@
 import SystemE
+import Book2.Prop01.step7_rangle
+import Book2.Prop01.step7_pgram
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +10,6 @@ namespace Elements.Book2
    BK is contained by GB and BD (rectangle_area on the parallelogram b,g,d,k with the right angle
    ∠b:d:k = ∟), giving area = |b─g| * |b─d|; and |b─g| = |a₁a₂| (step2), so area = |a₁a₂| * |b─d|.
    The right angle at d (step7_rangle) and the parallelogram (step7_pgram) are derived as sub-nodes. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_1_step7 (a₁ a₂ b c d e f f' g k : Point) (BC BF DK GH : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (hdBC : d.onLine BC)
     (hbde : between b d e) (hdec : between d e c)
@@ -20,8 +21,8 @@ theorem helper_2_1_step7 (a₁ a₂ b c d e f f' g k : Point) (BC BF DK GH : Lin
     (hkGH : k.onLine GH) :
     Triangle.area △ b:d:k + Triangle.area △ b:g:k = |(a₁─a₂)| * |(b─d)| := by
   euclid_intros
-  have step7_rangle : ∠ b:d:k = ∟ := by sorry
-  have step7_pgram : formParallelogram b g d k BF DK BC GH := by sorry
+  have step7_rangle : ∠ b:d:k = ∟ := by euclid_apply (helper_2_1_step7_rangle b c d e f f' g k BC BF DK GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_pgram : formParallelogram b g d k BF DK BC GH := by euclid_apply (helper_2_1_step7_pgram b d e f f' g k BC BF DK GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (rectangle_area b g d k BF DK BC GH)
   euclid_finish
 
