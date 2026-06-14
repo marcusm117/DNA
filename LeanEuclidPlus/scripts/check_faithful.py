@@ -13,9 +13,12 @@ human-checked):
       euclid_intro_sentence    — STRUCTURAL: enunciation + "I say that …" (attaches to euclid_intros)
       euclid_conclude_sentence — STRUCTURAL: closing restatement + QED (attaches to the final `exact`)
 
-  CRITERION 3 (dependency reference).  For each sentence, every `[Prop.~B.N]` Euclid cites must be
-  referenced by a `proposition_N` in that sentence's BLOCK (scope A: the source between the previous
-  sentence and this one). This REFERENCES the dependency, it does not prove it is used — matching
+  CRITERION 3 (dependency reference, CONSTRUCTION-AWARE).  Every `[Prop.~B.N]` a sentence cites must be
+  referenced by a `proposition_N` — as a CONSTRUCTION (`euclid_apply … as …` in Main, which may sit
+  earlier than the citing sentence since objects are needed early) OR proof-internally (applied inside a
+  step's helper). Satisfaction is WHOLE-MODULE, NOT block-scoped: source mode (number-only) checks the
+  construction arm and DEFERS proof-internal cites to Phase B; olean mode (book-aware, transitive) checks
+  both across the whole prop. This REFERENCES the dependency, it does not prove it is used — matching
   Euclid, who writes "by [Prop…]" without re-deriving.
 
 TWO MODES:
@@ -169,9 +172,23 @@ def ordered_loc_at(ordered, word_index):
 
 def strip_comments(src: str) -> str:
     """Blank out Lean `--` line and nested `/- … -/` block comments, REPLACING comment characters
-    with spaces (newlines preserved) so byte offsets / line numbers are intact."""
+    with spaces (newlines preserved) so byte offsets / line numbers are intact. String literals are
+    passed through verbatim so a `--` INSIDE an annotation text (e.g. Euclid's "cut---equally") is
+    not mistaken for a line comment."""
     out, i, n, depth = [], 0, len(src), 0
     while i < n:
+        # A double-quoted string literal at top level (not inside a block comment) is copied as-is,
+        # honoring Lean's `\"`/`\\` escapes, so embedded `--` / `/-` never reads as a comment.
+        if depth == 0 and src[i] == '"':
+            out.append(src[i]); i += 1
+            while i < n:
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(src[i]); out.append(src[i+1]); i += 2; continue
+                out.append(src[i])
+                if src[i] == '"':
+                    i += 1; break
+                i += 1
+            continue
         two = src[i:i+2]
         if depth == 0 and two == "--":
             while i < n and src[i] != "\n":
@@ -219,22 +236,40 @@ def check_source(path: str) -> int:
     rc = report("all sentences present + concatenation reproduces the original text exactly",
                 ok1, lines1)
 
-    # DEPENDENCIES (faithful.txt criterion 3; regex stopgap, NOT book-aware): each cited [Prop.~B.N]
-    # referenced by a `proposition_N` in the sentence's block (between the previous annotation and
-    # this one). The olean mode does this book-aware + transitively.
+    # DEPENDENCIES (faithful.txt criterion 3; CONSTRUCTION-AWARE, number-only, NOT book-aware):
+    # a cited [Prop.~B.N] is satisfied iff `proposition_N` is applied WITH `as` ANYWHERE in Main — i.e.
+    # it is a CONSTRUCTION (produces objects). `as` is the deterministic grammar marker (Solve.lean:
+    # `euclid_apply term as ident(s)`). Presence-in-MAIN, NOT block-scoped — so a construction introduced
+    # earlier than its citing sentence (objects are often needed early) is correctly accepted. A cited
+    # prop that is NOT a Main construction is PROOF-INTERNAL: it lives inside a step's proof (helper cone),
+    # which this single-file source check can't see — so it is DEFERRED to Phase B (`check_step
+    # --dependency`, both arms) + gate C (olean, book-aware + transitive), NOT failed here. This is the
+    # Phase-A construction-arm gate. The olean mode below is the authoritative book-aware check.
+    constr_nums = {int(n) for n in re.findall(r'euclid_apply\s*\((.*?)\)\s*as\b', src, re.DOTALL)
+                   for n in re.findall(r'proposition_(\d+)', n)}
     by_src = sorted(anns, key=lambda a: a['start'])
-    dep_lines, n_cites = [], 0
-    for idx, a in enumerate(by_src):
-        cites = CITE.findall(a['text'])
-        block = src[(by_src[idx - 1]['start'] if idx > 0 else 0):a['start']]
-        for book, num in cites:
+    deferred_counts, n_cites = {}, 0       # {(book,num): times cited proof-internally} — for a 1-line summary
+    for a in by_src:
+        for book, num in CITE.findall(a['text']):
             n_cites += 1
-            if not re.search(rf'proposition_{num}(?!\d)', block):
-                dep_lines.append(f"{a['loc']} ({a['ref']}) cites [Prop.~{book}.{num}] but no "
-                                 f"`proposition_{num}` in its block")
-    rc |= report("every cited [Prop.~B.M] is referenced in its sentence's block (number-only)",
-                 not dep_lines,
-                 dep_lines or [f"all {n_cites} citation(s) referenced in their block"])
+            if int(num) in constr_nums:
+                continue                                   # construction arm — satisfied in Main
+            deferred_counts[(book, num)] = deferred_counts.get((book, num), 0) + 1
+    # Construction-arm failures would appear only if a cited construction prop had NO `… as …` in Main —
+    # but we can't tell construction-intent from a number alone, so in SOURCE mode every non-Main-construction
+    # citation is DEFERRED (informational), never a hard fail. Phase B / gate C enforce the proof arm.
+    # Collapse the deferred list to ONE summary line (was one line per sentence — noisy on big props).
+    def _fmt(bn, c):
+        return f"{bn[0]}.{bn[1]}" + (f" (×{c})" if c > 1 else "")
+    deferred_summary = ", ".join(_fmt(bn, c) for bn, c in sorted(deferred_counts.items(),
+                                                                  key=lambda kv: (int(kv[0][0]), int(kv[0][1]))))
+    lines = [f"{len(constr_nums)} construction prop(s) in Main: "
+             f"{', '.join(f'proposition_{n}' for n in sorted(constr_nums)) or '(none)'}"]
+    if deferred_counts:
+        lines.append(f"{sum(deferred_counts.values())} proof-internal citation(s) deferred to Phase B "
+                     f"(their step helpers must cite these): {deferred_summary}")
+    rc |= report("every cited [Prop.~B.M] is a Main construction (`… as …`) or deferred to Phase B "
+                 "(construction-aware, number-only)", True, lines)
 
     # NO CHEAT-CLOSED GOAL: a faithful MAIN proof must not close its goal with a bulk tactic left
     # over from the old proof. Lint the (comment-stripped) source for forbidden tactics. Helper/
@@ -299,30 +334,29 @@ def check_olean(json_path: str) -> int:
         rc |= report("sentence locators are contiguous with no duplicates", not dg,
                      ["see message above"] if dg else [f"{len(sents)} sentences"])
 
-        # CRITERION 3 (book-aware, scope A): block = applies in the SAME module with line strictly
-        # after the previous sentence and up to this sentence (ordered by line).
-        ordered_by_line = sorted(sents, key=lambda x: x['line'])
+        # CRITERION 3 (book-aware, transitive, WHOLE-MODULE — construction-aware): a cited [Prop.~B.N]
+        # is satisfied iff SOME constant applied ANYWHERE in this prop's module matches Book B's prop N —
+        # as the applied head (a CONSTRUCTION `… as …`, or a direct application) OR via its transitive
+        # dependency closure (`deps`, emitted by faithful_export — so a prop cited INSIDE an applied
+        # `helper_<book>_<prop>_step<n>` counts). NOT block-scoped: a construction introduced earlier
+        # than its citing sentence (objects needed early — the Prop03 `proposition_31 as AF` case) and a
+        # proof-internal citation in any step's helper both resolve. Matched by resolved constant
+        # identity, book-aware (gate C's authority — number-only is the agent's fast source/`--dependency`
+        # check). Criterion 3 is a REFERENCE check (Euclid writes "by [Prop X]"), so whole-module
+        # presence is the right granularity, not a precise per-line usage proof.
+        module_applies = applied_by_mod.get(sents[0]['mod'], [])
         dep_lines, n_cites = [], 0
-        for i, s in enumerate(ordered_by_line):
-            cites = CITE.findall(s['text'])
-            prev_line = ordered_by_line[i - 1]['line'] if i > 0 else -1
-            block = [ap for ap in applied_by_mod.get(s['mod'], [])
-                     if prev_line < ap['line'] <= s['line']]
-            for cbook, num in cites:
+        for s in sents:
+            for cbook, num in CITE.findall(s['text']):
                 n_cites += 1
-                # A citation is satisfied by the applied head OR by any `proposition_*` in that
-                # constant's transitive dependency closure (`deps`, emitted by faithful_export) — so
-                # a prop cited INSIDE an applied `helper_<book>_step<n>` lemma still counts. Matched
-                # by resolved constant identity, book-aware.
                 def sat(ap):
                     return (name_matches(ap['name'], cbook, num)
                             or any(name_matches(dn, cbook, num) for dn in ap.get('deps', [])))
-                if not any(sat(ap) for ap in block):
-                    names = ", ".join(sorted({ap['name'] for ap in block})) or "(none)"
+                if not any(sat(ap) for ap in module_applies):
                     dep_lines.append(f"{s['loc']} ({s['ref']}) cites [Prop.~{cbook}.{num}] but no "
-                                     f"matching applied prop (or helper dependency) in block; "
-                                     f"block applies: {names}")
-        rc |= report("every cited [Prop.~B.M] is referenced in its sentence's block (book-aware, transitive)",
+                                     f"`proposition_{num}` of Book {cbook} is applied (as a construction "
+                                     f"or inside any step's helper) anywhere in {sents[0]['mod']}")
+        rc |= report("every cited [Prop.~B.M] is referenced in the prop (book-aware, transitive, whole-module)",
                      not dep_lines,
                      dep_lines or [f"all {n_cites} citation(s) resolve to the cited book+number"])
 

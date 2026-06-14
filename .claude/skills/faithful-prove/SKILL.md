@@ -196,6 +196,32 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
     > search). **Re-running the SAME axiom with a different argument/vertex/line ORDER — hoping one
     > orientation is cheaper — is the forbidden restate-and-hope: it is NOT decomposing.** If you've
     > rewritten a leaf twice without adding a sub-node, STOP permuting and extract the precondition.
+    > **⚖️ TIMEOUT TRIAGE — two opposite causes, opposite fixes; diagnose which before acting.** A >30s
+    > leaf is one of:
+    >  - **a genuinely-needed NON-TRIVIAL fact is missing** (e.g. `a.sameSide f CD` for an interior
+    >    vertical) → ADD a sub-node that derives it. ✅
+    >  - **a TRIVIAL fact `euclid_finish` should find instantly is drowning in a BLOATED context** (too
+    >    many hypotheses → the solver searches them all) → the fix is to **SLIM the signature to the
+    >    handful of hyps actually needed, NOT add a node.** Adding a leaf for a trivial fact like
+    >    `¬a.onLine CD` is OVER-decomposition — and it won't even help, because the new leaf INHERITS the
+    >    same bloated signature and times out too. (This was the step6 rabbit-hole: a `step6_aoff`/`_foff`
+    >    tower for trivial off-line facts, each still timing out, until the signatures were slimmed.)
+    >  Rule of thumb: if a sub-node for an *obvious* fact times out, you have a context-size problem, not a
+    >  hardness problem — cut hypotheses, don't add depth.
+    > **♻️ REUSE a sibling's fact — don't re-derive a precondition from scratch.** Before hand-building an
+    > axiom's precondition, check whether an EARLIER step (or a sister prop) already establishes it, and
+    > take it as a HYPOTHESIS / shared sub-node. step6 reuses `step5_edf` (the `between e d f` step5
+    > already proved) and gets `formParallelogram`'s hard `sameSide` conjunct from the CONTAINING square's
+    > parallelogram (`step6_hsq`) — instead of re-deriving the whole figure from incidences. Re-proving a
+    > `formParallelogram`/`between`/`sameSide` that a sibling already produced is wasted depth; the analog
+    > step (e.g. Prop02 step4, your own step5) shows the TECHNIQUE (hand the figure-fact in as a hyp), not
+    > just an orientation to copy.
+  - **(i-b) A LEAF closes with one ALL-IN-ONE `euclid_finish`** — after `euclid_apply (axiom …)`, a
+    single `euclid_finish` that must discharge the axiom's precondition AND match its conclusion AND do
+    the length/area algebra is doing three jobs at once → timeout. Remedy: **split the algebra out** —
+    pull each length/area rewrite into its own `have h… := by euclid_finish` then `rw [h…]`/`linarith`,
+    so the FINAL closer only has to match the goal shape (the lean-closer pattern: step5/step6 end on a
+    thin `rw [...]; ring`/`euclid_finish`, NOT a fat one). Fewer obligations per solver call = under 30s.
   - **(ii) A CONTAINER's trailing tactics are too big** — the proof work AFTER its `have`s (the
     `euclid_finish`/`linarith` that assembles sub-node claims into the container's goal). These run when
     the container is built with its sub-nodes as sorry (the SF-side build that SF and `--all`/`--subtree`
@@ -251,6 +277,16 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
   `check_step <node>` and confirm a container/step with `check_step --subtree <node>` (scoped to that
   cone). To triage a resumed/buggy proof, walk steps in order with `--subtree stepN` — each is scoped,
   so you find the first broken step without re-auditing the rest. `--all` is the END only — exactly ONCE.
+- **LAUNCH `--all` (and any long `--subtree` over a deep shared cone) WITH `run_in_background: true`.**
+  The final `--all` re-walks every node across all call-sites and can run 2.5–7 HOURS wall-clock — a
+  foreground call would block the whole turn on one tool use. Backgrounded, the harness pings you when it
+  exits, and you stay free meanwhile. This changes only *how* you launch the final audit — NOT the "run
+  `--all` ONCE, at the very end, never to hunt a failure" rule above.
+  - **Watching progress is allowed — through the sanctioned channels, NOT process-spying.** Poll the
+    background job's streamed stdout (the live per-node progress `--all` prints), or Read the per-node
+    log files the script writes at `.lake/build/lib/<propdir>/<node>.log.json` (these are FILES → the
+    Read tool). Do NOT reach for `ps`/`grep`/`tail` on the running job — those are blocked by the bash
+    hygiene hook and have no place here; the streamed output + log files are the designed way to observe.
 
 ---
 
@@ -267,6 +303,12 @@ asserted "because the picture shows it." Use `--context` for what's *available*;
 *true to aim at*.
 
 ## SYSTEM-E QUICK REFERENCE (the area-heavy surface you actually prove with)
+> **For the recurring figure-reasoning goal-shapes** (sameSide / off-line / line-distinctness /
+> pasch-betweenness / `formParallelogram`-`formTriangle` assembly / `rectangle_area`-`sum_parallelograms_area`
+> / parallel-angle props), see the **`euclid-figures`** skill — it lists goal-shape → axiom-chain → gotcha
+> recipes grounded in proven files (the done Prop01/02/03 + Prop04's certified leaves). It's the concrete companion to the timeout-triage
+> bullets above; consult it when a sub-node matches one of those shapes.
+
 Grep `SystemE/Theory/Inferences/{Metric,Transfer,Diagrammatic}.lean` + `Relations.lean` for exact
 signatures; the high-value ones:
 - **Convention:** "rectangle contained by X,Y" = `|X|*|Y|`; "square on X" = `|X|*|X|`; no square axiom
@@ -282,13 +324,30 @@ signatures; the high-value ones:
 - **Cross-book citations: fully-qualify** — `Elements.Book1.proposition_M` (Book-2 names collide with
   Book-1's short names). `import Book.PropM` (Book 1, flat) / `import Book2.PropM.Main` (Book 2).
 
-## HOW THE DEPENDENCY CHECK WORKS (why citations resolve through the wiring)
-A sentence's `[Prop.~B.M]` citation is satisfied iff some `proposition_*` in the **transitive
-dependency closure** of a constant `euclid_apply`'d in that sentence's block resolves to Book B's prop
-M — at any depth, by compiler identity. The script wires each sentence as `euclid_apply (helper_<book>_
-stepN …)`, and the olean checker follows the closure INTO `stepN.lean` (and its sub-files), so a prop
-cited inside your backing file counts. The one rule inside backing files: cite a prop via
-`euclid_apply`, **never** term-mode `:= by exact proposition_M …` (that bypasses recording).
+## HOW THE DEPENDENCY CHECK WORKS (criterion-3 — YOU must satisfy it; `--all` enforces it)
+A sentence's `[Prop.~B.M]` citation must be satisfied one of two ways, and `check_step --dependency`
+(instant, no build; also run inside `--check` and `--all`) verifies it by SOURCE REGEX:
+- **construction arm** — the cited prop is applied WITH `as` in Main (`euclid_apply (proposition_M …)
+  as …`), i.e. it produces objects. This is presence-in-MAIN, not block-scoped (a construction may sit
+  earlier than its citing sentence — objects are needed early). This arm is Phase A's job; it's already
+  in place when you start proving.
+- **proof arm** — the cited prop is `euclid_apply`'d (no `as`) somewhere in the sentence's HELPER CONE
+  (`stepN.lean` + its sub-files). So if a sentence cites a NON-construction prop, your backing file (or
+  one of its sub-files) MUST `euclid_apply (proposition_M …)` it.
+**The trap that bit Prop03 step3:** a helper that merely REPACKAGES facts (`exact ⟨h1, h2⟩`) or proves
+the claim WITHOUT citing the prop fails the proof arm. If the sentence cites `[Prop.~B.M]` and it's not a
+construction, you must actually `euclid_apply (proposition_M …)` in the cone — never term-mode
+`:= by exact proposition_M …` (bypasses recording), never just assert the conclusion.
+**`check_step --dependency` is NUMBER-ONLY (fast, offline). The HUMAN runs the authoritative BOOK-AWARE
+olean check (`check_faithful.sh`) at gate C — do NOT game the regex** (e.g. citing a same-numbered prop
+from the wrong book passes the regex but FAILS the human's olean gate). Run `--dependency` to isolate a
+criterion-3 problem fast before the slow `--all`.
+
+The olean mechanism (gate C): a citation resolves iff some `proposition_*` in the **transitive dependency
+closure** of a constant `euclid_apply`'d in that sentence's block resolves to Book B's prop M — at any
+depth, by compiler identity. The script wires each sentence as `euclid_apply (helper_<book>_<prop>_stepN
+…)`, and the olean checker follows the closure INTO `stepN.lean` (and its sub-files). This is why the
+proof arm works: a prop cited via `euclid_apply` inside your backing file counts.
 
 ---
 
@@ -330,21 +389,42 @@ The ladder (do them in this order):
 4. **Walk the Main sentences IN ORDER (step1 → … → last; never skip, never parallel).** Each step:
    certify its sub-nodes, then `check_step --subtree stepN` to confirm it. `--subtree stepN` audits
    ONLY stepN's cone — it does NOT re-audit step1…step(N-1).
-5. **MANDATORY LAST ACTION, exactly ONCE:** `check_step Book<N>/PropNN --all`. Exit 0 ⟹ the Phase-C
-   wired build is GUARANTEED green AND sorry-free. Then delete any `-- dev:` notes from backing files
-   and STOP — hand to the human for gate B + Phase C. Do NOT run `wire_main.py` yourself.
+5. **LAST ACTION, exactly ONCE, only once every cone is already `--subtree`-green:** `check_step
+   Book<N>/PropNN --all`, launched with `run_in_background: true` (it's 2.5–7 hr — see the anti-pattern
+   block; it is a WITNESS you record, not a gate you debug toward). Exit 0 ⟹ the Phase-C wired build is
+   GUARANTEED green AND sorry-free. Then delete any `-- dev:` notes from backing files and STOP — hand
+   to the human for gate B + Phase C. Do NOT run `wire_main.py` yourself.
 
-> **❌ ANTI-PATTERN — NEVER run `--all` to FIND a failure.** It re-audits every already-green node
-> (minutes of wasted builds) and tells you nothing a scoped check wouldn't. To locate a problem, use
-> `check_step <node>` (one node) or `check_step --subtree <node>` (one cone). `--all` is the final
-> witness, run ONCE when you believe everything is done — not a debugging tool, not run after each fix.
-> Likewise, a bare-node PASS is NOT a subtree PASS: confirm containers with `--subtree`.
+> **❌ ANTI-PATTERN — `--all` IS NOT A CHECK. It is a WITNESS that must NEVER, EVER FAIL.**
+> Internalize this or you WILL waste hours: `--all` re-walks every node across every call-site — 2.5–7
+> HOURS. You run it EXACTLY ONCE, only when you are ALREADY CERTAIN it passes, purely to record the
+> green witness for the human's gate B. If there is ANY chance it fails, you are not ready to run it.
+> "I edited some cones, let me run `--all` to confirm" is THE forbidden move — that is using a 7-hour
+> job as a debug check, and the transcript that motivated this rule did exactly that and burned the time.
+>   - **To FIND or CONFIRM-AFTER-A-FIX a failure: scoped checks ONLY.** `check_step <node>` (one node),
+>     or `check_step --subtree <node>` (one cone — what `--all` checks, restricted to that cone). A
+>     `--subtree` PASS on a cone is a COMPLETE, stand-alone certificate for that cone; it does not need
+>     an `--all` to "really confirm" it.
+>   - **AFTER ANY EDIT: re-`--subtree` ONLY the cone(s) whose files you touched, then move on.** Do NOT
+>     follow edits with an `--all`. The certainty model is COMPOSITIONAL: an unedited cone that passed
+>     `--subtree` STAYS passed (its files didn't change). So once every edited cone is `--subtree`-green
+>     and `--check`/`--dependency` are clean, Phase B is DONE — the final `--all` is a formality you may
+>     even hand to the human, not a gate you must personally re-clear. Never re-verify unedited cones.
+>   - **A bare-node PASS is NOT a subtree PASS** — confirm a container/step with `--subtree`.
+>   - **Watching a backgrounded `--subtree`/`--all`: poll the task tools or Read the job's output/log
+>     file — NEVER `sleep N; tail …` / `sleep N; echo done`.** Those foreground spin-waits block the
+>     turn AND trip the bash-hygiene hook (`tail`/`ps`/`grep` are denied). Launch background, then wait
+>     for the completion ping or Read `.lake/build/lib/<propdir>/<node>.log.json`.
 
 ---
 
 ## EXIT PHASE B — what "done" means
-Done ⟺ `check_step.py Book<N>/PropNN --all` exits 0 (and `--check` is clean). It certifies, for every
-node, exactly what guarantees the final wired build is green + sorry-free:
+Done ⟺ every cone is `--subtree`-green and `--check`/`--dependency` are clean — at which point a final
+`--all` is GUARANTEED to exit 0 (it checks nothing a passed `--subtree` of every cone didn't already
+check). Run that `--all` ONCE as the recorded witness — or hand it to the human — but it is the
+consequence of being done, NOT the way you become done or debug toward done (see the anti-pattern
+block). What `--all` certifies, for every node, is exactly what guarantees the final wired build is
+green + sorry-free:
 - **SP ✓ for every node** — wiring `euclid_apply (helper… (by assumption)…)` at its call site builds:
   every hypothesis is present (discharged by `assumption`, no SMT). SP wires ONLY this node and stubs
   the container's trailing tactics to `sorry`, so it checks hypothesis presence and NOTHING ELSE — it
@@ -354,7 +434,10 @@ node, exactly what guarantees the final wired build is green + sorry-free:
   the `have`s must close the container's goal from the sub-node claim TYPES (the SF-side build — the same
   one SF runs on a sub-node, since that sub-node's container IS this file);
 - **P ✓ for every LEAF** backing file — it builds in isolation, ZERO sorry;
-- **no stray sorry** anywhere (the `--check` source scan) — the only `sorry`s are declared node bodies.
+- **no stray sorry** anywhere (the `--check` source scan) — the only `sorry`s are declared node bodies;
+- **criterion-3 deps ✓** — every cited `[Prop.~B.M]` is satisfied by a Main construction (`… as …`) or
+  its sentence's helper cone (`--all` runs `--dependency`; isolate it fast with `check_step --dependency`
+  before the slow `--all`). NUMBER-ONLY — the human's gate-C olean check is the book-aware authority.
 The certainty rests on **context-identity**: a `have name : claim := <body>` contributes `name : claim`
 to every later tactic's context whether `<body>` is `sorry`, a wire, or a finished proof — so each
 node's context in its per-node SP build, and each container's context in its trailing-tactics build, is

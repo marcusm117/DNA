@@ -15,17 +15,6 @@
       "Bash(lake exe faithful_export:*)",
       "Bash(mkdir:*)",
 
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(head:*)",
-      "Bash(tail:*)",
-      "Bash(find:*)",
-      "Bash(grep:*)",
-      "Bash(rg:*)",
-      "Bash(wc:*)",
-      "Bash(sort:*)",
-      "Bash(uniq:*)",
-      "Bash(diff:*)",
       "Bash(realpath:*)",
       "Bash(dirname:*)",
       "Bash(basename:*)",
@@ -66,6 +55,20 @@
       "Bash(git checkout:*)",
       "Bash(git reset:*)",
       "Bash(git stash:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /h/56/taddmao/code/autoform/DNA/.claude/hooks/bash_hygiene.py",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }

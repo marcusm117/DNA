@@ -31,8 +31,8 @@ less. The diagram (`Book<N>/data/diagrams/<N>.png`) is for ONE thing: resolving 
 is `G`, which corners a figure-name like "HF" denotes (Euclid names figures by opposite corners),
 vertex order of a named region. You may **NOT** build a coordinate model, read geometric facts off the
 picture, "audit" claims against coordinates, or expand one sentence into many facts it didn't state.
-"HF is also a square" is ONE assertion about HF (like Prop02 `step3` types "AE is the square on AB" as
-a single area equation) — NOT an invented list of four sides + four right angles from the diagram.
+"HF is also a square" is ONE assertion about HF (e.g. "X is the square on AB" as a single area equation
+`area(X) = |a─b|*|a─b|`) — NOT an invented list of four sides + four right angles from the diagram.
 Formalizing the picture instead of the words is a faithfulness violation even when the picture is true.
 
 **RULE 1 — DO NOT READ ANY AXIOM FILE.** You may NOT open or grep `SystemE/Theory/Inferences/**`
@@ -42,10 +42,14 @@ proposition's own signature, and the VOCABULARY list below. If you feel the urge
 file — STOP; you've left translation and started proving. (Reading a construction prop's signature in
 `Book/` or a relation def in `SystemE/Theory/Relations.lean` is fine; axiom/Inferences files are not.)
 
-**RULE 2 — A FEW SENTENCES AT A TIME, NEVER THE WHOLE FILE IN ONE THINK.** Do NOT design all claim
-types in one giant think. Take a small CHUNK (you pick the size — 3–6 related sentences), write their
-claim types + any constructions, BUILD to confirm they elaborate, then the next chunk. A long single
-think over all sentences is the failure mode.
+**RULE 2 — ONE SENTENCE AT A TIME. NEVER one-shot the whole map.** Do the sentences strictly in order,
+**one at a time**: write THIS sentence's claim type (+ any construction it introduces) → BUILD
+(`check_step --provable`, no node) to confirm it elaborates → DEP-CHECK (`check_faithful.py` — confirms
+any CONSTRUCTION it cites has its `… as …` in Main; proof-internal cites defer to Phase B) → only THEN
+move to the next sentence. Do NOT write several sentences' claims in one
+pass, and do NOT design all claims in one giant think — that one-shot habit is what produces the
+dependency and claim mistakes (a forgotten `… as …` construction, a claim referencing an object not yet in
+scope) that only surface much later. One sentence, confirmed, then the next.
 
 **RULE 3 — EVERY CLAIM IS NON-VACUOUS AND CONTAINS ONLY WHAT THE SENTENCE ASSERTS.** Two failure modes
 this rule kills:
@@ -71,9 +75,9 @@ writing facts the sentence didn't state (vacuous fillers, construction incidence
 - **"Let the square FOO be described on XY" / "let PQ be drawn parallel to …"** → the figure's defining
   facts from the cited construction's signature (the lengths, `∠…=∟`, `¬(L.intersectsLine M)`). NOT the
   intersection incidences the construction also produces.
-- **"X is a square"** → either its definition `(sides equal) ∧ (angles right)`, OR — matching Prop02
-  `step3` "AE is the square on AB" — the single area equation `area(figure) = |side|*|side|`. Pick the
-  ONE the sentence states; do not also invent the other.
+- **"X is a square"** → either its definition `(sides equal) ∧ (angles right)`, OR — for an "X is the
+  square on AB" phrasing — the single area equation `area(figure) = |side|*|side|`. Pick the ONE the
+  sentence states; do not also invent the other.
 - **"figure F is the rectangle contained by P and Q"** → `area(F) = |(p…)| * |(q…)|`.
 - **"So I say that … is <property>" (announcement)** → assert the property itself (e.g. the right angles).
 - **"angle ABC = angle DEF"** → `∠ a:b:c = ∠ d:e:f`. **"side XY = side ZW"** → `|(x─y)| = |(z─w)|`.
@@ -104,8 +108,13 @@ writing facts the sentence didn't state (vacuous fillers, construction incidence
 - `Book<N>/data/texts_proofs/<N>.txt` — the canonical English statement + proof + conclusion. THE
   GROUND TRUTH you slice (verbatim).
 - `Book<N>/data/diagrams/<N>.png` — the figure, for LABEL RESOLUTION ONLY (Rule 0).
-- `Book2/Prop01/Main.lean` and `Book2/Prop02/Main.lean` — the FORMAT to imitate (annotation shape +
-  how claim types look). Don't read their proofs for strategy; just the shape.
+- The annotation FORMAT (the `euclid_sentence "loc" "text" (step_n : <claim>) := by sorry` shape, the
+  intro/conclude bookends, the trailing `exact`/`rw` chain) is described in THIS skill. `Book2/Prop01/
+  Main.lean`, `Book2/Prop02/Main.lean`, `Book2/Prop03/Main.lean` are DONE, vetted maps you may open to
+  see that FORMAT in a finished file. ⛔ But open them for SHAPE ONLY — NEVER copy a claim TYPE across
+  props. A claim is a translation of THIS prop's sentence (Rule 0); Prop02's `area△…=|x|*|x|` fits
+  Prop02's sentence, not yours. Reading another prop's claim to "see how a square is stated" is exactly
+  the proving-by-pattern-match Rule 0/3 forbid — translate your own sentence from its own words.
 - **Proposition SIGNATURES are fair game and HELP — read them freely in Phase A.** To know what a
   construction yields (its output objects + their properties) so your claim types name the right
   objects and your construction `euclid_apply` lines are right, READ the cited prop's signature:
@@ -116,7 +125,7 @@ writing facts the sentence didn't state (vacuous fillers, construction incidence
   to prove. Phase A needs the former, not the latter.
 
 ## CLAIM-TYPE VOCABULARY (all you need — do NOT go hunting beyond this)
-Claim types are built from what's already in the proposition's own signature + Prop01/Prop02:
+Claim types are built from what's already in the proposition's own signature plus this vocabulary:
 - lengths `|(a─b)|`, products `|(a─b)| * |(c─d)|` ("rectangle contained by", "square on" = `|x|*|x|`)
 - angles `∠ a:b:c`, right angle `= ∟`
 - areas as sums of `Triangle.area △ p:q:r` (a figure split into triangles; `Triangle.area` is
@@ -133,12 +142,17 @@ sentence — you're probably trying to prove it, not state it.
 ### A1 — split the text into sentences (no Lean types yet)
 
 ```
-1. READ Book<N>/data/texts_proofs/<N>.txt; look at the diagram for label resolution. Skim
-   Book2/Prop02/Main.lean for the annotation FORMAT.
+1. READ Book<N>/data/texts_proofs/<N>.txt; look at the diagram for label resolution. (The annotation
+   FORMAT is described in this skill; the done Prop01/02/03 Mains show it in a finished file — open for
+   shape only, NEVER to copy a claim type, see INPUTS above.)
 
 2. WIPE THE OLD PROOF. Main.lean currently has an UNFAITHFUL proof. Delete the entire body after
    `:= by` down to just `euclid_intros`. DO NOT touch the signature (theorem proposition_N : ∀ … :=)
    — leave those lines byte-for-byte; it is checked by scripts/check_signatures.py.
+   Ensure `set_option systemE.solverTime 30 in` sits on the line DIRECTLY ABOVE `theorem proposition_N`
+   (add it now if the old Main lacked it). Every file in the prop — Main included — carries the 30s dev
+   cap; if Main lacks it, the construction `euclid_apply`s run uncapped and `--check` only flags it at
+   the very end. (Phase C's `wire_main` strips this back to the 300s default — leave it during dev.)
 
 3. SLICE the text into contiguous locators "<book>.<prop>.0 … k":
      .0     = euclid_intro_sentence  (enunciation + "Let …" + "I say that …")
@@ -166,14 +180,17 @@ sentence — you're probably trying to prove it, not state it.
 4. Stub every logical sentence as:  euclid_sentence "<loc>" "<verbatim text>" (step_n : True) := by sorry
    (True = placeholder; structural intro/conclude take no claim/body.)
 
-5. GATE A1 — text only:  python3 scripts/check_faithful.py "Book<N>/PropNN/Main.lean"
-   The text-map line must PASS char-for-char. Fix slicing until it does. (The dep line will fail —
-   ignore it, deps belong to the proving phase.)
+5. GATE A1 — text + construction deps:  python3 scripts/check_faithful.py "Book<N>/PropNN/Main.lean"
+   The text-map line must PASS char-for-char (fix slicing until it does). The dep line is now
+   CONSTRUCTION-AWARE: it PASSES when every cited construction prop has its `… as …` in Main, and lists
+   proof-internal citations as "deferred to Phase B" (expected — those are satisfied later by a step's
+   helper cone; deferred is NOT a failure). Both lines should be green/deferred before gate A.
 ```
 
-### A2 — fill the real claim types, a FEW AT A TIME (Rule 2)
+### A2 — fill the real claim types, ONE SENTENCE AT A TIME (Rule 2)
 
-For each chunk of sentences, for each `step_n`:
+Go through the sentences strictly IN ORDER, ONE at a time — fully finishing (steps 1–5 below) for one
+`step_n` before touching the next. Do NOT batch several sentences into one pass:
 ```
 1. Replace True with the CLAIM TYPE: what THIS STEP's atomic idea asserts, in the VOCABULARY above.
    Rule 0 — the step's words, not the diagram's geometry. One step → one compact claim for its atomic
@@ -192,13 +209,27 @@ For each chunk of sentences, for each `step_n`:
    / (line_from_points …). The claim types reference these objects, so they must be in scope. (These
    ARE wired in Main and DO run a tiny precondition SMT — that's fine and expected. Only the step
    discharges (`euclid_apply (helper …)`) are NOT wired yet.)
+   CRITERION-3 (construction arm) IS YOUR PHASE-A JOB: every Euclid sentence that cites a CONSTRUCTION
+   prop (e.g. "[Prop.~1.46]", "[Prop.~1.31]") must have that `euclid_apply (proposition_N …) as …` present
+   in Main (it may sit earlier than the citing sentence — objects are often needed early; the check is
+   presence-in-Main, not block-local). A citation to a prop used only INSIDE a step's proof (not a
+   construction) is deferred to Phase B (the helper cone will cite it). Confirm with the dep check below.
    IMPORTS: Main imports ONLY `SystemE` + the CONSTRUCTION props it uses (e.g. `import Book.Prop46`,
    `import Book.Prop31`). NEVER `import Book<N>.PropNN.stepK` — step files don't exist yet, and a
    step's import (like its wiring) is added transiently by the Phase-B/C SCRIPTS, never by you.
 
-4. After the chunk, BUILD to confirm Main elaborates: python3 scripts/check_step.py Book<N>/PropNN --provable
+4. After THIS sentence, BUILD to confirm Main elaborates: python3 scripts/check_step.py Book<N>/PropNN --provable
    (all step bodies are sorry, so NO helper discharge runs — cheap; a non-elaborating claim is a
-   vocabulary/missing-object problem — fix now.) Then next chunk, until no True placeholders remain.
+   vocabulary/missing-object problem — fix it NOW, before the next sentence, while the cause is local).
+
+5. DEP CHECK (construction arm), THIS sentence:  python3 scripts/check_faithful.py "Book<N>/PropNN/Main.lean"
+   Instant, no build. Every cited CONSTRUCTION prop must be satisfied by its `… as …` in Main; proof-only
+   citations show as "deferred to Phase B" (expected — leave them). Fix any construction citation it
+   flags NOW (you forgot the `euclid_apply (proposition_N …) as …`) — number-only, and the human's gate-C
+   olean check is book-aware, so don't cite the wrong book's prop number. THEN move to the NEXT sentence
+   (back to step 1). Doing 4+5 per sentence — not in one batch at the end — is what keeps every claim and
+   construction-citation mistake LOCAL and cheap to fix.
+   (`check_step --dependency` is the PHASE-B dep gate — both arms, once helpers exist — not a Phase-A tool.)
 ```
 
 > **NOTE — step files / signatures are created in PHASE B, not here.** Phase A's deliverable is just

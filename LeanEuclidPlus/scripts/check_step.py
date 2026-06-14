@@ -26,7 +26,12 @@ USAGE  (run from LeanEuclidPlus/):
                                                           STOP at first failure. Run ONCE, at the very end.
   python3 scripts/check_step.py <propdir> --check        instant source-only integrity scan (NO builds;
                                                           incl. no-stray-sorry: every sorry/admit/axiom
-                                                          must be a declared node body)
+                                                          must be a declared node body; + criterion-3 deps)
+  python3 scripts/check_step.py <propdir> --dependency   instant criterion-3 check (NO builds): every cited
+                                                          [Prop.~B.N] satisfied by a Main construction
+                                                          (`… as …`) OR its sentence's helper cone. Number-
+                                                          only; the human's gate-C olean check is book-aware
+                                                          — don't game it. (`--deps` alias; `--all` also runs it.)
 
   <propdir> is e.g. Book2/Prop04  (or Book2/Prop04/Main.lean).
 
@@ -426,6 +431,10 @@ def mode_all(propdir):
         for p in problems:
             print("  - " + p)
         return 1
+    # criterion-3 dependency (source-only, instant) — enforce BEFORE the long build audit so a dep
+    # violation can't slip through the agent's final gate (the step3-cited-Prop.1.31 class).
+    if not _run_dependency(propdir):
+        return 1
     order = L.audit_order(propdir)                    # whole prop, bottom-up
     n_names = len(order)
     n_occ = sum(len(occs) for _, occs in order)
@@ -478,6 +487,34 @@ def mode_build_main(propdir):
     return 0
 
 
+def _run_dependency(propdir):
+    """Run the PHASE-B source-regex criterion-3 dependency check (both arms). Print problems; return ok.
+    NUMBER-ONLY by design — book authentication is the HUMAN's gate-C olean check (`check_faithful.sh`).
+    A citation fails iff satisfied by NEITHER the construction arm (`… as …` in Main) NOR the helper-cone
+    proof arm. (Phase A — no helpers yet — uses `check_faithful.py` source mode, construction arm only.)"""
+    problems = L.dependency_problems(propdir)
+    if problems:
+        print(f"FAIL (dependency / criterion-3): {len(problems)} cited [Prop.~B.N] not satisfied in "
+              f"{os.path.relpath(propdir, L.BOOK_ROOT)} (number-only; the human's gate-C olean check is "
+              f"book-aware — do NOT game this regex):")
+        for p in problems:
+            print("  - " + p)
+        return False
+    return True
+
+
+def mode_dependency(propdir):
+    """`--dependency`/`--deps`: ISOLATED, instant (no build) criterion-3 check (Phase-B arms). Run this to
+    fast-isolate a dependency problem before the slow `--all` (which also runs it)."""
+    print(f"[check_step --dependency] criterion-3 (source-regex, number-only) for "
+          f"{os.path.relpath(propdir, L.BOOK_ROOT)}:")
+    if not _run_dependency(propdir):
+        return 1
+    print("OK: every cited [Prop.~B.N] is satisfied by a Main construction (`… as …`) or its sentence's "
+          "helper cone. (Book authentication is the gate-C olean check.)")
+    return 0
+
+
 def mode_check(propdir):
     problems = L.integrity_scan(propdir)
     if problems:
@@ -486,10 +523,13 @@ def mode_check(propdir):
         for p in problems:
             print("  - " + p)
         return 1
+    # criterion-3 dependency is ALSO source-only (no build), so it belongs in the instant scan.
+    if not _run_dependency(propdir):
+        return 1
     n = len(L.parse_all_nodes(propdir))
     print(f"OK: {os.path.relpath(propdir, L.BOOK_ROOT)} structurally sound — {n} node(s), naming law "
           f"holds, every node has a backing file, every file carries the 30s cap, nothing pre-wired, "
-          f"no stray sorry.")
+          f"no stray sorry, every cited [Prop.~B.N] satisfied (construction or helper-cone).")
     return 0
 
 
@@ -578,6 +618,8 @@ def main(argv):
         # concurrent runs on the same prop can't clobber each other's edits. Different props parallelize.
         if rest == ["--check"]:
             return mode_check(propdir)
+        if rest in (["--dependency"], ["--deps"]):   # source-only (no build/swap) → no lock needed
+            return mode_dependency(propdir)
         if rest in (["--sufficient"], ["--suppliable"]):
             abbr = "SF" if rest[0] == "--sufficient" else "SP"
             print(f"FAIL: `{rest[0]}` needs a NODE argument (e.g. `{rest[0]} step5`). "

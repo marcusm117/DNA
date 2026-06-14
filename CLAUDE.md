@@ -17,7 +17,21 @@ and hope" thrashing. The one-line summary, but read the skill for the rules and 
 > SMT search with explicit `euclid_apply`s; if a step takes >30s it's too big — decompose. Never
 > run a tactic you can't justify; never build "to see"; decompose only into entailed sub-facts.
 
-Reference example of a finished, faithful proof: `LeanEuclidPlus/Book2/Prop01.lean`.
+For the recurring figure-reasoning goal-shapes in Book-2 rectangle-decomposition proofs (sameSide,
+point-off-a-line, line-distinctness, pasch-betweenness, `formParallelogram` assembly, `rectangle_area` /
+`sum_parallelograms_area`, the parallel/angle props), the **`euclid-figures` skill**
+([.claude/skills/euclid-figures/SKILL.md](.claude/skills/euclid-figures/SKILL.md)) is a reference of
+goal-shape → axiom-chain recipes that `prove-euclid` consults — it gives the chain to TRY, not a lemma
+to import (the facts are figure-specific; you re-prove each against your figure).
+
+(**Prop01, Prop02, Prop03 are DONE and vetted end-to-end** — wired, zero-sorry, and passing the
+authoritative olean-mode `check_faithful.sh` + `check_steps.py` + `check_signatures.py`. Use them as
+references for **STRUCTURE ONLY**: what a finished `Main` looks like, the helper naming law, the
+`@args` line, leaf-vs-container shape, decomposition granularity. **NEVER copy a claim TYPE or a
+decomposition across props** — claims are per-sentence translations (faithful-map Rule 0: the sentence
+is the claim), so a shape that fit Prop02's sentence is unfaithful on a prop whose sentence says
+something else. Format: copy freely. Content: translate THIS prop's sentences from scratch. Every
+other Book-2 prop is at a varying/in-progress state — not a reference.)
 
 ## Making proofs faithful
 
@@ -37,7 +51,10 @@ skills + one mechanical step):
    verifies each node with `scripts/check_step.py <propdir> <node>` (runs SF→SP→P, stops at first fail;
    this checks ONLY that node). Driving order: certify leaves, confirm each container/step with
    `--subtree <node>` (audits that node's whole cone, scoped — not the rest of the prop), bottom-up;
-   `--all` is the single FINAL audit, run ONCE — NEVER mid-work to hunt a failure.
+   `--all` is the single FINAL audit, run ONCE — NEVER mid-work to hunt a failure. `--all` also enforces
+   **criterion-3 deps** (every cited `[Prop.~B.N]` satisfied by a Main construction `… as …` OR the
+   sentence's helper cone); `check_step --dependency` isolates that check fast (number-only — the human's
+   gate-C olean check is the book-aware authority).
    **Main's bodies stay `:= by sorry`
    throughout — the agent NEVER wires Main; the script does all wiring/`trace_state` transiently and
    reverts.** Dev-state files import NO pipeline (helper/step) files — only `SystemE` + cited
@@ -68,27 +85,46 @@ the folder via `check_step.py` → C = `wire_main.py` + checks. There is NO `Scr
 "reunite" step — files are written where they belong and stay.
 Book 1 (`Book/Prop*.lean`) is FLAT and untouched. Book-2 props are all relocated into folders;
 already-done props keep their proofs in `PropNN/Main.lean` — to make one faithful, add `stepN.lean`
-files in its folder (don't recreate scratch/merge). Prop01 shows the OUTPUT shape (annotated by hand,
-monolithic), `Book2/Prop02/` shows the real pipeline output.
+files in its folder (don't recreate scratch/merge). (Prop01/02/03 are the done, vetted props — use
+them as STRUCTURE references only, never to copy a claim type or decomposition; see the note above.
+Every other Book-2 prop is at a varying/in-progress state — follow the skills' described shapes.)
 
 ## Tool & shell hygiene (applies to ALL work here — avoids wasted turns and permission prompts)
 
-- **Read files with the Read tool; search with Grep/Glob. Never shell out to `cat`/`head`/`tail`/
-  `sed`/`awk`/`find -exec` to read or slice a file** — `sed -n '76,100p' f` is just `Read(f, offset 76,
-  limit 25)`, `grep -n foo Book/*.lean` is just `Grep`. These are allowed, faster, clickable, never prompt.
-- **Never chain shell commands** with `;`, `&&`, or pipes in one Bash call (e.g.
-  `cd …; echo …; grep …; sed …`). Permissions match the WHOLE command string, so a multi-command blob
-  can't match a simple allow rule and pops a prompt even when each piece alone is fine. One lookup per
-  call — and prefer Read/Grep over Bash for lookups.
-- Run `check_faithful.*` **bare** (no pipes, no `timeout` wrapper). To inspect output, read what it prints.
-- git mutations are denied by policy (the human owns git — it's the safety net). Read-only git is fine.
+- **⛔ RUN EVERY COMMAND BARE FROM THE REPO ROOT — NEVER prefix with `cd …` and NEVER chain with `&&`,
+  `;`, or pipes.** The session cwd is ALREADY the repo root (`…/DNA`), and git + the `scripts/…` tools
+  work from anywhere in the repo, so a leading `cd` is pointless AND harmful. Permissions match the WHOLE
+  command string: `git log …` matches the `Bash(git log:*)` allow rule and runs silently, but
+  `cd /…/DNA && git log …` matches NEITHER `cd:*` NOR `git log:*` → it pops a permission prompt for a
+  read-only command that's already allowed. Same for `cd … && python3 scripts/…`. So: just
+  `git log …` / `git show …` / `python3 scripts/check_step.py …`, never wrapped. (`scripts/check_*` and
+  `wire_main` also run bare — no pipes, no `timeout` wrapper; read what they print.)
+- **BASH IS A POSITIVE ALLOWLIST — this is the EXHAUSTIVE set of bash you run here. If your command
+  isn't on this list, it's the wrong tool; use Read / Grep / Glob instead.** A PreToolUse hook
+  (`.claude/hooks/bash_hygiene.py`) ENFORCES this: it hard-denies the off-list inspection commands
+  (`cat`/`head`/`tail`/`sed`/`awk`/`find`/`grep`/`rg`/`ls`/`wc`/`jq`/`python3 -c`, including inside a
+  pipe) with a message naming the tool to use — so don't reach for them, even a clever sibling.
+  THE ALLOWLIST:
+  - **read a file → the Read tool** (a slice `sed -n '76,100p' f` is just `Read(f, offset 76, limit 25)`);
+    **find files → the Glob tool**; **search contents → the Grep tool** (`grep -n foo Book/*.lean` is `Grep`).
+    These are faster, clickable, and never prompt — there is NO bash reason to read/search a file here.
+  - **`python3 scripts/check_step.py …` / `check_steps.py` / `check_faithful.py` / `check_signatures.py`
+    / `scripts/check_faithful.sh` / `python3 scripts/wire_main.py …`** — the build/verify pipeline.
+    Run BARE, no pipe to `grep`/`head` (the hook denies the pipe; just read what the script prints).
+  - **read-only git**: `status`/`diff`/`log`/`show`/`branch`/`blame`/`ls-files` (git mutations are
+    denied by policy — the human owns git, it's the safety net).
+  - **path/shell helpers**: `cd LeanEuclidPlus` (the one allowed cd — see the bare-command rule above),
+    `pwd`, `mkdir`, `realpath`/`dirname`/`basename`, `echo`, `lake env`/`lake exe faithful_export`.
+  If you genuinely need something off this list, ASK the human to add it to the allowlist + hook rather
+  than working around the denial.
 
 ## Building
 
 - **The agent is HARD-DENIED raw `lake build` / `scripts/safe_build.sh`** (faithful-only repo). All
   agent builds go through the faithful scripts, which spawn `lake` internally under the build lock +
-  a 30s wall: `python3 scripts/check_step.py <propdir> <node>` (Phase B) / `--sufficient` (Phase A,
-  build Main) and `python3 scripts/wire_main.py <propdir>` (Phase C). See FAITHFUL.md for the surface.
+  a 30s wall: `python3 scripts/check_step.py <propdir> <node>` (Phase B per-node SF→SP→P) /
+  `--provable` with NO node (Phase A: build Main, tolerate sorry) and `python3 scripts/wire_main.py
+  <propdir>` (Phase C). See FAITHFUL.md for the surface.
 - `scripts/safe_build.sh Book.<Target>` — serialized `lake build`, **for HUMANS** (the one-time full
   `lake build Book Book2`, ad-hoc checks). The lock prevents `.lake` corruption when many build at once.
 - Faithfulness check: `scripts/check_faithful.sh Book2` (needs built `.olean`).

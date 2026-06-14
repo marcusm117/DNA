@@ -32,10 +32,10 @@ System E proofs are checked by an SMT backend behind `euclid_finish` / `euclid_a
 Every rule here is a corollary of that inversion. This methodology was derived the hard way
 (Prop 45/47/48); following it from the start turns a multi-hour thrash into steady, fast progress.
 
-The reference example of a *finished, faithful* proof is
-[Book2/Prop01.lean](../../LeanEuclidPlus/Book2/Prop01.lean) — read it before starting. It shows
-the STAGE-A decomposition comment block + per-sentence `euclid_sentence` `have`s. This skill is
-the **how**: how to produce that structure and then discharge each step without thrashing.
+(There is no single fully-vetted reference proof to copy yet — earlier Book-2 props are still being
+brought up to the current pipeline. Do NOT imitate a specific prop's files; follow the structure THIS
+skill describes: the STAGE-A decomposition comment block + per-sentence `euclid_sentence` `have`s. This
+skill is the **how** — how to produce that structure and discharge each step without thrashing.)
 
 ---
 
@@ -89,7 +89,7 @@ Violating any of these is what causes the thrash. They are hard constraints, not
 0. **STRUCTURE FIRST — never one-shot the proof.** Do NOT write the whole proof and run it to "see
    if it works." A failing all-in-one `euclid_finish` teaches you almost nothing and burns a build.
    Before any proof tactic: decompose the Euclid argument into a justified step-structure (Phase 1
-   below, format = [Book2/Prop01.lean](../../LeanEuclidPlus/Book2/Prop01.lean)), stub each step with
+   below — the format is described there, not copied from a specific prop), stub each step with
    `sorry`, confirm the SKELETON elaborates, and only THEN discharge leaves one at a time (Phase 2 =
    THE LOOP). The shape of the work is always: **decompose → justify → stub → confirm skeleton →
    fill leaves**, never "attempt → fail → patch."
@@ -142,12 +142,11 @@ discipline that prevents the wasteful "write it all, run it, watch it fail" star
 
 ```
 1. READ THE SOURCE. The Euclid proof text (Book 1: `Book/texts_proofs/{prop}.txt`; Book 2:
-   `Book2/data/texts_proofs/{prop}.txt`) and the reference format `Book2/Prop01/Main.lean`.
-   Understand the mathematical argument before formalizing.
+   `Book2/data/texts_proofs/{prop}.txt`). Understand the mathematical argument before formalizing.
 
-2. DECOMPOSE (STAGE-A). Write the numbered step-structure as a comment block, exactly like
-   Prop01's STAGE-A: each step has objects / hypotheses / WTS (what-to-show) / reasoning /
-   DEPENDS-on-which-earlier-steps. This is where you JUSTIFY the structure — each step must follow
+2. DECOMPOSE (STAGE-A). Write the numbered step-structure as a comment block: each step has
+   objects / hypotheses / WTS (what-to-show) / reasoning / DEPENDS-on-which-earlier-steps. This is where
+   you JUSTIFY the structure — each step must follow
    from its named dependencies. If a step doesn't follow, the decomposition is wrong; fix it here,
    on paper, where it is cheap — NOT later by patching tactics.
 
@@ -262,6 +261,21 @@ These are the moves that replaced `euclid_finish`-and-hope. Grep the axiom file 
 - **Area decomposition of a glued parallelogram.** `sum_parallelograms_area a b c d e f ...`:
   with `e` between `a,b` and `f` between `c,d`, the four sub-triangles sum to the two halves.
   One apply + linear arithmetic closes area-sum goals. (Prop45 `helper_45_area_sum`.)
+
+### THE PARALLEL-RECTANGLE FIGURE CHAINS → see the `euclid-figures` skill
+The recurring goal-shapes in "decompose a rectangle by internal parallels" proofs (Book 2 Props 1–8 —
+the bulk of the hours on the done Prop01/02/03 + Prop04) have known axiom-chain recipes: **same-side-of-a-parallel**
+(`intersection_lines_opposing`), **point-off-a-line** / **line-distinctness**, **foot/crossing
+betweenness** (`pasch_3`→`pasch_4`; this is the `between b g d`/`between b k e` shape), **`formParallelogram`
+assembly** (decompose, don't fat-`euclid_finish`), **`rectangle_area`/`sum_parallelograms_area`**
+(extract the precondition first), and the **parallel/angle props** (`proposition_30/29/6/34`). Each is
+rule #8 (explicit application) made concrete. When you hit one, consult the **`euclid-figures`** skill —
+it lists goal-shape → chain → gotcha, grounded in the proven files. Build each as its own `have`+backing
+sub-node; don't re-derive a chain you can look up.
+
+> **⚠ `linarith` / `nlinarith` / `ring` are NOT available in this repo (no Mathlib import — "unknown
+> tactic linarith").** For the final combine, use `euclid_finish` over the step-equations (or a `rw`
+> chain), NOT `linarith` — full detail in `euclid-figures`.
 
 - **Right-triangle / Pythagoras length algebra.** Pure `|·|` equations: substitute and use
   `s² = t², s,t ≥ 0 ⟹ s = t` (the solver knows `segment_gte_zero`). No geometry needed — strip

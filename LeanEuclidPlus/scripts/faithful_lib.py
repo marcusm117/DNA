@@ -1014,3 +1014,84 @@ def integrity_scan(propdir):
                             f"combine must be real tactics, e.g. `euclid_finish`, never `sorry`; only a "
                             f"node's canonical `:= by sorry` is allowed, and only because the script wires it.)")
     return problems
+
+
+# ── criterion-3 dependency check (SOURCE-REGEX, number-only — agent-facing; NOT the olean authority) ──
+# Mirrors check_faithful.py's CITE; NUMBER-ONLY by design (book authentication is the human's gate-C olean
+# check `check_faithful.sh`). A cited `[Prop.~B.N]` in a sentence's text is satisfied iff EITHER:
+#   (construction arm) Main applies `proposition_N` (or a named construction) WITH `as` — i.e. it produces
+#       objects. `as` is the deterministic grammar marker (Solve.lean: `euclid_apply term as ident(s)`),
+#       so this is exact, not a heuristic. Constructions legitimately sit anywhere in Main (objects are
+#       needed early), so this arm is presence-in-MAIN, NOT block-scoped — that is what correctly accepts
+#       a construction introduced before the sentence that cites it (e.g. Prop03 2.3.3 cites Prop.1.31,
+#       whose `proposition_31 … as AF` sits earlier because `AF` feeds `f`).
+#   (proof arm) the sentence's helper CONE (stepN.lean + transitive sub-files) applies `proposition_N`
+#       via `euclid_apply` (no `as`) — a proof-internal citation, recorded for olean by euclid_apply.
+CITE_RE = re.compile(r'\[Prop\.~(\d+)\.(\d+)\]')
+# euclid_apply (…term…) as …   → a CONSTRUCTION (binds objects). Capture the term to pull proposition_N.
+APPLY_AS_RE = re.compile(r'euclid_apply\s*\((.*?)\)\s*as\b', re.DOTALL)
+# euclid_apply (…term…)  NOT followed by `as`  → a proof-internal application.
+APPLY_NOAS_RE = re.compile(r'euclid_apply\s*\((.*?)\)(?!\s*as\b)', re.DOTALL)
+PROP_NUM_RE = re.compile(r'proposition_(\d+)')
+# a sentence head that ALSO captures the Euclid text (SENTENCE_HEAD drops it); Main-only scan.
+SENTENCE_TEXT_RE = re.compile(
+    r'euclid_(?:sentence|intro_sentence|conclude_sentence)\s*"((?:[^"\\]|\\.)*)"\s*"((?:[^"\\]|\\.)*)"')
+
+
+def _prop_nums_in(terms):
+    """All proposition NUMBERS named across an iterable of `euclid_apply` term strings."""
+    out = set()
+    for t in terms:
+        out.update(int(n) for n in PROP_NUM_RE.findall(t))
+    return out
+
+
+def construction_nums(propdir):
+    """Number set of every `proposition_N` applied WITH `as` in Main (the construction arm)."""
+    src = blank_comments(open(main_file(propdir), encoding="utf-8").read())
+    return _prop_nums_in(APPLY_AS_RE.findall(src))
+
+
+def _cone_proof_nums(propdir, stepname):
+    """Number set of every `proposition_N` applied WITHOUT `as` across stepname's helper cone
+    (its backing file + transitive sub-files). The proof arm for that sentence."""
+    nums = set()
+    for nm in cone_names(propdir, stepname):
+        bf = backing_file(propdir, nm)
+        if bf is None:
+            continue
+        src = blank_comments(open(bf, encoding="utf-8").read())
+        nums |= _prop_nums_in(APPLY_NOAS_RE.findall(src))
+    return nums
+
+
+def dependency_problems(propdir):
+    """SOURCE-REGEX criterion-3 check for PHASE B (both arms — helpers exist by now). Returns a list of
+    hard violations: a cited `[Prop.~B.N]` satisfied by NEITHER the construction arm (`proposition_N`
+    applied `… as …` anywhere in Main) NOR the proof arm (`proposition_N` `euclid_apply`'d, no `as`, in
+    the citing sentence's helper cone). NUMBER-ONLY — book authentication is the gate-C olean check
+    (`check_faithful.sh`). NO build, NO olean.
+    (Phase A — when no helpers exist yet — uses `check_faithful.py` source mode, which checks ONLY the
+    construction arm and DEFERS proof-internal citations; this both-arms check is the Phase-B gate, run
+    via `check_step --dependency` and inside `--all`/`--check`.)"""
+    cons = construction_nums(propdir)
+    main_src = open(main_file(propdir), encoding="utf-8").read()
+    # map each logical sentence's step-node name → so we can scope the proof arm to its cone
+    occ = parse_occurrences(propdir)
+    name_by_loc = {nd.loc: nm for nm, nds in occ.items() for nd in nds
+                   if nd.kind == "sentence" and nd.loc is not None}
+    problems = []
+    for m in SENTENCE_TEXT_RE.finditer(blank_comments(main_src)):
+        loc, text = m.group(1), m.group(2)
+        for cb, cn in CITE_RE.findall(text):
+            num = int(cn)
+            if num in cons:
+                continue                                        # construction arm — satisfied
+            stepname = name_by_loc.get(loc)                     # structural sentences have no node → skip proof arm
+            if stepname is not None and num in _cone_proof_nums(propdir, stepname):
+                continue                                        # proof arm — satisfied
+            problems.append(
+                f"sentence {loc} cites [Prop.~{cb}.{cn}] but no `proposition_{cn}` is (a) applied "
+                f"`… as …` in Main (construction) NOR (b) `euclid_apply`'d in its helper cone "
+                f"({stepname or 'structural sentence — must be a Main construction'}).")
+    return problems

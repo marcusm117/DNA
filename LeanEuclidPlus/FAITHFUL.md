@@ -83,10 +83,15 @@ itself was mid-compile at the kill — which warm deps prevent.
    deepest broken node.)
 
 **5. Phase C — wire + verify (mechanical; YOU run it, not a skill):**
+   **One command does all four (stops at the first failure):**
    ```
-   python3 scripts/wire_main.py Book2/Prop04        # commits the wiring, strips 30s caps, builds once
-   scripts/check_faithful.sh Book2                  # text (crit.1) + deps (crit.3), book-aware
-   python3 scripts/check_steps.py Book2/Prop04/Main.lean   # claims unchanged since gate A
+   scripts/phase_c.sh Book2/Prop04                  # = the four steps below, in order
+   ```
+   (or run them by hand — note the THREE different argument shapes, the slash-vs-dot footgun:)
+   ```
+   python3 scripts/wire_main.py Book2/PropNN        # commits the wiring, strips 30s caps, builds once
+   scripts/check_faithful.sh Book2.PropNN                  # text (crit.1) + deps (crit.3), book-aware
+   python3 scripts/check_steps.py Book2/PropNN/Main.lean   # claims unchanged since gate A
    python3 scripts/check_signatures.py              # no proposition statement was altered
    ```
    **▶ Gate C:** `wire_main` build green + zero sorry + all three checks PASS ⟹ Prop04 is faithful.
@@ -105,10 +110,13 @@ itself was mid-compile at the kill — which warm deps prevent.
 | `check_step.py <propdir> --sufficient/--suppliable/--provable <node>` | run just one of SF/SP/P (diagnostics; `--provable` reports remaining-sorry file:lines) | agent (Phase B) |
 | `check_step.py <propdir> --provable` (no node) | build Main tolerating sorry — the Phase-A skeleton-elaborates check (Main has no parent ⟹ no SF/SP) | agent (Phase A) |
 | `check_step.py <propdir> --context <node>` | print the real hypotheses available at a node | agent (Phase B) |
-| `check_step.py <propdir> --check` | instant, no-build integrity scan (naming law, caps, no stray imports, no stray sorry) | agent (Phase B) |
-| `check_step.py <propdir> --all` | WHOLE-prop bottom-up audit (SP every node + P every LEAF + no-stray-sorry); the FINAL gate, run ONCE; exit 0 ⟹ Phase C guaranteed | agent (end of B) + human (gate B) |
+| `check_step.py <propdir> --check` | instant, no-build integrity scan (naming law, caps, no stray imports, no stray sorry, + criterion-3 deps) | agent (Phase B) |
+| `check_step.py <propdir> --dependency` (`--deps`) | instant, no-build criterion-3 check, BOTH arms: every cited `[Prop.~B.N]` satisfied by a Main construction (`… as …`) OR its sentence's helper cone. Number-only; isolate fast before `--all` (which also runs it). The book-aware authority is the human's gate-C olean check — don't game it | agent (**Phase B** — needs helpers) |
+| `check_step.py <propdir> --all` | WHOLE-prop bottom-up audit (SP every node + P every LEAF + no-stray-sorry + criterion-3 deps); the FINAL gate, run ONCE; exit 0 ⟹ Phase C guaranteed | agent (end of B) + human (gate B) |
 | `wire_main.py <propdir> [--unwire]` | commit the wiring + build once (the ONLY script that keeps Main changed) | human (Phase C) |
-| `check_faithful.sh Book2` | authoritative faithfulness (text + deps); needs a build first | human (gate C) |
+| `phase_c.sh <propdir> [--unwire]` | run ALL of Phase C in order (wire_main → check_faithful → check_steps → check_signatures), stop at first failure; derives the dotted-module / Main.lean arg shapes for you | human (Phase C) |
+| `check_faithful.py <Main>` | instant, no-build: text (crit 1, char-for-char) + construction-aware deps (crit 3, number-only — cited construction props need `… as …` in Main; proof-internal cites DEFER to Phase B) | agent (Phase A) |
+| `check_faithful.sh Book2` | authoritative faithfulness (text + deps, BOOK-AWARE + transitive, whole-module construction-aware); needs a build first | human (gate C) |
 | `safe_build.sh <target>` | serialized `lake build` (parallel-safe) | **human only** (agents are hard-denied raw builds; they use `check_step`) |
 
 `check_step.py` (all Phase-B modes) NEVER leaves a file modified — every swap reverts atomically
