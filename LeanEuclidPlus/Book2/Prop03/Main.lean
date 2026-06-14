@@ -13,7 +13,6 @@ set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
-
 theorem proposition_3 : ∀ (a b c : Point) (AB : Line),
   distinctPointsOnLine a b AB ∧ between a c b →
   |(a─b)| * |(b─c)| = |(a─c)| * |(c─b)| + |(b─c)| * |(b─c)| :=
