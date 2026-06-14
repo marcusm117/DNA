@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements.Book1
 
-set_option systemE.solverTime 30 in
 /- sub-fact for 2.2.6: ¬(CF.intersectsLine BE). CF ∥ AD (given), AD ∥ BE (square verticals), so
    CF ∥ BE by proposition_30 (transitivity of parallelism). Rich point context lets the solver fix
    the line-distinctness preconditions of proposition_30. -/

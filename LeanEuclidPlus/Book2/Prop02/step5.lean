@@ -1,10 +1,17 @@
 import SystemE
+import Book2.Prop02.step5_sameside
+import Book2.Prop02.step5_adne
+import Book2.Prop02.step5_dene
+import Book2.Prop02.step5_cf
+import Book2.Prop02.step5_par
+import Book2.Prop02.step3_dfe
+import Book2.Prop02.step5_adf
+import Book2.Prop02.step5_area
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- 2.2.5: AF is the rectangle contained by BA and AC. AF (= ACFD) is contained by DA and AC,
    and AD = AB. Sub-nodes: step5_par (the parallelogram a c d f), step5_area (the rectangle_area
    identity △a:d:f + △a:c:f = |a─c|*|a─d|). Then |a─d| = |a─b| = |b─a| gives |b─a|*|a─c|. -/
@@ -21,14 +28,14 @@ theorem helper_2_2_step5 (a b c d e f : Point) (AB DE AD BE CF : Line)
     (hCFAD : ¬(CF.intersectsLine AD)) :
     Triangle.area △ a:c:f + Triangle.area △ a:d:f = |(b─a)| * |(a─c)| := by
   euclid_intros
-  have step5_sameside : a.sameSide d CF := by sorry
-  have step5_adne : a ≠ d := by sorry
-  have step5_dene : DE ≠ AB := by sorry
-  have step5_cf : c ≠ f := by sorry
-  have step5_par : formParallelogram a c d f AB DE AD CF := by sorry
-  have step3_dfe : between d f e := by sorry
-  have step5_adf : ∠ a:d:f = ∟ := by sorry
-  have step5_area : Triangle.area △ a:d:f + Triangle.area △ a:c:f = |(a─c)| * |(a─d)| := by sorry
+  have step5_sameside : a.sameSide d CF := by euclid_apply (helper_2_2_step5_sameside a b c d e AB DE AD BE CF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_adne : a ≠ d := by euclid_apply (helper_2_2_step5_adne a b c d (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_dene : DE ≠ AB := by euclid_apply (helper_2_2_step5_dene a b c d AB DE AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_cf : c ≠ f := by euclid_apply (helper_2_2_step5_cf c f AB DE (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_par : formParallelogram a c d f AB DE AD CF := by euclid_apply (helper_2_2_step5_par a b c d e f AB DE AD CF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step3_dfe : between d f e := by euclid_apply (helper_2_2_step3_dfe a b c d e f AB DE AD BE CF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_adf : ∠ a:d:f = ∟ := by euclid_apply (helper_2_2_step5_adf a d e f AD DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_area : Triangle.area △ a:d:f + Triangle.area △ a:c:f = |(a─c)| * |(a─d)| := by euclid_apply (helper_2_2_step5_area a c d f AB DE AD CF (by assumption) (by assumption)); (try split_ands) <;> assumption
   have hba : |(a─d)| = |(b─a)| := by euclid_finish
   have hprod : |(b─a)| * |(a─c)| = |(a─c)| * |(a─d)| := by rw [hba]; ring
   rw [hprod, ← step5_area]

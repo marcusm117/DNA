@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- sub-fact for 2.2.6: the right rectangle CBEF is a parallelogram (top C,B on AB; bottom F,E on DE;
    verticals CF and BE). b and e lie on BE which does not cross CF, placing them on the same side
    (step6_sameside); c ≠ f pins distinctness. -/

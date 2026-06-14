@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- sub-fact for 2.2.5: ¬(d.onLine AB). If d were on AB with a, b, then b,a,d would be collinear and
    the angle ∠b:a:d would be 0 or 2∟ (degenerate), contradicting ∠b:a:d = ∟. -/
 theorem helper_2_2_step5_doff (a b c d : Point) (AB : Line)

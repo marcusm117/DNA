@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- sub-fact for 2.2.5: the left rectangle ACFD is a parallelogram (top A,C on AB; bottom D,F on DE;
    verticals AD and CF). a and d lie on AD which does not cross CF, placing them on the same side;
    between a c b and the layout pin the rest. -/

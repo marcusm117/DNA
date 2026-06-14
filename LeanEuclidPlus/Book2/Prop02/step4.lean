@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- 2.2.4: AE is the square on AB. The square ADEB (formParallelogram d e a b DE AB AD BE) with
    right angle ∠b:a:d; rectangle_area gives △e:d:a + △e:b:a = |d─e|*|d─a|, and the edges
    |d─e| = |a─b|, |d─a| = |a─d| = |a─b|, giving |a─b|*|a─b|. -/

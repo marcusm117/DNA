@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements.Book1
 
-set_option systemE.solverTime 30 in
 /- sub-fact for 2.2.3: the foot f of the middle vertical CF on the bottom line DE keeps the top
    order between a c b, giving between d f e. CF ∥ AD given; AD ∥ BE from the square; CF ∥ BE via
    proposition_30. (Isolated so the area split in step3 gets the betweenness cheaply.) -/

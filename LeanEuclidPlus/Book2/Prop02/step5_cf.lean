@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- sub-fact for 2.2.5: c ≠ f. f lies on DE and c on AB; if c = f then c ∈ DE, giving a common
    point of DE and AB. With DE ≠ AB (step5_cf_dene), intersection_lines_common_point yields DE
    intersects AB — contradiction. -/

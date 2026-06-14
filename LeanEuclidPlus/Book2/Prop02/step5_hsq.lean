@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- sub-fact: the square ADEB's parallelogram, formParallelogram d e a b DE AB AD BE, repackaged
    from the atoms the proposition_46 construction left in context. Minimal context so it is fast. -/
 theorem helper_2_2_step5_hsq (a b d e : Point) (AB DE AD BE : Line)

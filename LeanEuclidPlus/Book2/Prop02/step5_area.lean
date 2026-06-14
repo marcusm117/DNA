@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- sub-fact for 2.2.5: the left-rectangle area identity △a:d:f + △a:c:f = |a─c|*|a─d|. Given the
    parallelogram a c d f (step5_par), rectangle_area fires; its right-angle precondition ∠a:d:f
    follows from ∠a:d:e = ∟ and the parallel verticals. -/

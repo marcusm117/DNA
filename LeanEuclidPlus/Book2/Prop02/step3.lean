@@ -1,10 +1,10 @@
 import SystemE
+import Book2.Prop02.step3_dfe
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- 2.2.3: the square AE (the whole ADEB) = rectangle AF (ACFD) + rectangle CE (CBEF).
    The square d e a b (bottom D E, top A B, verticals AD, BE) is cut by the middle vertical
    CF at c (top, between a b) and f (bottom, between d e); sum_parallelograms_area gives the
@@ -23,7 +23,7 @@ theorem helper_2_2_step3 (a b c d e f : Point) (AB DE AD BE CF : Line)
       (Triangle.area △ a:c:f + Triangle.area △ a:d:f)
     + (Triangle.area △ c:b:e + Triangle.area △ c:f:e) := by
   euclid_intros
-  have step3_dfe : between d f e := by sorry
+  have step3_dfe : between d f e := by euclid_apply (helper_2_2_step3_dfe a b c d e f AB DE AD BE CF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (sum_parallelograms_area d e a b f c DE AB AD BE)
   euclid_finish
 

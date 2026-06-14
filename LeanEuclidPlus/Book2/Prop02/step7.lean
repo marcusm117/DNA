@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 /- 2.2.7: rect(BA,AC) + rect(AB,BC) = square on AB. Substitution of steps 3–6:
    square AE = |a─b|² (step4) = AF + CE (step3) = |b─a|*|a─c| (step5) + |a─b|*|b─c| (step6). -/
 theorem helper_2_2_step7 (a b c d e f : Point)
