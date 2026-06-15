@@ -13,7 +13,7 @@ theorem helper_2_4_step31_par2a (a d c f : Point) (AD CF AB DE : Line)
     (hcCF : c.onLine CF) (hfCF : f.onLine CF)
     (haAB : a.onLine AB) (hcAB : c.onLine AB)
     (hdDE : d.onLine DE) (hfDE : f.onLine DE)
-    (hADCF : ¬(AD.intersectsLine CF)) (hABDE : ¬(AB.intersectsLine DE))
+    (hCFAD : ¬(CF.intersectsLine AD)) (hABDE : ¬(AB.intersectsLine DE))
     (hacde : a.sameSide c DE) (hdf : d ≠ f) :
     formParallelogram a d c f AD CF AB DE := by
   euclid_intros
