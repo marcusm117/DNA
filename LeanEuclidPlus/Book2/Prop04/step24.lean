@@ -66,6 +66,11 @@ theorem helper_2_4_step24 (a b c d e f g h k : Point) (AB CF AD BE HK BD DE : Li
   have hac : a ≠ c := by euclid_finish
   have hdh : d ≠ h := by euclid_finish
   have hdf : d ≠ f := by euclid_finish
+  -- destructure step22's conjunction into the atoms step24_hf takes
+  have heq3 : |(h─g)| = |(g─f)| := hstep22.1.1
+  have heq1 : |(g─f)| = |(f─d)| := hstep22.1.2.1
+  have heq2 : |(f─d)| = |(d─h)| := hstep22.1.2.2
+  have hfdh : ∠ f:d:h = ∟ := hstep22.2.2.2.2
   -- the two square areas
   have step24_hf : Triangle.area △ h:g:f + Triangle.area △ h:f:d = |(a─c)| * |(a─c)| := by sorry
   exact ⟨step24_hf, hstep21⟩

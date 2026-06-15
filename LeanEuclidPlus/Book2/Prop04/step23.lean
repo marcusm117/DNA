@@ -30,6 +30,7 @@ theorem helper_2_4_step23 (a b c d g h : Point) (AB CF AD BD HK : Line)
   have hcAB : c.onLine AB := by euclid_apply (between_same_line_in a c b AB); euclid_finish
   have hcg : c ≠ g := fun hh => step9_gnab (hh ▸ hcAB)
   have step22_ahcf : a.sameSide h CF := by sorry
+  have step22_adni : ¬(AD.intersectsLine CF) := by sorry
   -- ACGH rectangle: |a─c| = |h─g|
   have step22_acgh : |(a─c)| = |(h─g)| ∧ |(a─h)| = |(c─g)| := by sorry
   euclid_finish

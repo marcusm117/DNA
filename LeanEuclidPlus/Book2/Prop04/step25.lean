@@ -82,6 +82,7 @@ theorem helper_2_4_step25 (a b c d e f g h k : Point) (AB CF AD BE HK BD DE : Li
   have step22_ahcf : a.sameSide h CF := by sorry
   have hke : k ≠ e := by euclid_finish
   have hfd : f ≠ d := by euclid_finish
+  have step22_adni : ¬(AD.intersectsLine CF) := by sorry
   have step25_par1 : formParallelogram b k c g BE CF AB HK := by sorry
   have step25_par2 : formParallelogram g f h d CF AD HK DE := by sorry
   have step25_paracgh : formParallelogram a c h g AB HK AD CF := by sorry

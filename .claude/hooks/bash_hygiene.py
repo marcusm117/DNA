@@ -6,15 +6,22 @@ a few path helpers, and says "read files with Read, search with Grep/Glob — ne
 cat/head/tail/sed/awk/find/jq/python3 -c". But a *denylist in prose* can't be enforced: an agent
 pattern-matches the named commands and invents an unnamed sibling (`python3 -c`, `jq`, `awk`), which
 isn't allowlisted either, so it pops a permission prompt for what should just be a Read. This hook
-turns the prose rule into a deterministic gate: it DENIES the inspection commands with a message that
-names the tool to use instead, and stays silent (falls through to the normal permission flow) for
-everything else — so the allowlisted scripts/git/cd keep running exactly as before.
+turns the prose rule into a deterministic gate on the inspection commands, with a message that names
+the tool to use instead; allowlisted scripts/git/cd fall through silently and keep running as before.
+
+The gate's reaction to an off-allowlist command is set by `hygiene.conf` (read fresh every run, so an
+edit takes effect on the very next command):
+  mode = ask    -> pause and PROMPT the user to approve/reject it          (default; "go through me")
+  mode = deny   -> hard-block it silently, naming the right tool            ("don't bug me")
+This is the "sometimes block, sometimes let me decide" knob: flip one word in hygiene.conf. ("just run
+everything" is not a mode here — that's settings.json's Bash() allowlist, not this hygiene gate.)
 
 Applies to the main agent AND every subagent (PreToolUse fires for all Bash tool calls).
 
-Contract: read the PreToolUse JSON on stdin; on a blocked command print a deny decision and exit 0;
-otherwise print nothing and exit 0 (never block the pipeline by erroring)."""
-import sys, json, re, shlex
+Contract: read the PreToolUse JSON on stdin; on an off-allowlist command print the configured
+decision (ask/deny) and exit 0, or nothing for allow; otherwise print nothing and exit 0 (never
+block the pipeline by erroring)."""
+import sys, json, re, shlex, os
 
 # binary basename -> what to do instead (shown to the model on deny)
 BLOCKED = {
@@ -39,10 +46,31 @@ ALLOWED_SUMMARY = ("Bash here is reserved for: read-only git (status/diff/log/sh
                    "python3 scripts/wire_main.py, lake env/exe, and cd/pwd/mkdir. "
                    "For everything else use the Read / Grep / Glob tools.")
 
-def deny(reason: str):
+_CONF = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hygiene.conf")
+
+def read_mode() -> str:
+    """Off-list-command policy, re-read every run so edits take effect on the next command.
+    'ask' (default) force-prompts the user; 'deny' hard-blocks silently."""
+    try:
+        with open(_CONF) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                m = re.match(r"mode\s*=\s*(\w+)", line)
+                if m:
+                    v = m.group(1).lower()
+                    return v if v in ("ask", "deny") else "ask"
+    except Exception:
+        pass
+    return "ask"
+
+def gate(reason: str):
+    """Block an off-allowlist command per the configured mode (ask force-prompts, deny silences)."""
+    decision = "deny" if read_mode() == "deny" else "ask"
     print(json.dumps({"hookSpecificOutput": {
         "hookEventName": "PreToolUse",
-        "permissionDecision": "deny",
+        "permissionDecision": decision,
         "permissionDecisionReason": reason,
     }}))
     sys.exit(0)
@@ -76,13 +104,23 @@ def main():
         base = toks[i].rsplit("/", 1)[-1]
         nxt = toks[i + 1] if i + 1 < len(toks) else ""
 
-        # inline interpreters used for ad-hoc inspection: `python3 -c …`, `python -c …`
-        if base in ("python", "python3") and nxt == "-c":
-            deny(f"Inline `{base} -c` for inspection is blocked. "
-                 f"Read files with Read, search with Grep/Glob, run pipeline checks via "
-                 f"scripts/check_*.py. {ALLOWED_SUMMARY}")
+        # python/python3: ALLOWLIST, not denylist — the only sanctioned python here is running a
+        # pipeline script (`python3 scripts/check_*.py …` / `scripts/wire_main.py …`). EVERYTHING else
+        # — `-c`, a stdin heredoc (`python3 - <<EOF`), a process-sub (`python3 <(…)`), or an ad-hoc
+        # `python3 some_scratch.py` — is ad-hoc code execution for inspection and is DENIED. (This is
+        # what closes the `python3 -c` *and* the `python3 -`/heredoc holes at once.)
+        if base in ("python", "python3"):
+            arg = nxt.rsplit("/", 1)[-1]
+            ok = (nxt.startswith("scripts/") or nxt.startswith("./scripts/")) and (
+                arg.startswith("check_") or arg == "wire_main.py")
+            if not ok:
+                gate(f"`{base}` here may ONLY run the pipeline scripts "
+                     f"(`python3 scripts/check_step.py …` / `check_steps.py` / `check_faithful.py` / "
+                     f"`check_signatures.py` / `wire_main.py`). Inline code (`-c`), a stdin heredoc "
+                     f"(`python3 - <<EOF`), a process-substitution, or an ad-hoc script is blocked — "
+                     f"read files with the Read tool, search with Grep/Glob. {ALLOWED_SUMMARY}")
         if base in BLOCKED:
-            deny(f"`{base}` is blocked for reading/inspection. {BLOCKED[base]} {ALLOWED_SUMMARY}")
+            gate(f"`{base}` is blocked for reading/inspection. {BLOCKED[base]} {ALLOWED_SUMMARY}")
 
     sys.exit(0)
 

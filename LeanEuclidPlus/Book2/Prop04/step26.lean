@@ -40,6 +40,7 @@ theorem helper_2_4_step26 (a b c d e f g h k : Point) (AB CF AD BE HK BD DE : Li
   have hcg : c ≠ g := fun hh => step9_gnab (hh ▸ step25_cab)
   have hADCF : AD ≠ CF := fun hh => step5_cnad (hh ▸ hcCF)
   have step22_ahcf : a.sameSide h CF := by sorry
+  have step22_adni : ¬(AD.intersectsLine CF) := by sorry
   have step25_paracgh : formParallelogram a c h g AB HK AD CF := by sorry
   have step22_acgh : |(a─c)| = |(h─g)| ∧ |(a─h)| = |(c─g)| := by sorry
   -- g ∉ AD (g ∈ BD, d ∈ AD∩BD, g ≠ d ⟹ AD=BD ⟹ b ∈ AD, but b ∉ AD)

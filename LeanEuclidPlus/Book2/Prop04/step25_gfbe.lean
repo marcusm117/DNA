@@ -9,7 +9,7 @@ namespace Elements.Book2
 set_option systemE.solverTime 30 in
 theorem helper_2_4_step25_gfbe (g f : Point) (CF BE : Line)
     (hgCF : g.onLine CF) (hfCF : f.onLine CF)
-    (hCFBE : CF ≠ BE) (hBECF : ¬(BE.intersectsLine CF)) :
+    (hCFBE : CF ≠ BE) (hCFnBE : ¬(CF.intersectsLine BE)) :
     g.sameSide f BE := by
   euclid_intros
   have hgoff : ¬(g.onLine BE) := by

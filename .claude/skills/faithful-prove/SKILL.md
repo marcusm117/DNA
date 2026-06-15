@@ -282,11 +282,18 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
   foreground call would block the whole turn on one tool use. Backgrounded, the harness pings you when it
   exits, and you stay free meanwhile. This changes only *how* you launch the final audit — NOT the "run
   `--all` ONCE, at the very end, never to hunt a failure" rule above.
-  - **Watching progress is allowed — through the sanctioned channels, NOT process-spying.** Poll the
-    background job's streamed stdout (the live per-node progress `--all` prints), or Read the per-node
-    log files the script writes at `.lake/build/lib/<propdir>/<node>.log.json` (these are FILES → the
-    Read tool). Do NOT reach for `ps`/`grep`/`tail` on the running job — those are blocked by the bash
-    hygiene hook and have no place here; the streamed output + log files are the designed way to observe.
+  - **Watching progress: READ the job's output FILE (`…/tasks/<id>.output`) with the Read tool.** When
+    the harness backgrounds a build it prints that path and says "Read on that file path"; `check_step`
+    line-buffers its stdout, so `--all`/`--subtree`'s per-node `✓ <node>` lines (and the deepest `✗ …` on
+    failure) appear in that file AS THEY HAPPEN. That is the proven live channel — just Read it again
+    whenever you want a progress snapshot. (Do NOT use `TaskOutput`/`block=true` to "peek": block=true
+    WAITS for the whole job — correct only when you actually want to wait for completion — and the
+    non-blocking form may show nothing because that capture layer doesn't always stream. The output FILE
+    does.) There is NO separate per-node log file the script writes — do NOT look for
+    `.lake/.../<node>.log.json` (those are Lake build artifacts, not progress logs). And NEVER poll with
+    `sleep N; tail …` / `ps`/`grep` on the process: those are foreground spin-waits that block the turn
+    AND are blocked by the bash-hygiene hook. If the job's
+    output isn't pollable in your harness, just wait for the completion ping — do not invent a workaround.
 
 ---
 
@@ -411,10 +418,11 @@ The ladder (do them in this order):
 >     and `--check`/`--dependency` are clean, Phase B is DONE — the final `--all` is a formality you may
 >     even hand to the human, not a gate you must personally re-clear. Never re-verify unedited cones.
 >   - **A bare-node PASS is NOT a subtree PASS** — confirm a container/step with `--subtree`.
->   - **Watching a backgrounded `--subtree`/`--all`: poll the task tools or Read the job's output/log
->     file — NEVER `sleep N; tail …` / `sleep N; echo done`.** Those foreground spin-waits block the
->     turn AND trip the bash-hygiene hook (`tail`/`ps`/`grep` are denied). Launch background, then wait
->     for the completion ping or Read `.lake/build/lib/<propdir>/<node>.log.json`.
+>   - **Watching a backgrounded `--subtree`/`--all`: poll the JOB'S OUTPUT via the task tools** (it
+>     line-buffers a `✓ <node>` feed) — NEVER `sleep N; tail …` / `sleep N; echo done` / `ps`/`grep` on
+>     the process. Those foreground spin-waits block the turn AND are blocked by the bash-hygiene hook.
+>     There is NO `.lake/.../<node>.log.json` progress file — don't look for one. If the job output isn't
+>     pollable in your harness, just wait for the completion ping; never invent a shell workaround.
 
 ---
 

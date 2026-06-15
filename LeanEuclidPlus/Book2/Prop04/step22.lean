@@ -84,8 +84,10 @@ theorem helper_2_4_step22 (a b c d e f g h k : Point) (AB CF AD BE HK BD DE : Li
   -- foot betweenness on DE (uses the sameSide facts above)
   have step22_dfe : between d f e := by sorry
   -- the two parallelograms, the equilateral, the corner angle, the right angles
-  have step22_acgh : |(a─c)| = |(h─g)| ∧ |(a─h)| = |(c─g)| := by sorry
   have step22_adni : ¬(AD.intersectsLine CF) := by sorry
+  have step22_acgh : |(a─c)| = |(h─g)| ∧ |(a─h)| = |(c─g)| := by sorry
+  have hacng : |(a─c)| = |(h─g)| := step22_acgh.1
+  have hahcg : |(a─h)| = |(c─g)| := step22_acgh.2
   have step22_par : formParallelogram h g d f HK DE AD CF := by sorry
   have step22_eq : |(h─g)| = |(g─f)| ∧ |(g─f)| = |(f─d)| ∧ |(f─d)| = |(d─h)| := by sorry
   have step22_fdh : ∠ f:d:h = ∟ := by sorry

@@ -655,4 +655,14 @@ def main(argv):
 
 
 if __name__ == "__main__":
+    # Line-buffer stdout/stderr so per-node progress (the `✓ stepN` lines in --all/--subtree) flushes
+    # AS IT HAPPENS even when stdout is a pipe/file — i.e. when this is launched in the BACKGROUND and
+    # someone polls/Reads the captured output. Without this, Python block-buffers a non-TTY stdout and
+    # nothing appears until the process exits (which made "poll the background job" useless for a
+    # multi-hour --all). reconfigure is a no-op cost on a TTY (already line-buffered).
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
+        sys.stderr.reconfigure(line_buffering=True)
+    except Exception:
+        pass
     sys.exit(main(sys.argv[1:]))

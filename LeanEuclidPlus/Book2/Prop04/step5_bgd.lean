@@ -1,5 +1,4 @@
 import SystemE
-import Book2.Prop04.step5_bgd_ss
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -20,6 +19,10 @@ theorem helper_2_4_step5_bgd (a b c d g : Point) (AB CF AD BD : Line)
     (hCFAD : ¬(CF.intersectsLine AD)) :
     between b g d := by
   euclid_intros
-  have step5_bgd_ss : a.sameSide d CF := by euclid_apply (helper_2_4_step5_bgd_ss a b c d AB CF AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  sorry
+  have step5_bgd_ss : a.sameSide d CF := by sorry
+  -- a, b on opposite sides of CF (c between them, c on CF)
+  euclid_apply (pasch_3 a c b CF)
+  euclid_apply (pasch_4 b g d CF BD)
+  euclid_finish
+
 end Elements.Book2

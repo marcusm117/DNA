@@ -18,6 +18,22 @@ theorem helper_2_4_step5_bgd_ss (a b c d : Point) (AB CF AD : Line)
     (hab : a ≠ b) (had : a ≠ d)
     (hbad : ∠ b:a:d = ∟)
     (hCFAD : ¬(CF.intersectsLine AD)) :
-    a.sameSide d CF := by sorry
+    a.sameSide d CF := by
+  euclid_intros
+  have step5_cnad : ¬(c.onLine AD) := by sorry
+  have hne : CF ≠ AD := by
+    intro heq; rw [heq] at hcCF; exact step5_cnad hcCF
+  have haoff : ¬(a.onLine CF) := by
+    intro hon
+    euclid_apply (intersection_lines_common_point a CF AD)
+    euclid_finish
+  have hdoff : ¬(d.onLine CF) := by
+    intro hon
+    euclid_apply (intersection_lines_common_point d CF AD)
+    euclid_finish
+  by_contra hcon
+  euclid_apply (intersection_lines_opposing a d CF AD)
+  euclid_apply (intersection_symm CF AD)
+  euclid_finish
 
 end Elements.Book2

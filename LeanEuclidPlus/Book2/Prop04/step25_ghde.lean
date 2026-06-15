@@ -9,7 +9,7 @@ namespace Elements.Book2
 set_option systemE.solverTime 30 in
 theorem helper_2_4_step25_ghde (g h : Point) (HK DE : Line)
     (hgHK : g.onLine HK) (hhHK : h.onLine HK)
-    (hHKDE : HK ≠ DE) (hDEHK : ¬(DE.intersectsLine HK)) :
+    (hHKDE : HK ≠ DE) (hHKnDE : ¬(HK.intersectsLine DE)) :
     g.sameSide h DE := by
   euclid_intros
   have hgoff : ¬(g.onLine DE) := by
