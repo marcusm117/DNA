@@ -25,7 +25,7 @@ A fixed-shape text swap on these (no tactic parsing) ⟹ false positives are str
 Caps: every file carries `set_option systemE.solverTime 30 in` above its theorem in the dev state.
 Phase C (`wire_main`) deletes it (→ System E's 300s default — strictly MORE time, never less).
 """
-import os, re, sys, glob, signal, subprocess, fcntl
+import os, re, sys, glob, signal, subprocess, fcntl, hashlib, json
 
 # ── locations / constants ─────────────────────────────────────────────────────────────────────────
 # realpath (not just abspath): the repo is reachable via both /h/56/taddmao/… and /u/taddmao/… (a
@@ -1095,3 +1095,73 @@ def dependency_problems(propdir):
                 f"`… as …` in Main (construction) NOR (b) `euclid_apply`'d in its helper cone "
                 f"({stepname or 'structural sentence — must be a Main construction'}).")
     return problems
+
+
+# ── certification manifest (incremental "what's certified / what to recheck after an edit") ───────────
+# A per-prop JSON sidecar recording, for each node the audit certified, the HASHES of that node's INPUT
+# files (the small fixed set its checks read). Because the SF/SP/P checks are mutually isolated, a node's
+# certificate stays valid iff NONE of its input files changed — and there is NO transitive cascade (a
+# grandparent builds against the parent's signature in parent.lean, untouched; a grandchild against the
+# child's file, untouched). So diffing input-file hashes is a COMPLETE, BOUNDED answer to "after editing
+# file X, which nodes must I re-check?". The manifest is written ONLY by audits (--all/--subtree/per-node
+# pass); `--whatchanged` is pure-read. It lives under `.lake/` (git-ignored; invisible to integrity_scan,
+# which scans only *.lean), keyed exactly like prop_lock so it never collides across props.
+def file_sha(path):
+    """sha256 hex of a file's bytes, or None if it doesn't exist (a deleted/never-seen input)."""
+    if path is None or not os.path.exists(path):
+        return None
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def cert_path(propdir):
+    """The manifest JSON path for this prop: `.lake/faithful-certified/<key>.json` (same <key> as
+    prop_lock). `.lake/` is git-ignored, so the sidecar never shows up in git or in integrity_scan."""
+    key = os.path.relpath(propdir, BOOK_ROOT).replace(os.sep, "_")
+    d = os.path.join(BOOK_ROOT, ".lake", "faithful-certified")
+    os.makedirs(d, exist_ok=True)
+    return os.path.join(d, f"{key}.json")
+
+
+def node_inputs(propdir, name, occs):
+    """The set of input files whose bytes a node's certificate depends on, as BOOK_ROOT-relative paths:
+      {backing_file(name)}                       — its own proof (P) / combine bytes
+      ∪ {occ.file for occ in occs[name]}         — every container it's wired in (its SP context per site)
+    Editing any of these invalidates `name`'s certificate; editing a file NOT in any node's input set
+    invalidates nothing. (A node wired inside container C has C in its inputs ⟹ editing C flags both C's
+    own node and every child wired in C — exactly {X, its children} for an edit to X, with parents covered
+    because re-checking the child re-runs its SP at C.) `occs` = parse_occurrences(propdir)."""
+    files = set()
+    bf = backing_file(propdir, name)
+    if bf is not None:
+        files.add(os.path.relpath(os.path.realpath(bf), BOOK_ROOT))
+    for nd in occs.get(name, []):
+        files.add(os.path.relpath(os.path.realpath(nd.file), BOOK_ROOT))
+    return sorted(files)
+
+
+def read_manifest(propdir):
+    """Load the manifest dict, or {} if absent/unreadable/corrupt (never raises — a bad manifest just
+    means 'nothing known yet, re-audit')."""
+    p = cert_path(propdir)
+    if not os.path.exists(p):
+        return {}
+    try:
+        with open(p, encoding="utf-8") as f:
+            m = json.load(f)
+        return m if isinstance(m, dict) else {}
+    except (ValueError, OSError):
+        return {}
+
+
+def write_manifest(propdir, manifest):
+    """Persist the manifest dict as pretty JSON (atomic-ish: write a temp then replace)."""
+    p = cert_path(propdir)
+    tmp = p + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2, sort_keys=True)
+        f.write("\n")
+    os.replace(tmp, p)

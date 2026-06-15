@@ -32,6 +32,14 @@ USAGE  (run from LeanEuclidPlus/):
                                                           (`… as …`) OR its sentence's helper cone. Number-
                                                           only; the human's gate-C olean check is book-aware
                                                           — don't game it. (`--deps` alias; `--all` also runs it.)
+  python3 scripts/check_step.py <propdir> --whatchanged  instant, READ-ONLY (NO builds, no lock, never
+                                                          writes): diff the certification manifest's stored
+                                                          input-file hashes vs disk → report which certified
+                                                          nodes an edit invalidated (with WHY + the exact
+                                                          re-check commands). Run after editing a file to
+                                                          learn the MINIMAL recheck set instead of re-running
+                                                          --all. (`--changed` alias. The manifest is written
+                                                          by --all/--subtree and by each per-node PASS.)
 
   <propdir> is e.g. Book2/Prop04  (or Book2/Prop04/Main.lean).
 
@@ -332,9 +340,11 @@ def mode_node(propdir, node_name):
     if status == "container":
         if not _run_combine(propdir, occs[0]):       # a container's combine is its OWN check
             return 1
+        _restamp_node(propdir, node_name, "container")
         print(f"PASS: {node_name} suppliable (SF + SP{spx}) + Combine; it's a CONTAINER — also certify "
               f"its sub-nodes (their isolated SP + their own combine/P).")
     else:
+        _restamp_node(propdir, node_name, "leaf")
         print(f"PASS: {node_name} CERTIFIED (SF + SP{spx} + P).")
     return 0
 
@@ -383,12 +393,14 @@ def mode_context(propdir, node_name):
     return 0 if ok or block else 1
 
 
-def _audit(propdir, order, success_msg):
+def _audit(propdir, order, success_msg, on_pass=None):
     """Run a bottom-up audit over a pre-computed `order` = [(name, [occurrences]) …]: ISOLATED SP at
     every occurrence (per call site), then — per name — P (leaves, zero-sorry) OR a combine-check
     (containers). STOP at the first (deepest) failure. Shared by `--all` (order = audit_order, whole
     prop) and `--subtree` (order = subtree_order, one cone). The caller runs `integrity_scan` first
-    (the no-stray-sorry + structural preamble)."""
+    (the no-stray-sorry + structural preamble). If `on_pass` is given, it's called `on_pass(name, kind)`
+    with kind ∈ {'leaf','container'} after EACH node fully passes — used to record the certification
+    manifest incrementally (so a run that stops at X still records the certified bottom-up prefix)."""
     for name, occs in order:
         for nd in occs:
             ok, out, objs = check_suppliable(propdir, nd)
@@ -418,10 +430,68 @@ def _audit(propdir, order, success_msg):
                 print(_fail_output(cout))
                 return 1
             print(f"  ✓ {name}: SP[isolated]{nsite} + Combine (container)")
+            if on_pass:
+                on_pass(name, "container")
         else:
             print(f"  ✓ {name}: SP[isolated]{nsite} + P (leaf, zero-sorry)")
+            if on_pass:
+                on_pass(name, "leaf")
     print("\n" + success_msg)
     return 0
+
+
+def _restamp_node(propdir, name, kind):
+    """Update the certification manifest for a SINGLE node that just fully passed `check_step <node>`
+    (re-hash its input files + record its kind). Lets a per-node re-check after an edit clear that node
+    from `--whatchanged` without a full `--all`. Tolerant: never raises into the caller's exit path."""
+    try:
+        occs = L.parse_occurrences(propdir)
+        manifest = L.read_manifest(propdir)
+        manifest["prop"] = os.path.relpath(propdir, L.BOOK_ROOT)
+        manifest.setdefault("updated", "")
+        manifest["updated"] = (manifest["updated"] + f" +{name}").strip() \
+            if manifest.get("updated", "").startswith("--") else f"node {name}"
+        files = manifest.get("files", {})
+        certified = manifest.get("certified", {})
+        inputs = L.node_inputs(propdir, name, occs)
+        certified[name] = {"kind": kind, "inputs": inputs}
+        for f in inputs:
+            sha = L.file_sha(os.path.join(L.BOOK_ROOT, f))
+            if sha is not None:
+                files[f] = sha
+        manifest["files"], manifest["certified"] = files, certified
+        L.write_manifest(propdir, manifest)
+    except Exception:
+        pass                                          # bookkeeping must never break the actual check result
+
+
+def _audit_with_manifest(propdir, order, success_msg, source):
+    """Run `_audit`, recording every node that passes into the certification manifest (merged into any
+    existing on-disk manifest), and persisting it on return — whether the audit PASSES or STOPS at a
+    failure (so the certified bottom-up prefix is always saved). `source` labels the run ('--all' or
+    '--subtree <node>'). The manifest stores, per certified node, its kind + input files, plus a sha256
+    of every input file AT THIS AUDIT'S TIME — `--whatchanged` diffs those hashes. Returns _audit's code."""
+    occs = L.parse_occurrences(propdir)
+    manifest = L.read_manifest(propdir)
+    manifest["prop"] = os.path.relpath(propdir, L.BOOK_ROOT)
+    manifest["updated"] = source
+    files = dict(manifest.get("files", {}))
+    certified = dict(manifest.get("certified", {}))
+
+    def on_pass(name, kind):
+        inputs = L.node_inputs(propdir, name, occs)
+        certified[name] = {"kind": kind, "inputs": inputs}
+        for f in inputs:                              # re-hash each input at this audit's time
+            sha = L.file_sha(os.path.join(L.BOOK_ROOT, f))
+            if sha is not None:
+                files[f] = sha
+
+    try:
+        return _audit(propdir, order, success_msg, on_pass=on_pass)
+    finally:
+        manifest["files"] = files
+        manifest["certified"] = certified
+        L.write_manifest(propdir, manifest)
 
 
 def mode_all(propdir):
@@ -442,11 +512,12 @@ def mode_all(propdir):
           f"{f' / {n_occ} call-site(s)' if n_occ != n_names else ''} in "
           f"{os.path.relpath(propdir, L.BOOK_ROOT)} (sub-nodes before their parents):")
     rel = os.path.relpath(propdir, L.BOOK_ROOT)
-    return _audit(propdir, order,
+    return _audit_with_manifest(propdir, order,
                   f"PASS: all {n_names} node(s) certified — every leaf builds ZERO-sorry, every call "
                   f"site supplies its hyps (isolated SP, no SMT), every container's combine is certified "
                   f"by its OWN combine-check, and integrity_scan found no stray sorry ⇒ the Phase-C wired "
-                  f"build is GUARANTEED green AND sorry-free. Run `python3 scripts/wire_main.py {rel}`.")
+                  f"build is GUARANTEED green AND sorry-free. Run `python3 scripts/wire_main.py {rel}`.",
+                  source="--all")
 
 
 def mode_subtree(propdir, root):
@@ -465,10 +536,11 @@ def mode_subtree(propdir, root):
     print(f"[check_step --subtree {root}] auditing the {root} cone — {n_names} node(s)"
           f"{f' / {n_occ} in-cone call-site(s)' if n_occ != n_names else ''} in "
           f"{os.path.relpath(propdir, L.BOOK_ROOT)} (sub-nodes before {root}):")
-    return _audit(propdir, order,
+    return _audit_with_manifest(propdir, order,
                   f"PASS: {root}'s subtree certified (SF/SP over every in-cone call site + P every leaf "
                   f"in the cone). This is NOT the whole prop — keep driving the remaining steps, then "
-                  f"run `check_step {os.path.relpath(propdir, L.BOOK_ROOT)} --all` ONCE at the very end.")
+                  f"run `check_step {os.path.relpath(propdir, L.BOOK_ROOT)} --all` ONCE at the very end.",
+                  source=f"--subtree {root}")
 
 
 def mode_build_main(propdir):
@@ -530,6 +602,83 @@ def mode_check(propdir):
     print(f"OK: {os.path.relpath(propdir, L.BOOK_ROOT)} structurally sound — {n} node(s), naming law "
           f"holds, every node has a backing file, every file carries the 30s cap, nothing pre-wired, "
           f"no stray sorry, every cited [Prop.~B.N] satisfied (construction or helper-cone).")
+    return 0
+
+
+def mode_whatchanged(propdir):
+    """`--whatchanged`/`--changed`: READ-ONLY (no build, no swap, no lock, never writes the manifest).
+    Diff the certification manifest's stored input-file hashes against the files on disk NOW, and report
+    which certified nodes are STALE — i.e. have an input file that changed/was deleted — plus the exact
+    `check_step` commands to re-certify them. A node stays stale in every call until a real audit
+    re-certifies it. Sound + minimal: a node's certificate depends ONLY on its own input files (its
+    backing file + the containers it's wired in), and the SF/SP/P isolation means there's no transitive
+    cascade — so a node NOT flagged here is still genuinely certified."""
+    rel = os.path.relpath(propdir, L.BOOK_ROOT)
+    manifest = L.read_manifest(propdir)
+    certified = manifest.get("certified", {})
+    files = manifest.get("files", {})
+    if not certified:
+        print(f"[check_step --whatchanged] no certification manifest for {rel} yet "
+              f"(or it's empty). Run `python3 scripts/check_step.py {rel} --all` (or a `--subtree "
+              f"<node>`) first — that records what's certified; then this reports what an edit invalidates.")
+        return 0
+
+    # 1) which RECORDED input files changed on disk (content differs, or the file is now gone)?
+    changed = {}                                       # relpath → reason
+    for f, sha in sorted(files.items()):
+        now = L.file_sha(os.path.join(L.BOOK_ROOT, f))
+        if now is None:
+            changed[f] = "deleted"
+        elif now != sha:
+            changed[f] = "modified"
+
+    if not changed:
+        print(f"[check_step --whatchanged] {rel}: no recorded input file has changed since the last "
+              f"audit ({manifest.get('updated', '?')}). All {len(certified)} certified node(s) still hold.")
+        return 0
+
+    # 2) which certified nodes have a changed file in their input set → STALE (must be re-checked)?
+    stale = {}                                         # name → sorted list of (file, reason) hits
+    for name, rec in certified.items():
+        hits = [(f, changed[f]) for f in rec.get("inputs", []) if f in changed]
+        if hits:
+            stale[name] = sorted(hits)
+
+    print(f"[check_step --whatchanged] {rel}: {len(changed)} recorded input file(s) changed since the "
+          f"last audit ({manifest.get('updated', '?')}).")
+    print("\nCHANGED FILES:")
+    for f, reason in sorted(changed.items()):
+        print(f"  • {f}  ({reason})")
+
+    if not stale:
+        print(f"\nNo certified node depends on those file(s) — all {len(certified)} certified node(s) "
+              f"still hold. (The changed file isn't an input to any recorded certificate.)")
+        return 0
+
+    # WHY, per stale node: which of its input files changed, and what that file is to the node.
+    print(f"\nMUST RE-CHECK ({len(stale)} node(s)) — a file in each one's input set changed:")
+    for name in sorted(stale, key=L.natural_key):
+        rec = certified[name]
+        bf = L.backing_file(propdir, name)
+        bf_rel = os.path.relpath(os.path.realpath(bf), L.BOOK_ROOT) if bf else None
+        whys = []
+        for f, reason in stale[name]:
+            if f == bf_rel:
+                whys.append(f"its own backing file {f} {reason} → re-run P/SP")
+            else:
+                whys.append(f"it is wired in {f}, which {reason} → re-run SP at that site")
+        print(f"  ✗ {name} ({rec.get('kind','?')}): " + "; ".join(whys))
+
+    still = sorted(set(certified) - set(stale), key=L.natural_key)
+    print(f"\nStill certified (unaffected): {len(still)} node(s).")
+    print("\nRE-CHECK COMMANDS (run bottom-up; a node passing re-stamps its hashes in the manifest):")
+    # bottom-up so a fix's deepest node is checked first (mirrors the audit order)
+    occs, children, _ = L._containment(propdir)
+    order = [n for n in L._bottom_up(occs, children, set(stale)) if n in stale]
+    for name in order:
+        print(f"  python3 scripts/check_step.py {rel} {name}")
+    print(f"\nThen, once all pass, run `python3 scripts/check_step.py {rel} --all` ONCE as the final "
+          f"witness (it re-stamps the whole manifest).")
     return 0
 
 
@@ -620,6 +769,8 @@ def main(argv):
             return mode_check(propdir)
         if rest in (["--dependency"], ["--deps"]):   # source-only (no build/swap) → no lock needed
             return mode_dependency(propdir)
+        if rest in (["--whatchanged"], ["--changed"]):  # read-only hash diff (no build/swap) → no lock
+            return mode_whatchanged(propdir)
         if rest in (["--sufficient"], ["--suppliable"]):
             abbr = "SF" if rest[0] == "--sufficient" else "SP"
             print(f"FAIL: `{rest[0]}` needs a NODE argument (e.g. `{rest[0]} step5`). "

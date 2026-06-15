@@ -113,14 +113,18 @@ itself was mid-compile at the kill — which warm deps prevent.
 | `check_step.py <propdir> --check` | instant, no-build integrity scan (naming law, caps, no stray imports, no stray sorry, + criterion-3 deps) | agent (Phase B) |
 | `check_step.py <propdir> --dependency` (`--deps`) | instant, no-build criterion-3 check, BOTH arms: every cited `[Prop.~B.N]` satisfied by a Main construction (`… as …`) OR its sentence's helper cone. Number-only; isolate fast before `--all` (which also runs it). The book-aware authority is the human's gate-C olean check — don't game it | agent (**Phase B** — needs helpers) |
 | `check_step.py <propdir> --all` | WHOLE-prop bottom-up audit (SP every node + P every LEAF + no-stray-sorry + criterion-3 deps); the FINAL gate, run ONCE; exit 0 ⟹ Phase C guaranteed | agent (end of B) + human (gate B) |
+| `check_step.py <propdir> --whatchanged` (`--changed`) | instant, READ-ONLY (no build, no lock): after editing a file, report the MINIMAL set of certified nodes to re-check + WHY + the exact commands. Reads the certification manifest (written by `--all`/`--subtree`/each per-node PASS) and diffs input-file hashes. Use it instead of re-running `--all` after a fix | agent + human |
 | `wire_main.py <propdir> [--unwire]` | commit the wiring + build once (the ONLY script that keeps Main changed) | human (Phase C) |
 | `phase_c.sh <propdir> [--unwire]` | run ALL of Phase C in order (wire_main → check_faithful → check_steps → check_signatures), stop at first failure; derives the dotted-module / Main.lean arg shapes for you | human (Phase C) |
 | `check_faithful.py <Main>` | instant, no-build: text (crit 1, char-for-char) + construction-aware deps (crit 3, number-only — cited construction props need `… as …` in Main; proof-internal cites DEFER to Phase B) | agent (Phase A) |
 | `check_faithful.sh Book2` | authoritative faithfulness (text + deps, BOOK-AWARE + transitive, whole-module construction-aware); needs a build first | human (gate C) |
 | `safe_build.sh <target>` | serialized `lake build` (parallel-safe) | **human only** (agents are hard-denied raw builds; they use `check_step`) |
 
-`check_step.py` (all Phase-B modes) NEVER leaves a file modified — every swap reverts atomically
-(`git status` stays clean). Only `wire_main.py` (bare) commits the wiring; `--unwire` restores it.
+`check_step.py` (all Phase-B modes) NEVER leaves a `.lean` file modified — every swap reverts
+atomically (`git status` stays clean). (The audit modes do write one git-ignored bookkeeping file —
+the certification manifest under `.lake/faithful-certified/<prop>.json`, read by `--whatchanged`;
+it's invisible to git and to every `.lean` check.) Only `wire_main.py` (bare) commits the wiring;
+`--unwire` restores it.
 The agent builds ONLY through `check_step`/`wire_main` (raw `lake build`/`safe_build.sh` are
 hard-denied in `.claude/settings.json`); humans run `safe_build.sh` in their own terminal.
 
@@ -157,3 +161,27 @@ One agent per prop folder; approve each at gate A independently. Book 1 (`Book/`
 - **Gate C build fails** → a step left unproven slipped through; `wire_main --unwire` and return to
   Phase B. `check_faithful.sh`/`check_steps.py`/`check_signatures.py` fail → a text/dep/claim/statement
   drifted; the message says which.
+
+## After editing a file mid-proof — `--whatchanged` (don't re-run `--all` to find out)
+Once you've run an audit (`--all`, or any `--subtree`/per-node check), a **certification manifest**
+records which nodes are proven and the hashes of each node's *input files*. When you then edit a file
+to fix something, run:
+```
+python3 scripts/check_step.py Book2/Prop04 --whatchanged
+```
+It diffs the hashes and prints the **minimal, exact** set of nodes to re-check — never a guess, never
+the whole prop:
+```
+CHANGED FILES:  • Book2/Prop04/step24.lean (modified)
+MUST RE-CHECK (1 node):  ✗ step24_hf — it is wired in step24.lean, which modified → re-run SP
+Still certified (unaffected): 46 node(s).
+RE-CHECK COMMANDS:  python3 scripts/check_step.py Book2/Prop04 step24_hf
+```
+**Why this is the whole story (sound + minimal):** the SF/SP/P checks are mutually isolated, so a
+node's certificate depends ONLY on its own input files — its backing file + the container(s) it's wired
+in. Editing file X therefore invalidates exactly `{the node backed by X} ∪ {the nodes wired inside X}`
+and nothing else — there is **no transitive cascade** (a grandparent builds against the parent's
+signature in `parent.lean`, which you didn't touch). So a node NOT listed is still genuinely certified.
+Re-running `check_step <node>` on each listed node re-stamps its hashes (clearing it from
+`--whatchanged`); once all pass, run `--all` ONCE as the final witness. `--whatchanged` itself is
+read-only — no build, no lock, never edits anything.
