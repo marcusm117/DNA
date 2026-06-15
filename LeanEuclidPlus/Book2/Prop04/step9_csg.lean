@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.4.9 sub: c.sameSide g BE. c and g both lie on CF, which is parallel to BE (¬CF.intersectsLine
    BE). Both are off BE (a shared point would make CF meet BE, as CF ≠ BE), and two points on a line
    parallel to BE lie on the same side of BE. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step9_csg (c g : Point) (CF BE : Line)
     (hcCF : c.onLine CF) (hgCF : g.onLine CF)
     (hCFBE : CF ≠ BE) (hCFBEp : ¬(CF.intersectsLine BE)) :

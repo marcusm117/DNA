@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.4.15 sub-sub: d.sameSide e HK. d and e both lie on DE, which is parallel to HK
    (¬DE.intersectsLine HK) and distinct from it. Both are off HK (a shared point would make DE meet
    HK, as DE ≠ HK), and two points on a line parallel to HK lie on the same side of HK. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step15_dse (d e : Point) (DE HK : Line)
     (hdDE : d.onLine DE) (heDE : e.onLine DE)
     (hDEHKne : DE ≠ HK) (hDEHK : ¬(DE.intersectsLine HK)) :

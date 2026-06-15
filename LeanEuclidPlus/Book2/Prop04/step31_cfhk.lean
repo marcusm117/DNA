@@ -8,7 +8,6 @@ namespace Elements.Book2
    (g ∈ HK is between b and d on BD — pasch_3). c.sameSide b HK (c, b on AB ∥ HK) and
    f.sameSide d HK (f, d on DE ∥ HK), so c, f are on opposite sides of HK. The two sameSide facts
    are passed in. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step31_cfhk (b c d f g : Point) (HK BD : Line)
     (hgHK : g.onLine HK)
     (hbBD : b.onLine BD) (hgBD : g.onLine BD) (hdBD : d.onLine BD)

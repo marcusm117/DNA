@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.33: the square on AB equals the squares on AC, CB plus twice the rectangle. Chain:
    |a─b|² = area(ADEB) (step32) = four figures (step31) = |a─c|² + |c─b|² + 2·(|a─c|·|c─b|) (step30). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step33 (a b c d e f g h k : Point)
     (hstep30 : (Triangle.area △ h:g:f + Triangle.area △ h:f:d)
       + (Triangle.area △ c:g:k + Triangle.area △ c:k:b)

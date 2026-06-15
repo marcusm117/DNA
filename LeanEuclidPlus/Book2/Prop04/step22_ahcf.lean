@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.4.22 sub: a.sameSide h CF. a and h both lie on AD, which is parallel to CF (¬CF.intersectsLine
    AD) and distinct from it. Both are off CF (a shared point would make AD meet CF), so two points on
    AD lie on the same side of CF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_ahcf (a h : Point) (AD CF : Line)
     (haAD : a.onLine AD) (hhAD : h.onLine AD)
     (hADCF : AD ≠ CF) (hCFAD : ¬(CF.intersectsLine AD)) :

@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.12: CGKB is equilateral — |c─g| = |g─k| = |k─b| = |b─c|. From |b─c| = |c─g| (step8),
    |c─b| = |g─k| (step9), |c─g| = |k─b| (step10), |g─k| = |k─b| (step11) and distance symmetry. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step12 (b c g k : Point)
     (hstep8 : |(b─c)| = |(c─g)|)
     (hstep9 : |(c─b)| = |(g─k)|)

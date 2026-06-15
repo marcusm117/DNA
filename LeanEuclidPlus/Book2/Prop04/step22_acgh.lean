@@ -11,7 +11,6 @@ open Elements.Book1
    HK ∥ AB; a,h on AD; c,g on CF ∥ AD). proposition_34' then gives |a─c| = |h─g| and |a─h| = |c─g|.
    The sameSide a h CF comes from a,h both on AD ∥ CF (step22_ahcf); line distinctness from the
    off-line points c∉AD (step5_cnad), g∉AB (step9_gnab). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_acgh (a c g h : Point) (AB HK AD CF : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB)
     (hhHK : h.onLine HK) (hgHK : g.onLine HK)

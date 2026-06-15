@@ -8,7 +8,6 @@ namespace Elements.Book2
    from f (on DE, below): c.sameSide a HK... rather, the points c and f lie on opposite sides of HK,
    and g = CF ∩ HK lies between them (pasch_4). The opposite-sides fact ¬(c.sameSide f HK) is passed
    in (derived from c above / f below HK). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step31_cgf (c f g : Point) (CF HK : Line)
     (hcCF : c.onLine CF) (hfCF : f.onLine CF) (hgCF : g.onLine CF)
     (hgHK : g.onLine HK)

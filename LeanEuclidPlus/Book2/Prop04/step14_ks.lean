@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.4.14 sub: k.sameSide g AB. Both k and g lie on HK, which is parallel to AB
    (¬HK.intersectsLine AB) and distinct from it (g ∉ AB). Two points on a line parallel and distinct
    from AB are on the same side of AB. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step14_ks (g k : Point) (AB HK : Line)
     (hgHK : g.onLine HK) (hkHK : k.onLine HK) (hgnAB : ¬(g.onLine AB))
     (hHKAB : ¬(HK.intersectsLine AB)) :

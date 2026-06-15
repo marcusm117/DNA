@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.11: |(g─k)| = |(k─b)|. Chain from the earlier equalities: |g─k| = |c─b| (step9) = |b─c|
    (distance symmetry) = |c─g| (step8) = |k─b| (step10). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step11 (b c g k : Point)
     (hstep8 : |(b─c)| = |(c─g)|)
     (hstep9 : |(c─b)| = |(g─k)|)

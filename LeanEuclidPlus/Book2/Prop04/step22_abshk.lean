@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.22 sub: a.sameSide b HK. a and b both lie on AB, which is parallel to HK (¬HK.intersectsLine
    AB) and distinct from it. Both are off HK, so two points on AB lie on the same side of HK. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_abshk (a b : Point) (AB HK : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
     (hABHK : AB ≠ HK) (hHKAB : ¬(HK.intersectsLine AB)) :

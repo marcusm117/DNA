@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.31 sub: f.sameSide d HK. f and d both lie on DE, which is parallel to HK (¬HK.intersectsLine
    DE) and distinct from it. Both are off HK, so two points on DE lie on the same side of HK. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step31_fsd (f d : Point) (DE HK : Line)
     (hfDE : f.onLine DE) (hdDE : d.onLine DE)
     (hDEHK : DE ≠ HK) (hHKDE : ¬(HK.intersectsLine DE)) :

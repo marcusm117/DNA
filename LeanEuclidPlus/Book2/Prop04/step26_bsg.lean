@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.26 sub: b.sameSide g AD. g is between b and d on BD, and d ∈ AD with g ∉ AD; so along the
    segment d→g→b the points g and b lie on the same side of AD (pasch_2). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step26_bsg (b d g : Point) (AD BD : Line)
     (hdAD : d.onLine AD)
     (hbBD : b.onLine BD) (hgBD : g.onLine BD) (hdBD : d.onLine BD)

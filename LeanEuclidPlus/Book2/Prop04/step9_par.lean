@@ -1,4 +1,9 @@
 import SystemE
+import Book2.Prop04.step9_cnbe
+import Book2.Prop04.step9_gnab
+import Book2.Prop04.step9_cfbe
+import Book2.Prop04.step9_csg
+import Book2.Prop04.step9_bk
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -9,7 +14,6 @@ namespace Elements.Book2
    off-line facts c ∉ AD (c is the interior cut, off the left side) and a ∉ BE (a is off the right
    side), the line distinctness AD≠CF, CF≠BE, BE≠AD follow; then CF ∥ BE (step9_cfbe via Prop.~1.30),
    c.sameSide g BE (step9_csg) and b ≠ k (step9_bk) complete the parallelogram. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step9_par (a b c d e g k : Point) (AB CF AD BE HK BD : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
@@ -29,13 +33,13 @@ theorem helper_2_4_step9_par (a b c d e g k : Point) (AB CF AD BE HK BD : Line)
   have hADCF : AD ≠ CF := fun h => hcnAD (h ▸ hcCF)
   have hBEAD : BE ≠ AD := fun h => hanBE (h ▸ haAD)
   -- c ∉ BE and g ∉ AB (off-line via the base/right-side incidences)
-  have step9_cnbe : ¬(c.onLine BE) := by sorry
+  have step9_cnbe : ¬(c.onLine BE) := by euclid_apply (helper_2_4_step9_cnbe a b c AB BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   have hCFBE : CF ≠ BE := fun h => step9_cnbe (h ▸ hcCF)
-  have step9_gnab : ¬(g.onLine AB) := by sorry
+  have step9_gnab : ¬(g.onLine AB) := by euclid_apply (helper_2_4_step9_gnab a b d g AB BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- CF ∥ BE, c.sameSide g BE, b ≠ k complete the parallelogram
-  have step9_cfbe : ¬(CF.intersectsLine BE) := by sorry
-  have step9_csg : c.sameSide g BE := by sorry
-  have step9_bk : b ≠ k := by sorry
+  have step9_cfbe : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_4_step9_cfbe CF AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_csg : c.sameSide g BE := by euclid_apply (helper_2_4_step9_csg c g CF BE (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_bk : b ≠ k := by euclid_apply (helper_2_4_step9_bk b g k AB HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_finish
 
 end Elements.Book2

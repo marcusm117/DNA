@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.22 sub: h ∉ DE. h and d both lie on AD, with d ∈ AD ∩ DE. If h ∈ DE then h, d are two common
    points of AD and DE; with h ≠ d this forces AD = DE, putting a (∈ AD) on DE — but a ∉ DE. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_hnde (a d h : Point) (AD DE : Line)
     (haAD : a.onLine AD) (hdAD : d.onLine AD) (hhAD : h.onLine AD)
     (hdDE : d.onLine DE)

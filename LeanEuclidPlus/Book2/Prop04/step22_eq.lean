@@ -11,7 +11,6 @@ open Elements.Book1
    |g─f| = |d─h|. From ACGH (step22_acgh): |a─c| = |h─g| and |a─h| = |c─g|. With |c─g| = |b─c|
    (step8, distance symmetry), |a─d| = |a─h| + |h─d| (a-h-d), |a─b| = |a─c| + |c─b| (a-c-b) and
    |a─d| = |a─b| (square side), the lengths chain to |d─h| = |a─c| = |h─g|, so all sides equal. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_eq (a b c d f g h : Point) (HK DE AD CF : Line)
     (hacb : between a c b) (hahd : between a h d)
     (hpar : formParallelogram h g d f HK DE AD CF)

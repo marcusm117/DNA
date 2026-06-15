@@ -11,7 +11,6 @@ open Elements.Book1
    ∠ a:d:e (ray d→f along DE = d→e, ray d→h along AD = d→a — step22_fdh). Then the parallelogram
    HGFD has ∠ h:d:f = ∠ h:g:f (proposition_34', opposite angles) and the co-interior pairs sum to
    two right angles, forcing all four angles right. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_ra (h g f d : Point) (HK DE AD CF : Line)
     (hpar : formParallelogram h g d f HK DE AD CF)
     (hfdh : ∠ f:d:h = ∟) :

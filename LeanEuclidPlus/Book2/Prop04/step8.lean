@@ -1,5 +1,6 @@
 import SystemE
 import Book.Prop06
+import Book2.Prop04.step8_tri
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -12,7 +13,6 @@ open Elements.Book1
    — so the sides subtending them are equal: |c─g| = |c─b| [Prop.~1.6], i.e. |b─c| = |c─g|.
    The triangle's three lines are pairwise distinct (sub-nodes derive CF≠BD, BD≠AB, AB≠CF from the
    parallels HK∥AB and the perpendiculars). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step8 (a b c d g h : Point) (AB CF AD BD HK : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
@@ -29,7 +29,7 @@ theorem helper_2_4_step8 (a b c d g h : Point) (AB CF AD BD HK : Line)
   -- a ≠ d (side a─d = a─b > 0)
   have had : a ≠ d := by euclid_finish
   -- the triangle c,g,b (sides CF, BD, AB) — its formation also pins b≠c, c≠g, b≠g
-  have step8_tri : formTriangle c g b CF BD AB := by sorry
+  have step8_tri : formTriangle c g b CF BD AB := by euclid_apply (helper_2_4_step8_tri a b c d g AB CF AD BD HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- recast step7 into prop6's base-angle form: ∠ c:g:b = ∠ c:b:g
   have hbase : ∠ c:g:b = ∠ c:b:g := by
     have hbc : b ≠ c := by euclid_finish

@@ -11,7 +11,6 @@ open Elements.Book1
    a, h). The co-interior angles sum to two right angles [Prop.~1.29] (proposition_29'''''):
    ∠ b:a:h + ∠ a:h:g = ∟ + ∟; and ∠ b:a:h = ∠ b:a:d = ∟ (h on ray a→d, square corner), so
    ∠ a:h:g = ∟. Needs b.sameSide g AD. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step26_ahg (a b d g h : Point) (AB AD HK : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
     (haAD : a.onLine AD) (hdAD : d.onLine AD) (hhAD : h.onLine AD)

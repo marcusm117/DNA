@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.14 sub: k ∉ AB. k lies on HK, which is parallel to AB (¬HK.intersectsLine AB) and distinct
    from it (g ∈ HK but g ∉ AB). A common point k of HK and AB would make them intersect. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step9_knab (g k : Point) (AB HK : Line)
     (hgHK : g.onLine HK) (hkHK : k.onLine HK) (hgnAB : ¬(g.onLine AB))
     (hHKAB : ¬(HK.intersectsLine AB)) :

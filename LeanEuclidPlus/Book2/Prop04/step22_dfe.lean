@@ -8,7 +8,6 @@ namespace Elements.Book2
    opposite sides of CF (c ∈ CF is between a, b on AB — pasch_3); a.sameSide d CF (a, d on AD ∥ CF)
    and b.sameSide e CF (b, e on BE ∥ CF); hence d, e are on opposite sides of CF, and f (= DE ∩ CF)
    lies between them (pasch_4). The two sameSide facts and the opposite-sides chain are passed in. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_dfe (a b c d e f : Point) (DE CF AB AD BE : Line)
     (hacb : between a c b)
     (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE)

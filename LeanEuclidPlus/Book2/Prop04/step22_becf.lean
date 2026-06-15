@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.22 sub: b.sameSide e CF. b and e both lie on BE, which is parallel to CF (¬CF.intersectsLine
    BE) and distinct from it. Both are off CF, so two points on BE lie on the same side of CF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_becf (b e : Point) (BE CF : Line)
     (hbBE : b.onLine BE) (heBE : e.onLine BE)
     (hBECF : BE ≠ CF) (hCFBE : ¬(CF.intersectsLine BE)) :

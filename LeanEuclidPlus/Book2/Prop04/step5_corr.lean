@@ -11,7 +11,6 @@ open Elements.Book1
    (through b, g, d) with foot g between b and d and c, a on the same side of BD. proposition_29''''
    gives ∠ b:g:c = ∠ g:d:a (external = interior-opposite); angle symmetry (at g) plus equal_angles
    (ray d→g coincides with d→b, since g is between b and d) rewrite this to ∠ c:g:b = ∠ a:d:b. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step5_corr (a b c d g : Point) (CF AD BD : Line)
     (hcCF : c.onLine CF) (hgCF : g.onLine CF)
     (haAD : a.onLine AD) (hdAD : d.onLine AD)

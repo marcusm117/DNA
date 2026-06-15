@@ -1,4 +1,8 @@
 import SystemE
+import Book2.Prop04.step13_kbc
+import Book2.Prop04.step13_sum
+import Book2.Prop04.step13_bcg
+import Book2.Prop04.step13_opp
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -9,7 +13,6 @@ namespace Elements.Book2
    construction, reusing the same helper logic: ∠ k:b:c = ∟ (step15, square corner), the co-interior
    sum ∠ k:b:c + ∠ g:c:b = ∟+∟ (step14) ⟹ ∠ b:c:g = ∟ (step16), and the opposite angles
    ∠ c:g:k = ∟ ∧ ∠ g:k:b = ∟ (step17). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step13 (a b c d e g k : Point) (AB CF AD BE HK BD DE : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
@@ -27,10 +30,10 @@ theorem helper_2_4_step13 (a b c d e g k : Point) (AB CF AD BE HK BD DE : Line)
     (hbad : ∠ b:a:d = ∟) (habe : ∠ a:b:e = ∟) :
     (∠ k:b:c = ∟) ∧ (∠ b:c:g = ∟) ∧ (∠ c:g:k = ∟) ∧ (∠ g:k:b = ∟) := by
   euclid_intros
-  have step13_kbc : ∠ k:b:c = ∟ := by sorry
-  have step13_sum : ∠ k:b:c + ∠ g:c:b = ∟ + ∟ := by sorry
-  have step13_bcg : ∠ b:c:g = ∟ := by sorry
-  have step13_opp : ∠ c:g:k = ∟ ∧ ∠ g:k:b = ∟ := by sorry
+  have step13_kbc : ∠ k:b:c = ∟ := by euclid_apply (helper_2_4_step13_kbc a b c d e g k AB CF AD BE HK BD DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step13_sum : ∠ k:b:c + ∠ g:c:b = ∟ + ∟ := by euclid_apply (helper_2_4_step13_sum a b c d e g k AB CF AD BE HK BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step13_bcg : ∠ b:c:g = ∟ := by euclid_apply (helper_2_4_step13_bcg a b c g k (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step13_opp : ∠ c:g:k = ∟ ∧ ∠ g:k:b = ∟ := by euclid_apply (helper_2_4_step13_opp a b c d e g k AB CF AD BE HK BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   exact ⟨step13_kbc, step13_bcg, step13_opp.1, step13_opp.2⟩
 
 end Elements.Book2

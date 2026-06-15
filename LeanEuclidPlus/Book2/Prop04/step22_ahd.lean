@@ -8,7 +8,6 @@ namespace Elements.Book2
    • g (∈ HK) is between b and d on BD (step5_bgd), so b and d are on opposite sides of HK (pasch_3);
    • a and b both lie on AB ∥ HK, so they are on the same side of HK (step22_absHK);
    hence a and d are on opposite sides of HK, and h (= AD ∩ HK) lies between them (pasch_4). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_ahd (a b d g h : Point) (AD HK BD AB : Line)
     (haAD : a.onLine AD) (hdAD : d.onLine AD) (hhAD : h.onLine AD)
     (hgHK : g.onLine HK) (hhHK : h.onLine HK)

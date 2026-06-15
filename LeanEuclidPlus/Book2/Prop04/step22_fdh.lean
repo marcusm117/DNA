@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.4.22 sub: ∠ f:d:h = ∟. At corner d, ∠ a:d:e = ∟ (square). The ray d→f coincides with d→e
    (f between d, e on DE) and d→h coincides with d→a (h between a, d on AD), so
    ∠ f:d:h = ∠ e:d:a = ∟ (equal_angles + angle symmetry). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step22_fdh (a d e f h : Point) (DE AD : Line)
     (hdfe : between d f e) (hahd : between a h d)
     (hdDE : d.onLine DE) (heDE : e.onLine DE)

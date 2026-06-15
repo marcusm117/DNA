@@ -10,7 +10,6 @@ open Elements.Book1
 /- 2.4.24 sub: area(HGFD) = |a─c|². HGFD is a parallelogram (hpar) with the right angle at d,
    ∠ h:d:f = ∟, so by rectangle_area its area (△h:d:f + △h:g:f) = |h─g|·|h─d|; with |h─d| = |h─g|
    (HGFD equilateral) and |h─g| = |a─c| (step23), this is |a─c|·|a─c|. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step24_hf (a c h g f d : Point) (HK DE AD CF : Line)
     (hpar : formParallelogram h g d f HK DE AD CF)
     (hfdh : ∠ f:d:h = ∟) (hdf : d ≠ f) (hdh : d ≠ h)

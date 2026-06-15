@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.4.31 sub: the big square ADEB as formParallelogram a b d e AB DE AD BE (a,b on AB; d,e on DE;
    a,d on AD; b,e on BE; a.sameSide d BE; AB ∥ DE; AD ∥ BE). sameSide a d BE + non-intersections +
    b ≠ e supplied. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step31_par1 (a b d e : Point) (AB DE AD BE : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
     (hdDE : d.onLine DE) (heDE : e.onLine DE)

@@ -10,7 +10,6 @@ open Elements.Book1
 /- 2.4.25 sub: proposition_43 complement equality. On the square ADEB (formParallelogram b e a d,
    diagonal B-D through g) with inner parallelograms CGKB (`b k c g`) and HGFD (`g f h d`),
    proposition_43 gives △c:a:h + △c:h:g = △k:g:f + △k:f:e. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step25_compl (a b c d e f g h k : Point) (AB CF AD BE HK BD DE : Line)
     (hbBD : b.onLine BD) (hgBD : g.onLine BD) (hdBD : d.onLine BD)
     (hbd : b ≠ d)

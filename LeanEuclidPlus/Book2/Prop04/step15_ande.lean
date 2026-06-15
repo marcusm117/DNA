@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.4.15 sub: a ∉ DE. a lies on AB, which is parallel to DE (¬DE.intersectsLine AB) and distinct
    from it (d ∈ DE but d ∉ AB). A common point a of DE and AB would make them intersect. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step15_ande (a d : Point) (AB DE : Line)
     (haAB : a.onLine AB) (hdDE : d.onLine DE) (hdnAB : ¬(d.onLine AB))
     (hDEAB : ¬(DE.intersectsLine AB)) :

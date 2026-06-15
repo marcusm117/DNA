@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop04.step5_bgd
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +9,6 @@ namespace Elements.Book2
    ∠ a:b:d = ∠ g:b:c: at vertex b the ray b→c coincides with b→a (c is between a and b on AB) and
    the ray b→d coincides with b→g (g is between b and d on BD, supplied by the shared step5_bgd),
    so ∠ a:b:d = ∠ c:b:g (equal_angles), then ∠ c:b:g = ∠ g:b:c by symmetry. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_4_step7 (a b c d g : Point) (AB CF AD BD : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
@@ -24,7 +24,7 @@ theorem helper_2_4_step7 (a b c d g : Point) (AB CF AD BD : Line)
   -- a ≠ d (side a─d = a─b > 0)
   have had : a ≠ d := by euclid_finish
   -- g is between b and d on the diagonal (shared with step5)
-  have step5_bgd : between b g d := by sorry
+  have step5_bgd : between b g d := by euclid_apply (helper_2_4_step5_bgd a b c d g AB CF AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- ∠ a:b:d = ∠ c:b:g: rays b→a = b→c (c between a,b) and b→d = b→g (g between b,d)
   euclid_apply (equal_angles b a c d g AB BD)
   euclid_finish
