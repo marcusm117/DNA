@@ -5,15 +5,18 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book2
 
 /- 2.5.6 sub: ¬h.onLine AB. h ∈ BE and b ∈ BE ∩ AB; BE ≠ AB (e ∈ BE is off AB) and h ≠ b
-   (between b h e), so if h were on AB the two distinct lines AB, BE would share both b and h —
-   impossible. b≠h from between b h e; BE≠AB from e∉AB. -/
+   (h ∈ DG, b ∉ DG), so if h were on AB the two distinct lines AB, BE would share both b and h —
+   forcing AB = BE → e ∈ AB → contradiction. -/
 set_option systemE.solverTime 30 in
-theorem helper_2_5_step6_bmf_hoffab (b e h : Point) (AB BE : Line)
+theorem helper_2_5_step6_bmf_hoffab (b e h : Point) (AB BE DG : Line)
     (hbAB : b.onLine AB) (hbBE : b.onLine BE) (heBE : e.onLine BE) (hhBE : h.onLine BE)
-    (heoffAB : ¬(e.onLine AB)) (hbhe : between b h e) :
+    (hhDG : h.onLine DG)
+    (heoffAB : ¬(e.onLine AB)) (hboffDG : ¬(b.onLine DG)) :
     ¬(h.onLine AB) := by
   intro hhAB
-  have hbe_ne_ab : BE ≠ AB := fun heq => heoffAB (heq ▸ heBE)
+  have hBEneAB : BE ≠ AB := fun heq => heoffAB (heq ▸ heBE)
+  have hhb : h ≠ b := fun heq => hboffDG (heq ▸ hhDG)
+  euclid_apply (two_points_determine_line h b BE AB)
   euclid_finish
 
 end Elements.Book2

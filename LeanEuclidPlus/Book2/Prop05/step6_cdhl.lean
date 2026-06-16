@@ -19,8 +19,10 @@ theorem helper_2_5_step6_cdhl (c d h l : Point) (AB KM CE DG : Line)
     formParallelogram c d l h AB KM CE DG := by
   euclid_intros
   have hdh : d ≠ h := fun heq => hhoffAB (heq ▸ hdAB)
-  euclid_apply (intersection_symm KM AB)
-  euclid_apply (intersection_symm DG CE)
-  euclid_finish
+  have hABKM : ¬(AB.intersectsLine KM) := by
+    intro hx; euclid_apply (intersection_symm AB KM); euclid_finish
+  have hCEDG : ¬(CE.intersectsLine DG) := by
+    intro hx; euclid_apply (intersection_symm CE DG); euclid_finish
+  exact ⟨hcAB, hdAB, hlKM, hhKM, hcCE, hlCE, ⟨hdDG, hhDG, hdh⟩, hsscl, hABKM, hCEDG⟩
 
 end Elements.Book2

@@ -43,6 +43,8 @@ theorem helper_2_5_step6 (a b c d e f g h l m : Point) (AB BE CE BF EF DG KM : L
   have step6_kmef : ¬(KM.intersectsLine EF) := by sorry
   have step6_dgbf : ¬(DG.intersectsLine BF) := by sorry
   -- layer 4: off-line depending on the parallels
+  have step6_doffbf : ¬(d.onLine BF) := by sorry
+  have step6_hoffbf : ¬(h.onLine BF) := by sorry
   have step6_foffkm : ¬(f.onLine KM) := by sorry
   -- layer 5: sameSides depending on the off-line/parallel anchors
   have step6_ssbd : b.sameSide d KM := by sorry

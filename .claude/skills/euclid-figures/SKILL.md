@@ -44,6 +44,18 @@ The bread-and-butter precondition for almost everything else (distinctness, same
 - **Off a line from a right-angle + collinearity contradiction**: `intro hon`; `euclid_finish` (the
   contradiction — e.g. `a,b,d` collinear on `AB` with `∠b:a:d = ∟` — is small enough for the solver once
   the point is forced on the line). *Ref: `Book2/Prop04/step8_dnab.lean`.*
+- GOTCHA — **`intersection_lines_common_point` REQUIRES `L1 ≠ L2` already in context.** Without it the
+  SMT solver searches for distinctness and reliably times out — even in a 3-line file. The fix is always:
+  establish `L1 ≠ L2` from an off-line anchor BEFORE the call:
+  ```lean
+  have hL1neL2 : L1 ≠ L2 := fun heq => hpoffL2 (heq ▸ hpL1)
+  euclid_apply (intersection_lines_common_point p L1 L2)
+  euclid_finish
+  ```
+  Find the anchor by asking: which point is on `L1` and NOT on `L2`? That's your `p`. If no such point
+  is immediately in context, make it a sibling sub-node first (Family 1, off-a-parallel-line recipe).
+  *Ref: `Book2/Prop05/step6_foffkm.lean` (hKMneEF first), `Book2/Prop05/step6_doffbf.lean` (hDGneBF),
+  `Book2/Prop01/step5_ss_bg_ch.lean:17-24`.*
 - GOTCHA: keep the signature SLIM — these are trivial facts; a bloated context makes even `euclid_finish`
   search. If an off-line leaf times out you have a context-size problem, not a hardness problem (slim
   the hyps, don't add depth).
@@ -68,6 +80,9 @@ The bread-and-butter precondition for almost everything else (distinctness, same
 - **Segment endpoint on the line** (`p.sameSide q L` where one segment end is ON `L`): if `r` is on `L`,
   `between r p q` (or `between q p r`), and `p,q ∉ L`, then `euclid_apply (pasch_2 r p q L)`;
   `euclid_finish`. *Ref: `Book2/Prop04/step5_ss.lean:18-21` (`c.sameSide a BD` via `pasch_2 b c a BD`).*
+- GOTCHA: **`intersection_lines_opposing` and `intersection_lines_common_point` both need `L1 ≠ L2`
+  already in context** — same rule as Family 1's GOTCHA. Establish it first (term-mode from an off-line
+  anchor), then the call + `euclid_finish` finishes in <10s.
 - GOTCHA: `sameSide` is the lone HARD conjunct of `formParallelogram` — these are the leaves you extract
   before an area call (Family 6). Don't try to get `sameSide` out of an angle-split that itself needs it
   (circular — see prove-euclid CRUCIAL SUBTLETIES); go through betweenness/pasch instead.
