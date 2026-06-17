@@ -62,7 +62,7 @@ by
     "Thus, the whole (rectangle) $CM$ is equal to the whole (rectangle) $DF$."
     (step7 : Triangle.area △ c:b:m + Triangle.area △ c:m:l =
       Triangle.area △ d:b:f + Triangle.area △ d:f:g) := by sorry
-
+  
   euclid_sentence "2.5.8"
     "But, (rectangle) $CM$ is equal to (rectangle) $AL$, since $AC$ is also equal to $CB$ [Prop.~1.36]."
     (step8 : Triangle.area △ c:b:m + Triangle.area △ c:m:l =

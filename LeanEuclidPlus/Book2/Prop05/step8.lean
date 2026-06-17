@@ -19,7 +19,12 @@ theorem helper_2_5_step8 (a b c k l m : Point) (AB KM AK CE BF : Line)
     Triangle.area △ c:b:m + Triangle.area △ c:m:l =
       Triangle.area △ a:c:l + Triangle.area △ a:l:k := by
   euclid_intros
-  have step8_alpar : formParallelogram k l a c KM AB AK CE := by sorry
+  have step8_alpar : formParallelogram k l a c KM AB AK CE := by
+    unfold formParallelogram
+    repeat' constructor
+    all_goals (first | assumption | euclid_finish)
+
+
   have step8_kal_right : ∠ k:a:c = ∟ := by sorry
   have step8_clm_right : ∠ c:l:m = ∟ := by sorry
   have h1 : Triangle.area △ c:b:m + Triangle.area △ c:m:l = |(c─b)| * |(c─l)| := by
