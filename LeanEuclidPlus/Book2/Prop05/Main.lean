@@ -52,6 +52,12 @@ by
     (step6 : Triangle.area △ c:d:h + Triangle.area △ c:h:l =
       Triangle.area △ h:m:f + Triangle.area △ h:f:g) := by sorry
 
+  have step7_cmpar : formParallelogram c b l m AB KM CE BF := by sorry
+  have step7_dfpar : formParallelogram d g b f DG BF AB EF := by sorry
+  have step7_lhm : between l h m := by sorry
+  have step7_dhg : between d h g := by sorry
+  have step7_bmf : between b m f := by sorry
+
   euclid_sentence "2.5.7"
     "Thus, the whole (rectangle) $CM$ is equal to the whole (rectangle) $DF$."
     (step7 : Triangle.area △ c:b:m + Triangle.area △ c:m:l =
