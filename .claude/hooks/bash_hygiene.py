@@ -112,7 +112,7 @@ def main():
         if base in ("python", "python3"):
             arg = nxt.rsplit("/", 1)[-1]
             ok = (nxt.startswith("scripts/") or nxt.startswith("./scripts/")) and (
-                arg.startswith("check_") or arg == "wire_main.py")
+                arg.startswith("check_") or arg in ("wire_main.py", "smt_probe.py"))
             if not ok:
                 gate(f"`{base}` here may ONLY run the pipeline scripts "
                      f"(`python3 scripts/check_step.py …` / `check_steps.py` / `check_faithful.py` / "

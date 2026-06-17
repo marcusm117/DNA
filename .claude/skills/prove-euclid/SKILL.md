@@ -262,6 +262,25 @@ These are the moves that replaced `euclid_finish`-and-hope. Grep the axiom file 
   with `e` between `a,b` and `f` between `c,d`, the four sub-triangles sum to the two halves.
   One apply + linear arithmetic closes area-sum goals. (Prop45 `helper_45_area_sum`.)
 
+- **Split-and-delegate for CONJUNCTIVE goals (assembly steps only).** For a multi-conjunct goal
+  (`formParallelogram`, `formTriangle`, a `rectangle_area` precondition):
+  ```lean
+  unfold formParallelogram      -- or the relevant abbrev
+  repeat' constructor           -- split into conjuncts
+  all_goals try (first | assumption | euclid_finish)
+  ```
+  closes every cheap conjunct (incidences via `assumption`, the easy ones via `euclid_finish`) in one
+  sweep, leaving ONLY the genuinely-hard conjunct(s) open — which `try` surfaces by name so you see
+  exactly what still needs a `have`. Good for narrowing a 10-part assembly to its 1 hard part.
+  (Ref: `Book2/Prop05/step8.lean` `step8_alpar`.)
+  **SCOPE — this does NOT help atomic goals.** On `¬p.onLine L` / `between p q r` (no conjunction to
+  split), `repeat' constructor` is a no-op and the macro collapses to a bare `euclid_finish` that
+  SEARCHES THE WHOLE FIGURE AND TIMES OUT. Those atomic off-line/betweenness facts still need the
+  explicit anchored chain (`have hLneM : L ≠ M := …; euclid_apply (intersection_lines_common_point …)`)
+  — see the parallel/off-line entry above. Use split-and-delegate for assembly; use explicit anchors
+  for the atomic plumbing. (Empirically, the atomic plumbing — not the assembly — is the real cost
+  sink in Book-2 figure steps.)
+
 ### THE PARALLEL-RECTANGLE FIGURE CHAINS → see the `euclid-figures` skill
 The recurring goal-shapes in "decompose a rectangle by internal parallels" proofs (Book 2 Props 1–8 —
 the bulk of the hours on the done Prop01/02/03 + Prop04) have known axiom-chain recipes: **same-side-of-a-parallel**

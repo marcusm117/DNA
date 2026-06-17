@@ -1,3 +1,4 @@
+import Book2.Helpers.RightAngle
 import Book2.Prop01.Main
 import Book2.Prop02.Main
 import Book2.Prop03.Main
