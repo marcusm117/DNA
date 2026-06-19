@@ -78,73 +78,17 @@ Notes specific to Book 2:
   configuration implicit, as Book 1 does.
 - Heavy area proofs may need `set_option maxHeartbeats 0 in` (cf. Book 1's Prop47).
 
-### 1b. Faithfulness annotations + checking
+### 1b. Faithfulness — SUPERSEDED (see FAITHFUL.md)
 
-Spec: [faithful.txt](faithful.txt). A proof is proof-faithful iff two criteria hold (statement
-faithfulness is separate and human-checked; compiling is separate — that's `lake build`).
-
-**Criterion 1 — text map.** Concatenating the step texts in order reproduces `texts_proofs/N.txt`
-character-for-character.
-
-**Criterion 3 — dependencies.** Every `[Prop.~B.M]` Euclid cites is referenced by an `euclid_apply`
-of that prop in the same step's block (reference, not proof-of-use).
-
-#### Annotate the proof
-
-Three tactics (defined in [../SystemE/Meta/Tactics/Faithful.lean](../SystemE/Meta/Tactics/Faithful.lean)):
-
-- `euclid_intro_sentence "<loc>" "<text>"` — structural; the enunciation + `Let …` + `I say that …`.
-  Place after `euclid_intros`. Emits no `have`.
-- `euclid_sentence "<loc>" "<text>" (name : type) := by tac` — a logical step. Identical to
-  `have name : type := by tac`.
-- `euclid_conclude_sentence "<loc>" "<text>"` — structural; the closing `Thus, …` + QED. Place after
-  the final `exact`. Emits no `have`.
-
-```lean
-  euclid_intros
-  euclid_intro_sentence "2.N.0" "If there are two straight-lines … by $A$ and $EC$."
-
-  euclid_apply (proposition_11'' b c BC) as f                      -- cited [Prop.~1.11], in this block
-  euclid_sentence "2.N.1"
-    "For let $BF$ be drawn from point $B$, at right-angles to $BC$ [Prop.~1.11],"
-    (step1 : ¬(f.onLine BC) ∧ ∠ f:b:c = ∟) := by euclid_finish
-
-  exact stepK
-  euclid_conclude_sentence "2.N.M" "Thus, if there are two straight-lines … required to show."
-```
-
-#### Rules
-
-1. Locator = `"<book>.<prop>.<sentence>"`. Sentences number `0,1,2,…` contiguously; `*.0` = intro,
-   last = conclusion.
-2. Each annotation text is a verbatim slice of `texts_proofs/N.txt` — no edits, no stray edge spaces.
-   Slices tile the whole file, joined by single spaces.
-3. A cited `[Prop.~B.M]` needs its `euclid_apply (proposition_M …)` in that sentence's block (lines
-   from the previous annotation to this one). Any primes (`_M`, `_M'`, `_M''`) match; book + number
-   is what's checked.
-
-Worked example: [Prop01.lean](Prop01.lean).
-
-#### Check
-
-| Command | Build? | Criterion 1 | Criterion 3 |
-|---|---|---|---|
-| `python3 scripts/check_faithful.py "Book2/PropNN.lean"` | no | exact | number-only (sanity) |
-| `scripts/check_faithful.sh Book2` | needs built `.olean` | exact | book-aware (final) |
-
-```bash
-# sanity, instant, no build:
-python3 scripts/check_faithful.py "Book2/Prop01.lean"
-
-# final, book-aware:
-lake build Book2                 # incremental
-scripts/check_faithful.sh Book2  # = lake exe faithful_export Book2 | check_faithful.py --olean
-```
-
-The `.sh` accepts any module (one prop, `Book2`, or an aggregate importing several books — the
-`.olean` folds in all transitive imports, so one call checks them all). Book-aware means
-`[Prop.~1.34]` resolves to `Elements.Book1.proposition_34'` at compile time and cannot be satisfied
-by a Book 2 prop of the same number.
+> The per-prop annotation approach once sketched here is **outdated** and has been removed — it
+> assumed the old flat `Book2/PropNN.lean` layout (props are now folders, `Book2/PropNN/Main.lean`
+> + `stepN.lean` backing files) and an old block-scoped criterion-3 rule that no longer matches the
+> checker. For making a proof faithful — the `euclid_sentence` annotations, the A→gate→B→gate→C
+> pipeline, and the authoritative `check_faithful.sh Book2.PropNN.Main` (book-aware, two-arm deps:
+> Main construction `… as …` OR the citing sentence's helper cone) — follow
+> **[`../FAITHFUL.md`](../FAITHFUL.md)** plus the `faithful-map` / `faithful-prove` skills. The spec
+> itself is [faithful.txt](faithful.txt). Everything below (dataset extraction, statement-only texts,
+> the importer) is still accurate.
 
 ### 2. Statement-only text — `Book2/texts/N.txt`
 
@@ -166,8 +110,9 @@ separate step.
 
 ### 3. Importer — `Book2.lean`
 
-`../Book2.lean` already exists (sibling of `../Book.lean`) with every import **commented
-out**. Uncomment each `import Book2.PropNN` once that proposition compiles, mirroring
+`../Book2.lean` (sibling of `../Book.lean`) aggregates the book: it `import`s each prop's
+`Book2.PropNN.Main` submodule (props are folders now — see FAITHFUL.md), plus the `Helpers.*`
+lemma libraries. Add a prop's `import Book2.PropNN.Main` line once it compiles, mirroring
 [../Book.lean](../Book.lean).
 
 ### 4. (Optional) Pipeline dataset — `book2_propositions.json`

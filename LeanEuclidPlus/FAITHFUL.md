@@ -90,7 +90,7 @@ itself was mid-compile at the kill — which warm deps prevent.
    (or run them by hand — note the THREE different argument shapes, the slash-vs-dot footgun:)
    ```
    python3 scripts/wire_main.py Book2/PropNN        # commits the wiring, strips 30s caps, builds once
-   scripts/check_faithful.sh Book2.PropNN                  # text (crit.1) + deps (crit.3), book-aware
+   scripts/check_faithful.sh Book2.PropNN.Main            # text (crit.1) + deps (crit.3), book-aware
    python3 scripts/check_steps.py Book2/PropNN/Main.lean   # claims unchanged since gate A
    python3 scripts/check_signatures.py              # no proposition statement was altered
    ```
@@ -117,7 +117,7 @@ itself was mid-compile at the kill — which warm deps prevent.
 | `wire_main.py <propdir> [--unwire]` | commit the wiring + build once (the ONLY script that keeps Main changed) | human (Phase C) |
 | `phase_c.sh <propdir> [--unwire]` | run ALL of Phase C in order (wire_main → check_faithful → check_steps → check_signatures), stop at first failure; derives the dotted-module / Main.lean arg shapes for you | human (Phase C) |
 | `check_faithful.py <Main>` | instant, no-build: text (crit 1, char-for-char) + construction-aware deps (crit 3, number-only — cited construction props need `… as …` in Main; proof-internal cites DEFER to Phase B) | agent (Phase A) |
-| `check_faithful.sh Book2` | authoritative faithfulness (text + deps, BOOK-AWARE + transitive, whole-module construction-aware); needs a build first | human (gate C) |
+| `check_faithful.sh Book2.PropNN.Main` | authoritative faithfulness (text crit.1 + deps crit.3, BOOK-AWARE); needs a build first. Deps are TWO-ARM, mirroring `--dependency`: each cited `[Prop.~B.N]` resolves via a Main construction (`… as …`, whole-Main) OR the citing sentence's helper cone — matched by the compiler-resolved (book-authenticated) name. Pass the `.Main` submodule (where the sentences live), or `Book2` to check every prop at once | human (gate C) |
 | `safe_build.sh <target>` | serialized `lake build` (parallel-safe) | **human only** (agents are hard-denied raw builds; they use `check_step`) |
 
 `check_step.py` (all Phase-B modes) NEVER leaves a `.lean` file modified — every swap reverts

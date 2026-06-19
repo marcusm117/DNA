@@ -5,11 +5,11 @@
 #
 # Usage:
 #     scripts/check_faithful.sh Book2                       # check every proposition in Book2
-#     scripts/check_faithful.sh Book2.Prop01                # (any module name works)
+#     scripts/check_faithful.sh Book2.Prop01.Main           # one prop (its sentences live in the .Main submodule)
 #     scripts/check_faithful.sh Book2 --keep book2.json     # also save the extracted JSON to inspect
 #
 # For a quick pre-build sanity check of a single source file (number-only deps, not book-aware), use
-# the Python checker directly instead:  python3 scripts/check_faithful.py "Book2/Prop01.lean"
+# the Python checker directly instead:  python3 scripts/check_faithful.py "Book2/Prop01/Main.lean"
 set -euo pipefail
 
 MOD="${1:?usage: check_faithful.sh <RootModule> [--keep <path>]   (e.g. Book2)}"

@@ -40,6 +40,9 @@ TWO MODES:
 Neither mode verifies that the proof compiles — that is the *correctness* axis (`lake build`).
 """
 import re, sys, os, json
+# Cone machinery (cone_names / propdir_of / prop_prefix) reused from the Phase-B lib so olean mode's
+# notion of "the citing sentence's helper cone" is byte-identical to the number-only check.
+import faithful_lib as fl
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Shared helpers
@@ -334,29 +337,63 @@ def check_olean(json_path: str) -> int:
         rc |= report("sentence locators are contiguous with no duplicates", not dg,
                      ["see message above"] if dg else [f"{len(sents)} sentences"])
 
-        # CRITERION 3 (book-aware, transitive, WHOLE-MODULE — construction-aware): a cited [Prop.~B.N]
-        # is satisfied iff SOME constant applied ANYWHERE in this prop's module matches Book B's prop N —
-        # as the applied head (a CONSTRUCTION `… as …`, or a direct application) OR via its transitive
-        # dependency closure (`deps`, emitted by faithful_export — so a prop cited INSIDE an applied
-        # `helper_<book>_<prop>_step<n>` counts). NOT block-scoped: a construction introduced earlier
-        # than its citing sentence (objects needed early — the Prop03 `proposition_31 as AF` case) and a
-        # proof-internal citation in any step's helper both resolve. Matched by resolved constant
-        # identity, book-aware (gate C's authority — number-only is the agent's fast source/`--dependency`
-        # check). Criterion 3 is a REFERENCE check (Euclid writes "by [Prop X]"), so whole-module
-        # presence is the right granularity, not a precise per-line usage proof.
-        module_applies = applied_by_mod.get(sents[0]['mod'], [])
+        # CRITERION 3 (book-aware, TWO-ARM — construction vs. proof). A cited [Prop.~B.N] is satisfied
+        # iff some applied constant matches Book B's prop N (by RESOLVED identity — `name_matches`, the
+        # book-aware gate) in EITHER arm:
+        #   • construction arm — applied `… as …` ANYWHERE in this prop's `…Main` module. Whole-Main, NOT
+        #     block-scoped: figure objects are routinely hoisted EARLIER than the citing sentence (the
+        #     vetted Prop03 `proposition_31 as AF` case). Every Main proposition-apply is an `as`
+        #     construction (verified invariant), so "applied in the Main module" IS the construction arm.
+        #   • proof arm — applied (no `as`) INSIDE the citing sentence's helper CONE (its stepN backing
+        #     file + transitive sub-files). Scoped STRICTLY to that cone: the post-relocation layout puts
+        #     each step in its own module, so a proof-internal cite lives outside Main.
+        # The cone is the `have`-containment cone (`fl.cone_names`), identical to the Phase-B number-only
+        # `dependency_problems` — so the two gates can't disagree on structure; only the name-match
+        # granularity differs (book-aware here, number-only there). The export's per-`euclid_apply`
+        # `appliedExt` record (the `applied` array, keyed by module) is the reliable source: the `deps`
+        # transitive closure is empty for SMT-discharged applies (the prop never lands in the term), so
+        # it is NOT used. Criterion 3 is a REFERENCE check (Euclid writes "by [Prop X]").
+        main_mod = sents[0]['mod']
+        propdir = None
+        if main_mod.endswith(".Main"):
+            try:                                                      # Book2.Prop05.Main -> Book2/Prop05
+                propdir = fl.propdir_of(main_mod[:-len(".Main")].replace(".", os.sep))
+            except fl.FaithfulError:
+                propdir = None                                        # no folder on disk → construction arm only
+        mod_prefix = fl.prop_prefix(propdir) if propdir else None     # e.g. "Book2.Prop05"
+        # locator → node name (authoritative map from the parsed `have`/sentence tree, not a name guess).
+        try:
+            occ = fl.parse_occurrences(propdir) if propdir else {}
+        except fl.FaithfulError:
+            occ = {}
+        node_by_loc = {nd.loc: nm for nm, nds in occ.items() for nd in nds
+                       if nd.kind == "sentence" and nd.loc is not None}
+        construction = applied_by_mod.get(main_mod, [])               # whole-Main `as` constructions
         dep_lines, n_cites = [], 0
         for s in sents:
             for cbook, num in CITE.findall(s['text']):
                 n_cites += 1
-                def sat(ap):
-                    return (name_matches(ap['name'], cbook, num)
-                            or any(name_matches(dn, cbook, num) for dn in ap.get('deps', [])))
-                if not any(sat(ap) for ap in module_applies):
-                    dep_lines.append(f"{s['loc']} ({s['ref']}) cites [Prop.~{cbook}.{num}] but no "
-                                     f"`proposition_{num}` of Book {cbook} is applied (as a construction "
-                                     f"or inside any step's helper) anywhere in {sents[0]['mod']}")
-        rc |= report("every cited [Prop.~B.M] is referenced in the prop (book-aware, transitive, whole-module)",
+                if any(name_matches(ap['name'], cbook, num) for ap in construction):
+                    continue                                          # construction arm
+                # proof arm: search the citing sentence's cone modules (if it has a node + we found the dir).
+                cone_hit = False
+                node = node_by_loc.get(s['loc'])
+                if node is not None and propdir is not None:
+                    try:
+                        cone = fl.cone_names(propdir, node)
+                    except fl.FaithfulError:
+                        cone = set()
+                    cone_mods = {f"{mod_prefix}.{n}" for n in cone}
+                    cone_hit = any(name_matches(ap['name'], cbook, num)
+                                   for m in cone_mods for ap in applied_by_mod.get(m, []))
+                if cone_hit:
+                    continue
+                where = f"its helper cone (node `{node}`)" if node else \
+                        "any helper cone (structural sentence — must be a Main construction)"
+                dep_lines.append(f"{s['loc']} ({s['ref']}) cites [Prop.~{cbook}.{num}] but no "
+                                 f"`proposition_{num}` of Book {cbook} is applied `… as …` in {main_mod} "
+                                 f"(construction) nor inside {where}")
+        rc |= report("every cited [Prop.~B.M] is referenced in the prop (book-aware: Main construction or sentence's cone)",
                      not dep_lines,
                      dep_lines or [f"all {n_cites} citation(s) resolve to the cited book+number"])
 
