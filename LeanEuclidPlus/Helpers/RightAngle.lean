@@ -3,7 +3,7 @@ import Book.Prop29
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
-namespace Elements.Book2
+namespace Elements
 
 open Elements.Book1
 
@@ -24,4 +24,4 @@ theorem right_angle_cointerior (b d g h : Point) (L1 L2 T : Line)
   euclid_apply (Elements.Book1.proposition_29''''' b d g h L1 L2 T)
   euclid_finish
 
-end Elements.Book2
+end Elements

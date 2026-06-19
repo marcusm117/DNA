@@ -941,13 +941,32 @@ class restore_files:
 
 
 # ── shared structural pre-check (used by --check and as the abort-loud preamble of build ops) ────────
-def integrity_scan(propdir):
+def integrity_scan(propdir, names=None):
     """Source-only, NO builds. Verify the naming law and dev-state invariants. Returns a list of
     human-readable problem strings (empty ⟹ structurally sound). Raises FaithfulError only on a parse
-    failure so malformed source is never silently accepted."""
+    failure so malformed source is never silently accepted.
+
+    `names` SCOPES the scan to a node set (and the files those nodes touch — their backing files + the
+    containers they're wired in). When None (the default, used by `--all`/`--check`), the WHOLE prop is
+    scanned. `--subtree <root>` passes Cone(root) so a not-yet-started sibling step elsewhere in the prop
+    (e.g. a mapped-but-unbacked `stepN`) doesn't abort an audit of an unrelated, finished cone."""
     book = book_num(propdir)
     problems = []
     occ = parse_occurrences(propdir)
+    if names is not None:
+        occ = {n: o for n, o in occ.items() if n in names}
+        # the files this scoped scan inspects: each in-scope node's backing file + every container it's
+        # wired in (exactly the files the matching subtree audit touches).
+        scoped_files = set()
+        for name, occs in occ.items():
+            bf = backing_file(propdir, name)
+            if bf is not None:
+                scoped_files.add(os.path.realpath(bf))
+            for nd in occs:
+                scoped_files.add(os.path.realpath(nd.file))
+        files_to_scan = sorted(scoped_files)
+    else:
+        files_to_scan = prop_files(propdir)
     for name, occs in sorted(occ.items()):
         bf = backing_file(propdir, name)
         if bf is None:
@@ -969,7 +988,7 @@ def integrity_scan(propdir):
                 except FaithfulError as e:
                     problems.append(str(e))
     # every file in the dev state should carry the EXACT 30s cap, and import NO pipeline file
-    for path in prop_files(propdir):
+    for path in files_to_scan:
         src = open(path, encoding="utf-8").read()
         if not CAP_RE_EXACT.search(src):
             if CAP_RE.search(src):

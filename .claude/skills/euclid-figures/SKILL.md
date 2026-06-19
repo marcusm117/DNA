@@ -5,21 +5,49 @@ description: >
   proofs (LeanEuclidPlus): the goal-shapes that come up over and over — sameSide, point-off-a-line,
   line-distinctness, betweenness via pasch, formParallelogram/formTriangle assembly, rectangle/sum
   area, and the parallel/angle props. Consult it from `prove-euclid`'s P step when you hit one of these
-  shapes: it gives the axiom CHAIN to try, NOT a lemma to import — you re-prove it against YOUR figure.
+  shapes. For off-line / sameSide / area-recast / right-angle it points at an importable `Helpers/`
+  LEMMA (one `euclid_apply`, no hand-built leaf); for betweenness / figure-assembly / proposition-props
+  it gives the axiom CHAIN to re-prove against YOUR figure.
 ---
 
 # Euclid figure recipes — "IF YOU NEED TO PROVE THIS, TRY THIS CHAIN"
 
-This is a **recipe book, not a library.** The facts below (`b.sameSide g CH`, `between g l h`,
-`¬c.onLine AD`, …) are FIGURE-SPECIFIC — they depend on which points/lines/construction you have, so
-there is no importable lemma that fits every figure (a generic one would have to thread the whole figure
-through its hypotheses, just relocating the suppliability fight). Instead, each entry tells you the
-**axiom chain that has worked** for that goal-shape across the done Prop01/02/03 (and Prop04's certified leaves). You write the chain against your
-own points and let the build judge it.
+This is **half library, half recipe book — and the split matters.**
+
+- For the **off-line (Family 1)**, **sameSide (Family 3)**, **area-recast (Family 6)**,
+  **right-angle-from-co-interior (Family 7)**, and **parallel-transitivity (Family 7)** shapes, there is
+  now an **importable lemma** in `LeanEuclidPlus/Helpers/{OffLine,SameSide,Area,RightAngle,Parallel}.lean`.
+  These shapes turned out NOT to be irreducibly figure-specific: each needs only 3–5 LOCAL atomic
+  incidence facts (`p.onLine L`, `¬(p.onLine L)`, `p≠q`, `¬(L.intersectsLine M)`, …) — exactly what the
+  parent already supplies — so a generic lemma takes those atoms as hypotheses and does NOT thread the
+  whole figure. **Use the library lemma FIRST**; the axiom chain under each of those families is the
+  FALLBACK for a shape no sibling covers. **One `euclid_apply` of a `Helpers/` lemma replaces a
+  whole hand-built leaf — and is applied INLINE in the container with NO backing file** (see the
+  `faithful-prove` LIBRARY EXCEPTION); this is how a step that was ~10 backing files collapses to ~1–3.
+- For the **betweenness/pasch (Family 4)**, **figure-assembly (Family 5)**, and the remaining
+  **proposition props (Family 7: corresponding-angles, isosceles)** shapes, the facts ARE genuinely
+  figure-specific (they thread which point is between which, which assembly, which transversal), so those
+  families STAY recipes — the chains below are what you write against your own points, and those leaves
+  legitimately stay as backing files. There is no library lemma to import for them.
+
+**Extensibility law:** when you hand-build a NEW recurring off-line/sameSide/right-angle/area variant
+(a flipped orientation, a different witness position), do NOT leave it as a one-off leaf — **PROMOTE it
+to a sibling lemma** in the relevant `Helpers/` file (every mechanism has 2–3 orientation/witness
+forms; match the ATOM your parent literally has, or add the sibling). The library grows; the file count
+per step does not.
+
+Each recipe entry still tells you the **axiom chain that has worked** for that goal-shape across the done
+Prop01/02/03 (and Prop04's certified leaves) — you write the chain against your own points and let the
+build judge it.
 
 **How to use this (inside `faithful-prove`'s recursive SF/SP/P loop, via `prove-euclid`):**
-- Hit a sub-goal whose shape matches one below → introduce it as a `have <sub> : <goal> := by sorry`
-  node, then prove its backing file with the chain here. Recurse if the chain needs its own sub-facts.
+- Hit a sub-goal whose shape matches a **LIBRARY box** (off-line / sameSide / area-recast / right-angle /
+  parallel-trans) → discharge it INLINE: `import Helpers.<File>` (permanent) +
+  `have <sub> : <goal> := <lemma> objs… (by assumption)…`. NO `:= by sorry`, NO backing file, NO
+  script-wired node. If no sibling matches your atom-orientation, PROMOTE one into the Helpers file first.
+- Hit a sub-goal whose shape matches a **RECIPE** (betweenness / assembly / corresponding-angles /
+  isosceles) → introduce it as a `have <sub> : <goal> := by sorry` node, then prove its backing file with
+  the chain here. Recurse if the chain needs its own sub-facts.
 - The chains are **shapes, not substitutions** — match the GEOMETRY (which line is the transversal, which
   points are off which line), not the letters. A wrong instantiation simply fails SP/P; nothing unsafe is
   committed. That is exactly why this is recipes and not copy-paste bodies.
@@ -33,6 +61,22 @@ Grep exact signatures in `SystemE/Theory/Inferences/{Diagrammatic,Transfer,Metri
 
 ## FAMILY 1 — point off a line  (`¬ p.onLine L`)
 The bread-and-butter precondition for almost everything else (distinctness, sameSide, triangle/pgram).
+
+> **LIBRARY FIRST — `Helpers/OffLine.lean`.** Match your goal to one of these and `euclid_apply`
+> it (atomic hyps discharge by `assumption`); fall to the chains below only if no sibling fits — and if
+> you hand-build a new variant, PROMOTE it here.
+> - `offLine_of_parallel x w L M` — `x∈L`, witness `w∈M` off `L`, `¬(M.intersectsLine L)` ⟹ `¬(x∈M)`.
+>   Parallel in the flipped orientation `¬(L.intersectsLine M)`: `offLine_of_parallel'` (same args).
+> - `offLine_of_parallel_simple x L M` — NO off-line witness, but takes `L ≠ M` directly: `x∈L`, `L≠M`,
+>   `¬(L.intersectsLine M)` ⟹ `¬(x∈M)`. (The `L≠M` is ESSENTIAL — without it `L=M` is a countermodel;
+>   the parallel alone does NOT force `x` off `M`.) Flipped `¬(M.intersectsLine L)`: `offLine_of_parallel_simple'`.
+> - `offLine_of_two_points x c w L M` — `x,c` distinct on `L`; `c∈M`; witness `w∈M` off `L` ⟹ `¬(x∈M)`
+>   (being on `M` would equate `L=M`). Witness on the CARRIER instead (`w∈L` off `M`): `offLine_of_two_points'`.
+> - `offLine_of_right_angle a b d L` — `a,b∈L`, `a≠b`, `a≠d`, `∠b:a:d=∟` ⟹ `¬(d∈L)`.
+>
+> The hand-chains below are the FALLBACK / the proof these lemmas encapsulate. Their `Ref:` files
+> (`step6_foffkm`, `step6_doffbf`, the Prop04 leaves) are the ⟨OLD HAND FORM⟩ — keep them as STRUCTURE
+> references only; the model for these facts is now the one-line library call, NOT a re-typed chain.
 
 - **Off a PARALLEL line** (p is on a line `M`, `M ∦ L`, so p can't be on `L`): `by_contra`, then
   `intersection_lines_common_point p L M` (a shared point forces `L`,`M` to meet — contradicting
@@ -70,6 +114,18 @@ The bread-and-butter precondition for almost everything else (distinctness, same
   derive the needed `L ≠ M` facts as small leaves/terms FIRST so the big call has them in hand.
 
 ## FAMILY 3 — same side of a line  (`p.sameSide q L`)
+
+> **LIBRARY FIRST — `Helpers/SameSide.lean`** (the single biggest recurring shape in Book 2, ~60
+> leaves). Match and `euclid_apply`; fall to the chain only if no sibling fits; PROMOTE new variants.
+> - `sameSide_of_parallel p q w L M` — `p,q∈L`; witness `w∈M` off `L`; `¬(M.intersectsLine L)` ⟹ `p.sameSide q M`.
+> - `sameSide_of_parallel' p q u L M` — witness on the CARRIER: `p,q,u∈L`; `u∉M`; `¬(L.intersectsLine M)`
+>   (covers `u=p`, the point itself as witness).
+> - `sameSide_of_parallel_both p q L M` — NO off-line witness, takes `L ≠ M` directly: `p,q∈L`, `L≠M`,
+>   `¬(L.intersectsLine M)` ⟹ `p.sameSide q M`. (Like the off-line no-witness form, `L≠M` is ESSENTIAL —
+>   `L=M` is otherwise a countermodel.) The simplest rectangle shape once `L≠M` is in hand.
+>
+> For the segment-endpoint (`pasch_2`) shape below there is no lemma — it's figure-specific; keep it a leaf.
+
 - **Two points on a line `M ∦ L`, same side of `L`** (the workhorse): prove `¬p.onLine L` and
   `¬q.onLine L` (Family 1), then `by_contra hns`; `euclid_apply (intersection_lines_opposing p q L M)`;
   `euclid_finish` (opposing across `L` would make `M` cross `L`, contradicting `M ∦ L`). Add
@@ -90,6 +146,8 @@ The bread-and-butter precondition for almost everything else (distinctness, same
 ## FAMILY 4 — betweenness of feet / crossing points  (`between p q r`)
 The "a transversal foot / intersection point lands between two others" shape. **This is the
 `between b g d`/`between b k e` shape the Prop04 agent stalled on — it is NOT hard with this chain.**
+> NO library lemma — these are genuinely figure-specific (they thread which point is between which) and
+> legitimately STAY backing files. Write the chain against your own points.
 - **Crossing point of two lines lies between two points** (`q = L ∩ GH`, want `between p q r` with
   `p,r` on `GH`): show `p,r` on OPPOSITE sides of `L`, then `euclid_apply (pasch_4 p q r L GH)`;
   `euclid_finish`. Get the opposite-sides fact from a point `x` on `L` that is `between p' r'` on a base
@@ -104,6 +162,16 @@ The "a transversal foot / intersection point lands between two others" shape. **
   the line they're on. Map every precondition before calling.
 
 ## FAMILY 5 — assemble a figure  (`formParallelogram …`, `formTriangle …`)
+> **LIBRARY-ABLE — the assembly IS genericizable.** `formParallelogram a b c d …` from its ATOMS (the
+> incidences + `≠`s + the one `sameSide` + the two `¬intersects`) is a generic, universally-quantified
+> lemma — NOT whole-figure-threaded (the hyps are all atomic facts the parent supplies). A
+> `mk_parallelogram`-style lemma in `Helpers/` (e.g. the shape of `Book2/Prop02/step5_hsq.lean`, which is
+> already fully generic) can take those atoms and `euclid_finish` the remaining conjuncts. CAVEATS that
+> make this a SMALLER win than off-line/sameSide, so it's lower-priority: (a) the hard hyp is still the
+> `sameSide` — you derive THAT via `Helpers/SameSide.lean` (Family 3) regardless, and once you have it the
+> inline `exact ⟨…, ss, …⟩` constructor is already cheap; (b) `formParallelogram` has vertex-ordering /
+> orientation variants, so like off-line it needs a few siblings. So: promote a `mk_parallelogram` sibling
+> when a shape recurs, but the everyday move is still "derive the sameSide (library), then inline-assemble."
 - **`formParallelogram` — assemble, don't search.** Closing it with ONE fat `euclid_finish` over its ~10
   conjuncts (4 incidences + distinctness + the `sameSide` + two non-intersections) routinely blows 30s.
   Instead: derive the hard `sameSide` as its own sub-node (Family 3) and the `≠` facts (Family 2), then
@@ -119,6 +187,14 @@ The "a transversal foot / intersection point lands between two others" shape. **
   — e.g. Prop03 step6 reuses step5's `between e d f`. Re-proving it is wasted depth.
 
 ## FAMILY 6 — area of a figure  (`rectangle_area`, `sum_parallelograms_area`)
+
+> **LIBRARY — `Helpers/Area.lean`** for the parallelogram-area RECAST shape only:
+> `parallelogram_area' a b c d AB CD AC BD` — from `formParallelogram a b c d …` proves the diagonal
+> split `△a:c:d + △a:d:b = △b:a:c + △b:c:d` in one shot (the recurring step6_lhs/step6_rhs "complement"
+> leaves); the call-site relabel is then a cheap symmetry `euclid_finish`. `rectangle_area` and
+> `sum_parallelograms_area` themselves stay figure-specific recipes (their preconditions thread the
+> figure) — chains below.
+
 - **`rectangle_area`** (parallelogram with a right angle → `area = side·side`): the call's
   `formParallelogram` precondition is what times out, NOT the area algebra. So DECOMPOSE first — get
   `formParallelogram` (Family 5) and the right angle (Family 7) as sub-nodes, THEN
@@ -135,10 +211,26 @@ The "a transversal foot / intersection point lands between two others" shape. **
   restate-and-hope. Extract the precondition instead.
 
 ## FAMILY 7 — parallels & angles  (the cited Book-1 props)
-- **Parallel transitivity** (`¬CF.intersectsLine BE` from `CF ∥ AD` and `AD ∥ BE`): the three lines
+
+> **LIBRARY — `Helpers/RightAngle.lean`** for the right-angle-from-co-interior shape:
+> `right_angle_cointerior b d g h L1 L2 T` — `g,b∈L1` distinct, `h,d∈L2` distinct, `g,h∈T` distinct,
+> `b.sameSide d T`, `¬(L1.intersectsLine L2)`, and ONE known right angle `∠g:h:d=∟` ⟹ `∠b:g:h=∟`.
+> Wraps the `proposition_29'''''` rectangle-corner core (the caller still does its own orientation prep —
+> which angle is the known-right one, via supplement/ray-rewrite). PROMOTE a new angle-wrapper here if a
+> variant recurs.
+>
+> **LIBRARY — `Helpers/Parallel.lean`** for parallel-transitivity:
+> `not_intersects_trans L1 L2 L3` — `¬(L1.intersectsLine L2)`, `¬(L2.intersectsLine L3)`, and the three
+> pairwise `≠` (`L1≠L2`, `L2≠L3`, `L1≠L3`) ⟹ `¬(L1.intersectsLine L3)`, via `proposition_30`. Derive the
+> three line-≠ as cheap off-line-anchor terms (Family 2) first, then one `euclid_apply`. The
+> corresponding-angles / isosceles recipes below stay figure-specific leaves — no library lemma.
+
+- **Parallel transitivity** (`¬CF.intersectsLine BE` from `CF ∥ AD` and `AD ∥ BE`): ⟨OLD HAND FORM — use
+  `not_intersects_trans` from the library box above; this is the chain it encapsulates⟩. The three lines
   pairwise distinct (Family 2), then `euclid_apply (proposition_30 CF BE AD)`; `euclid_finish`.
-  *Ref (PROVEN): `Book2/Prop04/step9_cfbe.lean:14-20`.*
-- **Right angle from co-interior angles** (`∠b:c:h = ∟`): two parallels cut by a transversal, the
+  *Ref: `Book2/Prop04/step9_cfbe.lean:14-20`, `Book2/Prop05/step7_dfpar_dgbf.lean`.*
+- **Right angle from co-interior angles** (`∠b:c:h = ∟`): ⟨OLD HAND FORM — use `right_angle_cointerior`
+  from the library box above; this is the chain it encapsulates⟩. Two parallels cut by a transversal, the
   co-interior angles sum to two right angles — `g.sameSide h BC` sub-node (Family 3), then
   `euclid_apply (proposition_29''''' g h b c BF CH BC)`; `euclid_finish` (the solver finishes the
   `∠g:b:c = ∠f:b:c = ∟` ray-rewrite). *Ref (PROVEN): `Book2/Prop01/step6_rangle.lean:24-33`.*

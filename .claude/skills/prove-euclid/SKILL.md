@@ -35,7 +35,11 @@ Every rule here is a corollary of that inversion. This methodology was derived t
 (There is no single fully-vetted reference proof to copy yet — earlier Book-2 props are still being
 brought up to the current pipeline. Do NOT imitate a specific prop's files; follow the structure THIS
 skill describes: the STAGE-A decomposition comment block + per-sentence `euclid_sentence` `have`s. This
-skill is the **how** — how to produce that structure and discharge each step without thrashing.)
+skill is the **how** — how to produce that structure and discharge each step without thrashing.
+In particular, the Prop01–04 off-line / sameSide / right-angle LEAVES are the ⟨OLD HAND-BUILT FORM⟩ of the
+plumbing — NO LONGER the model for those facts: today you discharge them with a one-line `Helpers/`
+library call (see the PARALLEL-RECTANGLE CHAINS section + the `euclid-figures` skill). Cite them for
+STRUCTURE only, never to copy a hand-built chain a lemma now covers.)
 
 ---
 
@@ -249,9 +253,13 @@ These are the moves that replaced `euclid_finish`-and-hope. Grep the axiom file 
   `sameSide` + one `¬sameSide` across the three concurrent lines, derive a third `sameSide`.
   (Prop47 `f.sameSide a BC` from `a.sameSide c BF`.)
 
-- **Parallel ⟹ same side / off-line.** `intersection_lines_opposing` (contrapositive): points on a
-  line that does NOT cross `L` are on the same side of `L`. `intersection_lines_common_point`: a
-  point on two distinct lines ⟹ they intersect (use by_contra to prove a point is off a parallel).
+- **Parallel ⟹ same side / off-line.** ⟨LIBRARY FIRST⟩ For Book-2 figures these are now importable
+  lemmas in `Helpers/{OffLine,SameSide}.lean` — `offLine_of_parallel(_simple)(')`,
+  `sameSide_of_parallel('/_both)` — so the fact is ONE `euclid_apply` (hyps by `assumption`), NOT a
+  hand-built leaf; see the `euclid-figures` Family 1/3 boxes for which lemma matches your atoms. The
+  underlying axioms (the FALLBACK when no sibling fits): `intersection_lines_opposing` (contrapositive):
+  points on a line that does NOT cross `L` are on the same side of `L`. `intersection_lines_common_point`:
+  a point on two distinct lines ⟹ they intersect (use by_contra to prove a point is off a parallel).
   (Prop45 `l.sameSide m GH`.)
 
 - **Parallels + transversal ⟹ equal/right angle.** `proposition_29'''` (alternate angles): for
@@ -272,7 +280,9 @@ These are the moves that replaced `euclid_finish`-and-hope. Grep the axiom file 
   closes every cheap conjunct (incidences via `assumption`, the easy ones via `euclid_finish`) in one
   sweep, leaving ONLY the genuinely-hard conjunct(s) open — which `try` surfaces by name so you see
   exactly what still needs a `have`. Good for narrowing a 10-part assembly to its 1 hard part.
-  (Ref: `Book2/Prop05/step8.lean` `step8_alpar`.)
+  (Ref: `Book2/Prop05/step8.lean` `step8_alpar` — ⟨OLD HAND FORM: that file hand-builds the off-line /
+  sameSide glue inline; the model now is to discharge those sub-facts with `Helpers/` library calls,
+  leaving only the genuine assembly conjunct⟩.)
   **SCOPE — this does NOT help atomic goals.** On `¬p.onLine L` / `between p q r` (no conjunction to
   split), `repeat' constructor` is a no-op and the macro collapses to a bare `euclid_finish` that
   SEARCHES THE WHOLE FIGURE AND TIMES OUT. Those atomic off-line/betweenness facts still need the
@@ -282,6 +292,10 @@ These are the moves that replaced `euclid_finish`-and-hope. Grep the axiom file 
   sink in Book-2 figure steps.)
 
 ### THE PARALLEL-RECTANGLE FIGURE CHAINS → see the `euclid-figures` skill
+**LIBRARY FIRST.** For the off-line / sameSide / area-recast / right-angle-from-co-interior shapes there
+is now an importable `Helpers/` lemma — TRY IT FIRST (one `euclid_apply`, hyps by `assumption`, NO
+hand-built leaf), and PROMOTE a new recurring variant into the library rather than re-hand-building it.
+The chains below are the FALLBACK for those families and the genuine method for the rest.
 The recurring goal-shapes in "decompose a rectangle by internal parallels" proofs (Book 2 Props 1–8 —
 the bulk of the hours on the done Prop01/02/03 + Prop04) have known axiom-chain recipes: **same-side-of-a-parallel**
 (`intersection_lines_opposing`), **point-off-a-line** / **line-distinctness**, **foot/crossing

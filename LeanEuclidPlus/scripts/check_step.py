@@ -524,8 +524,9 @@ def mode_subtree(propdir, root):
     """`--subtree <node>`: audit ONLY Cone(root) (root + everything it transitively contains), bottom-up,
     occurrence-scoped to the cone. Confirms a container/step is fully done WITHOUT re-auditing the rest
     of the prop. NOT the final gate — run `--all` ONCE at the very end."""
-    problems = L.integrity_scan(propdir)              # structural preamble is whole-prop, cheap, no build
-    if problems:
+    cone = L.cone_names(propdir, root)                # scope the structural scan to root's cone, so a
+    problems = L.integrity_scan(propdir, names=cone)  # not-yet-started sibling step elsewhere in the prop
+    if problems:                                      # doesn't abort an audit of THIS finished cone
         print("FAIL (--subtree aborted by integrity scan — fix structure first):")
         for p in problems:
             print("  - " + p)

@@ -81,13 +81,42 @@ all of that.
 
 ### THE IMPORT INVARIANT (the LLM never imports a helper/step file)
 A dev-state container imports ONLY `SystemE` + the **cited-proposition** imports its own proof uses
-(e.g. `import Book.Prop29` for an `euclid_apply (proposition_29'''' …)` you wrote) — those are proof
-content you DO write. It imports NONE of its pipeline backing/step files; the script adds an
-`import Book<N>.PropNN.<name>` only while it transiently wires that node, and removes it on revert.
-This is what makes per-node checks fast and isolated (checking node N pulls in only N's backing olean,
-not every sibling). `check_step … --check` flags any stray `Book<N>.PropNN.*` import as an error.
-**Reach a sub-lemma ONLY as a `have`-node** (`have <sub> : <concl> := by sorry`; the script wires +
-imports it) — NEVER hand-write a helper `euclid_apply` or a helper import.
+(e.g. `import Book.Prop29` for an `euclid_apply (proposition_29'''' …)` you wrote) **+ any
+`Helpers.*` shared-lemma file it applies** (see below) — those are proof content you DO write. It
+imports NONE of its pipeline backing/step files; the script adds an `import Book<N>.PropNN.<name>` only
+while it transiently wires that node, and removes it on revert. This is what makes per-node checks fast
+and isolated (checking node N pulls in only N's backing olean, not every sibling).
+`check_step … --check` flags any stray `Book<N>.PropNN.*` (the prop's OWN-prefix pipeline) import as an
+error — it does NOT flag `Helpers.*` (a different prefix), so a library import is permanent and
+legal. **Reach a PIPELINE sub-lemma ONLY as a `have`-node** (`have <sub> : <concl> := by sorry`; the
+script wires + imports it) — NEVER hand-write a pipeline `euclid_apply` or a pipeline import.
+
+> **THE LIBRARY EXCEPTION — `Helpers/` lemmas are applied INLINE, by you, with a PERMANENT import.**
+> `LeanEuclidPlus/Helpers/{OffLine,SameSide,Area,RightAngle,Parallel}.lean` holds pre-proved generic
+> lemmas for the recurring off-line / sameSide / area-recast / right-angle / parallel-transitivity facts
+> (see `euclid-figures`). Unlike a pipeline backing file, a library lemma is NOT a `have`-node and NOT
+> script-wired: you write `import Helpers.OffLine` (it stays — different prefix, never flagged) and
+> discharge the fact in-place as `have F : <claim> := <lemma> obj… (by assumption)…` (or
+> `by euclid_apply (lemma …)`). This is pipeline-legal: a pre-proved lemma application does ZERO SMT
+> search (just instantiation), so it costs nothing against the 30s wall, and the resulting `F : <claim>`
+> sits in context for downstream wires to discharge by `assumption` exactly as a backing-file node would.
+> **So these facts take NO backing file** — that is precisely how a step that used to be ~10 leaf files
+> collapses to ~1–3. If the lemma you need doesn't exist yet for your atom-shape, PROMOTE a sibling into
+> the Helpers file (then the human rebuilds that Helpers target) rather than spawning a one-off backing leaf.
+>
+> **GRANULAR IMPORTS — import the SPECIFIC sub-module, NEVER the `Helpers` aggregator.** Write
+> `import Helpers.OffLine` (or `.SameSide`, `.Parallel`, …) — only the ones you actually use. Do NOT
+> `import Helpers` (the aggregator): it pulls in EVERY helper, so adding any new lemma anywhere would
+> invalidate your file and force a needless rebuild. The `Helpers` aggregator exists ONLY as the
+> `lake build Helpers` target root (build-all-helpers), never as a proof-file import.
+>
+> **SUPPLIABILITY — the lemma's hyps must still be Main-suppliable atoms.** A library lemma's hypotheses
+> are discharged by `(by assumption)` at the inline site, so each must be a fact the container already
+> has VERBATIM — same as any wired node. Watch the distinctness hyps in particular: the no-witness forms
+> (`offLine_of_parallel_simple(')`, `sameSide_of_parallel_both`) take an explicit `L ≠ M` (it's essential
+> — without it the claim is false), so the container must carry that `L ≠ M`. If it doesn't, derive it
+> first (a one-term `fun h => hoff (h ▸ hon)` from an off-line anchor) or pick the witness-bearing sibling
+> that establishes distinctness itself.
 
 ### THE PRIME DIRECTIVE (the one invariant you must never break)
 > **At every stage, every `.lean` file in the prop folder builds with its current sorries. If any file
@@ -114,6 +143,14 @@ backing file you create. (Run `--all` ONLY at the very end — see THE LOOP — 
 > step you are currently on.
 
 ```
+Is this goal an off-line / sameSide / area-recast / right-angle-co-interior / parallel-transitivity fact?
+  YES → does a Helpers/ lemma match the ATOMS my context has (see euclid-figures Families 1/3/6/7)?
+        YES → discharge it INLINE: `import Helpers.<File>` (permanent) + `have F : <claim> :=
+              <lemma> obj… (by assumption)…`. NO backing file, NO have-node. This is the file-count win.
+        NO (close, but my atom-orientation/witness isn't covered) → PROMOTE a sibling lemma into that
+              Helpers file (match your literal atom), have the human rebuild it, then apply inline as above.
+  NO (genuine content — betweenness / assembly / proposition-citation) → continue:
+
 Can I close this goal directly (real euclid_apply chain, no new node) and build it ≤30s?
   YES → write that proof; verify it green with `check_step Book<N>/PropNN --provable <thisnode>` → DONE.
   NO  → introduce a sub-fact F. NEVER guess its signature:

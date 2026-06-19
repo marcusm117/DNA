@@ -8,6 +8,9 @@ package «lib» where
 lean_lib SystemE {
 }
 
+lean_lib Helpers {
+}
+
 lean_lib Book {
 }
 
