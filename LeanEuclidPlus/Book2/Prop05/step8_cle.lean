@@ -8,7 +8,6 @@ namespace Elements.Book2
    (on EF). KM (∥ AB, through h) crosses CE strictly between c and e because b,e lie on opposite
    sides of KM (h between them, h ∈ KM) and c shares b's side. pasch_4 then places l between c,e.
    The off-KM facts and point-distinctness come in as hyps (supplied/derived by the parent). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_cle (b c e h l m : Point) (CE KM AB EF BE : Line)
     (hcCE : c.onLine CE) (heCE : e.onLine CE) (hlCE : l.onLine CE)
     (hlKM : l.onLine KM) (hhKM : h.onLine KM) (hmKM : m.onLine KM)

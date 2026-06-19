@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop05.step6_bmf_opp
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +9,6 @@ namespace Elements.Book2
    between b and e on the diagonal (sub-leaf step6_bmf_bhe), so pasch_3 b h e KM gives b,e on opposite
    sides of KM. f is on EF; with the figure incidences euclid_finish places f on e's side of KM, so
    b,f are opposite and pasch_4 b m f KM BF gives between b m f. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_bmf (b c d e f h m : Point) (AB BF BE EF CE DG KM : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hbBF : b.onLine BF) (hfBF : f.onLine BF) (hmBF : m.onLine BF)
@@ -25,7 +25,7 @@ theorem helper_2_5_step6_bmf (b c d e f h m : Point) (AB BF BE EF CE DG KM : Lin
     between b m f := by
   euclid_intros
   -- b,f on opposite sides of KM (sub-leaf), m = KM ∩ BF, b ≠ f ⟹ pasch_4 places m between.
-  have step6_bmf_opp : ¬(b.sameSide f KM) := by sorry
+  have step6_bmf_opp : ¬(b.sameSide f KM) := by euclid_apply (helper_2_5_step6_bmf_opp b c d e f h AB BE CE DG EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (pasch_4 b m f KM BF)
   euclid_finish
 

@@ -1,5 +1,11 @@
 import SystemE
 import Book.Prop30
+import Book2.Prop05.step11_ahpar_kh
+import Book2.Prop05.step11_ahpar_dh
+import Book2.Prop05.step11_ahpar_akdg
+import Book2.Prop05.step11_ahpar_aoffDG
+import Book2.Prop05.step11_ahpar_ssak
+import Book2.Prop05.step11_ahpar_abkm
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -10,7 +16,6 @@ open Elements.Book1
 /- 2.5.11 sub: formParallelogram a d h k AB KM AK DG. AK ∥ DG from AK ∥ CE ∥ DG (Prop.1.30).
    AB ∥ KM from hKMAB (symm). k ≠ h from between k l h (step11_klh). a.sameSide d KM
    needed (both on AB, KM ∥ AB). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_ahpar (a d e h k l : Point) (AB KM AK DG CE : Line)
     (haAB : a.onLine AB) (hdAB : d.onLine AB)
     (hkKM : k.onLine KM) (hhKM : h.onLine KM) (hlKM : l.onLine KM)
@@ -25,17 +30,17 @@ theorem helper_2_5_step11_ahpar (a d e h k l : Point) (AB KM AK DG CE : Line)
   euclid_intros
   -- a.sameSide k DG (A.sameSide C L4=DG), AK ∥ DG, AB ∥ KM (symm), k≠h, d≠h
   -- k ≠ h from between k l h (l strictly between them on KM)
-  have step11_ahpar_kh : k ≠ h := by sorry
+  have step11_ahpar_kh : k ≠ h := by euclid_apply (helper_2_5_step11_ahpar_kh k h l KM (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- d ≠ h: d ∈ AB, h ∈ KM, distinct lines
-  have step11_ahpar_dh : d ≠ h := by sorry
+  have step11_ahpar_dh : d ≠ h := by euclid_apply (helper_2_5_step11_ahpar_dh d h g (by assumption)); (try split_ands) <;> assumption
   -- AK ∥ DG: from AK ∥ CE ∥ DG (proposition_30). AK ≠ DG from k ∈ AK∩KM and h ∈ DG∩KM and k≠h.
-  have step11_ahpar_akdg : ¬(AK.intersectsLine DG) := by sorry
+  have step11_ahpar_akdg : ¬(AK.intersectsLine DG) := by euclid_apply (helper_2_5_step11_ahpar_akdg a d k h e l AK DG CE KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- a ∉ DG (needed for ssak): a ∈ AK, AK ∥ DG (step11_ahpar_akdg gives AK ≠ DG from context)
-  have step11_ahpar_aoffDG : ¬(a.onLine DG) := by sorry
+  have step11_ahpar_aoffDG : ¬(a.onLine DG) := by euclid_apply (helper_2_5_step11_ahpar_aoffDG a d k h l AK DG CE KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- a.sameSide k DG (position 8 = A.sameSide C L4=DG)
-  have step11_ahpar_ssak : a.sameSide k DG := by sorry
+  have step11_ahpar_ssak : a.sameSide k DG := by euclid_apply (helper_2_5_step11_ahpar_ssak a k AK DG (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- AB ∥ KM (¬AB∩KM via intersection_symm from hKMAB)
-  have step11_ahpar_abkm : ¬(AB.intersectsLine KM) := by sorry
+  have step11_ahpar_abkm : ¬(AB.intersectsLine KM) := by euclid_apply (helper_2_5_step11_ahpar_abkm AB KM (by assumption)); (try split_ands) <;> assumption
   exact ⟨haAB, hdAB, hkKM, hhKM, haAK, hkAK, ⟨hdDG, hhDG, step11_ahpar_dh⟩, step11_ahpar_ssak,
          step11_ahpar_abkm, step11_ahpar_akdg⟩
 

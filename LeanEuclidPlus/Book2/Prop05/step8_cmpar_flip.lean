@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.8 sub (ORPHAN — no longer used as a backed node; step8_cmpar_flip_lss not needed since
    hcmpar in step8.lean provides the formParallelogram directly). Kept for reference. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_cmpar_flip (b c l m : Point) (AB KM CE BF : Line)
     (hlKM : l.onLine KM) (hmKM : m.onLine KM)
     (hcAB : c.onLine AB) (hbAB : b.onLine AB)

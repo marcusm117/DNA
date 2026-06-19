@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop05.step11_DGneCE_foff
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -6,7 +7,6 @@ namespace Elements.Book2
 
 /- 2.5.11 sub: DG ≠ CE. Uses d ∈ DG and that d ∉ CE (derivable from between c d b + c ∈ CE + c≠d
    and euclid_finish knowing all the figure angles/lengths). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_DGneCE (a b c d e f : Point) (AB CE DG EF BF : Line)
     (hcAB : c.onLine AB) (hdAB : d.onLine AB) (hbAB : b.onLine AB)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)
@@ -20,7 +20,7 @@ theorem helper_2_5_step11_DGneCE (a b c d e f : Point) (AB CE DG EF BF : Line)
   intro hDGeqCE
   have hdCE : d.onLine CE := hDGeqCE ▸ hdDG
   have hcd : c ≠ d := by euclid_finish
-  have step11_DGneCE_foff : ¬(f.onLine AB) := by sorry
+  have step11_DGneCE_foff : ¬(f.onLine AB) := by euclid_apply (helper_2_5_step11_DGneCE_foff b c d f AB BF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   have hEFneAB : EF ≠ AB := fun heq => step11_DGneCE_foff (heq ▸ hfEF)
   -- AB = CE from c,d on both; proof inline: euclid_finish with c≠d,hcAB,hdAB,hcCE,hdCE
   have hABisCE : AB = CE := by

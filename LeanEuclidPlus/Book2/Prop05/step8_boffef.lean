@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.8 sub: ¬(b.onLine EF). b ∈ AB; EF ∥ AB (hEFAB). EF ≠ AB because e ∈ EF is off AB
    (step8_eoffab). A common point b would then force EF, AB to meet. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_boffef (b e : Point) (AB EF : Line)
     (hbAB : b.onLine AB) (heEF : e.onLine EF)
     (heoffAB : ¬(e.onLine AB))

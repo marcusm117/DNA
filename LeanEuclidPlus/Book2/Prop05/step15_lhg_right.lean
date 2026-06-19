@@ -11,7 +11,6 @@ open Elements.Book1
    h (on KM) and d (on AB); the co-interior angles ∠ g:h:l and ∠ h:d:c sum to two right angles
    (proposition_29'''''), and ∠ h:d:c = ∟ because DG ⊥ AB (DG ∥ CE, ∠ b:c:e = ∟ at the foot c).
    Concretely we are given ∠ c:d:h = ∟ (hcdh) and derive ∠ l:h:g = ∟. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step15_lhg_right (c d g h l : Point) (AB CE DG KM : Line)
     (hdAB : d.onLine AB) (hcAB : c.onLine AB)
     (hcCE : c.onLine CE) (hlCE : l.onLine CE)

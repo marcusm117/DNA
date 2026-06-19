@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.6 sub: ¬h.onLine AB. h ∈ BE and b ∈ BE ∩ AB; BE ≠ AB (e ∈ BE is off AB) and h ≠ b
    (h ∈ DG, b ∉ DG), so if h were on AB the two distinct lines AB, BE would share both b and h —
    forcing AB = BE → e ∈ AB → contradiction. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_bmf_hoffab (b e h : Point) (AB BE DG : Line)
     (hbAB : b.onLine AB) (hbBE : b.onLine BE) (heBE : e.onLine BE) (hhBE : h.onLine BE)
     (hhDG : h.onLine DG)

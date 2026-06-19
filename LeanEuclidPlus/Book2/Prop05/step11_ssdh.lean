@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.11 sub: d.sameSide h CE. d ∈ DG; h ∈ DG; DG ∥ CE. d ∉ CE (step11_doffCE) gives DG ≠ CE.
    Mirror of Prop06 step9_ssdk / step6_sshg pattern. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_ssdh (d h : Point) (DG CE : Line)
     (hdDG : d.onLine DG) (hhDG : h.onLine DG)
     (hdoffCE : ¬(d.onLine CE))

@@ -16,7 +16,6 @@ open Elements.Book1
    ∠ l:c:b = ∠ e:c:b = ∟ (given ∠ b:c:e = ∟). Hence ∠ c:l:m = ∟ (= ∠ m:l:c).
    m.sameSide b CE: m on BF ∥ CE so m.sameSide f CE-side; b on AB. Built by transitivity
    through the figure; off-CE facts are Main-supplied. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_clm_right (b c e l m f : Point) (AB CE KM BF : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB)
     (hcCE : c.onLine CE) (heCE : e.onLine CE) (hlCE : l.onLine CE)

@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.12 sub-sub: d.sameSide h AK. d,h both on DG, and AK ∥ DG (¬AK∩DG, AK ≠ DG since d ∉ AK),
    so they cannot be on opposite sides of AK (intersection_lines_opposing would force AK∩DG). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step12_sshc_dh (a d h : Point) (AB AK DG : Line)
     (haAB : a.onLine AB) (hdAB : d.onLine AB)
     (haAK : a.onLine AK)

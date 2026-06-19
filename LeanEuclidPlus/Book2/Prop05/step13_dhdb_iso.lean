@@ -10,7 +10,6 @@ open Elements.Book1
 /- 2.5.13 sub: ∠ c:e:b = ∠ c:b:e. Triangle CEB is isosceles — |c─e| = |c─b| (the square's two sides
    from C) — with CE (c,e), BE (e,b), AB (b,c) forming it and ∠ b:c:e = ∟ pinning non-collinearity,
    so its base angles at E and B are equal [Prop.~1.5]. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step13_dhdb_iso (b c e : Point) (AB CE BE : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)

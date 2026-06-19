@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.6 sub: c and l (both on CE) are on the same side of DG. (Mirror of Prop06 step7_sscl, relabel
    BG→DG.) c,l off DG (a common point of CE and DG would force them to meet, contra CE ∦ DG; DG ≠ CE
    since d ∈ DG, ¬d ∈ CE). Off DG and not separable ⟹ same side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_sscl (c d l : Point) (CE DG : Line)
     (hcCE : c.onLine CE) (hlCE : l.onLine CE) (hdDG : d.onLine DG)
     (hdoffCE : ¬(d.onLine CE))

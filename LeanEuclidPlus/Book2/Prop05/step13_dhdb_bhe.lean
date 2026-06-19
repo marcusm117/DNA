@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.13 sub: between b h e — h (= DG ∩ BE) lies between b and e on the diagonal BE. Given b,e on
    opposite sides of DG (hbopp) and h on both DG and BE, pasch_4 places h between them. Mirror of
    step6_bmf_bhe. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step13_dhdb_bhe (b e h : Point) (BE DG : Line)
     (hbBE : b.onLine BE) (heBE : e.onLine BE) (hhBE : h.onLine BE)
     (hhDG : h.onLine DG) (heoffDG : ¬(e.onLine DG)) (hboffDG : ¬(b.onLine DG))

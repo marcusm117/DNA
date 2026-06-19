@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.6 sub-sub: between b h e — h (= DG ∩ BE) lies between b and e on the diagonal BE. Given b,e on
    opposite sides of DG (hyp step6_bmf_bopp, a sibling sub-node) and h = DG ∩ BE on both lines,
    pasch_4 b h e DG BE places h between them. Slim signature so the pasch euclid_finish stays fast. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_bmf_bhe (b e h : Point) (BE DG : Line)
     (hbBE : b.onLine BE) (heBE : e.onLine BE) (hhBE : h.onLine BE)
     (hhDG : h.onLine DG) (heoffDG : ¬(e.onLine DG)) (hboffDG : ¬(b.onLine DG))

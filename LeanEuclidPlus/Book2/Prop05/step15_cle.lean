@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop05.step15_cle_opp
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -7,7 +8,6 @@ namespace Elements.Book2
 /- 2.5.15 sub: between c l e (l = KM ∩ CE, c on AB below KM, e on EF above KM).
    Combine: pasch_4 c l e KM CE once ¬(c.sameSide e KM) is established by step15_cle_opp.
    Off-line facts (hcoffKM, heoffKM, hloffDG) pre-derived in parent step15. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step15_cle (c d e g h l : Point) (AB CE DG EF KM : Line)
     (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hcCE : c.onLine CE) (hlCE : l.onLine CE) (heCE : e.onLine CE)
@@ -23,7 +23,7 @@ theorem helper_2_5_step15_cle (c d e g h l : Point) (AB CE DG EF KM : Line)
     (hloffDG : ¬(l.onLine DG)) :
     between c l e := by
   euclid_intros
-  have step15_cle_opp : ¬(c.sameSide e KM) := by sorry
+  have step15_cle_opp : ¬(c.sameSide e KM) := by euclid_apply (helper_2_5_step15_cle_opp c d e g h AB EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   have hKMneCE : KM ≠ CE := fun heq => hcoffKM (heq ▸ hcCE)
   have hlh : l ≠ h := fun heq => hloffDG (heq ▸ hhDG)
   have hcl : c ≠ l := fun heq => hcoffKM (heq ▸ hlKM)

@@ -11,7 +11,6 @@ open Elements.Book1
    with the right angle ∠ a:k:h = ∟, so rectangle_area gives area(△a:k:h + △a:d:h) = |a─d|·|a─k|;
    and |a─k| = |d─h| (opposite sides of the parallelogram [Prop.~1.34]); area △a:h:k = △a:k:h by
    permutation. Hence area △a:d:h + △a:h:k = |a─d|·|d─h|. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step12_rect (a d h k : Point) (AB KM AK DG : Line)
     (hpar : formParallelogram a d k h AB KM AK DG)
     (hakh : ∠ a:k:h = ∟) :

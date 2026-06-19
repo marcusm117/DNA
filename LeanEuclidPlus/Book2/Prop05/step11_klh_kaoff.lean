@@ -8,7 +8,6 @@ namespace Elements.Book2
    If k ∈ CE then intersection_lines_common_point k AK CE gives AK.intersectsLine CE — contradiction. -/
 /- k ∉ CE. k ∈ AK; a ∈ AK, a ∉ CE (from aaoff). So AK ≠ CE. Then k ∈ CE ∧ k ∈ AK + distinctness
    → intersection_lines_common_point k AK CE gives AK.intersectsLine CE — contradicts hAKCE. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_klh_kaoff (a k : Point) (AK CE : Line)
     (hkAK : k.onLine AK) (haAK : a.onLine AK)
     (haoffCE : ¬(a.onLine CE))

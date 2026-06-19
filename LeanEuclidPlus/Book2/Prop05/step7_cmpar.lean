@@ -8,7 +8,6 @@ namespace Elements.Book2
    hboffKM (b∉KM) and hcsslBF (c.sameSide l BF) are absent from the call site; derived in-body.
    Chain: e∉AB (square) → d∉CE → b∉DG → h∉AB → KM≠AB → b∉KM → b≠m.
    CE≠BF (e∉BF from sameSide) → c,l∉BF → c.sameSide l BF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_cmpar (b c d e h l m : Point) (AB KM CE BF BE DG : Line)
     (hcAB : c.onLine AB) (hbAB : b.onLine AB) (hdAB : d.onLine AB)
     (hlKM : l.onLine KM) (hmKM : m.onLine KM) (hhKM : h.onLine KM)

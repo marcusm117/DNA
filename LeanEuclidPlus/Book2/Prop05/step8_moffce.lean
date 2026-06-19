@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.8 sub: ¬(m.onLine CE). m ∈ BF; BF ∥ CE (hCEBF). BF ≠ CE because b ∈ BF is off CE
    (step8_boffce). A common point of BF,CE would then force them to meet. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_moffce (b c m : Point) (CE BF : Line)
     (hmBF : m.onLine BF) (hbBF : b.onLine BF) (hcCE : c.onLine CE)
     (hboffCE : ¬(b.onLine CE))

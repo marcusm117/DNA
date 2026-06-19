@@ -8,7 +8,6 @@ namespace Elements.Book2
    c and e are on opposite sides of KM: c.sameSide d KM (both on AB ∥ KM); d,g opposite across KM
    (between d h g, h ∈ KM, pasch_3); g.sameSide e KM (both on EF ∥ KM); transitivity ⟹ c,e opposite.
    pasch_4 then places l (∈ KM ∩ CE) between c and e.  Off-KM facts + KM∥EF are sub-nodes / in-body. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step12_cle (c d e g h l : Point) (AB EF KM CE DG : Line)
     (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (heEF : e.onLine EF) (hgEF : g.onLine EF)

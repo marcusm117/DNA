@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.13 sub: ¬(b.sameSide e DG) — b and e are on opposite sides of DG. d ∈ DG is between c and b
    on AB (hcdb), so c and b are on opposite sides of DG. e is on the same side of DG as c (e,c both
    on CE, and CE ∥ DG so CE does not cross DG). Hence b and e are on opposite sides. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step13_dhdb_bopp (b c d e : Point) (AB CE DG : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)

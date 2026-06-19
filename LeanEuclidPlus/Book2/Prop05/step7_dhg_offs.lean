@@ -12,7 +12,6 @@ open Elements.Book1
    from the square (hbce, hcelen) + the figure's incidences/parallels, exactly as step7_bmf does).
    Chain: e∉AB (square apex) → b∉EF → d∉CE → e∉DG, b∉DG; h∉AB, h∉EF → KM∥EF (prop_30);
    d,b∉KM (KM∥AB), g∉KM (KM∥EF). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dhg_offs (b c d e g h : Point) (AB BE CE DG EF KM : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hbBE : b.onLine BE) (heBE : e.onLine BE) (hhBE : h.onLine BE)

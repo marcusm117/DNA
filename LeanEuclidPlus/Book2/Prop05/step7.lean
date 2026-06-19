@@ -12,7 +12,6 @@ namespace Elements.Book2
    Since CH = HF (hstep6), CM = DF.
    step7_cmpar, step7_dfpar, step7_lhm, step7_dhg, step7_bmf are Main-level nodes (proved in their
    own backing files) and passed in as hypotheses here, making this a leaf. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7 (c d b f g h l m : Point) (AB KM CE BF DG EF : Line)
     (hcAB : c.onLine AB) (hdAB : d.onLine AB) (hbAB : b.onLine AB)
     (hlKM : l.onLine KM) (hhKM : h.onLine KM) (hmKM : m.onLine KM)

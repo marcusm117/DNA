@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.6 sub: f ∉ KM. f ∈ EF, KM ∥ EF (¬KM.intersectsLine EF) and KM ≠ EF (h ∈ KM, ¬h ∈ EF). A point
    on EF cannot lie on the parallel KM. (Mirror of Prop06 step7_foffkm.) -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_foffkm (f h : Point) (EF KM : Line)
     (hfEF : f.onLine EF) (hhKM : h.onLine KM)
     (hhoffEF : ¬(h.onLine EF))

@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.11 sub-sub: f ∉ AB. f ∈ BF; b ∈ AB ∩ BF; ∠c:b:f = ∟ at b. If f ∈ AB then f,b,c collinear
    with f on BF and b on AB ∩ BF, but the right angle forces f off AB. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_DGneCE_foff (b c d f : Point) (AB BF : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB)
     (hbBF : b.onLine BF) (hfBF : f.onLine BF)

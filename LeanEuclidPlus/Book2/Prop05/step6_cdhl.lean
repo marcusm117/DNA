@@ -8,7 +8,6 @@ namespace Elements.Book2
    step7_cbhl under relabel b→d, BG→DG.) def a b c d AB CD AC BD: a=c,b=d on AB; c=l,d=h on KM;
    a=c,c=l on CE; b=d,d=h on DG. sameSide c.sameSide l DG (step6_cdhl_ss); d ≠ h from d ∈ AB, ¬h ∈ AB
    (step6_hoffab). Parallels AB∥KM, CE∥DG in hand. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_cdhl (c d h l : Point) (AB KM CE DG : Line)
     (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hlKM : l.onLine KM) (hhKM : h.onLine KM)

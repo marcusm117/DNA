@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dfpar_body (b d f g : Point) (AB BF DG EF : Line)
     (hdDG : d.onLine DG) (hgDG : g.onLine DG)
     (hbBF : b.onLine BF) (hfBF : f.onLine BF)

@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- g∉BF. g∈EF, f∈EF∩BF, b∈BF, b∉EF.
    If g∈BF and EF=BF: b∈EF, contradiction.
    If g∈BF and EF≠BF: g∈EF∩BF, f∈EF∩BF, two_points → EF=BF, contradiction. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dfpar_goff (b c d f g : Point) (AB BF DG EF : Line)
     (hgEF : g.onLine EF) (hfEF : f.onLine EF)
     (hbBF : b.onLine BF) (hfBF : f.onLine BF)

@@ -1,4 +1,12 @@
 import SystemE
+import Book2.Prop05.step11_DGneCE
+import Book2.Prop05.step11_doffCE
+import Book2.Prop05.step11_eoffDG
+import Book2.Prop05.step11_aoffCE
+import Book2.Prop05.step11_ssak
+import Book2.Prop05.step11_ssdh
+import Book2.Prop05.step11_klh
+import Book2.Prop05.step11_ahpar
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +16,6 @@ namespace Elements.Book2
    AL (ACLK) and CH (CDHL). sum_parallelograms_area on par ADHK with between a c d and between k l h
    gives the area split; then substitute step9 (AL = DF). Sub-nodes: step11_klh (between k l h),
    step11_ahpar (formParallelogram a d h k AB KM AK DG). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11 (a b c d e f g h k l : Point) (AB KM AK DG CE EF BF : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB) (hbAB : b.onLine AB)
     (hkKM : k.onLine KM) (hlKM : l.onLine KM) (hhKM : h.onLine KM)
@@ -28,20 +35,20 @@ theorem helper_2_5_step11 (a b c d e f g h k l : Point) (AB KM AK DG CE EF BF : 
       (Triangle.area △ c:d:h + Triangle.area △ c:h:l) := by
   euclid_intros
   -- DG ≠ CE: SMT can derive from rich Main context (angles, lengths, betweenness, parallels)
-  have step11_DGneCE : DG ≠ CE := by sorry
+  have step11_DGneCE : DG ≠ CE := by euclid_apply (helper_2_5_step11_DGneCE a b c d e f AB CE DG EF BF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- derive ¬d.onLine CE using DG ≠ CE anchor + d ∈ DG + DG ∥ CE
-  have step11_doffCE : ¬(d.onLine CE) := by sorry
+  have step11_doffCE : ¬(d.onLine CE) := by euclid_apply (helper_2_5_step11_doffCE d DG CE (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- derive ¬e.onLine DG using DG ≠ CE anchor + e ∈ CE + DG ∥ CE
-  have step11_eoffDG : ¬(e.onLine DG) := by sorry
+  have step11_eoffDG : ¬(e.onLine DG) := by euclid_apply (helper_2_5_step11_eoffDG e DG CE (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- ¬a.onLine CE: if a ∈ CE, then a,c ∈ AB ∩ CE (a≠c from between a c d) → AB=CE → d ∈ CE
   --   contradicts step11_doffCE
-  have step11_aoffCE : ¬(a.onLine CE) := by sorry
+  have step11_aoffCE : ¬(a.onLine CE) := by euclid_apply (helper_2_5_step11_aoffCE a c d AB CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- sameSide facts needed for step11_klh betweenness (k,a on AK-side of CE; d,h on DG-side of CE)
-  have step11_ssak : k.sameSide a CE := by sorry
-  have step11_ssdh : d.sameSide h CE := by sorry
-  have step11_klh : between k l h := by sorry
+  have step11_ssak : k.sameSide a CE := by euclid_apply (helper_2_5_step11_ssak a k AK CE (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step11_ssdh : d.sameSide h CE := by euclid_apply (helper_2_5_step11_ssdh d h DG CE (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step11_klh : between k l h := by euclid_apply (helper_2_5_step11_klh a c d h k l AB KM CE AK DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- correct order: a,d on AB; k,h on KM; a,k on AK (left); d,h on DG (right)
-  have step11_ahpar : formParallelogram a d k h AB KM AK DG := by sorry
+  have step11_ahpar : formParallelogram a d k h AB KM AK DG := by euclid_apply (helper_2_5_step11_ahpar a d e h k l AB KM AK DG CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (sum_parallelograms_area a d k h c l AB KM AK DG)
   rw [← hstep9]
   euclid_finish

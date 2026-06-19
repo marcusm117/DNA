@@ -8,7 +8,6 @@ namespace Elements.Book2
    If d∈EF: g≠d → two_points_determine_line g d EF DG → EF=DG → d∈EF=DG∩AB → but
    d∈AB and d∈EF=DG — we need a contradiction. Use: EF=DG, d∈AB, d∈DG=EF → DG∩AB exists.
    But DG∥CE and d∈DG∩AB; c∈CE; between c d b → c∈AB → CE∩AB → with DG=EF → EF∥AB but now d∈EF∩AB, contradiction with hEFAB. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dfpar_doff (b c d e : Point) (AB EF : Line)
     (hdAB : d.onLine AB)
     (hcAB : c.onLine AB)

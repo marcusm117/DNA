@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.12 sub-sub: c.sameSide d AK. a ∈ AK is the foot of AB; between a c d puts c,d on the same
    ray from a, hence the same side of AK (pasch_2). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step12_sshc_cd (a c d : Point) (AB AK : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (haAK : a.onLine AK)

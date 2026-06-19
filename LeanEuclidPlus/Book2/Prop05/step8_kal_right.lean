@@ -18,7 +18,6 @@ open Elements.Book1
    k.sameSide e AB: k on KM ∥ AB so k.sameSide l AB (l also on KM); l.sameSide e AB
    by pasch_2 (between c l e, c on AB, l off AB); transitivity gives k.sameSide e AB.
    The off-AB facts and `between c l e` are figure facts Main supplies. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_kal_right (a b c d e k l : Point) (AB AK CE KM EF : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)
     (haAK : a.onLine AK) (hkAK : k.onLine AK)

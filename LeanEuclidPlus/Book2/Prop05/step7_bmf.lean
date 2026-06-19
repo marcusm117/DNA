@@ -11,7 +11,6 @@ open Elements.Book1
    b and f are on opposite sides of KM; m = KM ∩ BF; pasch_4 gives between b m f.
    The four absent-from-call-site hyps (heoffDG, hboffDG, hhoffEF, hKMEF) are
    derived in-body from the square (hcelen, hbce) + incidence/parallel hypotheses. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_bmf (b c d e f h m : Point) (AB BF BE EF CE DG KM : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hbBF : b.onLine BF) (hfBF : f.onLine BF) (hmBF : m.onLine BF)

@@ -11,7 +11,6 @@ open Elements.Book1
    c on AB ∩ CE, d on AB ∩ DG). CE ∥ DG cut by transversal AB at feet c (on CE) and d (on DG);
    co-interior ∠ e:c:d + ∠ c:d:h = 2∟ (proposition_29'''''), and ∠ e:c:d = ∟ (= ∠ b:c:e by ray
    coincidence: between c d b ⟹ ray c→d ≡ c→b). Hence ∠ c:d:h = ∟.  e on CE, h on DG, same side of AB. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step15_cdh_right (b c d e h : Point) (AB CE DG : Line)
     (hcAB : c.onLine AB) (hdAB : d.onLine AB) (hbAB : b.onLine AB)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)

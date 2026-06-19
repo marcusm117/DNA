@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.11 sub: a.sameSide k DG. a,k both on AK (∥ DG). a∉DG already proved (haoffDG).
    k∉DG via intersection_lines_common_point. Then by_contra + intersection_lines_opposing. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_ahpar_ssak (a k : Point) (AK DG : Line)
     (haAK : a.onLine AK) (hkAK : k.onLine AK)
     (haoffDG : ¬(a.onLine DG))

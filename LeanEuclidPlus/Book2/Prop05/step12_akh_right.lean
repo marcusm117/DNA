@@ -12,7 +12,6 @@ open Elements.Book1
    a (on AB) and k (on KM); the co-interior angles ∠ c:a:k and ∠ a:k:h sum to two right angles
    (proposition_29'''''), with c on AB and h on KM on the same side of AK. Since ∠ c:a:k = ∠ k:a:c = ∟,
    we get ∠ a:k:h = ∟. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step12_akh_right (a c h k : Point) (AB AK KM : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB)
     (haAK : a.onLine AK) (hkAK : k.onLine AK)

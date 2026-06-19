@@ -8,7 +8,6 @@ namespace Elements.Book2
    distinct lines DG, EF share two points. Simpler: h ∈ BE between b and e (between b h e), e ∈ EF,
    and the diagonal BE meets EF only at e; if h ∈ EF then h = e (both on BE∩EF), contradicting
    between b h e (h ≠ e). Uses BE ≠ EF (b ∈ BE off EF). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_bmf_hoffef (b e h : Point) (BE EF : Line)
     (hbBE : b.onLine BE) (heBE : e.onLine BE) (hhBE : h.onLine BE)
     (heEF : e.onLine EF) (hboffEF : ¬(b.onLine EF)) (hbhe : between b h e) :

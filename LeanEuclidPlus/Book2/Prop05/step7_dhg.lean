@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop05.step7_dhg_offs
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +9,6 @@ namespace Elements.Book2
    Separator = KM. Chain: pasch_3 c d b DG → e.sameSide c DG → ¬(b.sameSide e DG)
    → pasch_4 b h e DG BE → between b h e → pasch_3 b h e KM → ¬(b.sameSide e KM)
    → d.sameSide b KM (AB ∥ KM) → g.sameSide e KM (EF ∥ KM) → pasch_4 d h g KM DG. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dhg (b c d e g h : Point) (AB BE CE DG EF KM : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hbBE : b.onLine BE) (heBE : e.onLine BE) (hhBE : h.onLine BE)
@@ -26,7 +26,7 @@ theorem helper_2_5_step7_dhg (b c d e g h : Point) (AB BE CE DG EF KM : Line)
   -- cannot be helper hypotheses; derive them via the step7_dhg_offs sub-node (which builds them
   -- in-body from the square + incidences), then proceed exactly as before.
   have step7_dhg_offs : (¬(e.onLine DG)) ∧ (¬(b.onLine DG)) ∧ (¬(KM.intersectsLine EF)) ∧
-      (¬(d.onLine KM)) ∧ (¬(b.onLine KM)) ∧ (¬(g.onLine KM)) := by sorry
+      (¬(d.onLine KM)) ∧ (¬(b.onLine KM)) ∧ (¬(g.onLine KM)) := by euclid_apply (helper_2_5_step7_dhg_offs b c d e g h AB BE CE DG EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   obtain ⟨heoffDG, hboffDG, hKMEF, hdoffKM, hboffKM, hgoffKM⟩ := step7_dhg_offs
   euclid_intros
   -- c, b on opposite sides of DG (d between them, d on DG)

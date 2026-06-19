@@ -11,7 +11,6 @@ namespace Elements.Book2
    sameSide-bearing layout; passed/derived. Parallels BF∥DG, AB∥KM in hand. -/
 /- formParallelogram b m d h BF DG AB KM. def a b c d AB CD AC BD: a=b,b=m on BF; c=d,d=h on DG;
    a=b,c=d on AB; b=m,d=h on KM. m ≠ h: from h ∉ BF (step6_hoffbf) and m ∈ BF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_par1 (b d h m : Point) (BF DG AB KM : Line)
     (hbBF : b.onLine BF) (hmBF : m.onLine BF)
     (hdDG : d.onLine DG) (hhDG : h.onLine DG)

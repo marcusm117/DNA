@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.6 sub: h and g (both on DG) are on the same side of BF. (Mirror of Prop06 step7_sshg, relabel
    BG→DG, DF→BF.) h,g off BF (a common point of DG and BF would force them to meet, contra DG ∦ BF;
    DG ≠ BF since d ∈ DG, ¬d ∈ BF). Off BF and not separable ⟹ same side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_sshg (d g h : Point) (DG BF : Line)
     (hhDG : h.onLine DG) (hgDG : g.onLine DG) (hdDG : d.onLine DG)
     (hdoffBF : ¬(d.onLine BF))

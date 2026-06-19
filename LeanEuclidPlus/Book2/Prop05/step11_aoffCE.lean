@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.11 sub: a ∉ CE. If a ∈ CE: a,c ∈ AB ∩ CE (a≠c from between a c d) → AB = CE →
    d ∈ AB = CE, contradicting step11_doffCE (¬d.onLine CE). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_aoffCE (a c d : Point) (AB CE : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hcCE : c.onLine CE)

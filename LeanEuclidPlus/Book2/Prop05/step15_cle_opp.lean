@@ -9,7 +9,6 @@ namespace Elements.Book2
    c,d on AB ∥ KM → c.sameSide d KM (by contradiction via intersection_lines_opposing).
    g,e on EF ∥ KM → g.sameSide e KM (by contradiction via intersection_lines_opposing).
    Transitivity: ¬(c.sameSide e KM). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step15_cle_opp (c d e g h : Point) (AB EF KM : Line)
     (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hgEF : g.onLine EF) (heEF : e.onLine EF)

@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.6 sub: f and e (both on EF) are on the same side of KM. f,e off KM (a common point of EF and KM
    would force them to meet, contra EF ∦ KM; KM ≠ EF since h ∈ KM, ¬h ∈ EF). Off KM and not separable
    ⟹ same side. (Same shape as step6_sshl with EF as the carrier line.) -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_bmf_fse (e f h : Point) (EF KM : Line)
     (heEF : e.onLine EF) (hfEF : f.onLine EF) (hhKM : h.onLine KM)
     (hhoffEF : ¬(h.onLine EF))

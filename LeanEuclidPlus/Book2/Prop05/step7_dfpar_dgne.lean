@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- DG ≠ BF. If DG=BF: d∈BF; d≠b (betweenness); two_points_determine_line → AB=BF;
    c∈AB=BF with c∈CE → CE∩BF, contradicts hCEBF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dfpar_dgne (b c d : Point) (AB BF CE DG : Line)
     (hdDG : d.onLine DG)
     (hdAB : d.onLine AB) (hbAB : b.onLine AB) (hbBF : b.onLine BF)

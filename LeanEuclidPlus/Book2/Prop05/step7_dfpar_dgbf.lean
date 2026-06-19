@@ -10,7 +10,6 @@ open Elements.Book1
 /- 2.5.7 sub-sub: ¬DG.intersectsLine BF. DG∥CE and CE∥BF → DG∥BF by prop_30.
    Distinctness: DG≠CE (d∈DG, d∉CE derived from hDGCE); CE≠BF (c∈CE, c∉BF);
    DG≠BF (d∈DG, d∉BF via two_points_determine_line from d≠b). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dfpar_dgbf (b c d : Point) (AB BF CE DG : Line)
     (hdDG : d.onLine DG) (hcCE : c.onLine CE) (hbBF : b.onLine BF)
     (hdAB : d.onLine AB) (hbAB : b.onLine AB)

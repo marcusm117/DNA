@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.8 sub (ORPHAN — no longer used as a backed node; step8_alpar_kss is used directly in step8.lean):
    formParallelogram k l a c KM AB AK CE (rectangle AL). Kept for reference. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_alpar (a c k l : Point) (AB KM AK CE : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB)
     (hkKM : k.onLine KM) (hlKM : l.onLine KM)

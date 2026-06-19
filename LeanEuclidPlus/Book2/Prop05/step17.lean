@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.17: gnomon + LG = CB². From step16 (gnomon + LG = AD·DB + CD²) plus the algebraic identity
    AD·DB + CD² = CB²: |a─d| = |a─c| + |c─d| = |c─b| + |c─d| and |c─b| = |c─d| + |d─b|,
    so (|c─b|+|c─d|)(|c─b|-|c─d|) + |c─d|² = |c─b|² − |c─d|² + |c─d|² = |c─b|². nlinarith closes. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step17 (a b c d e f g h l : Point)
     (hac_cb : |(a─c)| = |(c─b)|)
     (hacdb : between a c d) (hcdb : between c d b)

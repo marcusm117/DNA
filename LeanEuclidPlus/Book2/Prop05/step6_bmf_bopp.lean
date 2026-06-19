@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.6 sub-sub-sub: ¬b.sameSide e DG (b and e on opposite sides of DG). d (= DG ∩ AB) is between c
    and b on AB (between c d b), so pasch_3 c d b DG gives c,b opposite across DG. e shares c's side
    (e,c on CE; DG ∥ CE ⟹ e.sameSide c DG). Opposite-of-same ⟹ b,e opposite. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_bmf_bopp (b c d e : Point) (AB CE DG : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)

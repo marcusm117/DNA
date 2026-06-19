@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book2
 
 /- EF ≠ AB: g∈EF. If EF=AB then g∈AB, giving EF∩AB — contradicts ¬(EF∥AB). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dfpar_efne (g : Point) (AB EF : Line)
     (hgEF : g.onLine EF)
     (hEFAB : ¬(EF.intersectsLine AB)) :

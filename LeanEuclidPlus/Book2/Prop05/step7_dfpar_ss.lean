@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- d.sameSide b EF: d,b both on AB; both off EF (from doff/boff sub-nodes); EF∥AB.
    By contradiction: if d opposes b across EF, then EF crosses AB — contradicts hEFAB. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dfpar_ss (b d : Point) (AB EF : Line)
     (hdAB : d.onLine AB) (hbAB : b.onLine AB)
     (hdoffEF : ¬(d.onLine EF))

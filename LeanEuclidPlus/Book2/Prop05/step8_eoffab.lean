@@ -8,7 +8,6 @@ namespace Elements.Book2
    b,c,e are collinear on AB, so the angle ∠ b:c:e at c is degenerate — either 0 (e not
    separated from b by c) or flat 2∟ (between b c e) — neither of which is a single right
    angle. Proven explicitly (degenerated_angle_if / flat_angle_onlyif), no bare euclid_finish. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_eoffab (a b c d e : Point) (AB : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB)
     (hacd : between a c d) (hcdb : between c d b)

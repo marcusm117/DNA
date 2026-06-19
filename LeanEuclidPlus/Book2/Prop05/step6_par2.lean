@@ -8,7 +8,6 @@ namespace Elements.Book2
    under relabel BG→DG.) def a b c d AB CD AC BD: a=h,b=g on DG; c=l,d=e on CE; a=h,c=l on KM;
    b=g,d=e on EF. sameSide h.sameSide l EF (step6_par2_ss); g ≠ e from g ∈ DG, ¬e ∈ DG (step6_eoffdg).
    Parallels DG∥CE, KM∥EF in hand. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_par2 (e g h l : Point) (DG CE KM EF : Line)
     (hhDG : h.onLine DG) (hgDG : g.onLine DG)
     (hlCE : l.onLine CE) (heCE : e.onLine CE)

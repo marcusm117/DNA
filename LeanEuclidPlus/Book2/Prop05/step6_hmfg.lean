@@ -8,7 +8,6 @@ namespace Elements.Book2
    step7_hmfg under relabel BG→DG, DF→BF.) def a b c d AB CD AC BD: a=h,b=m on KM; c=g,d=f on EF;
    a=h,c=g on DG; b=m,d=f on BF. sameSide h.sameSide g BF (step6_hmfg_ss); m ≠ f from m ∈ KM, ¬f ∈ KM
    (step6_foffkm). Parallels KM∥EF, DG∥BF in hand. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_hmfg (f g h m : Point) (KM EF DG BF : Line)
     (hhKM : h.onLine KM) (hmKM : m.onLine KM)
     (hgEF : g.onLine EF) (hfEF : f.onLine EF)

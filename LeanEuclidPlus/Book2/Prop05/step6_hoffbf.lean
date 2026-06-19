@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.6 sub: h ∉ BF. h ∈ DG; b ∉ DG (step6_boffdg) gives DG ≠ BF; then if h ∈ BF,
    intersection_lines_common_point h DG BF contradicts DG ∥ BF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_hoffbf (b h : Point) (DG BF : Line)
     (hhDG : h.onLine DG) (hbBF : b.onLine BF)
     (hboffDG : ¬(b.onLine DG))

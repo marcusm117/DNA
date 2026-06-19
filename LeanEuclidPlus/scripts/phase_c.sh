@@ -33,7 +33,7 @@ RAW="$1"
 RAW="${RAW%/Main.lean}"
 RAW="${RAW%/}"
 PROPDIR="${RAW//./\/}"                 # Book2.Prop04 -> Book2/Prop04 (harmless if already a path)
-MODULE="${PROPDIR//\//.}"              # Book2/Prop04 -> Book2.Prop04 (the dotted form check_faithful wants)
+MODULE="${PROPDIR//\//.}.Main"         # Book2/Prop04 -> Book2.Prop04.Main (sentences live in the .Main submodule post-relocation)
 MAIN="$PROPDIR/Main.lean"
 
 if [ ! -f "$MAIN" ]; then

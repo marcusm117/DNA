@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.13 sub: d.sameSide c BE. c,d both on AB, and AB meets BE only at b. between c d b ⟹ b is NOT
    between c and d, so the segment cd does not cross BE; both lie off BE (else they'd equal b), hence
    on the same side. Mirror of step6_ssbd. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step13_dhdb_ssdc (b c d : Point) (AB BE : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hbBE : b.onLine BE)

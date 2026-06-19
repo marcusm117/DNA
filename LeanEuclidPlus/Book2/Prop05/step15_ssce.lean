@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.5.15 sub (generic): p.sameSide q DG for two points p,q on CE. CE ∥ DG (¬DG∩CE, DG ≠ CE since
    d ∉ CE wait — d ∈ DG, d ∉ CE), so p,q (both on CE) are off DG and cannot be opposite. Reused for
    (l,e) and (l,c). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step15_ssce (d p q : Point) (CE DG : Line)
     (hpCE : p.onLine CE) (hqCE : q.onLine CE)
     (hdDG : d.onLine DG)

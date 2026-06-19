@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- d∉BF. d∈AB, b∈AB∩BF, between c d b → d≠b.
    If d∈BF: d≠b; two_points → AB=BF; c∈AB=BF; c∈CE → CE∩BF, contradicts hCEBF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_dfpar_doffBF (b c d : Point) (AB BF CE : Line)
     (hdAB : d.onLine AB) (hbAB : b.onLine AB) (hbBF : b.onLine BF)
     (hcCE : c.onLine CE)

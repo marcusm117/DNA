@@ -13,7 +13,6 @@ namespace Elements.Book2
    Chain: pasch_3 c d b DG → ¬(c.sameSide b DG);
    l.sameSide c DG (CE ∥ DG); m.sameSide b DG (BF ∥ DG from hdfpar);
    ¬(l.sameSide m DG) → pasch_4 l h m DG KM. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step7_lhm (b c d e f g h l m : Point) (AB BF BE EF CE DG KM : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hbBF : b.onLine BF) (hfBF : f.onLine BF) (hmBF : m.onLine BF)

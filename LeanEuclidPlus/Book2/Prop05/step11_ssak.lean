@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.11 sub: k.sameSide a CE. k ∈ AK; a ∈ AK; AK ∥ CE (hAKCE). a ∉ CE (step11_doffCE analog:
    AK ≠ CE from step11_DGneCE → a ∉ CE via AK ≠ CE). Mirror of Prop06 step9_ssak. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_ssak (a k : Point) (AK CE : Line)
     (haAK : a.onLine AK) (hkAK : k.onLine AK)
     (haoffCE : ¬(a.onLine CE))

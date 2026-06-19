@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.8 sub-sub: l.sameSide c BF. l and c are both on CE (∥ BF, hCEBF). Neither can be on BF
    (if l∈BF then CE∩BF≠∅, contradicting hCEBF). So both off BF and on the same side of BF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_cmpar_flip_lss (c l : Point) (CE BF : Line)
     (hlCE : l.onLine CE) (hcCE : c.onLine CE)
     (hCEBF : ¬(CE.intersectsLine BF)) :

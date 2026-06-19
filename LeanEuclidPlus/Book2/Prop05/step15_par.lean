@@ -8,7 +8,6 @@ namespace Elements.Book2
    l,e on CE; h,g on DG; l,h on KM; e,g on EF; CE ∥ DG, KM ∥ EF; l.sameSide e KM-side etc.
    Assembled from the figure facts (sides on the four lines, the two parallelisms, the sameSide and
    the distinctness), all passed in / derived in-body. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step15_par (e g h l : Point) (CE DG KM EF : Line)
     (hlCE : l.onLine CE) (heCE : e.onLine CE)
     (hhDG : h.onLine DG) (hgDG : g.onLine DG)

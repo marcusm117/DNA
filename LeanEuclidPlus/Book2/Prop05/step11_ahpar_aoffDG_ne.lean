@@ -8,7 +8,6 @@ namespace Elements.Book2
    If AK=DG: k∈DG; k,h ∈ DG∩KM, k≠h → DG=KM → l∈DG (l∈KM=DG) → l∈DG∩CE (l∈CE) →
    DG≠CE (d∈DG, d∉CE = hdoffCE) → intersection_lines_common_point l DG CE → DG∩CE →
    contradicts hDGCE. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_ahpar_aoffDG_ne (d k h l : Point) (AK DG CE KM : Line)
     (hdDG : d.onLine DG) (hdoffCE : ¬(d.onLine CE))
     (hkAK : k.onLine AK) (hkKM : k.onLine KM) (hhDG : h.onLine DG) (hhKM : h.onLine KM)

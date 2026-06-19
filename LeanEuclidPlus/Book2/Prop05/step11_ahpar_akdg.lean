@@ -10,7 +10,6 @@ open Elements.Book1
 /- 2.5.11 sub: AK ∥ DG. AK ∥ CE and DG ∥ CE → AK ∥ DG by proposition_30.
    Need AK ≠ CE (from haoffCE + haAK), DG ≠ CE (from hdoffCE + hdDG), AK ≠ DG (from euclid_finish). -/
 -- AK ≠ DG from: k ∈ AK ∩ KM, h ∈ DG ∩ KM, k ≠ h → AK ∩ KM ≠ DG ∩ KM → AK ≠ DG
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_ahpar_akdg (a d k h e l : Point) (AK DG CE KM : Line)
     (haAK : a.onLine AK) (hdDG : d.onLine DG) (hkAK : k.onLine AK) (hhDG : h.onLine DG)
     (hkKM : k.onLine KM) (hhKM : h.onLine KM) (heCE : e.onLine CE)

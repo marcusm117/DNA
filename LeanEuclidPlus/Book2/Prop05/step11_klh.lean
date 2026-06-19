@@ -8,7 +8,6 @@ namespace Elements.Book2
    k = AK∩KM (same side of CE as a since AK ∥ CE), h = DG∩KM (same side of CE as d since
    DG ∥ CE). a,d on opposite sides of CE (c between a,d on AB, c ∈ CE → pasch_3). Then
    pasch_4 on k,l,h across CE and KM gives between k l h. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step11_klh (a c d h k l : Point) (AB KM CE AK DG : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hkKM : k.onLine KM) (hlKM : l.onLine KM) (hhKM : h.onLine KM)

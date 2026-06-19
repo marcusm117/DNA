@@ -10,7 +10,6 @@ open Elements.Book1
 /- 2.5.6 sub: DG ∥ BF. DG ∥ CE and CE ∥ BF, so DG ∥ BF [Prop.~1.30]. (Mirror of Prop06 step7_bgdf,
    relabel BG→DG, DF→BF.) Distinctness in-body: DG ≠ CE (d ∈ DG, ¬d ∈ CE), CE ≠ BF (c ∈ CE, ¬c ∈ BF),
    DG ≠ BF (d ∈ DG, ¬d ∈ BF). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_dgbf (b c d : Point) (DG CE BF AB : Line)
     (hdDG : d.onLine DG) (hcCE : c.onLine CE) (hbBF : b.onLine BF) (hcAB : c.onLine AB) (hbAB : b.onLine AB) (hdAB : d.onLine AB)
     (hdoffCE : ¬(d.onLine CE)) (hcdb : between c d b)

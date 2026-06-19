@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.5.8 sub: ¬(c.onLine KM). c ∈ AB; KM ∥ AB (hKMAB). KM ≠ AB because h ∈ KM is off AB
    (step8_hoffab). A common point c would then force KM, AB to meet. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_coffkm (c h : Point) (AB KM : Line)
     (hcAB : c.onLine AB) (hhKM : h.onLine KM)
     (hhoffAB : ¬(h.onLine AB))

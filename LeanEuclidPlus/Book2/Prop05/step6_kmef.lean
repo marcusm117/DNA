@@ -9,7 +9,6 @@ open Elements.Book1
 
 /- 2.5.6 sub: KM ∥ EF. KM ∥ AB and AB ∥ EF, so KM ∥ EF [Prop.~1.30]. (Mirror of Prop06 step7_kmef.)
    Distinctness in-body: KM ≠ AB (h ∈ KM, ¬h ∈ AB), EF ≠ AB (e ∈ EF, ¬e ∈ AB), KM ≠ EF (h, ¬h ∈ EF). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step6_kmef (e h : Point) (AB KM EF : Line)
     (heEF : e.onLine EF) (hhKM : h.onLine KM)
     (hhoffAB : ¬(h.onLine AB)) (heoffAB : ¬(e.onLine AB)) (hhoffEF : ¬(h.onLine EF))

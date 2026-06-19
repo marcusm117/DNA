@@ -10,7 +10,6 @@ namespace Elements.Book2
    3. Assume a∈CE: two_points_determine_line a c AB CE → AB=CE → b∈CE → CE∩BF → contradicts hCEBF.
       Hence a∉CE. 4. AK≠CE (a∈AK, a∉CE). 5. k∉CE via intersection_lines_common_point.
    6. by_contra + intersection_lines_opposing k a CE AK + euclid_finish. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_5_step8_alpar_kss (a b c d k l m : Point) (AB KM AK CE BF : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB) (hbAB : b.onLine AB)
     (hkAK : k.onLine AK) (haAK : a.onLine AK)
