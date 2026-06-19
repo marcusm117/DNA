@@ -1,3 +1,0 @@
-Line VX and RY intersect at W, SU and RY intersect at T. Y, W, T and R are collinear and ordered.
-
-Given ∠ S T W and ∠ T W V are supplementary. Complete the proof that V X ∥ S U.

@@ -1,3 +1,0 @@
-There are two convex quadrilaterals □CDEB and □CUVD with the vertices arranged in the named order clockwise. They share a common side CD. The points B, C, U are sequentially aligned on the line BU.
-
-Given CD ⟂ BU, CD ∥ BE, and ∠EBD ≅ ∠DUC. Complete the proof that △DUC ~ △BDC.

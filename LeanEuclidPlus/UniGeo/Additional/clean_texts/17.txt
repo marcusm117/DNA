@@ -1,3 +1,0 @@
-There is a convex quadrilateral □BCDE with vertices B, C, D, and E arranged in clockwise order. R is an extended point of side BC closer to C, and S is an extended point of side DE closer to E. The line BD is fixed by B and D, the line RS is fixed by R and S, and they intersect at point V.
-
-Given BC ∥ DE and BV ≅ DV. Complete the proof that △BVR ≅ △DVS.

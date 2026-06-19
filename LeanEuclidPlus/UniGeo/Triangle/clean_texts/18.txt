@@ -1,3 +1,0 @@
-In the diagram, points S, T, and V form a triangle △STV, and points R, U, and W form a triangle △RUW.
-
-Given ∠V ≅ ∠R and ∠S ≅ ∠W. Complete the proof that S V / R W = T V / R U.

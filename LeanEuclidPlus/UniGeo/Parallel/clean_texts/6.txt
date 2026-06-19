@@ -1,3 +1,0 @@
-Lines US and RY intersect at T. XV and RY intersect at W. The points Y, W, T, and R are sequentially aligned. The set of points V, S and the set of points X, U are on opposing sides of the line RY.
-
-Given ∠ S T W and ∠ T W V are supplementary. Complete the proof that S U ∥ V X.

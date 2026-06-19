@@ -1,3 +1,0 @@
-In the diagram, points F, G, and H form a triangle △FGH with FI intersecting HG at I.
-
-Given F I ⟂ G H. I is the midpoint of G H. Complete the proof that ∠H ≅ ∠G.

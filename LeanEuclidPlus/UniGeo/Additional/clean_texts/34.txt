@@ -1,3 +1,0 @@
-There are two convex quadrilaterals □RSTU and □VWXY with the vertices arranged in the named order clockwise. The quadrilateral □RSTU has diagonal lines RT and SU. The diagonal lines RT and SU intersect at point D. The vertices R, S, T, U of □RSTU are the midpoints of the sides VW, WX, XY, YV of □VWXY, respectively.
-
-Complete the proof that D is the midpoint of RT and also the midpoint of SU.

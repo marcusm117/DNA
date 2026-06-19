@@ -1,7 +1,0 @@
-UV⟂SV
-∠USV≅∠SUT
-ST⟂TU
-∠T≅∠V
-SU≅SU
-△SUV≅△UST
-UV≅ST

@@ -1,1 +1,0 @@
-There are two triangles VZY and WXZ with a common vertex Z. Lines VY and WX are on opposing sides of Z.

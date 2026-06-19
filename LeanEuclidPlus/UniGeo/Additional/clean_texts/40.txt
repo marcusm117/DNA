@@ -1,3 +1,0 @@
-In the diagram, there are three lines RS, TU, VW. The lines RS and VW intersect at point O, and the lines TU and VW intersects at point P. The points T, W, U, P are on one side of line RS, and the point V is on the other side of RS. The points R, V, S, O are on one side of line TU, and the point W is on the other side of TU. The points R, T are on one side of line VW, and the points S, U are on the other side of line VW.
-
-Complete the proof that the quadrilateral □RVUW with the vertices arranged in the named order clockwise is convex.

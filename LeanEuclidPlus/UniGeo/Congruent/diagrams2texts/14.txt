@@ -1,4 +1,0 @@
-There are two overlapping triangles, △UYX and △VYW, with a common vertex Y. VW and UX are on opposing sides of Y.
-
-
-Removed an ambiguous and unnecessary premise: "VW and UX are on opposing sides of Y."

@@ -1,3 +1,0 @@
-Two triangles △RUT and △SUQ share a point U. RT is inside triangle △QSU intersecting SU at R and QU at T.
-
-R U / S U = T U / Q U. Complete the proof that △ R T U ~ △ S Q U.

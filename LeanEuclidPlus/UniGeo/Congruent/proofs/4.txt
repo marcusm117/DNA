@@ -1,5 +1,0 @@
-∠Y≅∠X
-UX∥VY
-UX≅VY
-∠VUX≅∠WVY
-△VWY≅△UVX

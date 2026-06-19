@@ -1,3 +1,0 @@
-In the diagram, there are three lines JK, LM, NO. The lines JK and NO intersect at point G, and the lines LM and NO intersects at point H. The points L, O, M, H are on one side of line JK, and the point N is on the other side of JK. The points J, N, K, G are on one side of line LM, and the point O is on the other side of LM. The points J, L are on one side of line NO, and the points K, M are on the other side of line NO.
-
-Complete the proof that the quadrilateral □JNMO with the vertices arranged in the named order clockwise is convex.

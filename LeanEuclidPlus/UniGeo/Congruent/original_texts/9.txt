@@ -1,3 +1,0 @@
-There are two overlapping triangles, △VWY and △UXY, sharing a common vertex Y. The triangles are positioned such that lines VW and UX are on opposite sides of Y.
-
-Given ∠W ≅ ∠U. Y is the midpoint of U W. Complete the proof that △ V W Y ≅ △ X U Y.

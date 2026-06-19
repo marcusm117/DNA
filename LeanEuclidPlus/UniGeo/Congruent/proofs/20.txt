@@ -1,6 +1,0 @@
-G is the midpoint of FH
-GJ≅FI
-GI≅HJ
-FG≅GH
-△FGI≅△GHJ
-∠J≅∠I

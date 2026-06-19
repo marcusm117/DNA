@@ -1,3 +1,0 @@
-There are two triangles △GHJ and △IFJ with a shared vertex J. The lines GI and HF intersect at point J. The point J lies between G and I, and also lies between H and F.
-
-Given G J / I J = H J / F J. Complete the proof that △ G H J ~ △ I F J.

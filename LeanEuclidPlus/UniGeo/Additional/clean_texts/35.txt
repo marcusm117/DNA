@@ -1,3 +1,0 @@
-There is a triangle △GHI with three lines drawn from each vertex to the opposite side. The line GJ from G meets side HI at point J, the line HK from H meets side GI at point K, and the line IL from I meets side GH at point L. The three lines meet at point Y.
-
-Given GJ ⊥ HI, HK ⊥ GI, and IL ⊥ GH. YJ ≅ YK ≅ YL. Complete the proof that △GHI is equilateral.

@@ -1,3 +1,0 @@
-There is a convex quadrilateral □GHJI with a diagonal line GI.
-
-Given G I bisects ∠ H G J and ∠H ≅ ∠J. Complete the proof that G J ≅ G H.

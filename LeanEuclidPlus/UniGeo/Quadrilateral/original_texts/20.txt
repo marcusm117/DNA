@@ -1,3 +1,0 @@
-In the diagram, points Q, R, T, and S form a quadrilateral □QRTS. It has diagonals TR and QS intersecting at point U.
-
-∠ Q T S ≅ ∠ Q R S and ∠ R S T ≅ ∠ R Q T. Complete the proof that Q T ∥ R S.

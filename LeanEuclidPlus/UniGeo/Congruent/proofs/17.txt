@@ -1,5 +1,0 @@
-UV≅TV
-SV≅RV
-∠RVU≅∠SVT
-△RUV≅△STV
-RU≅ST

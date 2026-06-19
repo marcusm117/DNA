@@ -1,3 +1,0 @@
-There are two triangles △RUP and △TQP with a shared vertex at P. Lines RU and TQ intersect at S. The point Q lies between P and R, and the point U lies between P and T.
-
-Given ∠R ≅ ∠T. Q T ≅ R U. Complete the proof that △ P R U ≅ △ P T Q.

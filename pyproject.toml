@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "dna"
+name = "afkit"
 version = "0.0.1"
 description = "Autoformalization toolkit"
 readme = "README.md"
@@ -22,34 +22,19 @@ classifiers = [
 ]
 
 dependencies = [
-    "vllm>=0.10.2",
+    # LLM inference backends (afkit.inference_*)
     "openai>=1.102.0",
-    "json5>=0.12.0",
-    "beautifulsoup4>=4.13.0",
-    "aiohttp>=3.12.0",
     "aioboto3>=15.0.0",
     "boto3>=1.38.23",
-    "smt-portfolio",
-    "numpy",
-    "pandas",
-    "matplotlib",
     "python-dotenv",
-    "requests",
+    # equivalence/validation checker needs smt-portfolio on PATH for the Lean SMT build
+    "smt-portfolio",
+    # pipeline driver (AutoFormalization/statement)
+    "json5>=0.12.0",
     "tqdm",
     "joblib",
-    "wandb",
-    "pyvis",
-    "networkx",
-    # LeanInteract runtime dependencies
-    "pydantic>=2",
+    "psutil",
     "typing-extensions",
-    "rich",
-    "filelock",
-    "packaging",
-    "GitPython",
-    "lean_interact",
-    "dacite",
-    "easydict",
 ]
 
 [project.optional-dependencies]
@@ -61,12 +46,12 @@ develop = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/dna"
-Repository = "https://github.com/your-org/dna"
-Documentation = "https://github.com/your-org/dna#readme"
+Homepage = "https://github.com/your-org/afkit"
+Repository = "https://github.com/your-org/afkit"
+Documentation = "https://github.com/your-org/afkit#readme"
 
 [tool.setuptools.packages.find]
-include = ["dna", "dna.*"]
+include = ["afkit*"]
 
 [tool.black]
 line-length = 150
@@ -117,12 +102,13 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = [
     "setuptools.*",
-    "torch.*",
-    "transformers.*",
-    "vllm.*",
     "smt_portfolio.*",
     "openai.*",
-    "wandb.*",
+    "aioboto3.*",
+    "boto3.*",
+    "botocore.*",
+    "joblib.*",
+    "json5.*",
 ]
 ignore_missing_imports = true
 

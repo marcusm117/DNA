@@ -1,3 +1,0 @@
-There is a triangle △FHI with an internal line GI intersecting FH at G.
-
-Given G I ⟂ F H and H I ⟂ F I. Complete the proof that △ F H I ~ △ I H G.

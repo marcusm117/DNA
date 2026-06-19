@@ -1,3 +1,0 @@
-In the diagram, points T, S, Q form a triangle △TSQ, and points R, P, and T form a triangle △RPT with a common point T. The lines QR and PS intersect at point T. The point T lies between R and Q, and also lies between P and S.
-
-Given P R ∥ Q S. Complete the proof that △ P R T ~ △ S Q T.

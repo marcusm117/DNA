@@ -1,5 +1,0 @@
-RS∥TU
-TU≅RS
-∠RTU≅∠SRT
-RT≅RT
-△RTU≅△TRS

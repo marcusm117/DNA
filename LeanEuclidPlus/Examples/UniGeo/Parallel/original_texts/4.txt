@@ -1,3 +1,0 @@
-There are two triangles △TUW and △SVW with a shared vertex W. TU and SV are on opposing sides of W.
-
-Given ∠S ≅ ∠ U T W and S V ∥ T U. Complete the proof that ∠ T U W ≅ ∠V.

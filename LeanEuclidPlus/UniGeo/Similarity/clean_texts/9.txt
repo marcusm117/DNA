@@ -1,3 +1,0 @@
-Two triangles △PRT and △QST share a common point T. The lines PS and QR intersect at point T. The point T lies between P and S, and also lies between Q and R.
-
-Given Q S ∥ P R. Complete the proof that △ Q S T ~ △ R P T.

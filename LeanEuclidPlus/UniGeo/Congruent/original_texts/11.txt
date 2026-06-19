@@ -1,3 +1,0 @@
-There is a quadrilateral □VWUT. There is a diagonal line segment from vertex V to vertex T.
-
-Given T U ≅ V W. T U ∥ V W. Complete the proof that △ T U V ≅ △ V W T.

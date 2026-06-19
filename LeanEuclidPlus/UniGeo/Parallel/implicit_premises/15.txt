@@ -1,3 +1,0 @@
-Implicit Premises:
-
-The points X, U, and I are on one side of line RY, and the points V, S, and G are on the other side of line RY.

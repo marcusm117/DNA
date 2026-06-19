@@ -1,3 +1,0 @@
-There are two overlapping triangles, △QUT and △RUS, sharing a common vertex at point U. The lines QS and RT intersect at point U. The point U lies between R and T.
-
-Given R S ⟂ Q S and Q S ⟂ Q T. U is the midpoint of Q S. Complete the proof that △ R S U ≅ △ T Q U.

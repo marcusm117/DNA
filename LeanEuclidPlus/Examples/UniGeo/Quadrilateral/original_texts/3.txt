@@ -1,3 +1,0 @@
-In the diagram, points U, V, T, and S form a quadrilateral □UVTS with diagonals VT and US intersecting at point W.
-
-Given S T ≅ T U and S V ≅ U V. Complete the proof that U W ≅ S W.

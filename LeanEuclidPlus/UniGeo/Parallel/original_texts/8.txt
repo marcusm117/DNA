@@ -1,3 +1,0 @@
-In the diagram, lines WY and SZ intersect at X. TV and SZ intersect at U. The points Z, X, U, and S are sequentially aligned.
-
-Given ∠ V U X and ∠ U X Y are supplementary. Complete the proof that T V ∥ W Y.

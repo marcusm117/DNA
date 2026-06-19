@@ -1,6 +1,0 @@
-EF≅GH
-GH∥EF
-∠EGH≅∠FEG
-EG≅EG
-△EFG≅△GHE
-∠EGF≅∠GEH

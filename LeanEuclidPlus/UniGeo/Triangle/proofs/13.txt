@@ -1,4 +1,0 @@
-∠Y≅∠U
-∠T≅∠W
-△TVY~△WXU
-VY/UX=TV/WX

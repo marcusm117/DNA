@@ -1,3 +1,0 @@
-In the diagram, points U, V, and W form a triangle △UVW. There is an internal line UX in △UVW that intersects VW at X.
-
-∠ W U X ≅ ∠ V U X and V W ⟂ U X. Complete the proof that W X ≅ V X.

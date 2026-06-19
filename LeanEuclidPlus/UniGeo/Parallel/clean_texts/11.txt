@@ -1,3 +1,0 @@
-There are two triangles RSU and TQU with a common vertex U. The lines QS and RT intersect at point U. The point U lies between Q and S, and also lies between R and T.
-
-Given R S ∥ Q T and ∠Q ≅ ∠ Q T U. Complete the proof that ∠S ≅ ∠ S R U.

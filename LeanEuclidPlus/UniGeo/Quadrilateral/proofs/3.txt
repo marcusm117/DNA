@@ -1,5 +1,0 @@
-XY≅WZ
-YZ≅WX
-WY≅WY
-△WXY≅△YZW
-∠YWZ≅∠WYX

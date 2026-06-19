@@ -1,1 +1,0 @@
-Given H K bisects ∠ I H J and H I ≅ H J. Complete the proof that ∠ H K I ≅ ∠ H K J.

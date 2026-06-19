@@ -1,3 +1,0 @@
-There are four lines RS, TU, VW, and XY that all pass through a common point G. Points V, R, and U are one side of XY, and T, S, and W are on the opposite side of XY. G is the midpoint of XY.
-
-Given ∠XRS ≅ ∠XSR ≅ ∠YRS, and YR ≅ YS. Complete the proof that the convex quadrilateral □RYSX with vertices R, Y, S, and X arranged in clockwise order is a rhombus.

@@ -1,3 +1,0 @@
-There is a convex quadrilateral □FGHI with vertices F, G, H, and I arranged in clockwise order. V is an extended point of side FG closer to G, and W is an extended point of side HI closer to I. The line FH is fixed by F and H, the line VW is fixed by V and W, and they intersect at point Z.
-
-Given FG ∥ HI and FZ ≅ HZ. Complete the proof that △FZV ≅ △HZW.

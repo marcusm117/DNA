@@ -17,16 +17,17 @@ theorem helper_2_5_step7_dhg (b c d e g h : Point) (AB BE CE DG EF KM : Line)
     (hdDG : d.onLine DG) (hhDG : h.onLine DG) (hgDG : g.onLine DG)
     (hhKM : h.onLine KM)
     (hKMAB : ¬(KM.intersectsLine AB))
-    (hKMEF : ¬(KM.intersectsLine EF))
     (hEFAB : ¬(EF.intersectsLine AB))
     (hDGCE : ¬(DG.intersectsLine CE))
-    (heoffDG : ¬(e.onLine DG))
-    (hboffDG : ¬(b.onLine DG))
-    (hdoffKM : ¬(d.onLine KM))
-    (hboffKM : ¬(b.onLine KM))
-    (hgoffKM : ¬(g.onLine KM))
+    (hbce : ∠ b:c:e = ∟) (hcelen : |(c─e)| = |(c─b)|)
     (hcdb : between c d b) :
     between d h g := by
+  -- The six off-line / non-intersection facts are NOT present at the Main call site, so they
+  -- cannot be helper hypotheses; derive them via the step7_dhg_offs sub-node (which builds them
+  -- in-body from the square + incidences), then proceed exactly as before.
+  have step7_dhg_offs : (¬(e.onLine DG)) ∧ (¬(b.onLine DG)) ∧ (¬(KM.intersectsLine EF)) ∧
+      (¬(d.onLine KM)) ∧ (¬(b.onLine KM)) ∧ (¬(g.onLine KM)) := by sorry
+  obtain ⟨heoffDG, hboffDG, hKMEF, hdoffKM, hboffKM, hgoffKM⟩ := step7_dhg_offs
   euclid_intros
   -- c, b on opposite sides of DG (d between them, d on DG)
   euclid_apply (pasch_3 c d b DG)

@@ -1,3 +1,0 @@
-Line WY and SZ intersect at X, TV and SZ intersect at U. The points Z, X, U, and S are sequentially aligned. T and W are on the one side of line SZ. V and Y are on the other side of line SZ.
-
-Given ∠ W X Z and ∠ S U T are supplementary. Complete the proof that W Y ∥ T V.

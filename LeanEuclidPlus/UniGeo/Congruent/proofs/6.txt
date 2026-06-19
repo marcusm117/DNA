@@ -1,6 +1,0 @@
-ST⟂RT
-ST≅RU
-RU⟂RT
-∠R≅∠T
-∠RVU≅∠SVT
-△STV≅△URV

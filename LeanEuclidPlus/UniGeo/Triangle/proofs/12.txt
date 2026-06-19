@@ -1,4 +1,0 @@
-∠I≅∠F
-∠K≅∠G
-△IJK~△FHG
-IK/FG=JK/GH

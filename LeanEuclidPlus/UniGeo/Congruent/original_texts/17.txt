@@ -1,3 +1,0 @@
-There are two triangles, △RUV and △SVT that share a common vertex V. RU and ST are on opposing sides of V.
-
-U V ≅ T V and S V ≅ R V. Complete the proof that R U ≅ S T.

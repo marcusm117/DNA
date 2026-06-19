@@ -1,3 +1,0 @@
-There is a quadrilateral □FGIH with a diagonal line FH.
-
-F I ≅ G H and H I ≅ F G. Complete the proof that ∠ F H I ≅ ∠ G F H.

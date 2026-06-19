@@ -1,3 +1,0 @@
-Two triangles △GHJ and △FIJ share a common point J. Points G and H are on one side of J, and points F and I are on another side of J.
-
-Given F I ∥ G H. Complete the proof that △ F I J ~ △ H G J.

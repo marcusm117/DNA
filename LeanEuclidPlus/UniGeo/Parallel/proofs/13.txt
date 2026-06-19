@@ -1,6 +1,0 @@
-∠QRU≅∠QUR
-ST∥RU
-∠T≅∠QUR
-∠RST≅∠QRU
-∠RST≅∠QUR
-∠RST≅∠T

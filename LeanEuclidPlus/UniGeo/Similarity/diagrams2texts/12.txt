@@ -1,1 +1,0 @@
-There are two triangles △TSW and △UVW. Line UV is inside △TSW, and intersecting SW at U and intersecting TW at V.

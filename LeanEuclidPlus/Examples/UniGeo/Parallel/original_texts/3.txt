@@ -1,3 +1,0 @@
-Inside △PRS, an internal line QT intersects PS and PR at T and Q, respectively.
-
-Given ∠ P T Q ≅ ∠ P Q T and Q T ∥ R S. Complete the proof that ∠S ≅ ∠ Q R S.

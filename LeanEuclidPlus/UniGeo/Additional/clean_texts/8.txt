@@ -1,3 +1,0 @@
-There is a isosceles triangle △STU with ST ≅ SU. There is an internal line DE cutting across ST at D and SU at E. A point F lies on the side TU such that F is between T and U. The line EF is fixed by the points E and F, and another line DF is fixed by the points D and F.
-
-Given that DE ∥ TU. Complete the proof that the points D, E, F forms a triangle that is isosceles at vertex F.

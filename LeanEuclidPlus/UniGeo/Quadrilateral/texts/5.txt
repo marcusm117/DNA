@@ -1,1 +1,0 @@
-E F ≅ G H and G H ∥ E F. Complete the proof that ∠ E G F ≅ ∠ G E H.

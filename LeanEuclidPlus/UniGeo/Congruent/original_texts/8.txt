@@ -1,3 +1,0 @@
-There are three triangles △TSP, △PSQ, and △QSR. △TSP and △PSQ share a side PS, △PSQ and △QSR share a side SQ. The points P and R are on opposing sides of the line SQ. The points Q and T are on opposing sides of the line PS.
-
-Given ∠ R Q S ≅ ∠ S P T and P T ≅ Q R. △ P Q S is equilateral. Complete the proof that △ P S T ≅ △ Q S R.

@@ -1,4 +1,0 @@
-∠U≅∠Y
-∠W≅∠V
-△UWZ~△YVX
-UW/VY=WZ/VX

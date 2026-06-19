@@ -1,3 +1,0 @@
-There are two triangles △STW and △RUV.
-
-Given ∠S ≅ ∠R. S W / R V = S T / R U. Complete the proof that ∠ S W T ≅ ∠ R V U.

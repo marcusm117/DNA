@@ -1,4 +1,0 @@
-WX/SV=UX/TV
-∠X≅∠V
-△UWX~△TSV
-∠UWX≅∠TSV

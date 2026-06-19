@@ -1,5 +1,0 @@
-Y is the midpoint of UW
-∠W≅∠U
-UY≅WY
-∠UYX≅∠VYW
-△VWY≅△XUY

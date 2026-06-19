@@ -1,3 +1,0 @@
-Two triangles △UVY and △UWX share a common point U. The lines WV and XY intersect at point U. The point U lies between W and V, and also lies between X and Y.
-
-Given W X ∥ V Y. Complete the proof that △ U W X ~ △ U V Y.

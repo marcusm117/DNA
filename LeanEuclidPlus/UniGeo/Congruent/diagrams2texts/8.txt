@@ -1,8 +1,0 @@
-There are three triangles △TSP, △PSQ, and △QSR. △TSP and △PSQ share a side PS, △PSQ and △QSR share a side SQ
-
-
-This text description allows multiple spatial configurations, which doesn't align with the diagram. Even though the original proof would work, but the goal of `diagrams2texts` is to generate text descriptions that are faithful to the diagram.
-
-Added:
-
-The points P and R are on opposing sides of the line SQ. The points Q and T are on opposing sides of the line PS. 

@@ -1,3 +1,0 @@
-There is a triangle △YZA with three lines drawn from each vertex to the opposite side. The line YB from Y meets side ZA at point B, the line ZC from Z meets side YA at point C, and the line AD from A meets side YZ at point D. The three lines meet at point Q.
-
-Given YB ⊥ ZA, ZC ⊥ YA, and AD ⊥ YZ. QB ≅ QC ≅ QD. Complete the proof that △YZA is equilateral.

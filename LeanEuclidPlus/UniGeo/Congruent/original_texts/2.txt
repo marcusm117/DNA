@@ -1,3 +1,0 @@
-There is a quadrilateral UVTW with a diagonal line VT, which divides the quadrilateral into two triangles, △UVT and △VWT.
-
-Given T U ≅ V W. T U ∥ V W. Complete the proof that △ T U V ≅ △ V W T.

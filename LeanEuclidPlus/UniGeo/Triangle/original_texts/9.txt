@@ -1,3 +1,0 @@
-In the diagram, there are two triangle △ZWU and △YXV.
-
-Given ∠U ≅ ∠Y and ∠W ≅ ∠V. Complete the proof that U W / V Y = W Z / V X.

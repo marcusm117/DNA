@@ -1,3 +1,0 @@
-In the diagram, points R, P, and Q form a triangle △RPQ with PS intersecting RQ at S.
-
-Given P S bisects ∠ Q P R. P S bisects ∠ Q P R and P Q ≅ P R. Complete the proof that Q S ≅ R S.

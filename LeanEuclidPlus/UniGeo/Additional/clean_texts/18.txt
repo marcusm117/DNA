@@ -1,3 +1,0 @@
-There is a isosceles triangle △XYZ with XY ≅ XZ. There is an internal line IJ cutting across XY at I and XZ at J. F point K lies on the side YZ such that K is between Y and Z. The line JK is fixed by the points J and K, and another line IK is fixed by the points I and K.
-
-Given that IJ ∥ YZ. Complete the proof that the points I, J, K forms a triangle that is isosceles at vertex K.

@@ -1,1 +1,0 @@
-Points V, W and Z form a triangle △VWZ. The line XY is inside the triangle and intersects VZ and WZ at Y and X, respectively.

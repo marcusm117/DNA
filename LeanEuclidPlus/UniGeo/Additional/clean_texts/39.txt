@@ -1,3 +1,0 @@
-There are two circles r and s with centers G and H. The line GH is fixed by the two centers G and H. It intersects r at point I and s at point J. The two circles intersect at points R and S with R and S on the opposite sides of the line GH.
-
-Given that RJ ∥ SI, and ∠HRJ ≅ ∠GSI. Complete the proof that △HJR ~ △IGS.

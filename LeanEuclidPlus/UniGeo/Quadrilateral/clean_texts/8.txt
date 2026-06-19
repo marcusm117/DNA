@@ -1,3 +1,0 @@
-There is a convex quadrilateral □VWYX with a diagonal line VX.
-
-X Y ⟂ V Y , V W ∥ X Y , and V W ⟂ W X. Complete the proof that V Y ≅ W X.

@@ -13,10 +13,10 @@ from joblib import Parallel, delayed
 
 # Internal Modules
 from path import ROOT_DIR
-from dna.leaneuclid import EquivalenceChecker
+from afkit.leaneuclid import EquivalenceChecker
 
-# from dna.leaneuclid_simplifier import Simplifier
-from dna import (
+# from afkit.leaneuclid_simplifier import Simplifier
+from afkit import (
     OPENAI_O_MODEL_LIST,
     OPENAI_GPT5_MODEL_LIST,
     OPENROUTER_GPT_OSS_MODEL_LIST,

@@ -1,3 +1,0 @@
-There are two triangle △VXU and △TWY.
-
-Given ∠T ≅ ∠V. T Y / U V = T W / V X. Complete the proof that ∠ T W Y ≅ ∠ U X V.

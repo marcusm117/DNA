@@ -1,3 +1,0 @@
-There is a convex quadrilateral □WXYZ with vertices W, X, Y, and Z arranged in clockwise order. M is an extended point of side WX closer to X, and N is an extended point of side YZ closer to Z. The line WY is fixed by W and Y, the line MN is fixed by M and N, and they intersect at point Q.
-
-Given WX ∥ YZ and WQ ≅ YQ. Complete the proof that △WQM ≅ △YQN.

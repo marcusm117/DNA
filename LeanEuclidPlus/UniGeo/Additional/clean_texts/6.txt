@@ -1,3 +1,0 @@
-There are 5 points A, B, C, D, and E that are sequentially aligned on the line AE. C is the midpoint of AE and the midpoint of BD. Another line FG intersects AE at C with F and G on the opposite sides of AE.
-
-Given FG ⊥ AE and AF ≅ EF. Complete the proof that △ABF ≅ △EDF.

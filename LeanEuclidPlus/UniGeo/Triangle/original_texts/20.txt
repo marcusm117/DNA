@@ -1,3 +1,0 @@
-In the diagram, points P, R, and T form a triangle △PRT, and points S, U, and Q form a triangle △SUQ.
-
-Given ∠R ≅ ∠U and ∠T ≅ ∠Q. Complete the proof that R T / Q U = P T / Q S.

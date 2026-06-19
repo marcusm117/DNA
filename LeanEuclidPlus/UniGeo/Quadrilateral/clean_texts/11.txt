@@ -1,3 +1,0 @@
-In the diagram, points S, T, V, and U form a convex quadrilateral □STVU with a diagonal line SU.
-
-U V ≅ T U and S T ≅ S V. Complete the proof that ∠V ≅ ∠T.

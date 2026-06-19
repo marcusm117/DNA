@@ -17,12 +17,6 @@ lean_lib Book {
 lean_lib Book2 {
 }
 
-lean_lib UniGeo {
-}
-
-lean_lib Examples {
-}
-
 lean_lib E3 {
 }
 

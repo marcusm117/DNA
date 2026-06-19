@@ -1,3 +1,0 @@
-In the diagram, lines US and RY intersect at T. XV and RY intersect at W. The points Y, W, T, and R are sequentially aligned.
-
-Given V X ∥ S U. Complete the proof that ∠ T W X ≅ ∠ S T W.

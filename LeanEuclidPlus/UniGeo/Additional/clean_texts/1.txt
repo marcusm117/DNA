@@ -1,3 +1,0 @@
-There is a convex pentagon ABCDE with vertices A, B, C, D, and E arranged in clockwise order. There are three diagonal lines AC, AD, and BE. The diagonal lines AC and BE intersect at point F. The diagonal lines AD and BE intersect at point G. G is the midpoint of EF, and F is the midpoint of GB.
-
-Given ∠BAC ≅ ∠EAD and AB ≅ AE. Complete the proof that △ABF ≅ △AEG.

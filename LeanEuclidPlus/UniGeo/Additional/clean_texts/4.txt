@@ -1,3 +1,0 @@
-There are two convex quadrilaterals □ABCD and □EFGH with the vertices arranged in the named order clockwise. The quadrilateral □ABCD has diagonal lines AC and BD. The diagonal lines AC and BD intersect at point M. The vertices A, B, C, D of □ABCD are the midpoints of the sides EF, FG, GH, HE of □EFGH, respectively.
-
-Complete the proof that M is the midpoint of AC and also the midpoint of BD.

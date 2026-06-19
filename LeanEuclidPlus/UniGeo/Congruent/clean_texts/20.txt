@@ -1,3 +1,0 @@
-There are two triangles, △FIG and △GHJ, with a common base line segment FH and a common vertex G between it. I and J are on same side of FH.
-
-G is the midpoint of F H , G J ≅ F I , and G I ≅ H J. Complete the proof that ∠J ≅ ∠I.

@@ -1,7 +1,0 @@
-∠TVU≅∠VTW
-TU⟂UV
-VW⟂TW
-∠U≅∠W
-TV≅TV
-△TVW≅△VTU
-TU≅VW

@@ -1,3 +1,0 @@
-There is a convex pentagon RSTUV with vertices R, S, T, U, and V arranged in clockwise order. There are three diagonal lines RT, RU, and SV. The diagonal lines RT and SV intersect at point W. The diagonal lines RU and SV intersect at point X. X is the midpoint of VW, and W is the midpoint of XS.
-
-Given ∠SRT ≅ ∠VRU and RS ≅ RV. Complete the proof that △RSW ≅ △RVX.

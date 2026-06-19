@@ -1,3 +1,0 @@
-Two triangles △VYZ and △WXZ share a point Z. The lines XY and VW intersect at point Z. The point Z lies between X and Y, and also lies between V and W.
-
-Given ∠W ≅ ∠Y. Complete the proof that △ W X Z ~ △ Y V Z.

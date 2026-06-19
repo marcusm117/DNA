@@ -1,3 +1,0 @@
-Two triangles △GHJ and △FIJ share a common point J. The lines HF and GI intersect at point J. The point J lies between H and F, and also lies between G and I.
-
-Given F I ∥ G H. Complete the proof that △ F I J ~ △ H G J.

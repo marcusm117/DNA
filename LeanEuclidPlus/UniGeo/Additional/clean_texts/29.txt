@@ -1,3 +1,0 @@
-There are two circles j and k with centers Y and Z. The line YZ is fixed by the two centers Y and Z. It intersects j at point A and k at point B. The two circles intersect at points J and K with J and K on the opposite sides of the line YZ.
-
-Given that JB ∥ KA, and ∠ZJB ≅ ∠YKA. Complete the proof that △ZBJ ~ △AYK.

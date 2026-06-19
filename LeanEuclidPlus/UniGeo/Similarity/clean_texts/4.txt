@@ -1,3 +1,0 @@
-Two triangles △HIG and △EIF share a common point I. The lines HF and GE intersect at point I. The point I lies between H and F, and also lies between G and E.
-
-Given ∠G ≅ ∠E. Complete the proof that △ G H I ~ △ E F I.

@@ -1,3 +1,0 @@
-There is a triangle △PQR with three lines drawn from each vertex to the opposite side. The line PS from P meets side QR at point S, the line QT from Q meets side PR at point T, and the line RU from R meets side PQ at point U. The three lines meet at point H.
-
-Given PS ⊥ QR, QT ⊥ PR, and RU ⊥ PQ. HS ≅ HT ≅ HU. Complete the proof that △PQR is equilateral.

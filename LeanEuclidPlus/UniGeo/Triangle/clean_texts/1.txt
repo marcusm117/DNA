@@ -1,3 +1,0 @@
-There is a triangle △HIJ with an internal line HK intersecting IJ at K.
-
-Given H J ≅ H I. K is the midpoint of I J. Complete the proof that ∠ H K J ≅ ∠ H K I.

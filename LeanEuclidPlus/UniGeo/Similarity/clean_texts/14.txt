@@ -1,3 +1,0 @@
-Two triangles △XWY and △VWZ share a point W. The lines XZ and VY intersect at point W. The point W lies between X and Z, and also lies between V and Y.
-
-W Z / W X = V W / W Y. Complete the proof that △ V W Z ~ △ Y W X.

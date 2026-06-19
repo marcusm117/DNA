@@ -1,3 +1,0 @@
-There are two overlapping triangles, △VWY and △UXY, sharing a common vertex Y. The lines WU and VX intersect at point Y. The point Y lies between V and X.
-
-Given ∠W ≅ ∠U. Y is the midpoint of U W. Complete the proof that △ V W Y ≅ △ X U Y.

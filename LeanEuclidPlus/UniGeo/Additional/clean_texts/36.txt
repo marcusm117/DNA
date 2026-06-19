@@ -1,3 +1,0 @@
-There are 5 points R, S, T, U, and V that are sequentially aligned on the line RV. T is the midpoint of RV and the midpoint of SU. Another line WX intersects RV at T with W and X on the opposite sides of RV.
-
-Given WX ⊥ RV and RW ≅ VW. Complete the proof that △RSW ≅ △VUW.

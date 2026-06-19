@@ -1,3 +1,0 @@
-There are two triangle △JGF and △IHF. The internal line IH intersects JF and FG at I and H, respectively.
-
-F I / F J = F H / F G. Complete the proof that △ F H I ~ △ F G J.

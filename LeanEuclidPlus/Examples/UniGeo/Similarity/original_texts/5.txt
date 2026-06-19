@@ -1,3 +1,0 @@
-In the diagram, points U, R, and S form a triangle △URS. The internal line UT intersects RS at T.
-
-Given R U ⟂ S U and T U ⟂ R S. Complete the proof that △ S T U ~ △ U T R.

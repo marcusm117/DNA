@@ -1,3 +1,0 @@
-Two triangles △UVY and △UWX share a common point U. XW and VY are on opposing sides of U.
-
-Given W X ∥ V Y. Complete the proof that △ U W X ~ △ U V Y.

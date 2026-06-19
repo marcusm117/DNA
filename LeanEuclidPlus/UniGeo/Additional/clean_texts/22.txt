@@ -1,3 +1,0 @@
-There are four lines JK, LM, NO, and PQ that all pass through a common point Y. Points N, J, and M are one side of PQ, and L, K, and O are on the opposite side of PQ. Y is the midpoint of PQ.
-
-Given ∠PJK ≅ ∠PKJ ≅ ∠QJK, and QJ ≅ QK. Complete the proof that the convex quadrilateral □JQKP with vertices J, Q, K, and P arranged in clockwise order is a rhombus.

@@ -22,7 +22,7 @@ from path import (
     EXAMPLE_DIR,
     ROOT_DIR,
 )
-from dna import (
+from afkit import (
     create_unified_model,
     UnifiedModel,
     OPENAI_GPT_MODEL_LIST,
@@ -41,8 +41,8 @@ from dna import (
     lean_error,
     parse_error,
 )
-from dna.type_defs import Content, Messages
-from dna.leaneuclid import Validator
+from afkit.type_defs import Content, Messages
+from afkit.leaneuclid import Validator
 
 
 # Fix random seed

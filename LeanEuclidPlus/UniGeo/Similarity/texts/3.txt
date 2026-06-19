@@ -1,1 +1,0 @@
-Given X Y ∥ V W. Complete the proof that △ X Y Z ~ △ W V Z.

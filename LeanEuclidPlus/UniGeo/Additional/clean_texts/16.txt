@@ -1,3 +1,0 @@
-There are 5 points F, G, H, I, and J that are sequentially aligned on the line FJ. H is the midpoint of FJ and the midpoint of GI. Another line KL intersects FJ at H with K and L on the opposite sides of FJ.
-
-Given KL ⊥ FJ and FK ≅ JK. Complete the proof that △FGK ≅ △JIK.

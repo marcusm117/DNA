@@ -1,1 +1,0 @@
-To place a straight-line equal to a given straight-line at a given point (as an extremity). Let $BC$ the given straight-line, and $A$ be the given point different from $B$, and .  <prf>  Thus, $AL$ is also equal to $BC$. Thus, the straight-line $AL$, equal to the given straight-line $BC$, has been placed at the given point $A$.
