@@ -144,7 +144,12 @@ backing file you create. (Run `--all` ONLY at the very end — see THE LOOP — 
 
 ```
 Is this goal an off-line / sameSide / area-recast / right-angle-co-interior / parallel-transitivity fact?
-  YES → does a Helpers/ lemma match the ATOMS my context has (see euclid-figures Families 1/3/6/7)?
+  YES → does a Helpers/ lemma (or an existing prop/helper) match the ATOMS my context has?
+        Find it with `python3 scripts/find.py --concludes <goal-symbol> --kind helper,prop` (the
+        sanctioned smart-grep — e.g. `--concludes sameSide --kind helper`; add `--consumes <sym>` to
+        narrow by a premise you have, `--grep <intent>` to search docstrings). This BEATS reciting from
+        memory: it returns the actual current lemmas + their `source` to Read. (euclid-figures Families
+        1/3/6/7 still describe the shapes.)
         YES → discharge it INLINE: `import Helpers.<File>` (permanent) + `have F : <claim> :=
               <lemma> obj… (by assumption)…`. NO backing file, NO have-node. This is the file-count win.
         NO (close, but my atom-orientation/witness isn't covered) → PROMOTE a sibling lemma into that
@@ -353,8 +358,10 @@ asserted "because the picture shows it." Use `--context` for what's *available*;
 > recipes grounded in proven files (the done Prop01/02/03 + Prop04's certified leaves). It's the concrete companion to the timeout-triage
 > bullets above; consult it when a sub-node matches one of those shapes.
 
-Grep `SystemE/Theory/Inferences/{Metric,Transfer,Diagrammatic}.lean` + `Relations.lean` for exact
-signatures; the high-value ones:
+Look up exact signatures with `python3 scripts/find.py` (the sanctioned smart-grep over the declaration
+DB — e.g. `--concludes area`, `--mentions formParallelogram --kind axiom`, `--name "rectangle_*"`), then
+`Read` the printed `source` line; the axioms live in
+`SystemE/Theory/Inferences/{Metric,Transfer,Diagrammatic}.lean` + `Relations.lean`. The high-value ones:
 - **Convention:** "rectangle contained by X,Y" = `|X|*|Y|`; "square on X" = `|X|*|X|`; no square axiom
   (it's the right-angled case of `rectangle_area`). Figure areas = sums of `Triangle.area △ p:q:r`;
   `Triangle.area` is permutation-invariant (`area_symm_1/2`, Metric.lean) — order is cosmetic.

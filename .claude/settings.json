@@ -43,7 +43,13 @@
       "Bash(python scripts/wire_main.py:*)",
       "Bash(python3 scripts/wire_main.py:*)",
       "Bash(python scripts/smt_probe.py:*)",
-      "Bash(python3 scripts/smt_probe.py:*)"
+      "Bash(python3 scripts/smt_probe.py:*)",
+      "Bash(python scripts/find.py:*)",
+      "Bash(python3 scripts/find.py:*)",
+      "Bash(python scripts/bake_index.py:*)",
+      "Bash(python3 scripts/bake_index.py:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(python3 -m pytest:*)"
     ],
     "deny": [
       "Bash(scripts/safe_build.sh:*)",

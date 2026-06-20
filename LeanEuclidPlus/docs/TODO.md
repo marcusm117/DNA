@@ -1,3 +1,6 @@
+-- there should be a list of nodes in main that --subtree passed on and that and if these files every changed, auto remove from list, so we knoe what is correct and what actuall needs to be checked.
+
+
 # Priority
 
 - Do number 10 first. THe main reason is tracking, and never needing to look back. We can check each step one at a time, and only things in the @deps. Ideally @deps is not listing everything but we do not enforce it I guess. this is more of a readability and tracking thing.

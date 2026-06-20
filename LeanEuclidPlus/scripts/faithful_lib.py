@@ -329,6 +329,333 @@ def type_until_assign(src, start):
     raise FaithfulError("no `:=` found for a `have` (malformed node?)")
 
 
+# ── declaration fact extraction (bake_index / find support — PURE PARSE, no Lean) ─────────────────────
+# A small, CLOSED registry of System-E's geometric vocabulary, transcribed ONCE from
+# SystemE/Theory/Relations.lean + the Sorts/ notations. `bake_index.py` turns each declaration's
+# hypotheses/conclusion into a list of {symbol, role, polarity} "facts" so `find.py` can answer
+# "what CONCLUDES X / CONSUMES X / MENTIONS X" off one parse. The registry is the only place the
+# vocabulary lives; adding a relation here is all a new symbol needs.
+
+# Opaque relation predicates (Relations.lean). Keyed by METHOD name as it appears in USE position
+# (lowercase-initial dot-form `a.onLine`, bare `between a b c`, or `Point.onLine`). The method name is
+# matched with a word boundary; because the abbrev `distinctPointsOnLine` spells it `…OnLine` (capital
+# O), `\bonLine\b` matches `a.onLine` but never the abbrev — no lookbehind needed.
+OPAQUE_METHODS = ("onLine", "sameSide", "collinear", "between", "onCircle", "insideCircle",
+                  "isCentre", "intersectsLine", "intersectsCircle")
+
+# `@[simp] abbrev`s (Relations.lean). Each maps to its UNFOLDED atomic facts as (symbol, polarity)
+# pairs — pre-flattened by hand (the set is closed + acyclic, so no runtime recursion). A positive
+# abbrev occurrence emits BOTH the packaged fact (its own name) AND these unfolded atoms (tagged
+# `via=<abbrev>`), so a query for `onLine` finds a prop that only mentions it inside `formTriangle`,
+# and a future first-order matcher sees atom-level hyps. A NEGATED abbrev emits the packaged fact only
+# (De Morgan over the body is intentionally not attempted — no corpus case negates a whole abbrev).
+ABBREV_UNFOLD = {
+    "distinctPointsOnLine": [("onLine", "pos"), ("onLine", "pos"), ("ne", "neg")],
+    "opposingSides":        [("onLine", "neg"), ("onLine", "neg"), ("sameSide", "neg")],
+    "outsideCircle":        [("insideCircle", "neg"), ("onCircle", "neg")],
+    "formTriangle":         [("onLine", "pos"), ("onLine", "pos"), ("ne", "neg"),
+                             ("onLine", "pos"), ("onLine", "pos"), ("onLine", "pos"), ("onLine", "pos"),
+                             ("ne", "neg"), ("ne", "neg"), ("ne", "neg")],
+    "formRectilinearAngle": [("onLine", "pos"), ("onLine", "pos"), ("ne", "neg"),
+                             ("onLine", "pos"), ("onLine", "pos"), ("ne", "neg")],
+    "formParallelogram":    [("onLine", "pos"), ("onLine", "pos"), ("onLine", "pos"), ("onLine", "pos"),
+                             ("onLine", "pos"), ("onLine", "pos"),
+                             ("onLine", "pos"), ("onLine", "pos"), ("ne", "neg"),  # distinctPointsOnLine b d BD
+                             ("sameSide", "pos"), ("intersectsLine", "neg"), ("intersectsLine", "neg")],
+}
+
+# Metric notations (Sorts/{Segments,Angles,Triangles}.lean) → symbol. Detected by their distinctive
+# unicode glyph (or the underlying `Namespace.method`).
+_METRIC_TOKENS = (
+    ("right_angle", re.compile(r"∟|\bAngle\.Right\b")),       # check BEFORE angle so ∟ isn't 'angle'
+    ("angle",       re.compile(r"∠|\bAngle\.degree\b")),
+    ("area",        re.compile(r"△|\bTriangle\.area\b")),
+    ("length",      re.compile(r"─|\bSegment\.length\b|\|[^|]+\|")),
+)
+# Top-level comparators → symbol. `≠` is recorded as `ne` with polarity neg (the doc's "≠ = ¬=");
+# the others inherit the conjunct's polarity. Single-glyph unicode (≠ ≤ ≥) and ascii (= < >).
+_COMPARATORS = {"≠": "ne", "=": "eq", "<": "lt", ">": "gt", "≤": "le", "≥": "ge"}
+
+# Sort-typed binders are OBJECTS (counted in object_arity); everything else is a hypothesis binder.
+SORT_TYPES = {"Point", "Line", "Circle", "Segment", "Triangle", "Angle", "ℝ", "Real", "ℕ", "Nat"}
+
+# The CLOSED set of canonical fact symbols a query (`find.py --concludes/--consumes/--mentions`) may
+# name — derived from the registry above so there is ONE source of truth. Every value that
+# `extract_facts` can emit appears here.
+VALID_SYMBOLS = (set(OPAQUE_METHODS) | set(ABBREV_UNFOLD)
+                 | {sym for sym, _ in _METRIC_TOKENS} | set(_COMPARATORS.values()))
+
+# Source-form → canonical-symbol aliases, so a query may use the form you'd copy from a `.lean` file
+# (`Triangle.area`, `∟`, `Line.intersectsLine`, `=`) instead of the bare canonical name. Built from the
+# same registry. `canon_symbol()` applies these; an input already canonical passes through unchanged.
+SYMBOL_ALIASES = {
+    # metric notations + their underlying methods
+    "△": "area", "Triangle.area": "area", "area": "area",
+    "∠": "angle", "Angle.degree": "angle", "angle": "angle",
+    "∟": "right_angle", "Angle.Right": "right_angle", "right-angle": "right_angle",
+    "rightangle": "right_angle", "right_angle": "right_angle",
+    "─": "length", "Segment.length": "length", "length": "length", "len": "length",
+    # comparators in punctuation form
+    "=": "eq", "≠": "ne", "!=": "ne", "<": "lt", ">": "gt",
+    "≤": "le", "<=": "le", "≥": "ge", ">=": "ge",
+}
+# every opaque method also reachable via its dotted receiver forms (`a.onLine`, `Point.onLine`)
+for _m in OPAQUE_METHODS:
+    SYMBOL_ALIASES[_m] = _m
+    for _ns in ("Point", "Line", "Circle"):
+        SYMBOL_ALIASES[f"{_ns}.{_m}"] = _m
+for _ab in ABBREV_UNFOLD:                              # abbrevs are their own canonical names
+    SYMBOL_ALIASES[_ab] = _ab
+
+
+def canon_symbol(token):
+    """Map a user-typed symbol to its canonical form, accepting source notations (`Triangle.area`→`area`,
+    `∟`→`right_angle`, `a.onLine`/`Point.onLine`→`onLine`, `=`→`eq`, …). A leading `*.` receiver
+    (`b.sameSide`) is stripped to the method. Returns the canonical symbol if recognized, else the
+    (stripped) token unchanged — the caller validates against VALID_SYMBOLS and reports if unknown."""
+    t = token.strip()
+    if t in SYMBOL_ALIASES:
+        return SYMBOL_ALIASES[t]
+    if t in VALID_SYMBOLS:
+        return t
+    if "." in t:                                       # e.g. `b.sameSide`, `α.onCircle` → method tail
+        tail = t.rsplit(".", 1)[-1]
+        if tail in SYMBOL_ALIASES:
+            return SYMBOL_ALIASES[tail]
+        if tail in VALID_SYMBOLS:
+            return tail
+    return t
+
+
+def _strip_outer_parens(s):
+    """If `s` is wholly wrapped in one balanced `(…)`, return the inside; else `s` unchanged."""
+    s = s.strip()
+    if s.startswith("(") and s.endswith(")"):
+        try:
+            if balanced_paren(s, 1) == len(s) - 1:
+                return s[1:-1].strip()
+        except FaithfulError:
+            pass
+    return s
+
+
+def _split_top_level(text, seps):
+    """Split `text` on any separator string in `seps` that occurs at bracket/paren depth 0 (and not
+    inside a string literal). `seps` are matched greedily-longest-first at each position. Returns the
+    list of pieces (separators removed)."""
+    parts, buf, i, n, depth = [], [], 0, len(text), 0
+    seps = sorted(seps, key=len, reverse=True)
+    while i < n:
+        c = text[i]
+        if c == '"':
+            j = _skip_string(text, i, n)
+            buf.append(text[i:j]); i = j; continue
+        if c in "([{⟨":
+            depth += 1
+        elif c in ")]}⟩":
+            depth -= 1
+        if depth == 0:
+            hit = next((s for s in seps if text.startswith(s, i)), None)
+            if hit:
+                parts.append("".join(buf)); buf = []; i += len(hit); continue
+        buf.append(c); i += 1
+    parts.append("".join(buf))
+    return parts
+
+
+def parse_binders(text):
+    """Parse a run of Lean binder groups (`(a b : Point) (h : P) {x : T} [inst]`) into a list of
+    `(idents, type)` pairs (one per group; `idents` is a list, `type` the stripped type text). LENIENT:
+    unlike `parse_helper_objs` it never raises on an unfamiliar sort — it just records the type so the
+    caller (bake_index) can classify object-vs-hypothesis. Instance binders `[…]` yield `([], type)`."""
+    out, i, n = [], 0, len(text)
+    while i < n:
+        while i < n and text[i] in " \t\r\n":
+            i += 1
+        if i >= n:
+            break
+        if text[i] in "([{":
+            close = balanced_paren(text, i + 1) if text[i] == "(" else _matching(text, i)
+            group = text[i + 1:close]
+            ci = group.find(":")
+            if ci < 0:                                   # e.g. an autobound `{α}` or `[inst]` w/o `:`
+                out.append(([] if text[i] == "[" else group.split(), ""))
+            else:
+                out.append((group[:ci].split(), group[ci + 1:].strip()))
+            i = close + 1
+        else:                                            # not a binder group — stop (defensive)
+            break
+    return out
+
+
+def _matching(src, start):
+    """Index of the bracket matching the `{`/`[`/`(` at `src[start]` (paren/string aware)."""
+    depth, i, n = 0, start, len(src)
+    pairs = {"(": ")", "[": "]", "{": "}"}
+    while i < n:
+        c = src[i]
+        if c == '"':
+            i = _skip_string(src, i, n); continue
+        if c in pairs:
+            depth += 1
+        elif c in pairs.values():
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    raise FaithfulError("unbalanced bracket while scanning")
+
+
+def split_signature(header):
+    """Split a declaration's header (everything between the decl NAME and its `:=`/end-of-axiom) into
+    `(binders_text, type_text)`. The result type begins at the FIRST top-level `:` (the one that is NOT
+    inside a binder group and NOT the `:=` proof separator); everything before it is the leading
+    (curried) binders, everything after is the type. For a `∀`-style prop (`theorem p : ∀ …`) the
+    binders_text is empty and type_text is the whole `∀ …`."""
+    i, n, depth = 0, len(header), 0
+    while i < n:
+        c = header[i]
+        if c == '"':
+            i = _skip_string(header, i, n); continue
+        if c in "([{⟨":
+            depth += 1
+        elif c in ")]}⟩":
+            depth -= 1
+        elif depth == 0 and c == ":" and not header.startswith(":=", i):
+            return header[:i].strip(), header[i + 1:].strip()
+        i += 1
+    return header.strip(), ""                            # no result `:` (defensive) — all binders
+
+
+def split_quantifier_and_arrow(type_text):
+    """Decompose a type `∀ (binders), H₁ ∧ … → C` into `(binders_text, hyps_text, concl_text,
+    concludes_exists)`. Peels a leading `∀ …,` (binders), splits the remainder on top-level `→` (all
+    but the last segment are hypotheses; the last is the conclusion), then strips a leading `∃`/`exists`
+    quantifier off the conclusion (constructions conclude existentially), setting `concludes_exists`."""
+    t = type_text.strip()
+    binders = ""
+    m = re.match(r"(?:∀|\bforall\b)\s*", t)
+    if m:
+        rest = t[m.end():]
+        segs = _split_top_level(rest, [","])
+        binders = segs[0].strip()
+        t = ",".join(segs[1:]).strip() if len(segs) > 1 else ""
+    arrow_segs = _split_top_level(t, ["→"])
+    if len(arrow_segs) >= 2:
+        hyps = " ∧ ".join(s.strip() for s in arrow_segs[:-1])
+        concl = arrow_segs[-1].strip()
+    else:
+        hyps, concl = "", t.strip()
+    concludes_exists = False
+    em = re.match(r"(?:∃|\bexists\b)\s*", concl)
+    if em:
+        body_segs = _split_top_level(concl[em.end():], [","])
+        if len(body_segs) > 1:                           # strip `∃ vars,`
+            concl = ",".join(body_segs[1:]).strip()
+            concludes_exists = True
+    return binders, hyps, concl, concludes_exists
+
+
+def split_conjuncts(region):
+    """Split a hypothesis/conclusion region into atomic conjuncts on top-level `∧` (and `∨`, so a
+    disjunctive conclusion's branches are each recorded). Outer parens are peeled first. Empty pieces
+    are dropped."""
+    region = _strip_outer_parens(region.strip())
+    if not region:
+        return []
+    return [p.strip() for p in _split_top_level(region, ["∧", "∨"]) if p.strip()]
+
+
+def _fact(symbol, role, polarity, raw, via=None):
+    return {"symbol": symbol, "role": role, "polarity": polarity, "raw": raw, "via": via}
+
+
+def _conjunct_facts(conj, role):
+    """Every fact in one atomic conjunct: its abbrev (packaged + unfolded), opaque-predicate, metric,
+    and comparator symbols, each with role + polarity. A leading `¬` flips polarity to neg; a top-level
+    `≠` always emits `ne`/neg."""
+    raw = conj.strip()
+    inner = _strip_outer_parens(raw)
+    nm = re.match(r"¬\s*", inner)
+    neg = bool(nm)
+    if nm:
+        inner = _strip_outer_parens(inner[nm.end():])
+    pol = "neg" if neg else "pos"
+    facts, seen = [], set()
+
+    def add(sym, polarity, via=None):
+        key = (sym, polarity, via)
+        if key not in seen:
+            seen.add(key)
+            facts.append(_fact(sym, role, polarity, raw, via))
+
+    for ab, atoms in ABBREV_UNFOLD.items():
+        if re.search(r"\b" + ab + r"\b", inner):
+            add(ab, pol)
+            if not neg:                                  # unfold positive abbrevs only
+                for sym, apol in atoms:
+                    add(sym, apol, via=ab)
+    for meth in OPAQUE_METHODS:
+        if re.search(r"\b" + meth + r"\b", inner):
+            add(meth, pol)
+    for sym, rx in _METRIC_TOKENS:
+        if rx.search(inner):
+            add(sym, pol)
+    for glyph, sym in _comparators_at_top(inner):
+        add(sym, "neg" if glyph == "≠" else pol)
+    return facts
+
+
+def _comparators_at_top(text):
+    """Yield (glyph, symbol) for each comparator at bracket depth 0 (deduped). Skips the `:=`/`==`
+    cases (types contain neither, but be safe)."""
+    out, i, n, depth, seen = [], 0, len(text), 0, set()
+    while i < n:
+        c = text[i]
+        if c == '"':
+            i = _skip_string(text, i, n); continue
+        if c in "([{⟨":
+            depth += 1
+        elif c in ")]}⟩":
+            depth -= 1
+        elif depth == 0 and c in _COMPARATORS:
+            if c == "=" and (text[i - 1:i] == ":" or text[i + 1:i + 1] == "="):
+                i += 1; continue
+            if c not in seen:
+                seen.add(c); out.append((c, _COMPARATORS[c]))
+        i += 1
+    return out
+
+
+def extract_facts(region, role):
+    """All facts in a hypothesis or conclusion region (`role` ∈ {'hyp','concl'}): split into conjuncts,
+    extract each conjunct's symbols. See `_conjunct_facts`."""
+    out = []
+    for conj in split_conjuncts(region):
+        out.extend(_conjunct_facts(conj, role))
+    return out
+
+
+# Capture the FULL dotted head of an `euclid_apply (HEAD …)` call — HEAD may be namespace-qualified
+# (`Elements.Book1.proposition_46`) or bare (`proposition_31`, `line_from_points`, `helper_2_4_step1`).
+_APPLY_HEAD_RE = re.compile(r"euclid_apply\s*\(\s*([A-Za-z_][\w'.]*)")
+
+
+def cited_in_body(body_text):
+    """The ordered, de-duplicated list of DECLARATION NAMES cited by `euclid_apply (NAME …)` in a proof
+    body — propositions (`proposition_30`), constructions (`line_from_points`), and helpers (`helper_…`).
+    The head of each call is parsed off a comment-blanked copy (so a commented call is ignored), and any
+    namespace qualifier is STRIPPED to the final component, so a call written `Elements.Book1.proposition_46`
+    records `proposition_46` — identical to the bare form, so `--cites proposition_46` matches both. (The
+    cited decl's own book/prop is a property of ITS row: look it up with `find.py --name <decl>`.)"""
+    out, seen = [], set()
+    for m in _APPLY_HEAD_RE.finditer(blank_comments(body_text)):
+        name = m.group(1).rstrip(".").split(".")[-1]    # strip a namespace prefix → the bare decl name
+        if name and name not in seen:
+            seen.add(name); out.append(name)
+    return out
+
+
 # ── canonical body matching / swapping ──────────────────────────────────────────────────────────────
 def _body_regexes(book, prop, name):
     """The three canonical body shapes for a node, anchored at the `:=`. The WIRED shape requires the

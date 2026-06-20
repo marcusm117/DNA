@@ -30,6 +30,8 @@ faithful_lib.py   ← shared CORE (no CLI): SF/SP/P atom, flock+wall-capped buil
 | `check_steps.py` | **A/C guard** | Snapshots approved `euclid_sentence` CLAIM TYPES (`--save`) and diffs later — claims unchanged since gate A. |
 | `check_signatures.py` | **C guard** | Snapshots every `theorem proposition_*` SIGNATURE and diffs — confirms no proposition statement was altered. |
 | `smt_probe.py` | research / diagnostics | Builds the "should-close-but-times-out" SMT failure catalog (two-sided evidence per node). Not part of the A→B→C gate. |
+| `bake_index.py` | research / tooling | PURE-PARSE fact database of EVERY declaration (axiom/def/abbrev/opaque/prop/helper/step) → `.lake/index.jsonl`. No Lean, no builds. Incremental: re-parses only changed `.lean` files. `--rebuild` for a full re-parse. You rarely run it directly — `find.py` re-bakes on every query. |
+| `find.py` | research / tooling | **The sanctioned smart-grep** over `bake_index`'s DB — query declarations by `--concludes`/`--consumes`/`--mentions` (symbol×role×polarity; SYM accepts source forms like `Triangle.area`/`∟`/`Point.onLine` and ERRORS on an unknown symbol), `--book`/`--prop` (numeric location), `--cites`/`--depends-of`, `--name` glob, `--grep` (regex over **signature + docstring** — search the math), all combinable. Output is one line per match, `--show {full,conclusion,hyps}` picks which region to print (independent of the filter), `--full` disables width-truncation. Hides the 500+ noisy step files by default — `--kind step` to browse, `--steps` to widen another query. Use this instead of grepping the theory files. |
 
 ## Shell wrappers
 
@@ -43,6 +45,14 @@ faithful_lib.py   ← shared CORE (no CLI): SF/SP/P atom, flock+wall-capped buil
 
 - `proposition_signatures.json` — gate for `check_signatures.py`.
 - `step_signatures.json` — gate for `check_steps.py`.
+
+(`.lake/index.jsonl` + `.lake/index.manifest.json` are `bake_index`'s output — git-ignored, NOT
+checked in; rebuilt on demand.)
+
+## Tests
+
+`tests/` holds the parse-only sanity suite for `bake_index.py` / `find.py` / the `faithful_lib` parse
+helpers — pure-parse (no Lean), runs in milliseconds: `python3 -m pytest tests/`. See `tests/README.md`.
 
 ## Adding a feature (the convention)
 

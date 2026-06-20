@@ -54,8 +54,11 @@ build judge it.
 - All the usual rules still hold (`prove-euclid`): one fact per node, ≤30s, derive-don't-assume, replace
   SMT search with explicit `euclid_apply`. These recipes ARE rule #8 (explicit application) made concrete.
 
-Grep exact signatures in `SystemE/Theory/Inferences/{Diagrammatic,Transfer,Metric}.lean` and
-`Relations.lean`. Every recipe names ≥1 real file it's drawn from — open it to see the chain in context.
+Look up exact signatures with `python3 scripts/find.py` (the sanctioned smart-grep over the declaration
+DB — `--mentions <sym>`/`--concludes <sym>`/`--consumes <sym>`/`--name "<glob>"`, combinable), then
+`Read` the printed `source` line; the relevant axioms live in
+`SystemE/Theory/Inferences/{Diagrammatic,Transfer,Metric}.lean` and `Relations.lean`. Every recipe names
+≥1 real file it's drawn from — open it to see the chain in context. (`grep` is hook-blocked here.)
 
 ---
 

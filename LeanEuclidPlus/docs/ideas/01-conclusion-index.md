@@ -1,5 +1,15 @@
 # 01 (+09) — Fact database + multi-axis query tool (`bake_index` + `find`)
 
+> **STATUS UPDATE (Phase 1 BUILT):** `scripts/bake_index.py` + `scripts/find.py` are implemented and
+> tested (`tests/`, pure-parse, 38 cases). All Phase-1 query axes work: `--concludes`/`--consumes`/
+> `--mentions` (symbol×role×polarity, `¬`-prefix for negation), `--cites`/`--depends-of`, `--name`
+> glob, `--grep` docstring, numeric `--book`/`--prop` location filters, step gating (`--kind step` to
+> browse, `--steps` to widen another query), incremental auto-bake. The index
+> lives at `.lake/index.jsonl` (git-ignored). The merged **idea-09 "cheapest next move" ranker is NOT
+> built yet** — it's deferred (needs a live `check_step --context` build + first-order matcher); Phase 1
+> already bakes BOTH packaged + unfolded abbrev facts so 09 can be added with no re-bake. `find.py` is
+> wired into the bash allowlist + CLAUDE.md as the sanctioned smart-grep.
+
 **Status:** idea · **Serves:** #1 (reasoning), #2 (search), #5 (reuse) · **Effort:** medium · **Priority:**
 Program 1 (REUSE) — the DB/search half. **`find.py` is the sanctioned smart-grep** (give the agent this
 instead of re-allowing raw `grep`). Idea 09 ("cheapest next move") is MERGED in below — it's a query MODE
@@ -86,12 +96,18 @@ is MERGED into this file below (was idea 09); it builds on this DB + the agent's
 
 ## Step display tiering (steps are noisy — many duplicates)
 
+The 500+ Book2 `stepN.lean` rows are near-duplicates, so they're HIDDEN by default. As built, step
+visibility is decoupled from a *location* filter (the original `--steps-all` / path-`--prop` coupling
+was confusing — a bare `--steps` couldn't even run). The shipped semantics:
 ```
-default       → axioms + helpers + props        (NO steps)
---steps       → + steps of the CURRENT prop only (cheap live reuse)
---steps-all   → every step everywhere           (explicit, rare — really for the promotion miner [03])
+default                       → axioms + helpers + props + defs   (NO steps)
+--kind step                   → browse ALL step rows              (asking for steps shows them)
+--book N --prop M --kind step → that prop's steps                 (location is a separate numeric filter)
+--steps                       → WIDEN any other query to also include step rows (not a selector itself)
 ```
-The duplication that makes `--steps-all` noisy is itself the promotion signal ([03](03-promotion-miner.md)).
+Location filtering is the general numeric `--book N` / `--prop M` (independent, combinable), NOT a
+step-only scope. The duplication that makes the full step set noisy is itself the promotion signal
+([03](03-promotion-miner.md)).
 
 ## Open questions / risks
 

@@ -47,8 +47,10 @@ BLOCKED = {
 # The positive allowlist, echoed in every deny message so the agent learns the boundary once.
 ALLOWED_SUMMARY = ("Bash here is reserved for: read-only git (status/diff/log/show/branch/blame/"
                    "ls-files), python3 scripts/check_*.py, scripts/check_faithful.sh, "
-                   "python3 scripts/wire_main.py, lake env/exe, and cd/pwd/mkdir. "
-                   "For everything else use the Read / Grep / Glob tools.")
+                   "python3 scripts/wire_main.py, python3 scripts/find.py, "
+                   "python3 scripts/bake_index.py, python3 -m pytest, lake env/exe, and cd/pwd/mkdir. "
+                   "For everything else use the Read / Grep / Glob tools (find.py is the sanctioned "
+                   "smart-grep over the System-E declaration database).")
 
 _CONF = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hygiene.conf")
 
@@ -127,7 +129,11 @@ def main():
         if base in ("python", "python3"):
             arg = nxt.rsplit("/", 1)[-1]
             ok = (nxt.startswith("scripts/") or nxt.startswith("./scripts/")) and (
-                arg.startswith("check_") or arg in ("wire_main.py", "smt_probe.py"))
+                arg.startswith("check_") or arg in ("wire_main.py", "smt_probe.py",
+                                                    "find.py", "bake_index.py"))
+            # also allow running the parse-only test suite bare: `python3 -m pytest tests/…`
+            if not ok and nxt == "-m" and nxt2 == "pytest":
+                ok = True
             if not ok:
                 gate(f"`{base}` here may ONLY run the pipeline scripts "
                      f"(`python3 scripts/check_step.py …` / `check_steps.py` / `check_faithful.py` / "

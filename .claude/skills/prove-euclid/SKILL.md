@@ -185,7 +185,11 @@ the skeleton elaborates do you enter Phase 2 to discharge each leaf.
    parent, then SP (`--suppliable F`) to confirm its hyps are present.
 
 4. TRACE THE PROOF BY HAND. Decide the axiom chain. For each `euclid_apply (axiom args)`:
-     - read the axiom's signature (grep SystemE/Theory/Inferences/*.lean),
+     - find/read the axiom's signature with `python3 scripts/find.py` (the sanctioned smart-grep over
+       the declaration DB — e.g. `--concludes between` for "what gives me a betweenness", `--mentions
+       sameSide --kind axiom` to see every axiom touching `sameSide`, `--name "pasch_*"` for a family,
+       `--consumes formParallelogram` for "what can I do with a parallelogram I have"); then `Read` the
+       cited `source` line for the exact arg order. (Do NOT shell out to `grep` — it's hook-blocked.)
      - map every argument and every PRECONDITION to a fact you have,
      - if a precondition isn't present, that's your next sub-goal (recurse: another `have`+backing file).
    Prefer explicit axiom applications over `euclid_finish` for anything non-trivial.
@@ -238,7 +242,9 @@ above it is not necessarily still *in context*. Re-derive it explicitly if a lat
 
 ## PATTERN GALLERY (reusable explicit-axiom chains)
 
-These are the moves that replaced `euclid_finish`-and-hope. Grep the axiom file for exact sigs:
+These are the moves that replaced `euclid_finish`-and-hope. Look up exact sigs with
+`python3 scripts/find.py` (the smart-grep — `--mentions <sym>`, `--concludes <sym>`, `--name "<glob>"`),
+then `Read` the `source` line; the axioms live in
 `SystemE/Theory/Inferences/{Diagrammatic,Transfer,Metric}.lean`.
 
 - **Point on opposite sides of a line ⟹ betweenness.** `pasch_4 a b c L M`: `L≠M`, `b∈L∩M`,

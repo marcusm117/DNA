@@ -108,6 +108,13 @@ Every other Book-2 prop is at a varying/in-progress state — follow the skills'
   - **read a file → the Read tool** (a slice `sed -n '76,100p' f` is just `Read(f, offset 76, limit 25)`);
     **find files → the Glob tool**; **search contents → the Grep tool** (`grep -n foo Book/*.lean` is `Grep`).
     These are faster, clickable, and never prompt — there is NO bash reason to read/search a file here.
+  - **find a LEMMA/AXIOM/PROP by what it concludes/consumes/mentions → `python3 scripts/find.py …`**
+    (the sanctioned smart-grep over the declaration database — "what gets me `¬intersectsLine`?"
+    `--concludes "¬intersectsLine"`; "what consumes a parallelogram?" `--consumes formParallelogram`;
+    "what axioms define this opaque pred?" `--mentions intersectsLine --kind axiom`; also `--cites` /
+    `--depends-of` / `--name` glob / `--grep` docstring). Use it INSTEAD of grepping `SystemE/Theory/…`
+    or guessing signatures. It auto-rebakes; `python3 scripts/bake_index.py --rebuild` forces a full
+    re-parse. The parse-only test suite is `python3 -m pytest tests/`.
   - **`python3 scripts/check_step.py …` / `check_steps.py` / `check_faithful.py` / `check_signatures.py`
     / `scripts/check_faithful.sh` / `python3 scripts/wire_main.py …`** — the build/verify pipeline.
     Run BARE, no pipe to `grep`/`head` (the hook denies the pipe; just read what the script prints).
