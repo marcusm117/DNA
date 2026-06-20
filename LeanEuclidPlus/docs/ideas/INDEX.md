@@ -37,6 +37,7 @@ decomposition* is expensive. Front-load truth/feasibility checks to the TOP of t
 | [07](07-generic-assembly-lemmas.md) | Promote generic figure-assembly lemmas (`mk_parallelogram` etc.) | #5 | partially fixed in skill | low |
 | [09](09-next-move-ranking.md) | "Cheapest next move" — rank candidates by hyps already in context (first-order matching) | #1,#2 | idea | med |
 | [10](10-contract-deps-incremental-certs.md) | Explicit named deps (`@deps`) + contract-hash certs — "certify once, never re-audit" | #3,#4 | developing | med-high |
+| [11](11-orphan-reachability.md) | Orphan / reachability check — mark-and-sweep from Main; flag nodes/files not reachable (the dead-leftover-decomposition that broke `--all`) | #3,#4 | idea | low |
 | [08](08-rejected.md) | Rejected ideas + WHY (aesop for #1, review-agent for #4, thrash-counter, live-rebake) | — | decided | — |
 
 ## Recommended build order (highest ROI first)
@@ -47,6 +48,10 @@ decomposition* is expensive. Front-load truth/feasibility checks to the TOP of t
    **03 promotion-miner falls out of it.**
 2. **02 SM smell step** — cheap, front-loads truth/triviality (the UNSAT-fast "don't decompose" branch is
    an under-used cost win today).
+2b. **11 orphan/reachability check** — low effort, immediate: mark-and-sweep from Main over the existing
+   containment graph, WARN on any node/file not reachable. Catches the dead-leftover-decomposition class
+   that silently passes `--check`/`--subtree` and then blows up the final `--all` (the boffDG bug). Reuses
+   `parse_occurrences` + `_containment` + `_bottom_up` in `faithful_lib.py` — no new parsing.
 3. **07 generic assembly lemmas** — small, surfaced by 01's miner; skill text already corrected.
 4. **05 timeout diagnostics** — cheap IF the profiler-streaming spike works.
 5. **04 numeric realizer** — the heavy one; build ONLY if 02's abstract-SMT smell proves too weak.

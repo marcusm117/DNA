@@ -64,8 +64,10 @@ THE CHECKS (node X, parent container Cnt, backing file X.lean):
   DRIVING ORDER: leaves first (bare `check_step`), then `--subtree` each container/step bottom-up (only
   after its components pass), then `--all` ONCE at the very end. NEVER run `--all` to find a failure.
 
-Every build is wrapped in a 30s WALL timeout + the files carry a 30s SMT cap. Exceed EITHER ⟹ the node
-is TOO BIG → DECOMPOSE into more backing files; NEVER raise a cap.
+Every build carries a 30s SMT cap (`solverTime`, the proving BUDGET) and is wrapped in a 45s WALL timeout
+(a diagnostic/safety bound, deliberately > the SMT cap — see WALL in faithful_lib.py). A solver that gives
+up at the 30s cap, OR a >45s wall-kill, ⟹ the node is TOO BIG → DECOMPOSE into more backing files; NEVER
+raise the cap. (The 15s gap lets Lean's LOCATED "Could not prove" error surface before the wall SIGKILLs.)
 """
 import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # so `faithful_lib` resolves from any cwd

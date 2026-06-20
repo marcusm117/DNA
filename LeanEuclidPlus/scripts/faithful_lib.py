@@ -35,14 +35,21 @@ BOOK_ROOT = os.path.realpath(os.path.dirname(os.path.dirname(os.path.abspath(__f
 DEFAULT_VENV = os.path.expanduser("~/.venvs/leaneuclid")
 GEOMETRIC_SORTS = {"Point", "Line", "Circle"}      # the only `axiom … : Type` object sorts (Sorts/Primitives.lean)
 CAP_LINE = "set_option systemE.solverTime 30 in"
-CAP_SECONDS = 30                                    # the ONE allowed dev SMT cap (also the wall, below)
+CAP_SECONDS = 30                                    # the ONE allowed dev SMT cap (solverTime, enforced by --check)
 # CAP_RE matches ANY solverTime line (used to strip/detect a cap regardless of value).
 CAP_RE   = re.compile(r"^[ \t]*set_option[ \t]+systemE\.solverTime[ \t]+\d+[ \t]+in[ \t]*\r?\n", re.MULTILINE)
 # CAP_RE_EXACT matches ONLY the canonical 30s cap — `--check` requires this exact value so a bumped
 # `solverTime 300` is flagged (the wall still kills it, but the structural guard should catch it too).
 CAP_RE_EXACT = re.compile(r"^[ \t]*set_option[ \t]+systemE\.solverTime[ \t]+" + str(CAP_SECONDS) +
                           r"[ \t]+in[ \t]*\r?\n", re.MULTILINE)
-WALL = CAP_SECONDS                                  # seconds — the per-build wall timeout (dev only)
+# The per-build wall timeout (dev only). DELIBERATELY > CAP_SECONDS: the SMT cap (30s) is the proving
+# BUDGET (a build whose solver gives up at 30s is still "too big → decompose"); the wall is only a
+# diagnostic/safety bound. Decoupling them (45 > 30) gives the slow-`euclid_finish` case ~15s of headroom
+# to emit Lean's LOCATED "Could not prove" error (path the agent can act on: which line/`have` failed)
+# BEFORE the wall SIGKILLs the process (which yields only an unlocated stdout tail). It also stops non-SMT
+# elaboration/translation overhead from eating into the usable 30s SMT budget. A wall-kill now means a
+# genuine >45s hang, still "decompose". Wall time is free per the cost model, so this costs nothing.
+WALL = 45
 
 # Phase-C linter suppression: the WIRED build's machine-generated form trips two cosmetic linters that
 # are simply the wrong lint for generated faithful proofs — (1) `unusedVariables`: a helper signature
