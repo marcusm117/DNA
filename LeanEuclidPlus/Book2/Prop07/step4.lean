@@ -42,6 +42,8 @@ theorem helper_2_7_step4 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Lin
   have step3_bnhf : ¬(b.onLine HF) := by sorry
   have hgd0 : g ≠ d := by euclid_finish
   have step3_dnhf : ¬(d.onLine HF) := by sorry
+  have step3_ande : ¬(a.onLine DE) := by sorry
+  have hhd : h ≠ d := fun hh => step3_dnhf (hh ▸ hhHF)
   have step3_hnde : ¬(h.onLine DE) := by sorry
   -- line distinctness
   have hADCN : AD ≠ CN := fun hh => step3_cnad (hh ▸ hcCN)
@@ -51,6 +53,7 @@ theorem helper_2_7_step4 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Lin
   have hDEAB' : DE ≠ AB := fun hh => step3_dnab (hh ▸ hdDE)
   have hABDE' : AB ≠ DE := fun hh => hDEAB' hh.symm
   have hADBE' : AD ≠ BE := fun hh => step3_anbe (hh ▸ haAD)
+  have hBEAD : BE ≠ AD := fun hh => hADBE' hh.symm
   -- non-intersections (parallel transitivity)
   have step3_cfbe : ¬(CN.intersectsLine BE) := by sorry
   have step3_hkde : ¬(HF.intersectsLine DE) := by sorry
