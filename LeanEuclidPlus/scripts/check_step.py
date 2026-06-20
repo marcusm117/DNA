@@ -47,6 +47,17 @@ USAGE  (run from LeanEuclidPlus/):
                                                           learn the MINIMAL recheck set instead of re-running
                                                           --all. (`--changed` alias. The manifest is written
                                                           by --all/--subtree and by each per-node PASS.)
+  python3 scripts/check_step.py <propdir> --status       instant, READ-ONLY (NO builds, no lock, never
+                                                          writes): the durable resume board — Main's own
+                                                          nodes (source order), each rolled up over its
+                                                          cone against the certification manifest into
+                                                          done/stale/todo, plus the 3 whole-prop checks
+                                                          (deps/integrity/orphans) and the NEXT commands
+                                                          to close what's missing. All-Main-✓ + 3/3 checks
+                                                          ⟹ `--all` is guaranteed to pass. (`--checklist`
+                                                          alias. The committed mirror `PropNN/STATUS.md`
+                                                          is rendered by --all/--subtree/per-node PASS —
+                                                          the same writers as the manifest.)
 
   <propdir> is e.g. Book2/Prop04  (or Book2/Prop04/Main.lean).
 
@@ -545,6 +556,7 @@ def _restamp_node(propdir, name, kind):
                 files[f] = sha
         manifest["files"], manifest["certified"] = files, certified
         L.write_manifest(propdir, manifest)
+        L.write_status_md(propdir, manifest["updated"])
     except Exception:
         pass                                          # bookkeeping must never break the actual check result
 
@@ -576,6 +588,10 @@ def _audit_with_manifest(propdir, order, success_msg, source):
         manifest["files"] = files
         manifest["certified"] = certified
         L.write_manifest(propdir, manifest)
+        try:
+            L.write_status_md(propdir, source)
+        except Exception:
+            pass                                      # bookkeeping must never break the audit's exit code
 
 
 def mode_all(propdir):
@@ -584,6 +600,14 @@ def mode_all(propdir):
         print("FAIL (--all aborted by integrity scan — fix structure first):")
         for p in problems:
             print("  - " + p)
+        return 1
+    # orphan guard — a node reachable from no Main node would never show as "todo" on the --status
+    # board (it isn't in any Main node's cone), so without this check --all could pass while the board
+    # silently omits a stray/orphaned file. Keeps the board⟺`--all` equivalence honest both ways.
+    orphans = L.orphan_nodes(propdir)
+    if orphans:
+        print(f"FAIL (--all aborted — {len(orphans)} orphan node(s) reachable from no Main node): "
+              f"{', '.join(orphans)}. Wire it into Main's cone or delete the stray file.")
         return 1
     # criterion-3 dependency (source-only, instant) — enforce BEFORE the long build audit so a dep
     # violation can't slip through the agent's final gate (the step3-cited-Prop.1.31 class).
@@ -709,13 +733,7 @@ def mode_whatchanged(propdir):
         return 0
 
     # 1) which RECORDED input files changed on disk (content differs, or the file is now gone)?
-    changed = {}                                       # relpath → reason
-    for f, sha in sorted(files.items()):
-        now = L.file_sha(os.path.join(L.BOOK_ROOT, f))
-        if now is None:
-            changed[f] = "deleted"
-        elif now != sha:
-            changed[f] = "modified"
+    changed = L.changed_files(manifest)                 # relpath → reason (shared with --status)
 
     if not changed:
         print(f"[check_step --whatchanged] {rel}: no recorded input file has changed since the last "
@@ -764,6 +782,80 @@ def mode_whatchanged(propdir):
         print(f"  python3 scripts/check_step.py {rel} {name}")
     print(f"\nThen, once all pass, run `python3 scripts/check_step.py {rel} --all` ONCE as the final "
           f"witness (it re-stamps the whole manifest).")
+    return 0
+
+
+def mode_status(propdir):
+    """`--status`/`--checklist`: live, READ-ONLY board (no build, no lock, never writes STATUS.md —
+    only a manifest-updating audit does that). Rolls the certification manifest up to Main's own nodes
+    via `L.status_rows` — the SAME computation STATUS.md renders, so the two can never diverge."""
+    rel = os.path.relpath(propdir, L.BOOK_ROOT)
+    manifest = L.read_manifest(propdir)
+    if not manifest.get("certified"):
+        print(f"[check_step --status] {rel} — no certification manifest yet (nothing certified).")
+        main_nodes = L.main_nodes_in_order(propdir)
+        if not main_nodes:
+            print("  Main has no nodes yet (no `(stepN : …)` / top-level `have` stubs) — map the "
+                  "sentences first (faithful-map Phase A).")
+            return 0
+        names = [nd.name for nd in main_nodes]
+        print("  Drive Main's nodes in order (each --subtree certifies that node's whole cone):")
+        print(f"    python3 scripts/check_step.py {rel} --subtree {names[0]}")
+        if len(names) > 1:
+            print(f"  then {', '.join(names[1:])}.  Once a node is ✓ it's DONE — never revisit an "
+                  f"earlier one.")
+        return 0
+
+    rows, checks = L.status_rows(propdir)
+    if "error" in checks:
+        print(f"[check_step --status] {rel} — ABORT: {checks['error']}")
+        return 2
+
+    symbol = {"done": "✓", "stale": "⚠", "todo": "○"}
+    print(f"[check_step --status] {rel} — Main nodes (source order):\n")
+    for name, state, detail in rows:
+        print(f"  {symbol[state]} {name:<8} {detail}")
+
+    not_done = [name for name, state, _ in rows if state != "done"]
+    if not_done:
+        idx_first_bad = next(i for i, (_, s, _) in enumerate(rows) if s != "done")
+        last_good = rows[idx_first_bad - 1][0] if idx_first_bad > 0 else None
+        later_good = [name for name, s, _ in rows[idx_first_bad:] if s == "done"]
+        if later_good:
+            print(f"\n  (⚠ OUT OF ORDER: {', '.join(later_good)} ✓ but earlier node(s) "
+                  f"{', '.join(not_done)} are not — drive Main's nodes in order; this is a soft hint, "
+                  f"not a hard gate.)")
+        elif last_good:
+            print(f"\n  (soft hint: {last_good} ✓ but {', '.join(not_done)} not — drive Main's nodes "
+                  f"in order; once ✓ a node is DONE.)")
+
+    print("\n  whole-prop checks (instant, source-only):")
+    print(f"    {'✓' if checks['deps'] else '✗'} criterion-3 deps         every cited "
+          f"[Prop.~B.N] satisfied")
+    print(f"    {'✓' if checks['integrity'] else '✗'} integrity (whole prop)   naming law · 30s caps "
+          f"· no stray sorry/import")
+    if checks["orphans"]:
+        print(f"    ✗ no orphans               {len(checks['orphans'])} node(s) reachable from no "
+              f"Main node: {', '.join(checks['orphans'])}")
+    else:
+        print("    ✓ no orphans               every backing-file node reachable from a Main node")
+
+    n_done = len(rows) - len(not_done)
+    n_checks = sum(1 for ok in (checks["deps"], checks["integrity"], not checks["orphans"]) if ok)
+    print(f"\n  SUMMARY: {n_done}/{len(rows)} Main nodes ✓ · {n_checks}/3 whole-prop checks ✓")
+    if n_done == len(rows) and n_checks == 3:
+        print("  ⟹ check_step --all is GUARANTEED to pass. Run it ONCE as the final witness, "
+              "then Phase C.")
+        return 0
+
+    blocking = [f"{name} ({state})" for name, state, _ in rows if state != "done"]
+    if checks["orphans"]:
+        blocking.append(f"orphan {', '.join(checks['orphans'])} (wire it or delete it)")
+    print(f"  → NOT all-green — --all will NOT pass yet. Blocking: {', '.join(blocking)}.")
+
+    print("\n  NEXT (Main order — a node passing re-stamps its hashes):")
+    for name in not_done:
+        print(f"    python3 scripts/check_step.py {rel} --subtree {name}")
     return 0
 
 
@@ -868,6 +960,8 @@ def main(argv):
             return mode_dependency(propdir)
         if rest in (["--whatchanged"], ["--changed"]):  # read-only hash diff (no build/swap) → no lock
             return mode_whatchanged(propdir)
+        if rest in (["--status"], ["--checklist"]):  # read-only board (no build/swap) → no lock needed
+            return mode_status(propdir)
         if rest in (["--sufficient"], ["--suppliable"]):
             abbr = "SF" if rest[0] == "--sufficient" else "SP"
             print(f"FAIL: `{rest[0]}` needs a NODE argument (e.g. `{rest[0]} step5`). "

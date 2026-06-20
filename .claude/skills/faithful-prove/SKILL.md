@@ -422,20 +422,30 @@ proof arm works: a prop cited via `euclid_apply` inside your backing file counts
 ---
 
 ## RESUMING A PROOF (picking up a prop whose state you don't know)
-1. Run `check_step Book<N>/PropNN --check` first — instant, no build. It scans naming law / stray sorries
+0. **Run `check_step Book<N>/PropNN --status` FIRST** — instant, read-only, no build, no lock. It walks
+   Main's nodes in source order and shows each as `done`/`stale`/`todo` against the certification
+   manifest, plus the 3 whole-prop checks and the exact next `--subtree`/`--all` command. This is now the
+   normal way to find where to resume — it's free (no wall-clock) because it reads the manifest instead of
+   re-auditing. Also check `Book<N>/PropNN/agent_notes.md` (per-prop scratchpad) and the repo-root
+   `AGENT_NOTES.md` (cross-cutting) for breadcrumbs a previous agent left — dead ends already tried, why a
+   node was decomposed a certain way, etc. Jot your own findings there as you go.
+1. Run `check_step Book<N>/PropNN --check` — instant, no build. It scans naming law / stray sorries
    / dead files up front, so you clean obvious clutter before sinking hours into the next step.
-2. Run `check_step Book<N>/PropNN --all` ONCE, backgrounded. This is the one time `--all` is a STARTING
-   point rather than the final witness: it walks bottom-up and reports the first node that breaks. Every
-   node before the break is already proven — that break is where you resume. (A break on a dead leftover
-   file is not a real failure: nothing live references it, so delete it and continue.)
-3. From then on, NEVER run `--all` again this session. Resume work at the breaking node and drive with
+2. If `--status` shows a manifest already exists (some nodes `done`), trust it and resume at the first
+   non-`done` Main node it names — no need to also run `--all`. **Only if the manifest is EMPTY** (a prop
+   that's never been audited, so `--status` has nothing to roll up) is `--all` ONCE, backgrounded, still
+   the right move: it walks bottom-up and reports the first node that breaks, and every node before the
+   break is already proven. (A break on a dead leftover file is not a real failure: nothing live
+   references it, so delete it and continue.)
+3. From then on, NEVER run `--all` again this session. Resume work at the named node and drive with
    scoped `check_step <node>` / `check_step --subtree <node>`, exactly as in a fresh proof. The certainty
-   model holds: a cone you don't touch stays proven.
+   model holds: a cone you don't touch stays proven (and `--status` reflects that — it only flips a node
+   to `stale` if its inputs actually changed).
 
-Why `--all` here and not a manual `--subtree` walk: finding the break by hand means enumerating Main's
-nodes and running/interpreting many commands — that is agent cognition, the expensive resource. `--all`
-is one command: free build time, almost no thinking, and a complete answer including the first break and
-any dead files. You pay wall-clock (hours, backgrounded) to save the thing that actually costs.
+Why `--status`/`--all` here and not a manual cone-by-cone walk: finding the break by hand means
+enumerating Main's nodes and running/interpreting many commands — that is agent cognition, the expensive
+resource. `--status` (when a manifest exists) or `--all` (when it doesn't) is one command: a complete
+answer including the first break/todo node and any dead files, for free or for backgrounded wall-clock.
 
 ## THE LOOP IN PRACTICE (per prop) — STRICT, BOTTOM-UP, `--all` AT THE VERY END (and, when resuming, once at the start)
 Three commands, three scopes — know exactly what each certifies:

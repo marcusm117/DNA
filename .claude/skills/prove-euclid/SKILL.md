@@ -405,6 +405,22 @@ A node's backing file is cheap (~30s); if it won't build in 30s it's TOO BIG →
   `Scratch/`, no `_steps.lean`, no merge step.) **Never** discharge a cited step with term-mode
   `exact proposition_M …` — a citation is only recorded when the prop/helper enters via `euclid_apply`.
 
+## RESUMING / THE CHECKLIST — `--status` + the in-order discipline
+
+- **Drive Main's nodes 1..N in order; once a Main node shows `✓` it's DONE — never revisit it**, except
+  by working inside its own cone (which immediately flips it back via the hash check, so you can't
+  silently regress it without `--status` noticing). This mirrors `faithful-prove`'s "go through Main's
+  sentences IN ORDER" rule — later steps lean on earlier ones as hypotheses, so an out-of-order pass
+  proves against an unstable context.
+- **Picking a prop back up (yours or another agent's)?** Run `python3 scripts/check_step.py <propdir>
+  --status` first — instant, read-only, no build. It shows every Main node as `done`/`stale`/`todo`
+  against the certification manifest, plus the exact next `--subtree` command, so you don't have to
+  reconstruct progress from memory or re-run a slow audit.
+- **Leave breadcrumbs.** `Book<N>/PropNN/agent_notes.md` (per-prop, freeform) and the repo-root
+  `AGENT_NOTES.md` (cross-cutting) are scratchpads — never parsed, never enforced — for things the NEXT
+  agent on this prop should know: a dead end you ruled out, why a node got split a particular way, a
+  tooling quirk. Check them when resuming; add to them when you find something worth keeping.
+
 ## DON'T
 
 - Don't add a hypothesis to a helper to make it close without checking the Prop can supply it
