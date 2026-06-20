@@ -177,6 +177,14 @@ the skeleton elaborates do you enter Phase 2 to discharge each leaf.
 2. ISOLATE THE ONE FAILING GOAL. A timeout at the end of a long proof is almost always
    "huge context", not "hard logic". Identify the single conjunct/assert that fails.
 
+2.5. SMELL IT BEFORE DECOMPOSING (optional, cheap). Before investing a whole sub-lemma+backing-file
+   subtree, run `python3 scripts/check_step.py <propdir> --smell <node>` — it fires the BARE claim at
+   `euclid_finish` under a short solver cap. If it says **CLOSES**, DON'T decompose: the goal closes
+   directly, so just let it close (a leaf whose body is `euclid_finish`, or a smaller context — you were
+   about to over-decompose). If **NOT CLOSED**, proceed to step 3 (the normal path). If **SAT**, the
+   claim is FALSE — fix the statement, don't decompose. (This is a sanity gate, not a substitute for
+   reasoning out WHY the claim is true — you should already know that from step 1.)
+
 3. TRIM TO A SUB-LEMMA — as a `have` NODE + its backing file. Add `have F : <failing goal> := by
    sorry` where it's needed, and create the backing file `<propdir>/F.lean` (`import SystemE` + only
    the PropMM it cites — NEVER a helper/step import; `set_option systemE.solverTime 30 in`; theorem

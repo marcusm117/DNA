@@ -677,6 +677,10 @@ def _body_regexes(book, prop, name):
         ("wired", re.compile(r":=[ \t]*by[ \t\r\n]+euclid_apply[ \t]*\(\s*" + helper +
                              r"\b(?:[^()]|\([^()]*\))*\)[ \t\r\n]*;?[ \t\r\n]*"
                              r"(?:\(try split_ands\)[ \t]*<;>[ \t]*assumption|euclid_finish\b)")),
+        # SMELL (transient, `check_step --smell` only): the BARE claim fired straight at euclid_finish,
+        # no decomposition. Distinct from `wired` (which REQUIRES the `euclid_apply (helper…)` prefix),
+        # so a bare `:= by euclid_finish` matches ONLY here. Never written to disk persistently.
+        ("smell", re.compile(r":=[ \t]*by[ \t\r\n]+euclid_finish\b")),
     ]
 
 
@@ -909,15 +913,18 @@ def swap_node_body(src, node, new_body_after_assign):
 
 
 def set_node_state(src, node, state, propdir, book):
-    """Return `src` with `node` put into `state` ∈ {'sorry','trace','wired'}, managing BOTH the body
-    AND the node's helper import together (wiring is body+import; reverting removes both). 'trace' is
-    `trace_state; sorry` and, like 'sorry', needs NO helper import; 'wired' adds it.
+    """Return `src` with `node` put into `state` ∈ {'sorry','trace','wired','smell'}, managing BOTH the
+    body AND the node's helper import together (wiring is body+import; reverting removes both). 'trace'
+    is `trace_state; sorry` and 'smell' is the bare `euclid_finish` (the SM smell fire) — both, like
+    'sorry', need NO helper import; only 'wired' adds it.
     The body span is edited FIRST (its indices are valid for the current `src`); the import edit, being
     line-based and idempotent, is applied to the result."""
     if state == "sorry":
         body = ":= by sorry"
     elif state == "trace":
         body = ":= by trace_state; sorry"
+    elif state == "smell":
+        body = ":= by euclid_finish"
     elif state == "wired":
         objs, n_hyps = resolve_call_args(propdir, book, node)
         body = wired_body(book, prop_num(propdir), node.name, objs, n_hyps)
@@ -1017,6 +1024,18 @@ def add_cap(src):
     if not m:
         raise FaithfulError("no top-level `theorem` to cap")
     return src[:m.start()] + CAP_LINE + "\n" + src[m.start():]
+
+
+def set_solver_cap(src, seconds):
+    """Return `src` with the `solverTime` cap set to `seconds` (strip any existing cap, then insert
+    `set_option systemE.solverTime {seconds} in` above the theorem). Used TRANSIENTLY by the SM smell
+    build to fire euclid_finish at a SHORT solver cap (e.g. 5s) without disturbing the persisted 30s
+    `CAP_LINE` — `restore_files` reverts it. Raises if there's no top-level theorem to cap."""
+    out = CAP_RE.sub("", src)
+    m = re.search(r"^theorem\s", out, re.MULTILINE)
+    if not m:
+        raise FaithfulError("no top-level `theorem` to cap")
+    return out[:m.start()] + f"set_option systemE.solverTime {seconds} in\n" + out[m.start():]
 
 
 def strip_linter_opts(src):

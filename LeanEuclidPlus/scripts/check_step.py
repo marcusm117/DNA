@@ -16,6 +16,13 @@ USAGE  (run from LeanEuclidPlus/):
   python3 scripts/check_step.py <propdir> --provable            (NO node) build Main, tolerate sorry —
                                                                   the Phase-A skeleton-elaborates check
                                                                   (Main has no parent, so no SF/SP).
+  python3 scripts/check_step.py <propdir> --smell <node>   SM SMELL (run it BEFORE you decide to
+                                                          decompose): fire the node's BARE claim at
+                                                          euclid_finish with a SHORT solver cap. "closes"
+                                                          ⟹ DON'T decompose, just `euclid_finish`;
+                                                          "not closed" ⟹ genuinely hard, decompose;
+                                                          "SAT" ⟹ the claim is FALSE, fix it. A deliberate
+                                                          sanity check — the no-flag <node> does NOT run it.
   python3 scripts/check_step.py <propdir> --context <node>   print the real hypotheses available at <node>
   python3 scripts/check_step.py <propdir> --subtree <node>  audit the node's WHOLE CONE (it + every
                                                           sub-node it transitively contains), bottom-up,
@@ -89,6 +96,48 @@ def _build_with_node_state(propdir, node, state, wall=L.WALL):
         src = open(node.file, encoding="utf-8").read()
         open(node.file, "w", encoding="utf-8").write(L.set_node_state(src, node, state, propdir, book))
         return L.lake_build(L.target_of(node.file), wall=wall)
+    # restore_files has restored node.file here
+
+
+# ── SM smell: fire the BARE claim at euclid_finish under a SHORT solver cap ──────────────────────────
+# The solver cap (not the wall) must be what bounds it, so the SOLVER's verdict — not a SIGKILL — is
+# what we classify. Hence a short cap with a GENEROUS wall.
+SMELL_SOLVER = 5
+SMELL_WALL = 20
+
+
+def classify_smell(ok, out):
+    """Map a smell build's (ok, output) → a verdict. PURE (unit-tested) — the load-bearing logic.
+       'closes' — built green, no sorry: euclid_finish discharged the bare claim ⟹ DON'T decompose.
+       'wall'   — the WALL pre-empted (faithful_lib's "exceeded …s wall clock"): inconclusive, treat as hard.
+       'sat'    — euclid_finish's solver returned SAT (`Prover returned SAT`): the claim is FALSE.
+       'hard'   — `Could not prove`: solver unknown/too-big at the short cap ⟹ genuinely needs work.
+       'error'  — anything else (a real Lean/parse error): not a proof verdict."""
+    o = out or ""
+    if ok and not L.has_sorry(o):
+        return "closes"
+    if "exceeded" in o and "wall clock" in o:
+        return "wall"
+    if "Prover returned SAT" in o:
+        return "sat"
+    if "Could not prove" in o:
+        return "hard"
+    return "error"
+
+
+def check_smell(propdir, node):
+    """SM: put `node` into the transient 'smell' state (bare `:= by euclid_finish`) under a SHORT solver
+    cap, build its container (generous wall so the SOLVER verdict lands, not a kill), REVERT, and
+    classify. Returns (verdict, output). Atomic via restore_files (the node body + the transient cap are
+    both reverted, the stale olean purged) — exactly like --context."""
+    book = L.book_num(propdir)
+    with L.restore_files([node.file]):
+        src = open(node.file, encoding="utf-8").read()
+        smelled = L.set_node_state(src, node, "smell", propdir, book)
+        smelled = L.set_solver_cap(smelled, SMELL_SOLVER)
+        open(node.file, "w", encoding="utf-8").write(smelled)
+        ok, out = L.lake_build(L.target_of(node.file), wall=SMELL_WALL)
+    return classify_smell(ok, out), out
     # restore_files has restored node.file here
 
 
@@ -393,6 +442,39 @@ def mode_context(propdir, node_name):
           "authoritative suppliability test is SP (`check_step <node>`), not this list — do not "
           "over-decompose because something isn't shown.")
     return 0 if ok or block else 1
+
+
+def mode_smell(propdir, node_name):
+    """--smell <node>: fire the node's BARE claim at euclid_finish under a short solver cap, to decide
+    whether decomposing is even worth it. The claim is identical at every call site, so one build (the
+    first occurrence's container) suffices."""
+    nodes = L.parse_all_nodes(propdir)
+    if node_name not in nodes:
+        print(f"FAIL: no node '{node_name}'. Stub it first as `have {node_name} : <claim> := by sorry` "
+              f"(or it's a Main sentence). Known: {', '.join(sorted(nodes))}")
+        return 2
+    node = nodes[node_name]
+    verdict, out = check_smell(propdir, node)
+    where = os.path.relpath(node.file, L.BOOK_ROOT)
+    print(f"[check_step --smell] {node_name}  ({where}) — bare claim at euclid_finish, "
+          f"{SMELL_SOLVER}s solver cap:\n")
+    if verdict == "closes":
+        print(f"  ✓ CLOSES — euclid_finish discharges this claim directly in ≤{SMELL_SOLVER}s.\n"
+              f"    DON'T decompose: just write the claim's body as `:= by euclid_finish` (or, as a node,\n"
+              f"    let the wire close it). Decomposing it would be wasted work.")
+        return 0
+    if verdict in ("hard", "wall"):
+        print(f"  ✗ NOT CLOSED at {SMELL_SOLVER}s — genuinely needs work. Proceed with the normal\n"
+              f"    SF → SP → P decomposition (this is the expected path for a real sub-goal).")
+        return 1
+    if verdict == "sat":
+        print("  ✗ SAT — the solver found a COUNTERMODEL: the claim is FALSE as written. Do NOT\n"
+              "    decompose; FIX the claim (wrong statement / missing hypothesis), then re-check.")
+        return 1
+    # error — a real Lean/parse/translation error, not a proof verdict
+    print("  ✗ BUILD ERROR (not a proof verdict — a Lean/elaboration/parse problem):\n")
+    print(_fail_output(out))
+    return 1
 
 
 def _audit(propdir, order, success_msg, on_pass=None):
@@ -711,11 +793,23 @@ def _errors(out):
     return "\n\n".join(blocks)
 
 
+def _annotate_sat(out):
+    """If the build output contains the solver's `Prover returned SAT`, append a one-line gloss naming
+    its consequence — SAT means the claim is FALSE (a countermodel was found), NOT that the step is too
+    big. Prevents the documented misread (the no-witness lemma bug, where SAT was taken as 'decompose').
+    No-op when SAT isn't present."""
+    if out and "Prover returned SAT" in out:
+        return ("\nNOTE: `Prover returned SAT` = the solver found a COUNTERMODEL ⟹ the claim is FALSE as "
+                "written. Do NOT decompose; FIX the claim (wrong statement / missing hypothesis).")
+    return ""
+
+
 def _fail_output(out):
     """What to print on a build failure: the full `error:` blocks if any (the real diagnosis), else the
-    tail (e.g. a wall-timeout message that isn't an `error:` line)."""
+    tail (e.g. a wall-timeout message that isn't an `error:` line). A `Prover returned SAT` is always
+    glossed (it means the claim is false — see _annotate_sat)."""
     errs = _errors(out)
-    return errs if errs.strip() else _tail(out)
+    return (errs if errs.strip() else _tail(out)) + _annotate_sat(out)
 
 
 def _extract_trace(out, container_file):
@@ -794,6 +888,8 @@ def main(argv):
                 return 2 if reject_main_as_node(rest[1]) else mode_subtree(propdir, as_node(rest[1]))
             if len(rest) == 2 and rest[0] == "--context":
                 return 2 if reject_main_as_node(rest[1]) else mode_context(propdir, as_node(rest[1]))
+            if len(rest) == 2 and rest[0] == "--smell":
+                return 2 if reject_main_as_node(rest[1]) else mode_smell(propdir, as_node(rest[1]))
             if len(rest) == 2 and rest[0] in ("--sufficient", "--suppliable", "--provable"):
                 return 2 if reject_main_as_node(rest[1]) else mode_one(propdir, as_node(rest[1]), rest[0][2:])
             if len(rest) == 1 and not rest[0].startswith("-"):

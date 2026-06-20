@@ -157,6 +157,9 @@ Is this goal an off-line / sameSide / area-recast / right-angle-co-interior / pa
   NO (genuine content — betweenness / assembly / proposition-citation) → continue:
 
 Can I close this goal directly (real euclid_apply chain, no new node) and build it ≤30s?
+  (UNSURE whether it even needs decomposing? `check_step Book<N>/PropNN --smell <node>` fires the bare
+   claim at euclid_finish under a short cap — "CLOSES" ⟹ don't decompose, just close it; "SAT" ⟹ the
+   claim is false, fix it. A cheap pre-decompose sanity gate; the no-flag path doesn't run it.)
   YES → write that proof; verify it green with `check_step Book<N>/PropNN --provable <thisnode>` → DONE.
   NO  → introduce a sub-fact F. NEVER guess its signature:
 
