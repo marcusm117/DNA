@@ -1,6 +1,9 @@
-# 01 — Fact database + multi-axis query tool (`bake_index` + `find`)
+# 01 (+09) — Fact database + multi-axis query tool (`bake_index` + `find`)
 
-**Status:** idea · **Serves:** #1 (reasoning), #2 (search), #5 (reuse) · **Effort:** medium · **Priority:** 1st (keystone)
+**Status:** idea · **Serves:** #1 (reasoning), #2 (search), #5 (reuse) · **Effort:** medium · **Priority:**
+Program 1 (REUSE) — the DB/search half. **`find.py` is the sanctioned smart-grep** (give the agent this
+instead of re-allowing raw `grep`). Idea 09 ("cheapest next move") is MERGED in below — it's a query MODE
+of this same DB, not a separate idea.
 
 > **Design correction (don't lose this):** this is NOT a "conclusion index." It's a COMPLETE structured
 > database of every declaration, queryable along MANY axes. "What concludes X" is just ONE query. The DB
@@ -54,8 +57,8 @@ All three are filters over the same rows. Combine freely (`--consumes X --conclu
 > `object_arity`. Known CEILING (record, don't fake): "find a lemma with a SIMILAR PROOF TECHNIQUE" (not
 > symbols, not text — strategy similarity) needs AI or hand-tags; out of scope for the mechanical tool.
 
-See [09](09-next-move-ranking.md) for the highest-value query that builds on this DB + the agent's live
-context: "rank candidates by how many hyps are ALREADY satisfied" (cheapest next move).
+The highest-value query — "rank candidates by how many hyps are ALREADY satisfied" (cheapest next move) —
+is MERGED into this file below (was idea 09); it builds on this DB + the agent's live context.
 
 ## Sketch
 
@@ -101,3 +104,79 @@ The duplication that makes `--steps-all` noisy is itself the promotion signal ([
 - **`facts` extraction:** robust parse of each relation's head symbol + role + polarity across goal shapes
   (negation, `≠` as `¬ =`, abbrevs like `formParallelogram`). Abbrevs may need a head category or unfolding.
 - **Hook constraint:** `find.py` / `bake_index.py` must be added to the bash allowlist (new `scripts/…`).
+
+---
+
+## 09 (MERGED) — "Cheapest next move": rank candidates by how much is already in context
+
+> This was a separate idea; it is the FLAGSHIP query of the DB above + the agent's CURRENT CONTEXT + a
+> matcher + cost ranking. It answers "what's my best LEGAL MOVE given THIS proof state," not just "what
+> exists." Serves #1 (reasoning) and #2 (search). The most decision-relevant query the DB enables.
+
+### Problem it solves
+
+The DB answers "what concludes/consumes/mentions X." But the agent's real question at a node is:
+**"given the atoms I ALREADY have in context, which lemma gets me to my goal with the LEAST additional
+work?"** A lemma whose 5 hyps are all already in context is a free win; one needing 3 new sub-proofs is
+expensive. Today the agent can't see that ranking — it picks a lemma, then discovers mid-wire how many
+hyps it can't supply.
+
+### Sketch
+
+1. **Get context:** the pipeline already produces it — `check_step --context <node>` (trace_state) lists
+   the ground atoms in scope. Feed those to the query.
+2. **Candidate set:** from the DB, the lemmas/axioms/props whose CONCLUSION matches the goal shape (backward).
+3. **Match each candidate's hyps against context — FIRST-ORDER MATCHING (the crux):**
+
+   **Phase A — conclusion pins (always unambiguous).** The agent has already decided its claim via SF
+   before it ever queries — the goal is a FULLY GROUND atom with real figure names (`¬(b.onLine EF)`,
+   not a wish). Matching the lemma conclusion against that goal is deterministic: each syntactic position
+   in the conclusion binds exactly one hole (`¬(x.onLine M)` → `{x→b, M→EF}`). No symmetry concern,
+   no ambiguity. This is by design — SF precedes search.
+
+   **Phase B — hyp search over remaining free variables.** After Phase A, some lemma args are bound;
+   the rest are FREE (not mentioned in the conclusion). For each free variable, the search space is
+   "which context atom of the right type to assign it." This is the only real search:
+   - For each unbound free var, try every same-type context atom.
+   - Extend ONE CONSISTENT substitution across all hyps — if hyp₁ forces `L→AB` and hyp₂ forces
+     `L→CE`, reject that branch immediately.
+   - Goal: find the assignment that **minimizes unsatisfied hyps** (not just "find any match") →
+     needs branch-and-bound: keep running best, prune branches whose partial lower bound already
+     exceeds current best.
+
+   **Why it's cheap.** Let m = number of free variables REMAINING after Phase A, c = context size
+   (~10–20 atoms). Worst case is c^m — NOT n! (factorial would be permutations; this is just
+   assignment). Consistency pruning shrinks the branching factor at each depth (once `L→AB` is
+   committed, every subsequent hyp with `L` checks in O(1) — no re-search). In practice m ≤ 3–4 for
+   these figure lemmas, so the real search tree is tens to hundreds of nodes — sub-millisecond
+   exhaustive search.
+
+   - Count hyps that CAN'T be matched under the best consistent assignment = "still to prove."
+
+4. **Rank ascending by (hyps-still-to-prove).** Output: candidate, the substitution, which hyps are already
+   satisfied, which remain. Cheapest-to-apply first.
+
+### Syntactic matching vs. logical equivalence — the deliberate choice
+
+- **Pure string equality:** too weak — fails on variable renaming (lemma `x.onLine L` vs context
+  `b.onLine AB`). REJECTED.
+- **First-order matching (up to variable assignment):** handles renaming, deterministic, cheap, no SMT/AI.
+  CHOSEN level.
+- **Full logical equivalence (SMT):** too expensive, overkill.
+- **The GAP and why it's SAFE:** matching misses SEMANTIC equivalence — distance symmetry `|a─b|=|b─a|`,
+  `intersectsLine` orientation, packaged-vs-unfolded abbrevs (`formParallelogram`). A hyp present
+  up-to-symmetry is counted "unmatched." But that only makes a candidate look MORE expensive than it is —
+  it NEVER yields a false "free" match or a wrong wire. So it's a SOUND, conservative ranking heuristic; the
+  cost estimate is pessimistic, which is the safe bias. (If symmetry-blindness ever hurts ranking quality
+  noticeably, add a few normalization rules — canonicalize distance/angle arg order, unfold known abbrevs to
+  atoms — BEFORE matching. Cheaper than SMT, closes most of the gap.)
+
+### Open questions / risks (09-specific)
+
+- **Abbrev unfolding:** `formParallelogram` in a hyp is really a conjunction of atoms; decide whether to
+  match against the packaged form or the unfolded atoms (the context usually has it UNFOLDED — so unfold
+  candidate hyps too, or match at the atom level).
+- **Context source coupling:** depends on `--context`'s trace_state. Fine (it exists), but means this query
+  runs a (cheap) build to get context, unlike the pure-parse DB queries. Acceptable — builds are free.
+- **Ranking ties:** many candidates may tie on hyp-count; secondary sort by total hyps, or by `kind`
+  (prefer helper/axiom over re-deriving). Tune empirically.

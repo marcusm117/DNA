@@ -1,7 +1,9 @@
 # 11 — Orphan / reachability check (find nodes & files not connected to the top-level file)
 
 **Status:** idea · **Serves:** #3 (test + pinpoint), #4 (did I break / leave something?) · **Effort:** low
-· **Priority:** high — it's the cheapest fix for the exact failure that motivated [10](10-contract-deps-incremental-certs.md)
+· **Priority:** **Program 2 — the QUICK WIN.** Do it early/whenever: ~15 lines reusing existing machinery,
+independent of everything, and the cheapest fix for the exact failure that motivated
+[10](10-contract-deps-incremental-certs.md) (dead leftover files silently pass `--check`, then blow up `--all`).
 
 ## The bug that triggered this
 

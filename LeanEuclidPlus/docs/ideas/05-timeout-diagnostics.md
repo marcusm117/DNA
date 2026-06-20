@@ -1,6 +1,26 @@
-# 05 — Timeout diagnostics (which line / what context on a wall-kill)
+# 05 — SP failure message cleanup (timeout-diagnostics tiers RETIRED)
 
-**Status:** idea · **Serves:** #3 · **Effort:** low (spike first) · **Priority:** 4th
+**Status:** idea · **Serves:** #3 · **Effort:** very low · **Priority:** Program 3 (cleanup), low
+
+> **Scope correction (recorded — read first).** The original wall-kill *timeout-diagnostics tiers below
+> are RETIRED.** They're superseded by the build design: every build carries a **30s SMT cap** wrapped in a
+> **45s WALL** (`check_step.py` / `faithful_lib.WALL`), wall > cap **on purpose**. So a too-slow
+> `euclid_finish` hits the 30s cap and returns a clean "could not prove" **that already carries the goal it
+> failed on** — it rarely gets SIGKILL'd at the wall. So Tier 1 ("print the goal on a wall-kill") is moot
+> (you already have the goal), and Tier 2/3 only address non-SMT slowness, which the methodology says to
+> DECOMPOSE anyway. The surviving, still-useful item is the **SP `(by assumption)` failure-message
+> cleanup** in the addendum — that's a different code path (suppliability, not a timeout) the 45s wall
+> doesn't touch. **That addendum is now the whole content of this idea; the tiers are kept below only as a
+> record of why we dropped them.**
+
+## The surviving item — SP failure message: print ONLY the unmet hypotheses
+
+(Promoted from the addendum — see the full write-up below under "Addendum".) On an SP `assumption` failure,
+strip the repeated ~80-line context dump and print only the unmet binder goals. Cheap, forever-hot path.
+
+---
+
+## RETIRED — original timeout-diagnostics problem + tiers (kept for the record only)
 
 ## Problem it solves
 

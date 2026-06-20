@@ -1,6 +1,13 @@
 # 06 — Context slimmer (report which hyps a proof actually used)
 
-**Status:** idea · **Serves:** #1, #3 · **Effort:** low-med · **Priority:** opportunistic
+**Status:** idea · **Serves:** #1, #3 · **Effort:** low-med · **Priority:** Program 3 (cleanup), opportunistic
+
+> **NOT "just cleanup."** Two distinct payoffs: (1) it attacks the **#1 timeout cause** (bloated context —
+> a steady multiplier on the whole pipeline), and (2) it **feeds [10](10-contract-deps-incremental-certs.md)'s
+> `@deps`** — slimming first drops unused hyps, so the surviving binders are exactly the ones `@deps`
+> attributes (fewer edges to declare, smaller dep graph). The cheap **drop-each-hyp** version below is sound
+> (the build is the check — it can only report "unused" when removal still proves, so it never strips an
+> essential hyp) and needs zero new infra; do that before the principled UNSAT-core version.
 
 ## Problem it solves
 

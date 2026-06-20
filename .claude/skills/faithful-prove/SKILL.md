@@ -312,8 +312,8 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
 - **You never wire Main and never build an all-wired container.** Don't use `--all` as your driving
   loop or to find failures (it re-checks EVERY node — minutes wasted); drive with per-node
   `check_step <node>` and confirm a container/step with `check_step --subtree <node>` (scoped to that
-  cone). To triage a resumed/buggy proof, walk steps in order with `--subtree stepN` — each is scoped,
-  so you find the first broken step without re-auditing the rest. `--all` is the END only — exactly ONCE.
+  cone). To pick up a proof whose state you don't know, see RESUMING below (the one case `--all` is a
+  starting snapshot). Otherwise `--all` is the END only — exactly ONCE.
 - **LAUNCH `--all` (and any long `--subtree` over a deep shared cone) WITH `run_in_background: true`.**
   The final `--all` re-walks every node across all call-sites and can run 2.5–7 HOURS wall-clock — a
   foreground call would block the whole turn on one tool use. Backgrounded, the harness pings you when it
@@ -411,7 +411,23 @@ proof arm works: a prop cited via `euclid_apply` inside your backing file counts
 
 ---
 
-## THE LOOP IN PRACTICE (per prop) — STRICT, BOTTOM-UP, `--all` ONLY AT THE VERY END
+## RESUMING A PROOF (picking up a prop whose state you don't know)
+1. Run `check_step Book<N>/PropNN --check` first — instant, no build. It scans naming law / stray sorries
+   / dead files up front, so you clean obvious clutter before sinking hours into the next step.
+2. Run `check_step Book<N>/PropNN --all` ONCE, backgrounded. This is the one time `--all` is a STARTING
+   point rather than the final witness: it walks bottom-up and reports the first node that breaks. Every
+   node before the break is already proven — that break is where you resume. (A break on a dead leftover
+   file is not a real failure: nothing live references it, so delete it and continue.)
+3. From then on, NEVER run `--all` again this session. Resume work at the breaking node and drive with
+   scoped `check_step <node>` / `check_step --subtree <node>`, exactly as in a fresh proof. The certainty
+   model holds: a cone you don't touch stays proven.
+
+Why `--all` here and not a manual `--subtree` walk: finding the break by hand means enumerating Main's
+nodes and running/interpreting many commands — that is agent cognition, the expensive resource. `--all`
+is one command: free build time, almost no thinking, and a complete answer including the first break and
+any dead files. You pay wall-clock (hours, backgrounded) to save the thing that actually costs.
+
+## THE LOOP IN PRACTICE (per prop) — STRICT, BOTTOM-UP, `--all` AT THE VERY END (and, when resuming, once at the start)
 Three commands, three scopes — know exactly what each certifies:
 - **`check_step <node>`** = ONLY that node (its SF→SP→P). It does **NOT** check the node's sub-nodes.
 - **`check_step --subtree <node>`** = that node's WHOLE CONE (the node + every sub-node it transitively
@@ -430,9 +446,16 @@ The ladder (do them in this order):
    pass.** Inner container first (`check_step step27_decomp`), then once its leaves + it are green,
    `check_step --subtree step27` to CONFIRM the whole cone (SP at every in-cone call site + P every
    leaf). A bare `check_step step27` PASS does NOT mean its subtree is done — `--subtree` does.
-4. **Walk the Main sentences IN ORDER (step1 → … → last; never skip, never parallel).** Each step:
-   certify its sub-nodes, then `check_step --subtree stepN` to confirm it. `--subtree stepN` audits
-   ONLY stepN's cone — it does NOT re-audit step1…step(N-1).
+4. **Certify the steps IN ORDER (step1, then step2, …, then the last; never skip, never parallel).**
+   A step is not finished by one `--subtree` on its sentence. To finish a step, run `--subtree` on the
+   step's sentence AND on every `have` that belongs to that step's block (the sibling haves passed into
+   the sentence as hypotheses). When all of those pass, that step is DONE. Then move to the next step and
+   do the same — its sentence and every have in its block. `--subtree <node>` audits only that node's
+   cone, so finishing one step never re-audits the earlier steps.
+   Why every node and not just the sentence: a sentence is handed its sibling haves as hypotheses.
+   `--subtree` on the sentence confirms those hypotheses are PRESENT, but it does not PROVE them — each
+   sibling have is proven by its own `--subtree`. So a step is sound only once its sentence and all the
+   haves in its block have each passed `--subtree`.
 5. **LAST ACTION, exactly ONCE, only once every cone is already `--subtree`-green:** `check_step
    Book<N>/PropNN --all`, launched with `run_in_background: true` (it's 2.5–7 hr — see the anti-pattern
    block; it is a WITNESS you record, not a gate you debug toward). Exit 0 ⟹ the Phase-C wired build is
@@ -445,6 +468,11 @@ The ladder (do them in this order):
 > green witness for the human's gate B. If there is ANY chance it fails, you are not ready to run it.
 > "I edited some cones, let me run `--all` to confirm" is THE forbidden move — that is using a 7-hour
 > job as a debug check, and the transcript that motivated this rule did exactly that and burned the time.
+> **The ONE exception is RESUMING a proof whose state you don't know** (see RESUMING): there you may run
+> `--all` ONCE as a starting snapshot to locate the first break, BECAUSE you have no scoped knowledge to
+> target yet. That is still "exactly once" — once you've found the break you NEVER run `--all` again that
+> session; you switch to scoped checks. Running it once at the start (resume) and running it once at the
+> end (witness) are the only two `--all` runs that ever happen.
 >   - **To FIND or CONFIRM-AFTER-A-FIX a failure: scoped checks ONLY.** `check_step <node>` (one node),
 >     or `check_step --subtree <node>` (one cone — what `--all` checks, restricted to that cone). A
 >     `--subtree` PASS on a cone is a COMPLETE, stand-alone certificate for that cone; it does not need

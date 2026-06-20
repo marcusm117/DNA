@@ -1,8 +1,33 @@
 # 10 — Explicit named dependencies + contract-hash incremental certificates
 
 **Status:** idea (actively developing) · **Serves:** #3, #4 (+ #1/#5 clarity) · **Effort:** med-high
-(staged) · **Priority:** high — it closes a real false-confidence hole AND unlocks "certify once, never
-re-audit"
+(staged) · **Priority:** **Program 3 (cleanup/maintenance) — NOT a priority for finishing Book 2.** This
+pays off when proofs are *done and churning* (certify-once, invalidation, readability), not in the
+get-it-green regime. Record richly; spike the named-wire on ONE node before committing surface area.
+
+> **How `@deps` gets computed — the operator's-question resolution (recorded, don't relitigate).**
+> "`@deps` doesn't exist yet — for each node, how does a SCRIPT figure out the minimal deps?" Resolved:
+> there is **no combinatorial search** (no n! over hyp subsets). The named-node set is *parsed* from Main
+> (`parse_occurrences`), never searched. Two sound mechanisms, both polynomial:
+> - **Leave-one-out (cheap, ~context-size builds):** with all facts in context the wire is green; remove
+>   ONE context fact, rebuild once (that one build re-checks all the helper's slots at once), fails ⟹ that
+>   fact was necessary ⟹ a dependency. O(context) builds per node, not slots×context.
+> - **Per-slot `exact` (sound under redundancy, ~slots×candidates builds):** for each helper slot, try each
+>   same-type context fact via `exact`; Lean accepting it IS the check (not a fragile matcher). Type-filter
+>   by head symbol FIRST to skip non-matching facts (a `formParallelogram` slot only tests the 2–3
+>   `formParallelogram` facts) → ~tens of builds/node, not thousands.
+>
+> **The redundancy hole and its fix (operator's call):** if TWO context facts can discharge the same slot,
+> leave-one-out breaks SILENTLY (remove either, the other still covers it ⟹ both reported "unused" ⟹
+> under-declaration, the boffDG bug class). Per-slot `exact` instead SEES both and flags ambiguity. BUT —
+> "two facts concluding the same thing" is **redundant by definition** (they're defeq at the wire, else
+> only one would `exact`-match), which is **bad proof design the agent should remove**, not engineer
+> around. So the chosen path is: **lint out same-conclusion redundant facts**, after which **leave-one-out
+> is sound and minimal** — cheapest, no slot-search, no core change. Mis-attributing between two genuinely
+> defeq producers is HARMLESS anyway (you can only ever trigger a *spurious* future re-audit, never SKIP a
+> needed one: if a recorded producer's contract later changes it's no longer defeq, so it stops discharging
+> the slot and the build catches it — the safe direction). Cost is per-node, computed ONCE, then cached by
+> the contract-hash cert and never recomputed until that node or a dep's *contract* changes.
 
 ## The bug that triggered this
 
@@ -188,6 +213,43 @@ To help the agent decide what to name, `--context` should classify each context 
 against (node claims | construction outputs | premises) and label it "supplied by step7_dfpar" /
 "premise" / "unknown". Put the *fragile* type-matcher HERE, where a miss costs nothing — it's only advice.
 The same matcher used as a *gate* would be unsound (see open questions).
+
+## Part F — ALTERNATIVE substrate: auto-named interface facts (System-E change) — NOT a priority
+
+A different way to get explicit deps: instead of the script *recovering* dependency edges by build-search
+(leave-one-out / per-slot `exact`), change **System E itself** so the anonymous facts are NAMED at the
+source — then the wire reads its deps off names, no recovery needed.
+
+**What's anonymous today, and what naming targets.** The helper's slots are ALREADY named (its signature).
+The only anonymous fillers are the **construction outputs**: `euclid_apply (proposition_46 …) as (e,f,EF,…)`
+names the 5 OBJECTS but dumps its ~7 geometric facts into Main's context unnamed (premises are already
+bound by the proposition signature; solver-*inferred* facts like `between`/parallel are never hyps at all,
+so they're neither nameable nor needed). So this change is narrow: **auto-name the construction-output
+facts** (extend the `… as` handling in `Solve.lean` / the construction tactics to introduce hygienic
+names), via a stable convention derived from the producing lemma's conclusion structure (e.g. `prop46.fpar`,
+NOT positional `prop46.3` — positional shifts if the lemma's conjuncts reorder).
+
+**Why it's safe and the operator's objections were answered:**
+- **Cannot break anything** — naming is *additive*. `euclid_finish` translates the whole context regardless
+  of names; `(by assumption)` is name-blind; every existing proof builds identically. Old `(by assumption)`
+  wires keep working — incrementally adoptable, no migration.
+- **Brittleness defused** — the earlier "positional names go stale on reorder" objection only bites if
+  names are HAND-maintained. Here **the script regenerates the wiring** whenever a producer changes, so
+  names are always freshly correct; staleness is impossible.
+
+**What it actually buys (provenance, not proving power — naming gives `euclid_finish` ZERO new power):**
+- **Deps become parse-readable** — "what does step7 depend on" = read the named wire; zero builds ever to
+  *recall* deps (vs. `(by assumption)` recording nothing).
+- **Stable producer-tie for invalidation** — exactly what Part C's contract-certs need.
+- **Drops the load-bearing no-anonymous-leak property** (Part A) — nothing is anonymous anymore, so the
+  `clear`-soundness argument isn't needed.
+
+**Why it's NOT a priority (operator's call):** it's a change to the **trusted tactic core** everything
+depends on, for a **bookkeeping/readability** payoff that lands in the certify-once/maintenance regime —
+not in the get-it-green regime of finishing Book 2. The zero-core-change path (lint redundant facts +
+leave-one-out, in the box at the top) gets sound deps TODAY. **Auto-naming is the better PERMANENT
+substrate to migrate to once the corpus stabilizes — recorded as a good readability/cleanliness idea,
+explicitly deferred.**
 
 ## Why it helps (cost terms)
 

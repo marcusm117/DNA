@@ -1,21 +1,32 @@
-# 02 — `SM` smell step (short-timeout triviality/falsity check before SF)
+# 02 — `SM` smell step (short-timeout "don't over-decompose" check before SF)
 
-**Status:** idea · **Serves:** #1, #3, #4 · **Effort:** low · **Priority:** 2nd
+**Status:** idea · **Serves:** #1, #3 · **Effort:** low · **Priority:** Program 3 (cleanup), opportunistic
+
+> **Scope correction (operator's call, recorded — read this first).** The HEADLINE value of `SM` is the
+> **UNSAT-fast branch: "don't decompose — `euclid_finish` closes this directly."** Even a competent agent
+> over-decomposes — splits a goal the solver would have closed in a few seconds — and that wasted
+> sub-tree of cognition is a real, frequent cost leak. THIS is what `SM` is for.
+>
+> The **falsity-oracle framing is explicitly DOWNWEIGHTED** (was the original headline): "fire the bare
+> claim, `SAT` ⟹ it's false ⟹ stop." A smart agent must reason out *in NL* why a claim is true BEFORE it
+> ever decomposes — it must NOT lean on a `SAT`/timeout code-smell as its truth signal. If the smell
+> catches a falsity the agent didn't already know was false, the agent was too careless, not well-served.
+> So `SM` is a guard against **over-decomposition**, not a substitute for the agent reasoning about truth.
+> (The mechanical-falsity oracle, if ever wanted, is [04](04-numeric-realizer.md) — a sound disproof, kept
+> separate and also downweighted for the same reason.)
 
 ## Problem it solves
 
 The pipeline today is `SF → SP → P`. `SF` checks *sufficiency* ("if this claim were true, does it close
-the parent"). But it NEVER checks *truth* until `P` (the full proof). So the agent can design a clean
-decomposition, pass `SF` on every node, prove several, then discover a leaf is **false/unprovable** — and
-unwind the whole subtree of cognition. The prerequisite question "**should this even be true?**" is asked
-implicitly and only answered the expensive way (by proving it).
+the parent"). It never asks whether the goal is **already trivially closable** — so the agent decomposes
+goals that `euclid_finish` would have discharged directly, investing a whole sub-tree of cognition in a
+split that was never needed.
 
 ## Why it helps (in cost terms)
 
-Front-loads truth to the TOP of the thinking tree. The asymmetry that makes it cheap: **a false claim
-returns `SAT` FAST** (the solver finds a countermodel quickly), while a true-but-hard claim times out
-slowly. So a short-timeout fire of the bare claim cleanly separates three cases the agent should treat
-COMPLETELY differently — and conflating them is a top thrash source.
+Front-loads the "is this already trivial?" question to the TOP of the thinking tree. The asymmetry that
+makes it cheap: a trivially-true claim returns **UNSAT fast**; a true-but-hard claim times out slowly. So a
+short-timeout fire of the bare claim cleanly separates "just close it" from "genuinely needs decomposing."
 
 ## Sketch — add `SM` before `SF`: `check_step --smell <node>`
 
@@ -23,8 +34,8 @@ Fire the bare claim (no decomposition) at a SHORT timeout (~5s). Three outcomes:
 
 | Result | Meaning | Agent action |
 |--------|---------|--------------|
-| **UNSAT fast** | trivially TRUE | **Don't decompose — just close it.** (Under-used cost win: agents decompose things `euclid_finish` closes directly.) |
-| **SAT fast** | FALSE (countermodel) | **STOP. Fix the claim.** Decomposing a false goal is infinite thrash. |
+| **UNSAT fast** | trivially TRUE | **Don't decompose — just close it.** ← THE HEADLINE WIN. Under-used: agents decompose things `euclid_finish` closes directly. |
+| **SAT fast** | FALSE (countermodel) | Downweighted (see scope correction): a smart agent should already know it's false from NL reasoning. Treat as a sanity backstop, not the reason to build `SM`. |
 | **timeout** | true-but-hard | Proceed to decompose (the normal `SF→SP→P` path). |
 
 Also: `check_step` should LABEL a `SAT` verdict in any build's output with its consequence ("SAT = the
