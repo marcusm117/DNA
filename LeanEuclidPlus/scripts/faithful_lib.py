@@ -768,6 +768,14 @@ def parse_nodes_in_file(path, book):
         if not body:
             continue                                            # a real proof-local `have`, not a node
         state, bs, be = body
+        if state == "smell":
+            continue            # a FINISHED inline `:= by euclid_finish` proof — NOT a pipeline hole.
+                                # The 'smell' shape is transient-only (the `--smell <node>` flow swaps a
+                                # `:= by sorry` node to it, builds, and reverts — it never DISCOVERS a
+                                # persisted smell node), so a bare `euclid_finish` on disk is just inline
+                                # proof content, exactly as it was before smell-mode existed. Treating it
+                                # as a node would falsely demand a backing file (the 25/414-false-node
+                                # regression on Prop06/Prop05). See Book2/Prop06/agent_notes.md.
         nodes.append(Node(name, path, "have", None, claim.strip(), state, bs, be,
                           _args_above(src, m.start())))
     return nodes

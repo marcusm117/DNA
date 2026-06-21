@@ -13,7 +13,7 @@ theorem helper_2_6_step15_sqpar_a (c d e f : Point) (AB EF CE DF : Line)
     (heEF : e.onLine EF) (hfEF : f.onLine EF)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)
     (hdDF : d.onLine DF) (hfDF : f.onLine DF)
-    (hcoffEF : ¬(c.onLine EF)) (hdoffEF : ¬(d.onLine EF))
+    (hcoffEF : ¬(c.onLine EF)) (hdoffEF : ¬(d.onLine EF)) (heoffDF : ¬(e.onLine DF))
     (hCEDF : ¬(CE.intersectsLine DF)) (hEFAB : ¬(EF.intersectsLine AB)) :
     formParallelogram c e d f CE DF AB EF := by
   euclid_intros
