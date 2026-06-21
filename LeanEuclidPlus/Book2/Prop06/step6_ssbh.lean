@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- sub-fact for 2.6.6 / step6_klh: b and h (both on the vertical BG) are on the same side of CE.
    Given BG ≠ CE, b,h are off CE (a common point of BG and CE would force them to meet, contradicting
    BG ∦ CE). Off CE and not separable, b and h share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step6_ssbh (b h : Point) (CE BG : Line)
     (hbBG : b.onLine BG) (hhBG : h.onLine BG)
     (hBGneCE : BG ≠ CE)

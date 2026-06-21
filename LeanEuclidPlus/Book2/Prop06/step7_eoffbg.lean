@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.6.7 sub: e ∉ BG. e ∈ CE, BG ∥ CE (¬BG.intersectsLine CE) and BG ≠ CE (b ∈ BG, ¬b ∈ CE). A point
    on CE cannot lie on the parallel BG. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_eoffbg (b e : Point) (CE BG : Line)
     (heCE : e.onLine CE) (hbBG : b.onLine BG)
     (hboffCE : ¬(b.onLine CE))

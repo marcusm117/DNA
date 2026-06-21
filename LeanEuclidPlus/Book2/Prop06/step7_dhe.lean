@@ -8,7 +8,6 @@ namespace Elements.Book2
    the middle vertical BG (step7_dnseBG: ¬d.sameSide e BG). pasch_4 on d, h, e across BG and DE gives
    between d h e. Distinctness: BG ≠ DE (b ∈ BG, ¬b ∈ DE); d ≠ e (d ∈ AB, ¬e ∈ AB); d ≠ h (d ∈ DF,
    ¬h ∈ DF); e ≠ h (h ∈ BG, ¬e ∈ BG). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_dhe (b d e h : Point) (AB DF BG DE : Line)
     (hdDE : d.onLine DE) (heDE : e.onLine DE) (hhDE : h.onLine DE)
     (hhBG : h.onLine BG) (hbBG : b.onLine BG)

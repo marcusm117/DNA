@@ -8,7 +8,6 @@ namespace Elements.Book2
    ends of the middle vertical BG inside the square, so the crossing h lies between them. b and g are
    on opposite sides of KM: b ~ d (both on AB ∥ KM, step7_ssdb), d ≁ e (step7_dnse), e ~ g (both on
    EF ∥ KM), so b ≁ g. pasch_4 on b, h, g across KM and BG gives between b h g. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step13_bhg (b d e g h : Point) (AB EF BG KM : Line)
     (hbAB : b.onLine AB) (hgEF : g.onLine EF) (heEF : e.onLine EF)
     (hbBG : b.onLine BG) (hgBG : g.onLine BG) (hhBG : h.onLine BG)

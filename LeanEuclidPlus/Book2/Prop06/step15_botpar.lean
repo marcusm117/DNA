@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.15 sub: formParallelogram l m e f KM EF CE DF (the bottom strip LMFE: l,m on KM; e,f on EF;
    l,e on CE; m,f on DF). Cut by BG at h (on KM) and g (on EF) for sum_parallelograms_area.
    The sameSide l.sameSide e DF passed in (l,e both on CE ∥ DF). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step15_botpar (e f l m : Point) (KM EF CE DF : Line)
     (hlKM : l.onLine KM) (hmKM : m.onLine KM)
     (heEF : e.onLine EF) (hfEF : f.onLine EF)

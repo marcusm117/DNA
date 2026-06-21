@@ -1,5 +1,8 @@
 import SystemE
 import Book.Prop06
+import Book2.Prop06.step11_dmdb_iso
+import Book2.Prop06.step11_dmdb_corr
+import Book2.Prop06.step11_dmdb_tri
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -15,7 +18,6 @@ open Elements.Book1
      ∠ c:e:d = ∠ c:d:e              (CDE isosceles, |c─e|=|c─d| — step11_dmdb_iso)
      ∠ c:d:e = ∠ b:d:h              (ray d→c ≡ d→b, ray d→e ≡ d→h — equal_angles)
    hence ∠ b:d:h = ∠ d:h:b = ∠ b:h:d. (Mirror of Prop05 step13_dhdb.) -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11_bdbh (a b c d e h : Point) (AB CE BG DE : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)
@@ -37,9 +39,9 @@ theorem helper_2_6_step11_bdbh (a b c d e h : Point) (AB CE BG DE : Line)
   have hcd : c ≠ d := by euclid_finish
   have hcene : c ≠ e := by euclid_finish
   have hde : d ≠ e := by euclid_finish
-  have step11_dmdb_iso : ∠ c:d:e = ∠ c:e:d := by sorry
-  have step11_dmdb_corr : ∠ d:h:b = ∠ c:e:d := by sorry
-  have step11_dmdb_tri : formTriangle b d h AB DE BG := by sorry
+  have step11_dmdb_iso : ∠ c:d:e = ∠ c:e:d := by euclid_apply (helper_2_6_step11_dmdb_iso c d e AB DE CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step11_dmdb_corr : ∠ d:h:b = ∠ c:e:d := by euclid_apply (helper_2_6_step11_dmdb_corr b c d e h BG CE DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step11_dmdb_tri : formTriangle b d h AB DE BG := by euclid_apply (helper_2_6_step11_dmdb_tri b d h AB DE BG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   have hray2 : ∠ c:d:e = ∠ b:d:h := by
     euclid_apply (equal_angles d c b e h AB DE)
     euclid_finish

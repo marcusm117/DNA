@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.7 sub: c.sameSide e BG (c and e both on CE, which is parallel to BG). c,e off BG (a common
    point of CE and BG would force them to meet, contradicting BG ∦ CE; BG ≠ CE since b ∈ BG, ¬b ∈ CE).
    Off BG and not separable, c and e share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_sscebg (b c e : Point) (CE BG : Line)
     (hcCE : c.onLine CE) (heCE : e.onLine CE) (hbBG : b.onLine BG)
     (hboffCE : ¬(b.onLine CE))

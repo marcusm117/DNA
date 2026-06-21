@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.11 sub: c.sameSide m AK. c and d (both on AB) are on the same side of AK (AK ∩ AB = a, and the
    order a–c–b–d puts c, d both on the b-side of a, so a is not between them); d and m (both on DF ∥ AK)
    are on the same side of AK. Transitivity gives c.sameSide m AK. Off-line anchors derived in-body. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11_sscm (a b c d m : Point) (AB AK CE DF : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (haAK : a.onLine AK)

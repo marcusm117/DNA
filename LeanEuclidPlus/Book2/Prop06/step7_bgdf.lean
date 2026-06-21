@@ -9,7 +9,6 @@ open Elements.Book1
 
 /- 2.6.7 sub: BG ∥ DF. BG ∥ CE and CE ∥ DF, so BG ∥ DF [Prop.~1.30]. Distinctness derived in-body:
    BG ≠ CE (b ∈ BG, ¬b ∈ CE), CE ≠ DF (c ∈ CE, ¬c ∈ DF), BG ≠ DF (b ∈ BG, ¬b ∈ DF). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_bgdf (b c : Point) (BG CE DF : Line)
     (hbBG : b.onLine BG) (hcCE : c.onLine CE)
     (hboffCE : ¬(b.onLine CE)) (hcoffDF : ¬(c.onLine DF)) (hboffDF : ¬(b.onLine DF))

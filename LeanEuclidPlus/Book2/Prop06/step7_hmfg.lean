@@ -8,7 +8,6 @@ namespace Elements.Book2
    AB CD AC BD: a=h,b=m on KM; c=g,d=f on EF; a=h,c=g on BG; b=m,d=f on DF. sameSide a.sameSide c BD =
    h.sameSide g DF (step7_sshg). BD-slot distinctPointsOnLine m f DF needs m ≠ f, from m ∈ KM, ¬f ∈ KM.
    Parallels KM∥EF, BG∥DF. refine + euclid_finish on the two non-intersection conjuncts. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_hmfg (f g h m : Point) (KM EF BG DF : Line)
     (hhKM : h.onLine KM) (hmKM : m.onLine KM)
     (hgEF : g.onLine EF) (hfEF : f.onLine EF)

@@ -8,7 +8,6 @@ namespace Elements.Book2
    and m (on DF, right of BG) are on opposite sides of the middle vertical BG: l ~ c (both on CE ∥ BG,
    step7_sscl), c ≁ d (step7_cnsdBG), d ~ m (both on DF ∥ BG), so l ≁ m. pasch_4 on l, h, m across BG
    and KM gives between l h m. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step15_lhm (b c d h l m : Point) (CE DF BG KM : Line)
     (hlCE : l.onLine CE) (hcCE : c.onLine CE)
     (hmDF : m.onLine DF) (hdDF : d.onLine DF)

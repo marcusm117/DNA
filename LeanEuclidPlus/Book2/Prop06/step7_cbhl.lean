@@ -8,7 +8,6 @@ namespace Elements.Book2
    AB CD AC BD: a=c,b=b on AB; c=l,d=h on KM; a=c,c=l on CE; b=b,d=h on BG. sameSide a.sameSide c BD =
    c.sameSide l BG (step7_sscl). BD-slot distinctPointsOnLine b h BG needs b ≠ h, from b ∈ AB, ¬h ∈ AB.
    Parallels AB∥KM, CE∥BG (KM∩AB / BG∩CE orientation, flipped in-body). refine + euclid_finish. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_cbhl (b c h l : Point) (AB KM CE BG : Line)
     (hcAB : c.onLine AB) (hbAB : b.onLine AB)
     (hlKM : l.onLine KM) (hhKM : h.onLine KM)

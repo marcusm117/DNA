@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.7 sub: e.sameSide f KM (e and f both on EF, which is parallel to KM). e,f off KM (a common
    point of EF and KM would force them to meet, contradicting KM ∦ EF; KM ≠ EF since h ∈ KM, ¬h ∈ EF).
    Off KM and not separable, e and f share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_essf (e f h : Point) (EF KM : Line)
     (heEF : e.onLine EF) (hfEF : f.onLine EF) (hhKM : h.onLine KM)
     (hhoffEF : ¬(h.onLine EF))

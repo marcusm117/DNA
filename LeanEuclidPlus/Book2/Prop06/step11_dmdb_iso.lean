@@ -10,7 +10,6 @@ open Elements.Book1
 /- 2.6.11 sub: ∠ c:d:e = ∠ c:e:d. Triangle CDE is isosceles — |c─d| = |c─e| (the square's two sides
    from C) — with AB (c,d), DE (d,e), CE (c,e) forming it and ∠ d:c:e = ∟ pinning non-collinearity,
    so its base angles at D and E are equal [Prop.~1.5]. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11_dmdb_iso (c d e : Point) (AB DE CE : Line)
     (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hdDE : d.onLine DE) (heDE : e.onLine DE)

@@ -9,7 +9,6 @@ namespace Elements.Book2
    opposite sides of KM (step7_dnse: ¬d.sameSide e KM). e and f lie on EF ∥ KM, hence on the same
    side (step7_essf: e.sameSide f KM). If d.sameSide f then with e.sameSide f (symm) same_side_trans
    would give d.sameSide e — contradicting step7_dnse. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_dnsf (d e f : Point) (KM : Line)
     (hdnse : ¬(d.sameSide e KM)) (hessf : e.sameSide f KM) :
     ¬(d.sameSide f KM) := by

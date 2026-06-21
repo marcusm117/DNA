@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- sub-fact for 2.6.6: l and c (both on the vertical CE) are on the same side of the vertical BG.
    Given BG ≠ CE (step6_bgce_ne), l,c are off BG (a common point of BG and CE would force them to
    meet, contradicting BG ∦ CE). Off BG and not separable, l and c share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step6_sslc (c l : Point) (CE BG : Line)
     (hlCE : l.onLine CE) (hcCE : c.onLine CE)
     (hBGneCE : BG ≠ CE)

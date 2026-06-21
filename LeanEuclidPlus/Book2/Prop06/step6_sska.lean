@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop06.step6_sska_aoff
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +9,6 @@ namespace Elements.Book2
    vertical CE. a ∉ CE (step6_sska_aoff), so AK ≠ CE (a witnesses it); then k ∉ CE (a shared point
    would force AK,CE to meet, contradicting AK ∦ CE). Off CE and not separable across it, k and a
    share a side (intersection_lines_opposing contrapositive). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step6_sska (a b c d e k : Point) (AB CE AK : Line)
     (hkAK : k.onLine AK) (haAK : a.onLine AK)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)
@@ -18,7 +18,7 @@ theorem helper_2_6_step6_sska (a b c d e k : Point) (AB CE AK : Line)
     (hAKCE : ¬(AK.intersectsLine CE)) :
     k.sameSide a CE := by
   euclid_intros
-  have step6_sska_aoff : ¬(a.onLine CE) := by sorry
+  have step6_sska_aoff : ¬(a.onLine CE) := by euclid_apply (helper_2_6_step6_sska_aoff a b c d e AB CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   have hAKneCE : AK ≠ CE := fun h => step6_sska_aoff (h ▸ haAK)
   have hkoff : ¬(k.onLine CE) := by
     by_contra hkon

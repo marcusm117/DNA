@@ -8,7 +8,6 @@ namespace Elements.Book2
    distinct points of KM. k shares a's side of CE (step6_sska: k.sameSide a CE), m shares d's side
    (step9_ssdm: d.sameSide m CE); a, d are on opposite sides of CE because c (on CE) is between a and
    d (step9_acd via between a c d). Then pasch_4 on k, l, m across CE and KM gives between k l m. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step9_klm (a c d k l m : Point) (AB CE KM : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hacd : between a c d)

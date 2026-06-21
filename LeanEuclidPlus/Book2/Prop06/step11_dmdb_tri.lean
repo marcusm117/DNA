@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.11 sub: formTriangle b d h AB DE BG. b,d on AB; d,h on DE; b,h on BG. Pairwise distinct:
    AB ≠ DE (b ∉ DE, b ∈ AB), DE ≠ BG (b ∉ DE, b ∈ BG), AB ≠ BG (h ∉ AB, h ∈ BG). d ≠ h, b ≠ h from the
    off-line anchors; b ≠ d from between a b d. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11_dmdb_tri (b d h : Point) (AB DE BG : Line)
     (hbAB : b.onLine AB) (hdAB : d.onLine AB)
     (hdDE : d.onLine DE) (hhDE : h.onLine DE)

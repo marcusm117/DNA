@@ -415,7 +415,11 @@ A node's backing file is cheap (~30s); if it won't build in 30s it's TOO BIG →
 - **Picking a prop back up (yours or another agent's)?** Run `python3 scripts/check_step.py <propdir>
   --status` first — instant, read-only, no build. It shows every Main node as `done`/`stale`/`todo`
   against the certification manifest, plus the exact next `--subtree` command, so you don't have to
-  reconstruct progress from memory or re-run a slow audit.
+  reconstruct progress from memory or re-run a slow audit. Then run `--drive` to actually close that
+  list instead of running each printed `--subtree` yourself: it loops over the not-`done` nodes in
+  order, stopping at the first real failure (including a leaf that's still bare `sorry` — fix it, then
+  re-run `--drive`). Works the same whether the prop has never been audited (manifest empty, every
+  node starts `todo`) or is partway done (it skips the already-`✓` nodes).
 - **Leave breadcrumbs.** `Book<N>/PropNN/agent_notes.md` (per-prop, freeform) and the repo-root
   `AGENT_NOTES.md` (cross-cutting) are scratchpads — never parsed, never enforced — for things the NEXT
   agent on this prop should know: a dead end you ruled out, why a node got split a particular way, a

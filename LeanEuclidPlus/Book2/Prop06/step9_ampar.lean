@@ -8,7 +8,6 @@ namespace Elements.Book2
    a=a,b=d on AB; c=k,d=m on KM; a=a,c=k on AK; b=d,d=m on DF. sameSide a.sameSide c BD = a.sameSide k
    DF (step9_ssak). BD-slot distinctPointsOnLine d m DF needs d ≠ m, from d ∈ AB, ¬d ∈ KM (step9_doffkm)
    and m ∈ KM. Parallels AB∥KM (¬KM∩AB flipped), AK∥DF (step9_akdf). refine + euclid_finish. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step9_ampar (a d k m : Point) (AB KM AK DF : Line)
     (haAB : a.onLine AB) (hdAB : d.onLine AB)
     (hkKM : k.onLine KM) (hmKM : m.onLine KM)

@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.9 sub: d.sameSide m CE (d and m both on DF, which is parallel to CE). d,m off CE (a common
    point of DF and CE would force them to meet, contradicting CE ∦ DF; DF ≠ CE since d ∈ DF, ¬d ∈ CE).
    Off CE and not separable, d and m share a side. d ∉ CE supplied (step9_doffce). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step9_ssdm (d m : Point) (CE DF : Line)
     (hdDF : d.onLine DF) (hmDF : m.onLine DF)
     (hdoffCE : ¬(d.onLine CE))

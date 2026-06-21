@@ -28,6 +28,12 @@ USAGE  (run from LeanEuclidPlus/):
                                                           sub-node it transitively contains), bottom-up,
                                                           scoped to the cone — does NOT touch other
                                                           steps. Confirms a container/step is done.
+  python3 scripts/check_step.py <propdir> --drive        auto-loop --subtree over every Main node
+                                                          --status would report not-`done` (todo or
+                                                          stale), in source order, stopping at the first
+                                                          failure. Covers cold-start (empty manifest) and
+                                                          warm-resume (skips already-done nodes) the same
+                                                          way — no need to hand-drive --subtree yourself.
   python3 scripts/check_step.py <propdir> --all         FINAL bottom-up audit of the WHOLE prop (SP all +
                                                           P leaves + no-stray-sorry; sub-nodes first);
                                                           STOP at first failure. Run ONCE, at the very end.
@@ -652,6 +658,43 @@ def mode_subtree(propdir, root):
                   source=f"--subtree {root}")
 
 
+def mode_drive(propdir):
+    """`--drive`: automate the manual one-by-one `--subtree` loop `--status` only describes. While any
+    Main node is not yet `done` (todo or stale), take the FIRST such node (source order) and run
+    `--subtree` on it — stop immediately on failure (a later node likely depends on it; fix it, then
+    re-run `--drive` to resume). Recompute status after each pass: certifying one node can flip
+    another's staleness when they share a helper, and a fresh prop (empty manifest) just starts every
+    node at `todo`, so this loop body also covers the cold-start case `mode_status`'s early-return
+    punts on instead of giving a board."""
+    rel = os.path.relpath(propdir, L.BOOK_ROOT)
+    ran_any = False
+    while True:
+        rows, checks = L.status_rows(propdir)
+        if "error" in checks:
+            print(f"[check_step --drive] {rel} — ABORT: {checks['error']}")
+            return 2
+        not_done = [(name, state) for name, state, _ in rows if state != "done"]
+        if not not_done:
+            break
+        name, state = not_done[0]
+        print(f"[check_step --drive] {name} ({state}) — running --subtree {name}\n")
+        rc = mode_subtree(propdir, name)
+        if rc != 0:
+            print(f"\n[check_step --drive] STOPPED at {name} — fix it, then re-run --drive to resume.")
+            return rc
+        ran_any = True
+    print(f"[check_step --drive] {'all Main nodes done' if ran_any else 'nothing to do — already all done'}.")
+    if checks["deps"] and checks["integrity"] and not checks["orphans"]:
+        print("  ⟹ check_step --all is GUARANTEED to pass. Run it ONCE as the final witness, then Phase C.")
+    else:
+        blockers = [n for n, ok in (("criterion-3 deps", checks["deps"]),
+                                     ("integrity", checks["integrity"])) if not ok]
+        if checks["orphans"]:
+            blockers.append(f"orphans: {', '.join(checks['orphans'])}")
+        print(f"  whole-prop checks still failing: {', '.join(blockers)} — fix before --all.")
+    return 0
+
+
 def mode_build_main(propdir):
     """`--provable` with NO node = build Main, tolerate sorry (the Phase-A skeleton elaboration check).
     Main has NO parent, so SF/SP don't apply to it — it only gets the build (the P-style "does it
@@ -976,6 +1019,8 @@ def main(argv):
         def dispatch():
             if rest == ["--all"]:
                 return mode_all(propdir)
+            if rest == ["--drive"]:                  # auto-loop --subtree over Main's not-done nodes
+                return mode_drive(propdir)
             if rest == ["--provable"]:               # no node = Phase-A: build Main, tolerate sorry
                 return mode_build_main(propdir)
             if len(rest) == 2 and rest[0] == "--subtree":

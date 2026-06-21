@@ -1,4 +1,34 @@
 import SystemE
+import Book2.Prop06.step2_eoff
+import Book2.Prop06.step6_sska_aoff
+import Book2.Prop06.step7_coffdf
+import Book2.Prop06.step9_aoffdf
+import Book2.Prop06.step7_boffdf
+import Book2.Prop06.step7_boffce
+import Book2.Prop06.step6_hoffab
+import Book2.Prop06.step7_boffde
+import Book2.Prop06.step7_cnsdBG
+import Book2.Prop06.step7_hoffef
+import Book2.Prop06.step7_sscebg
+import Book2.Prop06.step7_eoffbg
+import Book2.Prop06.step9_akdf
+import Book2.Prop06.step7_bgdf
+import Book2.Prop06.step7_ssdb
+import Book2.Prop06.step7_doffkm
+import Book2.Prop06.step7_hoffdf
+import Book2.Prop06.step7_dnseBG
+import Book2.Prop06.step7_kmef
+import Book2.Prop06.step9_ssak
+import Book2.Prop06.step9_ampar
+import Book2.Prop06.step7_par1
+import Book2.Prop06.step7_dhe
+import Book2.Prop06.step7_dnse
+import Book2.Prop06.step11_cle
+import Book2.Prop06.step11_kac_right
+import Book2.Prop06.step11_sscm
+import Book2.Prop06.step11_akm_right
+import Book2.Prop06.step11_rect
+import Book2.Prop06.step11_dmdb
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -9,7 +39,6 @@ namespace Elements.Book2
    area = |a─d|·|d─m| (step11_rect); and DM = DB (step11_dmdb), so area = |a─d|·|d─b|.
    The AM parallelogram and the DMBH parallelogram / diagonal preamble mirror steps 7 & 9
    (shared sub-nodes). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11 (a b c d e f g h l m k : Point) (AB CE DF EF BG KM DE AK : Line)
     (hacb : between a c b) (habd : between a b d)
     (hce : |(c─e)| = |(c─d)|) (hdf : |(d─f)| = |(c─d)|)
@@ -29,30 +58,30 @@ theorem helper_2_6_step11 (a b c d e f g h l m k : Point) (AB CE DF EF BG KM DE 
     Triangle.area △ a:d:m + Triangle.area △ a:m:k = |(a─d)| * |(d─b)| := by
   euclid_intros
   -- ===== figure preamble (reused off-line / sameSide / parallel facts from steps 2/6/7/9) =====
-  have step2_eoff : ¬(e.onLine AB) := by sorry
-  have step6_sska_aoff : ¬(a.onLine CE) := by sorry
-  have step7_coffdf : ¬(c.onLine DF) := by sorry
-  have step9_aoffdf : ¬(a.onLine DF) := by sorry
-  have step7_boffdf : ¬(b.onLine DF) := by sorry
-  have step7_boffce : ¬(b.onLine CE) := by sorry
-  have step6_hoffab : ¬(h.onLine AB) := by sorry
-  have step7_boffde : ¬(b.onLine DE) := by sorry
-  have step7_cnsdBG : ¬(c.sameSide d BG) := by sorry
-  have step7_hoffef : ¬(h.onLine EF) := by sorry
-  have step7_sscebg : c.sameSide e BG := by sorry
-  have step7_eoffbg : ¬(e.onLine BG) := by sorry
-  have step9_akdf : ¬(AK.intersectsLine DF) := by sorry
-  have step7_bgdf : ¬(BG.intersectsLine DF) := by sorry
-  have step7_ssdb : d.sameSide b KM := by sorry
-  have step7_doffkm : ¬(d.onLine KM) := by sorry
-  have step7_hoffdf : ¬(h.onLine DF) := by sorry
-  have step7_dnseBG : ¬(d.sameSide e BG) := by sorry
-  have step7_kmef : ¬(KM.intersectsLine EF) := by sorry
-  have step9_ssak : a.sameSide k DF := by sorry
-  have step9_ampar : formParallelogram a d k m AB KM AK DF := by sorry
-  have step7_par1 : formParallelogram d m b h DF BG AB KM := by sorry
-  have step7_dhe : between d h e := by sorry
-  have step7_dnse : ¬(d.sameSide e KM) := by sorry
+  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_sska_aoff : ¬(a.onLine CE) := by euclid_apply (helper_2_6_step6_sska_aoff a b c d e AB CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_coffdf : ¬(c.onLine DF) := by euclid_apply (helper_2_6_step7_coffdf a b c d f AB DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_aoffdf : ¬(a.onLine DF) := by euclid_apply (helper_2_6_step9_aoffdf a b c d f AB DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_boffdf : ¬(b.onLine DF) := by euclid_apply (helper_2_6_step7_boffdf a b c d f AB DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_boffce : ¬(b.onLine CE) := by euclid_apply (helper_2_6_step7_boffce a b c d e AB CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_hoffab : ¬(h.onLine AB) := by euclid_apply (helper_2_6_step6_hoffab a b c d e h AB CE DE BG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_boffde : ¬(b.onLine DE) := by euclid_apply (helper_2_6_step7_boffde a b c d e AB DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_cnsdBG : ¬(c.sameSide d BG) := by euclid_apply (helper_2_6_step7_cnsdBG a b c d AB BG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_hoffef : ¬(h.onLine EF) := by euclid_apply (helper_2_6_step7_hoffef b c d e h AB DE EF CE BG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_sscebg : c.sameSide e BG := by euclid_apply (helper_2_6_step7_sscebg b c e CE BG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_eoffbg : ¬(e.onLine BG) := by euclid_apply (helper_2_6_step7_eoffbg b e CE BG (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_akdf : ¬(AK.intersectsLine DF) := by euclid_apply (helper_2_6_step9_akdf a c AK CE DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_bgdf : ¬(BG.intersectsLine DF) := by euclid_apply (helper_2_6_step7_bgdf b c BG CE DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_ssdb : d.sameSide b KM := by euclid_apply (helper_2_6_step7_ssdb b d h AB KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_doffkm : ¬(d.onLine KM) := by euclid_apply (helper_2_6_step7_doffkm d h AB KM (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_hoffdf : ¬(h.onLine DF) := by euclid_apply (helper_2_6_step7_hoffdf b h BG DF (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_dnseBG : ¬(d.sameSide e BG) := by euclid_apply (helper_2_6_step7_dnseBG c d e BG (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_kmef : ¬(KM.intersectsLine EF) := by euclid_apply (helper_2_6_step7_kmef e h AB KM EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_ssak : a.sameSide k DF := by euclid_apply (helper_2_6_step9_ssak a k AK DF (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_ampar : formParallelogram a d k m AB KM AK DF := by euclid_apply (helper_2_6_step9_ampar a d k m AB KM AK DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_par1 : formParallelogram d m b h DF BG AB KM := by euclid_apply (helper_2_6_step7_par1 b d h m DF BG AB KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_dhe : between d h e := by euclid_apply (helper_2_6_step7_dhe b d e h AB DF BG DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_dnse : ¬(d.sameSide e KM) := by euclid_apply (helper_2_6_step7_dnse d e h KM (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- inline distinctness for the corner co-interior steps
   have hac : a ≠ c := by euclid_finish
   have hak : a ≠ k := by euclid_finish
@@ -60,14 +89,14 @@ theorem helper_2_6_step11 (a b c d e f g h l m k : Point) (AB CE DF EF BG KM DE 
   have hABKM : ¬(AB.intersectsLine KM) := by
     intro hx; euclid_apply (intersection_symm AB KM); euclid_finish
   -- ===== the right corner ∠ a:k:m = ∟ =====
-  have step11_cle : between c l e := by sorry
-  have step11_kac_right : ∠ k:a:c = ∟ := by sorry
-  have step11_sscm : c.sameSide m AK := by sorry
-  have step11_akm_right : ∠ a:k:m = ∟ := by sorry
+  have step11_cle : between c l e := by euclid_apply (helper_2_6_step11_cle c d e h l AB CE EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step11_kac_right : ∠ k:a:c = ∟ := by euclid_apply (helper_2_6_step11_kac_right a b c d e k l AB AK CE KM EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step11_sscm : c.sameSide m AK := by euclid_apply (helper_2_6_step11_sscm a b c d m AB AK CE DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step11_akm_right : ∠ a:k:m = ∟ := by euclid_apply (helper_2_6_step11_akm_right a c k m AB AK KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- ===== rectangle area = |a─d|·|d─m| =====
-  have step11_rect : Triangle.area △ a:d:m + Triangle.area △ a:m:k = |(a─d)| * |(d─m)| := by sorry
+  have step11_rect : Triangle.area △ a:d:m + Triangle.area △ a:m:k = |(a─d)| * |(d─m)| := by euclid_apply (helper_2_6_step11_rect a d m k AB KM AK DF (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- ===== DM = DB =====
-  have step11_dmdb : |(d─m)| = |(d─b)| := by sorry
+  have step11_dmdb : |(d─m)| = |(d─b)| := by euclid_apply (helper_2_6_step11_dmdb a b c d e h m AB CE DF EF BG KM DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   rw [step11_rect, step11_dmdb]
 
 end Elements.Book2

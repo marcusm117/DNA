@@ -12,7 +12,6 @@ open Elements.Book1
    (on KM); the co-interior angles ∠ c:a:k and ∠ a:k:m sum to two right angles (proposition_29'''''),
    with c on AB and m on KM on the same side of AK. Since ∠ c:a:k = ∠ k:a:c = ∟, ∠ a:k:m = ∟.
    (Mirror of Prop05 step12_akh_right.) -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11_akm_right (a c k m : Point) (AB AK KM : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB)
     (haAK : a.onLine AK) (hkAK : k.onLine AK)

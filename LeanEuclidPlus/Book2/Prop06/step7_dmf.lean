@@ -9,7 +9,6 @@ namespace Elements.Book2
    (step7_dnsf: ¬d.sameSide f KM); KM ≠ DF since h ∈ KM, ¬h ∈ DF. pasch_4 on d, m, f across KM and DF
    (m the common point) gives between d m f. Distinctness: d ≠ f (d ∈ AB, ¬f ∈ AB); d ≠ m (m ∈ KM,
    ¬d ∈ KM via d ∈ AB, ¬h-style — here from ¬d.onLine KM); f ≠ m (m ∈ KM, ¬f ∈ KM). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_dmf (d f h m : Point) (AB KM DF : Line)
     (hdDF : d.onLine DF) (hfDF : f.onLine DF) (hmDF : m.onLine DF)
     (hmKM : m.onLine KM) (hhKM : h.onLine KM) (hdAB : d.onLine AB)

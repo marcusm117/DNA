@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.7 sub: h and g (both on BG) are on the same side of DF. h,g off DF (a common point of BG and DF
    would force them to meet, contradicting BG ∦ DF; BG ≠ DF since b ∈ BG, ¬b ∈ DF). Off DF and not
    separable, h and g share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_sshg (b g h : Point) (BG DF : Line)
     (hhBG : h.onLine BG) (hgBG : g.onLine BG) (hbBG : b.onLine BG)
     (hboffDF : ¬(b.onLine DF))

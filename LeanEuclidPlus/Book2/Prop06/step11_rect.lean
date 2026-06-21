@@ -11,7 +11,6 @@ open Elements.Book1
    with the right corner ∠ a:k:m = ∟, so rectangle_area gives △a:k:m + △a:d:m = |a─d|·|a─k|; and
    |a─k| = |d─m| (opposite sides [Prop.~1.34]); △a:m:k = △a:k:m by permutation. Hence
    △a:d:m + △a:m:k = |a─d|·|d─m|. (Mirror of Prop05 step12_rect.) -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11_rect (a d m k : Point) (AB KM AK DF : Line)
     (hpar : formParallelogram a d k m AB KM AK DF)
     (hakm : ∠ a:k:m = ∟) :

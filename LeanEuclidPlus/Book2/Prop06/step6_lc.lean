@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- sub-fact for 2.6.6 / step6_alpar: l ≠ c. l is on KM (the middle parallel), c is on AB (the top
    line). KM ≠ AB because h ∈ KM but h ∉ AB; with KM ∦ AB, a shared point l = c forces KM, AB to meet.
    h ∉ AB is supplied (step6_hoffab). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step6_lc (c l h : Point) (AB KM : Line)
     (hlKM : l.onLine KM) (hcAB : c.onLine AB)
     (hhKM : h.onLine KM) (hhoffAB : ¬(h.onLine AB))

@@ -8,7 +8,6 @@ namespace Elements.Book2
    (d ∈ AB ∥ EF). h ≠ e since h ∈ BG, e ∈ CE, BG ∥ CE distinct (BG ≠ CE from b ∈ BG, ¬b ∈ CE... here
    simplest: e ∈ CE, h ∈ KM∩BG; if h = e then e ∈ BG, but BG ∥ CE and e ∈ CE ⟹ e on both, BG=CE
    impossible). If h ∈ EF then h,e on EF and DE ⟹ DE = EF (h ≠ e), so d ∈ EF — contradiction. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_hoffef (b c d e h : Point) (AB DE EF CE BG : Line)
     (hdDE : d.onLine DE) (heDE : e.onLine DE) (hhDE : h.onLine DE)
     (heEF : e.onLine EF) (hdAB : d.onLine AB)

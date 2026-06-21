@@ -14,7 +14,6 @@ open Elements.Book1
    the supplement of ∠ d:c:e = ∟ (CE ⊥ AB at c, with a–c–d straight). Hence ∠ k:a:c = ∟.
    k.sameSide e AB: k on KM ∥ AB so k.sameSide l AB; l.sameSide e AB by pasch_2 (between c l e);
    transitivity gives k.sameSide e AB. (Mirror of Prop05 step8_kal_right.) -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11_kac_right (a b c d e k l : Point) (AB AK CE KM EF : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (haAK : a.onLine AK) (hkAK : k.onLine AK)

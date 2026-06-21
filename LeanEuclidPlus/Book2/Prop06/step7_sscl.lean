@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.7 sub: c and l (both on CE) are on the same side of BG. c,l off BG (a common point of CE and BG
    would force them to meet, contradicting CE ∦ BG; BG ≠ CE since b ∈ BG, ¬b ∈ CE). Off BG and not
    separable, c and l share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_sscl (b c l : Point) (CE BG : Line)
     (hcCE : c.onLine CE) (hlCE : l.onLine CE) (hbBG : b.onLine BG)
     (hboffCE : ¬(b.onLine CE))

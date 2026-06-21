@@ -431,29 +431,34 @@ proof arm works: a prop cited via `euclid_apply` inside your backing file counts
    node was decomposed a certain way, etc. Jot your own findings there as you go.
 1. Run `check_step Book<N>/PropNN --check` — instant, no build. It scans naming law / stray sorries
    / dead files up front, so you clean obvious clutter before sinking hours into the next step.
-2. If `--status` shows a manifest already exists (some nodes `done`), trust it and resume at the first
-   non-`done` Main node it names — no need to also run `--all`. **Only if the manifest is EMPTY** (a prop
-   that's never been audited, so `--status` has nothing to roll up) is `--all` ONCE, backgrounded, still
-   the right move: it walks bottom-up and reports the first node that breaks, and every node before the
-   break is already proven. (A break on a dead leftover file is not a real failure: nothing live
-   references it, so delete it and continue.)
-3. From then on, NEVER run `--all` again this session. Resume work at the named node and drive with
-   scoped `check_step <node>` / `check_step --subtree <node>`, exactly as in a fresh proof. The certainty
-   model holds: a cone you don't touch stays proven (and `--status` reflects that — it only flips a node
-   to `stale` if its inputs actually changed).
+2. Run `check_step Book<N>/PropNN --drive` to actually CLOSE what `--status` listed, instead of
+   hand-driving each printed `--subtree` command yourself: it takes the same node-by-node rollup, runs
+   `--subtree` on the first not-`done` node, and stops the moment one really fails (fix it, then re-run
+   `--drive` to resume) — otherwise it keeps going until every Main node is `✓`. This works identically
+   whether the manifest is EMPTY (a prop never audited before — every node just starts `todo`, so it
+   drives node 1, 2, 3, … in order) or partially certified (it skips the already-`done` nodes), so you no
+   longer need to branch on whether a manifest exists. (A break on a dead leftover file is not a real
+   failure: nothing live references it, so delete it and continue, then re-run `--drive`.)
+3. From then on, NEVER run `--all` again this session — `--drive` already re-derives and closes the same
+   board incrementally. The certainty model holds: a cone you don't touch stays proven (and `--status`/
+   `--drive` reflect that — a node only flips to `stale` if its inputs actually changed).
 
-Why `--status`/`--all` here and not a manual cone-by-cone walk: finding the break by hand means
-enumerating Main's nodes and running/interpreting many commands — that is agent cognition, the expensive
-resource. `--status` (when a manifest exists) or `--all` (when it doesn't) is one command: a complete
-answer including the first break/todo node and any dead files, for free or for backgrounded wall-clock.
+Why `--status`/`--drive` here and not a manual cone-by-cone walk: finding and closing the break by hand
+means enumerating Main's nodes and running/interpreting many commands yourself — that is agent
+cognition, the expensive resource. `--status` is the free read of where things stand; `--drive` is the
+one command that actually runs the remaining `--subtree`s for you, stopping at the first real failure.
 
-## THE LOOP IN PRACTICE (per prop) — STRICT, BOTTOM-UP, `--all` AT THE VERY END (and, when resuming, once at the start)
+## THE LOOP IN PRACTICE (per prop) — STRICT, BOTTOM-UP, `--all` AT THE VERY END
 Three commands, three scopes — know exactly what each certifies:
 - **`check_step <node>`** = ONLY that node (its SF→SP→P). It does **NOT** check the node's sub-nodes.
 - **`check_step --subtree <node>`** = that node's WHOLE CONE (the node + every sub-node it transitively
   contains), bottom-up, scoped to the cone (a shared helper is checked only at its in-cone call sites).
   It does NOT touch other steps. This is how you CONFIRM a container/step is fully done.
 - **`check_step --all`** = the WHOLE prop. The FINAL gate, run exactly ONCE.
+
+(`check_step --drive` is `--subtree` looped automatically over every not-`done` Main node — same
+"stops at the first failure" contract, including stopping on a leaf that's still a bare `sorry`. Use it
+when RESUMING, not as a substitute for the decompose-and-prove loop below.)
 
 The ladder (do them in this order):
 1. (anytime, free) `check_step Book<N>/PropNN --check` — instant no-build scan: naming law, every node

@@ -9,7 +9,6 @@ namespace Elements.Book2
    KM (step7_ssdb). BD-slot distinctPointsOnLine m h KM needs m ≠ h, from m ∈ DF, ¬h ∈ DF. The two
    parallels DF∥BG, AB∥KM supplied (BG∩DF / KM∩AB orientation, flipped in-body). Assembled by refine
    so euclid_finish only closes the two non-intersection conjuncts. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_par1 (b d h m : Point) (DF BG AB KM : Line)
     (hdDF : d.onLine DF) (hmDF : m.onLine DF)
     (hbBG : b.onLine BG) (hhBG : h.onLine BG)

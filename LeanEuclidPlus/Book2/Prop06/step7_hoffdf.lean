@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.6.7 sub: h ∉ DF. h ∈ BG, BG ∥ DF (¬BG.intersectsLine DF) and BG ≠ DF (b ∈ BG, ¬b ∈ DF). A point
    on BG cannot lie on the parallel DF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_hoffdf (b h : Point) (BG DF : Line)
     (hhBG : h.onLine BG) (hbBG : b.onLine BG)
     (hboffDF : ¬(b.onLine DF))

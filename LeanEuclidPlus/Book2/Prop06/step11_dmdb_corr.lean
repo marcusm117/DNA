@@ -11,7 +11,6 @@ open Elements.Book1
    (through d,h,e) with h between d and e. proposition_29'''' gives the corresponding angle
    ∠ d:h:b = ∠ h:e:c; ray e→h coincides with e→d (h between d,e) so ∠ c:e:h = ∠ c:e:d, and angle
    symmetries rewrite to ∠ d:h:b = ∠ c:e:d. (Mirror of Prop05 step13_dhdb_corr.) -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11_dmdb_corr (b c d e h : Point) (BG CE DE : Line)
     (hbBG : b.onLine BG) (hhBG : h.onLine BG)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)

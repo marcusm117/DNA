@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.6.7 sub: the two triangulations of the complement parallelogram HMFG are equal —
    △h:m:f + △h:f:g = △m:h:g + △m:g:f. Direct from parallelogram_area on formParallelogram h m g f. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_rhs (h m g f : Point) (KM EF BG DF : Line)
     (hpar : formParallelogram h m g f KM EF BG DF) :
     Triangle.area △ h:m:f + Triangle.area △ h:f:g = Triangle.area △ m:h:g + Triangle.area △ m:g:f := by

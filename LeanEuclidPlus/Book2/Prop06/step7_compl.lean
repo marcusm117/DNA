@@ -11,7 +11,6 @@ open Elements.Book1
    prop43 corners (a b c d e f g h k) ↦ (d c e f b g l m h), lines (AD BC AB CD AC EF GH) ↦
    (DF CE AB EF DE BG KM): big square `d f c e`, diagonal DE through h, the two about-diagonal
    parallelograms DMBH (`d m b h`) and HGLE (`h g l e`). Yields △b:c:l + △b:l:h = △m:h:g + △m:g:f. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_compl (b c d e f g h l m : Point) (AB DE CE DF EF BG KM : Line)
     (hdDE : d.onLine DE) (heDE : e.onLine DE) (hhDE : h.onLine DE)
     (hdDF : d.onLine DF) (hecDF : e.sameSide c DF)

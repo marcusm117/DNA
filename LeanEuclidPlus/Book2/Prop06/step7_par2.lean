@@ -8,7 +8,6 @@ namespace Elements.Book2
    a=h,b=g on BG; c=l,d=e on CE; a=h,c=l on KM; b=g,d=e on EF. sameSide a.sameSide c BD = h.sameSide l
    EF (step7_sshl). BD-slot distinctPointsOnLine g e EF needs g ≠ e, from g ∈ BG, ¬e ∈ BG. Parallels
    BG∥CE, KM∥EF. Assembled by refine so euclid_finish only closes the two non-intersection conjuncts. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_par2 (e g h l : Point) (BG CE KM EF : Line)
     (hhBG : h.onLine BG) (hgBG : g.onLine BG)
     (hlCE : l.onLine CE) (heCE : e.onLine CE)

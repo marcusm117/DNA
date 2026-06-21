@@ -11,7 +11,6 @@ namespace Elements.Book2
        (on EF) splits into the corner LHGE and the rectangle HMFG (sum_parallelograms_area).
    Adding: (CDML) + (HMFG) + (LHGE) = (CDML) + (LMFE) = square. euclid_finish reconciles the
    triangulations. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step15_decomp (c d e f g h l m : Point) (AB CE DF EF KM BG : Line)
     (hsqpar : formParallelogram c e d f CE DF AB EF)
     (hbotpar : formParallelogram l m e f KM EF CE DF)

@@ -8,7 +8,6 @@ namespace Elements.Book2
    sides of KM: c is on AB ∥ KM (same side as d), e is opposite d across KM (step7_dnse), so c and e are
    opposite. pasch_4 on c, l, e across KM and CE then gives between c l e. Off-line anchors
    (c, e ∉ KM) derived in-body from KM ≠ AB, KM ≠ EF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step11_cle (c d e h l : Point) (AB CE EF KM : Line)
     (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hcCE : c.onLine CE) (hlCE : l.onLine CE) (heCE : e.onLine CE)

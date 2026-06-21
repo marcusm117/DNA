@@ -8,7 +8,6 @@ namespace Elements.Book2
    and f (on DF, right of BG) are on opposite sides of the middle vertical BG: e ~ c (both on CE ∥ BG,
    step7_sscebg), c ≁ d (step7_cnsdBG), d ~ f (both on DF ∥ BG), so e ≁ f. pasch_4 on e, g, f across BG
    and EF gives between e g f. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step15_egf (b c d e f g : Point) (CE DF BG EF : Line)
     (heCE : e.onLine CE) (hcCE : c.onLine CE)
     (hfDF : f.onLine DF) (hdDF : d.onLine DF)

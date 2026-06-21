@@ -1,4 +1,17 @@
 import SystemE
+import Book2.Prop06.step6_sska_aoff
+import Book2.Prop06.step7_coffdf
+import Book2.Prop06.step9_aoffdf
+import Book2.Prop06.step9_doffce
+import Book2.Prop06.step6_sska
+import Book2.Prop06.step6_hoffab
+import Book2.Prop06.step7_doffkm
+import Book2.Prop06.step9_akdf
+import Book2.Prop06.step9_ssak
+import Book2.Prop06.step9_ssdm
+import Book2.Prop06.step9_ampar
+import Book2.Prop06.step9_acd
+import Book2.Prop06.step9_klm
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -9,7 +22,6 @@ namespace Elements.Book2
    formParallelogram a d k m AB KM AK DF, with between a c d (on AB) and between k l m (on KM), yields
    △a:k:l + △a:l:c + △c:l:m + △c:m:d = △a:k:m + △a:m:d, which is the goal up to area-permutation.
    sub-nodes: step9_ampar (the AM parallelogram), step9_acd (between a c d), step9_klm (between k l m). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step9 (a b c d e f k l m h : Point) (AB KM AK DF CE BG DE : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hkKM : k.onLine KM) (hlKM : l.onLine KM) (hmKM : m.onLine KM)
@@ -28,23 +40,23 @@ theorem helper_2_6_step9 (a b c d e f k l m h : Point) (AB KM AK DF CE BG DE : L
       (Triangle.area △ c:d:m + Triangle.area △ c:m:l) := by
   euclid_intros
   -- off-line anchors
-  have step6_sska_aoff : ¬(a.onLine CE) := by sorry
-  have step7_coffdf : ¬(c.onLine DF) := by sorry
-  have step9_aoffdf : ¬(a.onLine DF) := by sorry
-  have step9_doffce : ¬(d.onLine CE) := by sorry
-  have step6_sska : k.sameSide a CE := by sorry
-  have step6_hoffab : ¬(h.onLine AB) := by sorry
+  have step6_sska_aoff : ¬(a.onLine CE) := by euclid_apply (helper_2_6_step6_sska_aoff a b c d e AB CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_coffdf : ¬(c.onLine DF) := by euclid_apply (helper_2_6_step7_coffdf a b c d f AB DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_aoffdf : ¬(a.onLine DF) := by euclid_apply (helper_2_6_step9_aoffdf a b c d f AB DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_doffce : ¬(d.onLine CE) := by euclid_apply (helper_2_6_step9_doffce a b c d e AB CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_sska : k.sameSide a CE := by euclid_apply (helper_2_6_step6_sska a b c d e k AB CE AK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_hoffab : ¬(h.onLine AB) := by euclid_apply (helper_2_6_step6_hoffab a b c d e h AB CE DE BG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- @args: d h AB KM
-  have step7_doffkm : ¬(d.onLine KM) := by sorry
+  have step7_doffkm : ¬(d.onLine KM) := by euclid_apply (helper_2_6_step7_doffkm d h AB KM (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- parallels
-  have step9_akdf : ¬(AK.intersectsLine DF) := by sorry
+  have step9_akdf : ¬(AK.intersectsLine DF) := by euclid_apply (helper_2_6_step9_akdf a c AK CE DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- sameSides
-  have step9_ssak : a.sameSide k DF := by sorry
-  have step9_ssdm : d.sameSide m CE := by sorry
+  have step9_ssak : a.sameSide k DF := by euclid_apply (helper_2_6_step9_ssak a k AK DF (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_ssdm : d.sameSide m CE := by euclid_apply (helper_2_6_step9_ssdm d m CE DF (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   -- the AM parallelogram + the two cut betweennesses
-  have step9_ampar : formParallelogram a d k m AB KM AK DF := by sorry
-  have step9_acd : between a c d := by sorry
-  have step9_klm : between k l m := by sorry
+  have step9_ampar : formParallelogram a d k m AB KM AK DF := by euclid_apply (helper_2_6_step9_ampar a d k m AB KM AK DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_acd : between a c d := by euclid_apply (helper_2_6_step9_acd a b c d (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_klm : between k l m := by euclid_apply (helper_2_6_step9_klm a c d k l m AB CE KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (sum_parallelograms_area a d k m c l AB KM AK DF)
   euclid_finish
 

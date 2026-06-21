@@ -13,7 +13,6 @@ open Elements.Book1
    ∠ h:b:c + ∠ b:c:e = ∟ + ∟. And ∠ b:c:e = ∟ (ray c→b ≡ c→d, ∠ d:c:e = ∟). Hence ∠ c:b:h = ∟.
    h.sameSide e AB: h on KM ∥ AB so h.sameSide l AB; l.sameSide e AB by pasch_2 (between c l e);
    transitivity gives h.sameSide e AB. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step13_cbh_right (a b c d e h l : Point) (AB BG CE KM EF : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hbBG : b.onLine BG) (hhBG : h.onLine BG)

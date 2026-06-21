@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.9 sub: a.sameSide k DF (a and k both on AK, which is parallel to DF). a,k off DF (a common
    point of AK and DF would force them to meet, contradicting AK ∦ DF; AK ≠ DF since a ∈ AK, ¬a ∈ DF).
    Off DF and not separable, a and k share a side. a ∉ DF supplied (step9_aoffdf). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step9_ssak (a k : Point) (AK DF : Line)
     (haAK : a.onLine AK) (hkAK : k.onLine AK)
     (haoffDF : ¬(a.onLine DF))

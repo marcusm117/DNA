@@ -11,7 +11,6 @@ open Elements.Book1
    h (on KM) and b (on AB); the co-interior angles ∠ g:h:l and ∠ h:b:c sum to two right angles
    (proposition_29'''''), and ∠ h:b:c = ∠ c:b:h = ∟ (step13_cbh_right). The supplement at h (between
    b h g) then gives ∠ l:h:g = ∟. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step13_lhg_right (b c g h l : Point) (AB CE BG KM : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB)
     (hcCE : c.onLine CE) (hlCE : l.onLine CE)

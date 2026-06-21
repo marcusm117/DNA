@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.6.7 sub: h and l (both on KM) are on the same side of EF. h,l are off EF (a common point of KM
    and EF would force them to meet, contradicting KM ∦ EF; KM ≠ EF since h ∈ KM, ¬h ∈ EF). Off EF and
    not separable across it, h and l share a side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_sshl (h l : Point) (KM EF : Line)
     (hhKM : h.onLine KM) (hlKM : l.onLine KM)
     (hhoffEF : ¬(h.onLine EF))

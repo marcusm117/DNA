@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop06.step2_eoff
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -6,14 +7,13 @@ namespace Elements.Book2
 
 /- 2.6.7 sub: b ∉ CE. If b ∈ CE then b, c (distinct on AB, b ≠ c from between a c b) both lie on CE,
    so CE = AB (two_points_determine_line), putting e ∈ AB — contradicting step2_eoff (degeneracy). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_6_step7_boffce (a b c d e : Point) (AB CE : Line)
     (hcCE : c.onLine CE) (heCE : e.onLine CE)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB) (hdAB : d.onLine AB)
     (hacb : between a c b) (habd : between a b d)
     (hce : |(c─e)| = |(c─d)|) (hdce : ∠ d:c:e = ∟) :
     ¬(b.onLine CE) := by
-  have step2_eoff : ¬(e.onLine AB) := by sorry
+  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   intro hbCE
   euclid_apply (two_points_determine_line b c CE AB)
   euclid_finish
