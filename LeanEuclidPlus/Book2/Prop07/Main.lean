@@ -28,7 +28,7 @@ theorem proposition_7 : ∀ (a b c : Point) (AB : Line),
     2 * (|(a─b)| * |(b─c)|) + |(c─a)| * |(c─a)| :=
 by
   euclid_intros
-  euclid_intro_sentence "2.7.0"
+  euclid_intro_sentence "2.7.0" 
     "If a straight-line is cut at random, (then) the sum of the squares on the whole (straight-line), and one of the pieces (of the straight-line), is equal to twice the rectangle contained by the whole, and the said piece, and the square on the remaining piece. For let any straight-line $AB$ be cut, at random, at point $C$. I say that the (sum of the) squares on $AB$ and $BC$ is equal to twice the rectangle contained by $AB$ and $BC$, and the square on $CA$."
 
   euclid_apply (Elements.Book1.proposition_46 a b AB) as (d, e, DE, AD, BE)

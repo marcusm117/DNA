@@ -2,6 +2,8 @@ import SystemE
 import Book.Prop03
 import Book.Prop31
 import Book.Prop46
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
@@ -20,12 +22,13 @@ theorem proposition_8 : ∀ (a b c : Point) (AB : Line),
   euclid_apply (proposition_3 b d' c b AB AB) as d
   euclid_sentence "2.8.1"
     "For let $BD$ be produced in a straight-line [with the straight-line $AB$], and let $BD$ be made equal to $CB$ [Prop.~1.3],"
-    (step1 : True) := by sorry
+    (step1 : between a b d ∧ |(b─d)| = |(c─b)|) := by sorry
 
   euclid_apply (proposition_46 a d AB) as (e, f, EF, AE, DF)
   euclid_sentence "2.8.2"
     "and let the square $AEFD$ be described on $AD$ [Prop.~1.46],"
-    (step2 : True) := by sorry
+    (step2 : |(e─f)| = |(a─d)| ∧ |(a─e)| = |(a─d)| ∧ |(d─f)| = |(a─d)| ∧
+      (∠ d:a:e = ∟) ∧ (∠ a:e:f = ∟) ∧ (∠ a:d:f = ∟) ∧ (∠ d:f:e = ∟)) := by sorry
 
   euclid_apply (line_from_points e d) as ED
   euclid_apply (proposition_31 c a e AE) as CH
@@ -44,111 +47,185 @@ theorem proposition_8 : ∀ (a b c : Point) (AB : Line),
   euclid_apply (intersection_lines BL OP) as r
   euclid_sentence "2.8.3"
     "and let the (rest of the) figure be drawn double."
-    (step3 : True) := by sorry
+    (step3 : c.onLine CH ∧ ¬(CH.intersectsLine AE) ∧ b.onLine BL ∧ ¬(BL.intersectsLine AE) ∧
+      k.onLine MN ∧ ¬(MN.intersectsLine AB) ∧ q.onLine OP ∧ ¬(OP.intersectsLine AB)) := by sorry
 
   euclid_sentence "2.8.4"
     "Therefore, since $CB$ is equal to $BD$, but $CB$ is equal to $GK$ [Prop.~1.34], and $BD$ to $KN$ [Prop.~1.34], $GK$ is thus also equal to $KN$."
-    (step4 : True) := by sorry
+    (step4 : |(g─k)| = |(k─n)|) := by sorry
 
   euclid_sentence "2.8.5"
     "So, for the same (reasons), $QR$ is equal to $RP$."
-    (step5 : True) := by sorry
+    (step5 : |(q─r)| = |(r─p)|) := by sorry
 
   euclid_sentence "2.8.6"
     "And since $BC$ is equal to $BD$, and $GK$ to $KN$, (square) $CK$ is thus also equal to (square) $KD$,"
-    (step6 : True) := by sorry
+    (step6 : Triangle.area △ g:c:b + Triangle.area △ g:b:k =
+      Triangle.area △ k:b:d + Triangle.area △ k:d:n) := by sorry
 
   euclid_sentence "2.8.7"
     "and (square) $GR$ to (square) $RN$ [Prop.~1.36]."
-    (step7 : True) := by sorry
+    (step7 : Triangle.area △ g:k:r + Triangle.area △ g:r:q =
+      Triangle.area △ k:n:p + Triangle.area △ k:p:r) := by sorry
 
   euclid_sentence "2.8.8"
     "But, (square) $CK$ is equal to (square) $RN$. For (they are) complements in the parallelogram $CP$ [Prop.~1.43]."
-    (step8 : True) := by sorry
+    (step8 : Triangle.area △ g:c:b + Triangle.area △ g:b:k =
+      Triangle.area △ k:n:p + Triangle.area △ k:p:r) := by sorry
 
   euclid_sentence "2.8.9"
     "Thus, (square) $KD$ is also equal to (square) $GR$."
-    (step9 : True) := by sorry
+    (step9 : Triangle.area △ k:b:d + Triangle.area △ k:d:n =
+      Triangle.area △ g:k:r + Triangle.area △ g:r:q) := by sorry
 
   euclid_sentence "2.8.10"
     "Thus, the four (squares) $DK$, $CK$, $GR$, and $RN$ are equal to one another."
-    (step10 : True) := by sorry
+    (step10 : (Triangle.area △ g:c:b + Triangle.area △ g:b:k =
+        Triangle.area △ k:b:d + Triangle.area △ k:d:n) ∧
+      (Triangle.area △ k:b:d + Triangle.area △ k:d:n =
+        Triangle.area △ g:k:r + Triangle.area △ g:r:q) ∧
+      (Triangle.area △ g:k:r + Triangle.area △ g:r:q =
+        Triangle.area △ k:n:p + Triangle.area △ k:p:r)) := by sorry
 
   euclid_sentence "2.8.11"
     "Thus, the four (taken together) are quadruple (square) $CK$."
-    (step11 : True) := by sorry
+    (step11 : (Triangle.area △ g:c:b + Triangle.area △ g:b:k) +
+      (Triangle.area △ k:b:d + Triangle.area △ k:d:n) +
+      (Triangle.area △ g:k:r + Triangle.area △ g:r:q) +
+      (Triangle.area △ k:n:p + Triangle.area △ k:p:r) =
+      4 * (Triangle.area △ g:c:b + Triangle.area △ g:b:k)) := by sorry
 
   euclid_sentence "2.8.12"
     "Again, since $CB$ is equal to $BD$, but $BD$ (is) equal to $BK$---that is to say, $CG$---and $CB$ is equal to $GK$---that is to say, $GQ$---$CG$ is thus also equal to $GQ$."
-    (step12 : True) := by sorry
+    (step12 : |(c─g)| = |(g─q)|) := by sorry
 
   euclid_sentence "2.8.13"
     "And since $CG$ is equal to $GQ$, and $QR$ to $RP$, (rectangle) $AG$ is also equal to (rectangle) $MQ$,"
-    (step13 : True) := by sorry
+    (step13 : Triangle.area △ a:c:g + Triangle.area △ a:g:m =
+      Triangle.area △ m:g:q + Triangle.area △ m:q:o) := by sorry
 
   euclid_sentence "2.8.14"
     "and (rectangle) $QL$ to (rectangle) $RF$ [Prop.~1.36]."
-    (step14 : True) := by sorry
+    (step14 : Triangle.area △ q:r:l + Triangle.area △ q:l:h =
+      Triangle.area △ r:p:f + Triangle.area △ r:f:l) := by sorry
 
   euclid_sentence "2.8.15"
     "But, (rectangle) $MQ$ is equal to (rectangle) $QL$. For (they are) complements in the parallelogram $ML$ [Prop.~1.43]."
-    (step15 : True) := by sorry
+    (step15 : Triangle.area △ m:g:q + Triangle.area △ m:q:o =
+      Triangle.area △ q:r:l + Triangle.area △ q:l:h) := by sorry
 
   euclid_sentence "2.8.16"
     "Thus, (rectangle) $AG$ is also equal to (rectangle) $RF$."
-    (step16 : True) := by sorry
+    (step16 : Triangle.area △ a:c:g + Triangle.area △ a:g:m =
+      Triangle.area △ r:p:f + Triangle.area △ r:f:l) := by sorry
 
   euclid_sentence "2.8.17"
     "Thus, the four (rectangles) $AG$, $MQ$, $QL$, and $RF$ are equal to one another."
-    (step17 : True) := by sorry
+    (step17 : (Triangle.area △ a:c:g + Triangle.area △ a:g:m =
+        Triangle.area △ m:g:q + Triangle.area △ m:q:o) ∧
+      (Triangle.area △ m:g:q + Triangle.area △ m:q:o =
+        Triangle.area △ q:r:l + Triangle.area △ q:l:h) ∧
+      (Triangle.area △ q:r:l + Triangle.area △ q:l:h =
+        Triangle.area △ r:p:f + Triangle.area △ r:f:l)) := by sorry
 
   euclid_sentence "2.8.18"
     "Thus, the four (taken together) are quadruple (rectangle) $AG$."
-    (step18 : True) := by sorry
+    (step18 : (Triangle.area △ a:c:g + Triangle.area △ a:g:m) +
+      (Triangle.area △ m:g:q + Triangle.area △ m:q:o) +
+      (Triangle.area △ q:r:l + Triangle.area △ q:l:h) +
+      (Triangle.area △ r:p:f + Triangle.area △ r:f:l) =
+      4 * (Triangle.area △ a:c:g + Triangle.area △ a:g:m)) := by sorry
 
   euclid_sentence "2.8.19"
     "And it was also shown that the four (squares) $CK$, $KD$, $GR$, and $RN$ (taken together are) quadruple (square) $CK$."
-    (step19 : True) := by sorry
+    (step19 : (Triangle.area △ g:c:b + Triangle.area △ g:b:k) +
+      (Triangle.area △ k:b:d + Triangle.area △ k:d:n) +
+      (Triangle.area △ g:k:r + Triangle.area △ g:r:q) +
+      (Triangle.area △ k:n:p + Triangle.area △ k:p:r) =
+      4 * (Triangle.area △ g:c:b + Triangle.area △ g:b:k)) := by sorry
 
   euclid_sentence "2.8.20"
     "Thus, the eight (figures taken together), which comprise the gnomon $STU$, are quadruple (rectangle) $AK$."
-    (step20 : True) := by sorry
+    (step20 : (Triangle.area △ g:c:b + Triangle.area △ g:b:k) +
+      (Triangle.area △ k:b:d + Triangle.area △ k:d:n) +
+      (Triangle.area △ g:k:r + Triangle.area △ g:r:q) +
+      (Triangle.area △ k:n:p + Triangle.area △ k:p:r) +
+      (Triangle.area △ a:c:g + Triangle.area △ a:g:m) +
+      (Triangle.area △ m:g:q + Triangle.area △ m:q:o) +
+      (Triangle.area △ q:r:l + Triangle.area △ q:l:h) +
+      (Triangle.area △ r:p:f + Triangle.area △ r:f:l) =
+      4 * (Triangle.area △ a:b:k + Triangle.area △ a:k:m)) := by sorry
 
   euclid_sentence "2.8.21"
     "And since $AK$ is the (rectangle contained) by $AB$ and $BD$, for $BK$ (is) equal to $BD$, four times the (rectangle contained) by $AB$ and $BD$ is quadruple (rectangle) $AK$."
-    (step21 : True) := by sorry
+    (step21 : Triangle.area △ a:b:k + Triangle.area △ a:k:m = |(a─b)| * |(b─d)|) := by sorry
 
   euclid_sentence "2.8.22"
     "But the gnomon $STU$ was also shown (to be equal to) quadruple (rectangle) $AK$."
-    (step22 : True) := by sorry
+    (step22 : (Triangle.area △ g:c:b + Triangle.area △ g:b:k) +
+      (Triangle.area △ k:b:d + Triangle.area △ k:d:n) +
+      (Triangle.area △ g:k:r + Triangle.area △ g:r:q) +
+      (Triangle.area △ k:n:p + Triangle.area △ k:p:r) +
+      (Triangle.area △ a:c:g + Triangle.area △ a:g:m) +
+      (Triangle.area △ m:g:q + Triangle.area △ m:q:o) +
+      (Triangle.area △ q:r:l + Triangle.area △ q:l:h) +
+      (Triangle.area △ r:p:f + Triangle.area △ r:f:l) =
+      4 * (Triangle.area △ a:b:k + Triangle.area △ a:k:m)) := by sorry
 
   euclid_sentence "2.8.23"
     "Thus, four times the (rectangle contained) by $AB$ and $BD$ is equal to the gnomon $STU$."
-    (step23 : True) := by sorry
+    (step23 : 4 * (|(a─b)| * |(b─d)|) =
+      (Triangle.area △ g:c:b + Triangle.area △ g:b:k) +
+      (Triangle.area △ k:b:d + Triangle.area △ k:d:n) +
+      (Triangle.area △ g:k:r + Triangle.area △ g:r:q) +
+      (Triangle.area △ k:n:p + Triangle.area △ k:p:r) +
+      (Triangle.area △ a:c:g + Triangle.area △ a:g:m) +
+      (Triangle.area △ m:g:q + Triangle.area △ m:q:o) +
+      (Triangle.area △ q:r:l + Triangle.area △ q:l:h) +
+      (Triangle.area △ r:p:f + Triangle.area △ r:f:l)) := by sorry
 
   euclid_sentence "2.8.24"
     "Let $OH$, which is equal to the square on $AC$, be added to both."
-    (step24 : True) := by sorry
+    (step24 : Triangle.area △ o:q:h + Triangle.area △ o:h:e = |(a─c)| * |(a─c)|) := by sorry
 
   euclid_sentence "2.8.25"
     "Thus, four times the rectangle contained by $AB$ and $BD$, plus the square on $AC$, is equal to the gnomon $STU$, and the (square) $OH$."
-    (step25 : True) := by sorry
+    (step25 : 4 * (|(a─b)| * |(b─d)|) + |(a─c)| * |(a─c)| =
+      (Triangle.area △ g:c:b + Triangle.area △ g:b:k) +
+      (Triangle.area △ k:b:d + Triangle.area △ k:d:n) +
+      (Triangle.area △ g:k:r + Triangle.area △ g:r:q) +
+      (Triangle.area △ k:n:p + Triangle.area △ k:p:r) +
+      (Triangle.area △ a:c:g + Triangle.area △ a:g:m) +
+      (Triangle.area △ m:g:q + Triangle.area △ m:q:o) +
+      (Triangle.area △ q:r:l + Triangle.area △ q:l:h) +
+      (Triangle.area △ r:p:f + Triangle.area △ r:f:l) +
+      (Triangle.area △ o:q:h + Triangle.area △ o:h:e)) := by sorry
 
   euclid_sentence "2.8.26"
     "But, the gnomon $STU$ and the (square) $OH$ is (equivalent to) the whole square $AEFD$, which is on $AD$."
-    (step26 : True) := by sorry
+    (step26 : (Triangle.area △ g:c:b + Triangle.area △ g:b:k) +
+      (Triangle.area △ k:b:d + Triangle.area △ k:d:n) +
+      (Triangle.area △ g:k:r + Triangle.area △ g:r:q) +
+      (Triangle.area △ k:n:p + Triangle.area △ k:p:r) +
+      (Triangle.area △ a:c:g + Triangle.area △ a:g:m) +
+      (Triangle.area △ m:g:q + Triangle.area △ m:q:o) +
+      (Triangle.area △ q:r:l + Triangle.area △ q:l:h) +
+      (Triangle.area △ r:p:f + Triangle.area △ r:f:l) +
+      (Triangle.area △ o:q:h + Triangle.area △ o:h:e) =
+      Triangle.area △ a:e:f + Triangle.area △ a:f:d) := by sorry
 
   euclid_sentence "2.8.27"
     "Thus, four times the (rectangle contained) by $AB$ and $BD$, plus the (square) on $AC$, is equal to the square on $AD$."
-    (step27 : True) := by sorry
+    (step27 : 4 * (|(a─b)| * |(b─d)|) + |(a─c)| * |(a─c)| = |(a─d)| * |(a─d)|) := by sorry
 
   euclid_sentence "2.8.28"
     "And $BD$ (is) equal to $BC$."
-    (step28 : True) := by sorry
+    (step28 : |(b─d)| = |(b─c)|) := by sorry
 
   euclid_sentence "2.8.29"
     "Thus, four times the rectangle contained by $AB$ and $BC$, plus the square on $AC$, is equal to the (square) on $AD$, that is to say the square described on $AB$ and $BC$, as on one (complete straight-line)."
-    (step29 : True) := by sorry
+    (step29 : 4 * (|(a─b)| * |(b─c)|) + |(a─c)| * |(a─c)| =
+      (|(a─b)| + |(b─c)|) * (|(a─b)| + |(b─c)|)) := by sorry
 
   exact step29
   euclid_conclude_sentence "2.8.30"
