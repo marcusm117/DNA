@@ -939,12 +939,48 @@ def _annotate_sat(out):
     return ""
 
 
+# `error: <path>:<line>:<col>:` as Lean prints it (path may carry lake's `./././` prefix).
+_ERR_LOC = re.compile(r'^error:\s*(\S+\.lean):(\d+):(\d+):')
+
+
+def _source_gloss(text):
+    """Inject the on-disk source line under each `error: <path>:<line>:<col>` block, so the reader sees
+    EXACTLY which source line failed instead of cross-referencing line numbers by hand — a recurring
+    misdiagnosis (e.g. reading a failing `euclid_finish` line as a `linarith` line off a stale diff).
+    Best-effort: lake prefixes paths with `./././` (stripped); for SP the file is built from a transiently
+    rewritten copy so the line may be off by the swap's import shift, but for P/SF (built as-is on disk)
+    it is exact. No-op when the file/line can't be read."""
+    if not text:
+        return text
+    glosses = {}
+    for m in _ERR_LOC.finditer(text):
+        raw, ln = m.group(1), int(m.group(2))
+        rel = re.sub(r'^(\./)+', '', raw)            # strip lake's `././././` prefix
+        for cand in (rel, os.path.join(L.BOOK_ROOT, rel)):
+            try:
+                lines = open(cand, encoding="utf-8").read().splitlines()
+            except OSError:
+                continue
+            if 1 <= ln <= len(lines):
+                glosses[(raw, ln)] = lines[ln - 1].strip()
+            break
+    if not glosses:
+        return text
+    out_lines = []
+    for line in text.splitlines():
+        out_lines.append(line)
+        m = _ERR_LOC.match(line)
+        if m and (m.group(1), int(m.group(2))) in glosses:
+            out_lines.append(f"    ↳ source: {glosses[(m.group(1), int(m.group(2)))]}")
+    return "\n".join(out_lines)
+
+
 def _fail_output(out):
-    """What to print on a build failure: the full `error:` blocks if any (the real diagnosis), else the
-    tail (e.g. a wall-timeout message that isn't an `error:` line). A `Prover returned SAT` is always
-    glossed (it means the claim is false — see _annotate_sat)."""
+    """What to print on a build failure: the full `error:` blocks if any (the real diagnosis, each glossed
+    with its on-disk source line via _source_gloss), else the tail (e.g. a wall-timeout message that isn't
+    an `error:` line). A `Prover returned SAT` is always glossed (it means the claim is false)."""
     errs = _errors(out)
-    return (errs if errs.strip() else _tail(out)) + _annotate_sat(out)
+    return _source_gloss(errs if errs.strip() else _tail(out)) + _annotate_sat(out)
 
 
 def _extract_trace(out, container_file):

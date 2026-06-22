@@ -183,10 +183,17 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
       there. For a `have`/container, SF genuinely tests sufficiency + that the trailing tactics close.)
 
   (c) CREATE the backing file F.lean (naming law):
+        **RECOMMENDED: run `python3 scripts/scaffold_step.py Book<N>/PropNN F`** — this creates the
+        skeleton file with correct imports, namespace, theorem name (`helper_<book>_<prop>_<name>`),
+        and claim type pre-filled from Main. You then edit it to add object/hypothesis binders.
+        (The skeleton approach eliminates boilerplate errors and saves ~150 tokens per file.)
+        If you prefer manual creation, the structure is:
+        ```
         import SystemE   (+ the specific Book.PropMM / Book2.PropMM.Main it CITES — proposition
                           citations only; NEVER import another helper/step file)
         set_option systemE.solverTime 30 in
         theorem helper_<book>_F <objects from (a)> <hyps from (a)> : <claim> := by sorry
+        ```
       Hyps must be EXACTLY facts present in F's --context dump, in their LITERAL form (they'll be
       discharged by `(by assumption)` at the wire — a type-match, no SMT). If a proof needs something
       NOT in context, that something becomes ANOTHER `have`+backing-file (recurse) OR is derived in F's

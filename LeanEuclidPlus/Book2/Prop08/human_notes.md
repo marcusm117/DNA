@@ -1,1 +1,1 @@
-- faithfulnes not checked
+- faithfulnes checked

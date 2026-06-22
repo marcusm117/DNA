@@ -116,8 +116,10 @@ Every other Book-2 prop is at a varying/in-progress state — follow the skills'
     or guessing signatures. It auto-rebakes; `python3 scripts/bake_index.py --rebuild` forces a full
     re-parse. The parse-only test suite is `python3 -m pytest tests/`.
   - **`python3 scripts/check_step.py …` / `check_steps.py` / `check_faithful.py` / `check_signatures.py`
-    / `scripts/check_faithful.sh` / `python3 scripts/wire_main.py …`** — the build/verify pipeline.
-    Run BARE, no pipe to `grep`/`head` (the hook denies the pipe; just read what the script prints).
+    / `scripts/check_faithful.sh` / `python3 scripts/wire_main.py …` / `python3 scripts/scaffold_step.py …`**
+    — the build/verify pipeline and backing-file scaffolder. Run BARE, no pipe to `grep`/`head` (the hook
+    denies the pipe; just read what the script prints). `scaffold_step.py` creates a skeleton `stepN.lean`
+    backing file with correct naming law and claim type pre-filled (Phase B uses this to avoid boilerplate).
   - **read-only git**: `status`/`diff`/`log`/`show`/`branch`/`blame`/`ls-files` (git mutations are
     denied by policy — the human owns git, it's the safety net).
   - **path/shell helpers**: `cd LeanEuclidPlus` (the one allowed cd — see the bare-command rule above),

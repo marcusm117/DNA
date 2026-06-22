@@ -48,6 +48,8 @@
       "Bash(python3 scripts/find.py:*)",
       "Bash(python scripts/bake_index.py:*)",
       "Bash(python3 scripts/bake_index.py:*)",
+      "Bash(python scripts/scaffold_step.py:*)",
+      "Bash(python3 scripts/scaffold_step.py:*)",
       "Bash(python -m pytest:*)",
       "Bash(python3 -m pytest:*)"
     ],

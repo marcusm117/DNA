@@ -249,11 +249,16 @@ The "a transversal foot / intersection point lands between two others" shape. **
 
 ---
 
-## THE FINAL COMBINE — `linarith` is NOT available here
+## THE FINAL COMBINE — `linarith` / `ring` ARE available (preferred for the arithmetic)
 The last step of an area/length proof (conclusion = a linear combination of the per-step equations) is
-NOT closed with `linarith`/`nlinarith`/`ring` — **this repo has no Mathlib import, so those are "unknown
-tactic".** Close it with `euclid_finish` over the step-equations held as hypotheses (it handles the
-linear chain), or a `rw [...]` chain over named `have h… := by euclid_finish` length rewrites (the
-lean-closer pattern: end on a thin `rw`/`euclid_finish`, never a fat one doing three jobs). *Ref:
-`Book2/Prop01/step10.lean` (euclid_finish over the 5 area-equations); `Book2/Prop03/step8.lean`
-(`rw [← step5, step4, step6, step7]`).*
+closed with **`linarith`/`nlinarith`/`ring`** — Mathlib is a project dependency, so `import
+Mathlib.Tactic.Linarith` (or `.Ring`) at the top of the backing file and use them. The SMT translator
+behind `euclid_finish` chokes on exactly this pure-ℝ arithmetic (notably `2 * x` in hypothesis
+position), so `linarith`/`ring` over the locked per-step equations is usually the *right* closer, not a
+fallback. The lean-closer pattern still holds: end on a THIN closer (`linarith [...]` over named
+`have h… : <equation>` facts, or a `rw [...]` chain), never a fat `euclid_finish` doing the geometry AND
+the algebra at once — split the algebra out (one `have h… := by euclid_finish` per rewrite, then
+`linarith`). Keep the GEOMETRY in the SMT path (`euclid_apply`/`euclid_finish` equalities as `have`s);
+put the ARITHMETIC in Mathlib. *Ref: `Book2/Prop09/step10.lean` (`euclid_apply angle_symm` then `linarith`
+for the `2·∠ = ∟ ⟹ ∠ = ∟/2` halving); `Book2/Prop01/step10.lean` (`euclid_finish` over 5 area-equations —
+also valid); `Book2/Prop03/step8.lean` (`rw [← step5, step4, step6, step7]`).*

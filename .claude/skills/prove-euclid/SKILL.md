@@ -320,9 +320,15 @@ rule #8 (explicit application) made concrete. When you hit one, consult the **`e
 it lists goal-shape → chain → gotcha, grounded in the proven files. Build each as its own `have`+backing
 sub-node; don't re-derive a chain you can look up.
 
-> **⚠ `linarith` / `nlinarith` / `ring` are NOT available in this repo (no Mathlib import — "unknown
-> tactic linarith").** For the final combine, use `euclid_finish` over the step-equations (or a `rw`
-> chain), NOT `linarith` — full detail in `euclid-figures`.
+> **✅ `linarith` / `nlinarith` / `ring` ARE available — Mathlib is a project dependency.** Import the
+> specific tactic module at the top of the backing file (e.g. `import Mathlib.Tactic.Linarith`) and use
+> them for the pure-arithmetic *tail* of a step — the linear/ring combine over ℝ (`2·x = ∟ ⟹ x = ∟/2`,
+> area/length sums). The SMT translator behind `euclid_finish` chokes on exactly this arithmetic (notably
+> `2 * x` in hypothesis position), so `linarith`/`ring` is often the *right* closer there, not a fallback.
+> They obey the same rules as any tactic: a real justified step (rule #1), ≤30s (they're fast), correct
+> node structure. Keep the GEOMETRY in the SMT path (`euclid_apply`/`euclid_finish` equalities as
+> `have`s); put the ARITHMETIC in Mathlib. Canonical shape: `euclid_apply angle_symm …` then `linarith`
+> for the halving (ref `Book2/Prop09/step10.lean`). Full detail in `euclid-figures`.
 
 - **Right-triangle / Pythagoras length algebra.** Pure `|·|` equations: substitute and use
   `s² = t², s,t ≥ 0 ⟹ s = t` (the solver knows `segment_gte_zero`). No geometry needed — strip
