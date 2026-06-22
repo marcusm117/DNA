@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.11 sub: h.sameSide d CN. h and d both lie on AD, which is parallel to CN (¬AD.intersectsLine
    CN) and distinct from it. Both are off CN, so two points on AD lie on the same side of CN. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step11_hsd (h d : Point) (AD CN : Line)
     (hhAD : h.onLine AD) (hdAD : d.onLine AD)
     (hADCN : AD ≠ CN) (hCNADni : ¬(CN.intersectsLine AD)) :

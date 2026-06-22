@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.7.4 sub-sub: f.sameSide b CN. f and b both lie on BE, which is parallel to CN
    (¬CN.intersectsLine BE) and distinct from it. Both are off CN, so two points on BE lie on the
    same side of CN. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step4_fsb (f b : Point) (BE CN : Line)
     (hfBE : f.onLine BE) (hbBE : b.onLine BE)
     (hCNBE : CN ≠ BE) (hCNBEni : ¬(CN.intersectsLine BE)) :

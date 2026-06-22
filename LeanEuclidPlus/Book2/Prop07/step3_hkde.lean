@@ -9,7 +9,6 @@ open Elements.Book1
 
 /- 2.7.3 sub: HF ∥ DE. HF ∥ AB and DE ∥ AB, so HF ∥ DE by transitivity [Prop.~1.30]. The three
    lines are pairwise distinct (hypotheses). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_hkde (HF DE AB : Line)
     (hHFDE : HF ≠ DE) (hDEAB : DE ≠ AB) (hABHF : AB ≠ HF)
     (hHFAB : ¬(HF.intersectsLine AB)) (hDEAB' : ¬(DE.intersectsLine AB)) :

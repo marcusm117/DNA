@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop07.step3_cnad
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +9,6 @@ namespace Elements.Book2
    c distinguishes the lines: c ∈ CN, but c ∉ AD (step3_cnad), so CN ≠ AD; then a, d are off CN
    (a shared point of two distinct lines makes them intersect); finally a, d off CN on a line
    parallel to CN lie on the same side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_bgd_ss (a b c d : Point) (AB CN AD : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
@@ -19,7 +19,7 @@ theorem helper_2_7_step3_bgd_ss (a b c d : Point) (AB CN AD : Line)
     (hCNAD : ¬(CN.intersectsLine AD)) :
     a.sameSide d CN := by
   euclid_intros
-  have step3_cnad : ¬(c.onLine AD) := by sorry
+  have step3_cnad : ¬(c.onLine AD) := by euclid_apply (helper_2_7_step3_cnad a b c d AB AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   have hne : CN ≠ AD := by
     intro heq; rw [heq] at hcCN; exact step3_cnad hcCN
   have haoff : ¬(a.onLine CN) := by

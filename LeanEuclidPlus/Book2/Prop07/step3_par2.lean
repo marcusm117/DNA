@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.3 sub: HGND as formParallelogram g n h d CN AD HF DE (g,n on CN; h,d on AD; g,h on HF;
    n,d on DE; g.sameSide h DE; CN ∥ AD; HF ∥ DE). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_par2 (g n h d : Point) (CN AD HF DE : Line)
     (hgCN : g.onLine CN) (hnCN : n.onLine CN)
     (hhAD : h.onLine AD) (hdAD : d.onLine AD)

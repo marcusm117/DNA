@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.7.4 sub: the right-half rectangle CE (= CBEN) is tiled by the horizontal HF into CF (CBFG) and
    GE (GFEN). sum_parallelograms_area on formParallelogram c n b e CN BE AB DE, cut at g (between
    c g n on CN) and f (between b f e on BE), gives the four-triangle sum equal to the two halves. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step4_tileCE (c n b e g f : Point) (CN BE AB DE : Line)
     (hpar : formParallelogram c n b e CN BE AB DE)
     (hcgn : between c g n) (hbfe : between b f e) :

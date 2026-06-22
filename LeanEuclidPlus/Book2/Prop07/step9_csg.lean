@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.9 sub: c.sameSide g BE. c and g both lie on CN, which is parallel to BE (¬CN.intersectsLine
    BE) and distinct from it. Both are off BE, so two points on CN lie on the same side of BE. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step9_csg (c g : Point) (CN BE : Line)
     (hcCN : c.onLine CN) (hgCN : g.onLine CN)
     (hCNBE : CN ≠ BE) (hCNBEni : ¬(CN.intersectsLine BE)) :

@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.3 sub: CGFB as formParallelogram b f c g BE CN AB HF (b,f on BE; c,g on CN; b,c on AB;
    f,g on HF; b.sameSide c HF; BE ∥ CN; AB ∥ HF). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_par1 (b f c g : Point) (BE CN AB HF : Line)
     (hbBE : b.onLine BE) (hfBE : f.onLine BE)
     (hcCN : c.onLine CN) (hgCN : g.onLine CN)

@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.3 sub: GFEN as formParallelogram g f n e HF DE CN BE (g,f on HF; n,e on DE; g,n on CN;
    f,e on BE; g.sameSide n BE; HF ∥ DE; CN ∥ BE). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_pargkef (g f n e : Point) (HF DE CN BE : Line)
     (hgHF : g.onLine HF) (hfHF : f.onLine HF)
     (hnDE : n.onLine DE) (heDE : e.onLine DE)

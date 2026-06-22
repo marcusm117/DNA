@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.9 sub: the square CF (= CBFG) as formParallelogram c b g f AB HF CN BE (c,b on AB; g,f on HF;
    c,g on CN; b,f on BE; c.sameSide g BE; AB ∥ HF; CN ∥ BE). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step9_parCF (c b g f : Point) (AB HF CN BE : Line)
     (hcAB : c.onLine AB) (hbAB : b.onLine AB)
     (hgHF : g.onLine HF) (hfHF : f.onLine HF)

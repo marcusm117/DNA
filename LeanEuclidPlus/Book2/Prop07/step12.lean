@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.7.12: the gnomon KLM and the squares BG (= CF) and GD (= DG) are equal to twice the rectangle
    by AB and BC, plus the square on AC. Adding step11 (DG = |a─c|²) to both sides of step10
    (gnomon + CF = 2 (AB·BC)). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step12 (a b c d e n g h f : Point)
     (hstep10 : ((Triangle.area △ a:c:g + Triangle.area △ a:g:h)
           + (Triangle.area △ g:f:e + Triangle.area △ g:e:n)

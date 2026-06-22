@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.11 sub: b.sameSide e CN. b and e both lie on BE, which is parallel to CN (¬CN.intersectsLine
    BE) and distinct from it. Both are off CN, so two points on BE lie on the same side of CN. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step11_bse (b e : Point) (BE CN : Line)
     (hbBE : b.onLine BE) (heBE : e.onLine BE)
     (hCNBE : CN ≠ BE) (hCNBEni : ¬(CN.intersectsLine BE)) :

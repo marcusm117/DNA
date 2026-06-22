@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.7.4 sub-sub: n.sameSide d HF. n and d both lie on DE, which is parallel to HF
    (¬HF.intersectsLine DE) and distinct from it. Both are off HF, so two points on DE lie on the
    same side of HF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step4_nsd (n d : Point) (DE HF : Line)
     (hnDE : n.onLine DE) (hdDE : d.onLine DE)
     (hHFDE : HF ≠ DE) (hHFDEni : ¬(HF.intersectsLine DE)) :

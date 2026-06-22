@@ -121,9 +121,33 @@ def diff():
     return 0
 
 
+def save_prop(prop_filter):
+    """Re-save signatures for files matching prop_filter (e.g. 'Prop14'), keep the rest."""
+    if os.path.exists(BASELINE):
+        sigs = json.load(open(BASELINE, encoding="utf-8"))
+    else:
+        sigs = {}
+    cur = extract()
+    removed = [k for k in list(sigs) if prop_filter in k and k not in cur]
+    for k in removed:
+        del sigs[k]
+    updated = 0
+    for k, v in cur.items():
+        if prop_filter in k:
+            sigs[k] = v
+            updated += 1
+    with open(BASELINE, "w", encoding="utf-8") as f:
+        json.dump(sigs, f, ensure_ascii=False, indent=2, sort_keys=True)
+    print(f"updated {updated} signature(s) matching '{prop_filter}', removed {len(removed)} "
+          f"-> {os.path.relpath(BASELINE, BOOK_ROOT)}")
+    return 0
+
+
 def main(argv):
     if argv == ["--save"]:
         return save()
+    if len(argv) == 2 and argv[0] == "--save":
+        return save_prop(argv[1])
     if not argv:
         return diff()
     print(__doc__)

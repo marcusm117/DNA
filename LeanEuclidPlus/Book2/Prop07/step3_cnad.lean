@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop07.step3_collin
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -7,7 +8,6 @@ namespace Elements.Book2
 /- 2.7.3 sub: c is not on AD. If c ∈ AD then a, c are two distinct shared points of AB and AD ⟹
    AB = AD, placing a, b, d collinear on AD; but then ∠ b:a:d ≠ ∟ (step3_collin), contradicting
    the square's right angle. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_cnad (a b c d : Point) (AB AD : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
@@ -21,7 +21,7 @@ theorem helper_2_7_step3_cnad (a b c d : Point) (AB AD : Line)
     euclid_apply (two_points_determine_line a c AB AD)
     euclid_finish
   rw [hABAD] at hbAB
-  have step3_collin : ∠ b:a:d ≠ ∟ := by sorry
+  have step3_collin : ∠ b:a:d ≠ ∟ := by euclid_apply (helper_2_7_step3_collin a b c d AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   exact step3_collin hbad
 
 end Elements.Book2

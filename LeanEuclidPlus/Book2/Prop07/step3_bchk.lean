@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.3 sub: b.sameSide c HF. b and c both lie on AB, which is parallel to HF (¬HF.intersectsLine
    AB) and distinct from it. Both are off HF, so two points on AB lie on the same side of HF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_bchk (b c : Point) (AB HF : Line)
     (hbAB : b.onLine AB) (hcAB : c.onLine AB)
     (hABHF : AB ≠ HF) (hHFAB : ¬(HF.intersectsLine AB)) :

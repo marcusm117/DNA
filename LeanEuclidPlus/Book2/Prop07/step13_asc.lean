@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.13 sub: a.sameSide c DE. a and c both lie on AB, which is parallel to DE (¬AB.intersectsLine
    DE) and distinct from it. Both are off DE, so two points on AB lie on the same side of DE. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step13_asc (a c : Point) (AB DE : Line)
     (haAB : a.onLine AB) (hcAB : c.onLine AB)
     (hABDE : AB ≠ DE) (hABDEni : ¬(AB.intersectsLine DE)) :

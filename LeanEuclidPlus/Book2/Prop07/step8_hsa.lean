@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.8 sub: h.sameSide a BE. h and a both lie on AD, which is parallel to BE (¬AD.intersectsLine
    BE) and distinct from it. Both are off BE, so two points on AD lie on the same side of BE. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step8_hsa (h a : Point) (AD BE : Line)
     (hhAD : h.onLine AD) (haAD : a.onLine AD)
     (hADBE : AD ≠ BE) (hADBEni : ¬(AD.intersectsLine BE)) :

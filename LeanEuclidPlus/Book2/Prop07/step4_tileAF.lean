@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.7.4 sub: the top-half rectangle AF (= ABFH) is tiled by the vertical CN into AG (ACGH) and
    CF (CBFG). sum_parallelograms_area on formParallelogram a b h f AB HF AD BE, cut at c (between
    a c b on AB) and g (between h g f on HF), gives the four-triangle sum equal to the two halves. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step4_tileAF (a b c h g f : Point) (AB HF AD BE : Line)
     (hpar : formParallelogram a b h f AB HF AD BE)
     (hacb : between a c b) (hhgf : between h g f) :

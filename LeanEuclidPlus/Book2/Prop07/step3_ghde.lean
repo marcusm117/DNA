@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.3 sub: g.sameSide h DE. g and h both lie on HF, which is parallel to DE (¬DE.intersectsLine
    HF) and distinct from it. Both are off DE, so two points on HF lie on the same side of DE. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_ghde (g h : Point) (HF DE : Line)
     (hgHF : g.onLine HF) (hhHF : h.onLine HF)
     (hHFDE : HF ≠ DE) (hHFDEni : ¬(HF.intersectsLine DE)) :

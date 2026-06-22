@@ -10,7 +10,6 @@ open Elements.Book1
 /- 2.7.9 sub: |(b─c)| = |(c─g)|. In triangle c,g,b (sides c─g on CN, g─b on BD, b─c on AB) the base
    angles at g and b are equal — ∠ c:g:b = ∠ g:b:c (step9_cgb), recast to ∠ c:g:b = ∠ c:b:g by
    symmetry — so the subtending sides are equal: |c─g| = |c─b| [Prop.~1.6], i.e. |b─c| = |c─g|. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step9_bccg (a b c d g : Point) (AB CN AD BD : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)

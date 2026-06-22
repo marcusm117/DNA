@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.4 sub: the top-half rectangle ABFH as formParallelogram a b h f AB HF AD BE (a,b on AB;
    h,f on HF; a,h on AD; b,f on BE; a.sameSide h BE; AB ∥ HF; AD ∥ BE). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step4_parAF (a b h f : Point) (AB HF AD BE : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
     (hhHF : h.onLine HF) (hfHF : f.onLine HF)

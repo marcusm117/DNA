@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.3 sub: g ∉ AB. g lies on BD (the diagonal), with b ∈ BD ∩ AB. If g ∈ AB then b, g are two
    common points of AB and BD; with b ≠ g this forces AB = BD, putting d (∈ BD) on AB — but d ∉ AB. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_gnab (a b d g : Point) (AB BD : Line)
     (hbAB : b.onLine AB) (haAB : a.onLine AB)
     (hbBD : b.onLine BD) (hgBD : g.onLine BD) (hdBD : d.onLine BD)

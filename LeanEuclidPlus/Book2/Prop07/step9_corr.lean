@@ -10,7 +10,6 @@ open Elements.Book1
 /- 2.7.9 sub: ∠ c:g:b = ∠ a:d:b. CN (through g, c) ∥ AD (through d, a), cut by transversal BD
    (through b, g, d) with foot g between b and d and c, a on the same side of BD. proposition_29''''
    gives ∠ b:g:c = ∠ g:d:a; angle symmetry plus equal_angles rewrite this to ∠ c:g:b = ∠ a:d:b. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step9_corr (a b c d g : Point) (CN AD BD : Line)
     (hcCN : c.onLine CN) (hgCN : g.onLine CN)
     (haAD : a.onLine AD) (hdAD : d.onLine AD)

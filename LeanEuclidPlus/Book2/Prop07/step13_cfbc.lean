@@ -8,7 +8,6 @@ namespace Elements.Book2
    angle ∠c:b:f = ∟ (vertex b in the c-slot); rectangle_area gives △c:b:f + △c:g:f = |c─b|·|c─g|,
    and |c─g| = |b─c| (the square is equilateral, step9_bccg), so the area (= △c:b:f + △c:f:g) is
    |b─c|·|b─c|. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step13_cfbc (c g b f : Point) (CN BE AB HF : Line)
     (hpar : formParallelogram c g b f CN BE AB HF)
     (hcbf : ∠ c:b:f = ∟) (hbccg : |(b─c)| = |(c─g)|) :

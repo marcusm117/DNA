@@ -1,4 +1,5 @@
 import SystemE
+import Book2.Prop07.step2_dnab
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +9,6 @@ namespace Elements.Book2
    lines drawn: BD joined (distinct points b,d on BD), CN through C parallel to AD, and HF
    through G parallel to AB. All incidence/parallel facts are deposited by the Main
    constructions; the only fact to derive is b ≠ d, via d ∉ AB (step2_dnab) and b ∈ AB. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step2 (a b c d e n g h f : Point) (AB DE AD BE BD CN HF : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hab : a ≠ b)
     (hadlen : |(a─d)| = |(a─b)|) (hbad : ∠ b:a:d = ∟)
@@ -17,7 +17,7 @@ theorem helper_2_7_step2 (a b c d e n g h f : Point) (AB DE AD BE BD CN HF : Lin
     (hgHF : g.onLine HF) (hHFAB : ¬HF.intersectsLine AB) :
     distinctPointsOnLine b d BD ∧ (c.onLine CN ∧ ¬(CN.intersectsLine AD)) ∧
       (g.onLine HF ∧ ¬(HF.intersectsLine AB)) := by
-  have step2_dnab : ¬(d.onLine AB) := by sorry
+  have step2_dnab : ¬(d.onLine AB) := by euclid_apply (helper_2_7_step2_dnab a b d AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_finish
 
 end Elements.Book2

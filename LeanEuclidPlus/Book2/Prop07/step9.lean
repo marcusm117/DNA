@@ -1,11 +1,11 @@
 import SystemE
+import Book2.Prop07.step9_bfbc
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
 /- 2.7.9: BF is equal to BC. The argument lives in the shared core step9_bfbc (reused by 2.7.8). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step9 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
@@ -22,7 +22,7 @@ theorem helper_2_7_step9 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Lin
     (hbad : ∠ b:a:d = ∟) (habe : ∠ a:b:e = ∟) :
     |(b─f)| = |(b─c)| := by
   euclid_intros
-  have step9_bfbc : |(b─f)| = |(b─c)| := by sorry
+  have step9_bfbc : |(b─f)| = |(b─c)| := by euclid_apply (helper_2_7_step9_bfbc a b c d e n g h f AB CN AD BE HF BD DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   exact step9_bfbc
 
 end Elements.Book2

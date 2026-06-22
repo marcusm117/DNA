@@ -1,4 +1,6 @@
 import SystemE
+import Book2.Prop07.step3_ahcf
+import Book2.Prop07.step4_fsb
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -9,7 +11,6 @@ namespace Elements.Book2
    same side of CN (both on AD ∥ CN, step3_ahcf); f and b are on the same side of CN (both on
    BE ∥ CN, step4_fsb); hence h and f are on opposite sides of CN, and the crossing point g of HF
    with CN lies between them (pasch_4). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step4_hgf (a b c d h g f : Point) (AB CN AD BE HF : Line)
     (hacb : between a c b)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcCN : c.onLine CN) (hgCN : g.onLine CN)
@@ -20,8 +21,8 @@ theorem helper_2_7_step4_hgf (a b c d h g f : Point) (AB CN AD BE HF : Line)
     (hADCN : AD ≠ CN) (hCNBEne : CN ≠ BE) :
     between h g f := by
   euclid_intros
-  have step3_ahcf : a.sameSide h CN := by sorry
-  have step4_fsb : f.sameSide b CN := by sorry
+  have step3_ahcf : a.sameSide h CN := by euclid_apply (helper_2_7_step3_ahcf a h AD CN (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step4_fsb : f.sameSide b CN := by euclid_apply (helper_2_7_step4_fsb f b BE CN (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (pasch_3 a c b CN)
   euclid_apply (pasch_4 h g f CN HF)
   euclid_finish

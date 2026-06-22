@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.7.3 sub: the big square ADEB as formParallelogram b e a d BE AD AB DE (b,e on BE; a,d on AD;
    b,a on AB; e,d on DE; b.sameSide a DE; BE ∥ AD; AB ∥ DE). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step3_bigpar (b e a d : Point) (BE AD AB DE : Line)
     (hbBE : b.onLine BE) (heBE : e.onLine BE)
     (haAD : a.onLine AD) (hdAD : d.onLine AD)

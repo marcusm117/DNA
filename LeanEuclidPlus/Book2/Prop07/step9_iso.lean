@@ -9,7 +9,6 @@ open Elements.Book1
 
 /- 2.7.9 sub: ∠ a:d:b = ∠ a:b:d. Triangle a,d,b is isosceles with |a─d| = |a─b| (the square's two
    sides from a), so its base angles at d and b are equal [Prop.~1.5]. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_7_step9_iso (a b d : Point) (AB AD BD : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB)
     (haAD : a.onLine AD) (hdAD : d.onLine AD)
