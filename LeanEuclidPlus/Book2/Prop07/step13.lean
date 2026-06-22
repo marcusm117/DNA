@@ -63,12 +63,14 @@ theorem helper_2_7_step13 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Li
   -- foot betweennesses
   have step8_ahd : between a h d := by sorry
   have step4_cgn : between c g n := by sorry
+  have step3_bgd_ss : a.sameSide d CN := by sorry
   have step11_dne : between d n e := by sorry
   have step3_bke : between b f e := by sorry
   -- distinctness of cut points
   have hbf : b ≠ f := fun hh => step3_bnhf (hh ▸ hfHF)
   have step3_gnbe : ¬(g.onLine BE) := by sorry
   have hne : n ≠ e := by euclid_finish
+  have hgn : g ≠ n := by euclid_finish
   have hgf : g ≠ f := by euclid_finish
   have hbe : b ≠ e := heb.symm
   have hdn : d ≠ n := by euclid_finish
@@ -86,6 +88,11 @@ theorem helper_2_7_step13 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Li
   have step13_parCF2 : formParallelogram c g b f CN BE AB HF := by sorry
   -- the right angle and equilateral side for CF
   have step13_cbf : ∠ c:b:f = ∟ := by sorry
+  have step9_tri : formTriangle c g b CN BD AB := by sorry
+  have step9_ss : c.sameSide a BD := by sorry
+  have step9_corr : ∠ c:g:b = ∠ a:d:b := by sorry
+  have step9_iso : ∠ a:d:b = ∠ a:b:d := by sorry
+  have step9_cgb : ∠ c:g:b = ∠ g:b:c := by sorry
   have step9_bccg : |(b─c)| = |(c─g)| := by sorry
   -- the tiling and the two square areas
   have step13_tile : (Triangle.area △ a:c:g + Triangle.area △ a:g:h)

@@ -8,11 +8,14 @@ namespace Elements.Book2
    If c ∈ BE then b, c are two distinct shared points of AB and BE ⟹ AB = BE, putting a (∈ AB) on BE
    — contradicting a ∉ BE. -/
 set_option systemE.solverTime 30 in
-theorem helper_2_7_step3_cnbe (a b c : Point) (AB BE : Line)
+theorem helper_2_7_step3_cnbe (a b c e : Point) (AB BE : Line)
     (hacb : between a c b)
-    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hbBE : b.onLine BE)
-    (hanBE : ¬(a.onLine BE)) :
+    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hbBE : b.onLine BE) (heBE : e.onLine BE)
+    (hab : a ≠ b) (heb : e ≠ b) (habe : ∠ a:b:e = ∟) :
     ¬(c.onLine BE) := by
+  have hanBE : ¬(a.onLine BE) := by
+    intro haBE
+    euclid_finish
   intro hcBE
   euclid_apply (between_same_line_in a c b AB)
   have hbc : b ≠ c := by euclid_finish

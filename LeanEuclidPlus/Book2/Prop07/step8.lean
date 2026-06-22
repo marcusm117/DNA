@@ -33,11 +33,11 @@ theorem helper_2_7_step8 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Lin
   have step3_dnab : ¬(d.onLine AB) := by sorry
   have hbd : b ≠ d := fun hh => step3_dnab (hh ▸ hbAB)
   have step3_bgd : between b g d := by sorry
+  have hbg : b ≠ g := by euclid_finish
+  have step3_gnab : ¬(g.onLine AB) := by sorry
   have step3_bnhf : ¬(b.onLine HF) := by sorry
   have hbf : b ≠ f := fun hh => step3_bnhf (hh ▸ hfHF)
   have hfb : f ≠ b := fun hh => hbf hh.symm
-  have hbg : b ≠ g := by euclid_finish
-  have step3_gnab : ¬(g.onLine AB) := by sorry
   have hABHF : AB ≠ HF := fun hh => step3_gnab (hh ▸ hgHF)
   have step3_anbe : ¬(a.onLine BE) := by sorry
   have hADBE' : AD ≠ BE := fun hh => step3_anbe (hh ▸ haAD)

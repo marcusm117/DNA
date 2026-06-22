@@ -37,6 +37,7 @@ theorem helper_2_7_step11 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Li
   have step3_cnbe : ¬(c.onLine BE) := by sorry
   have step3_bnhf : ¬(b.onLine HF) := by sorry
   have hbf : b ≠ f := fun hh => step3_bnhf (hh ▸ hfHF)
+  have hfb : f ≠ b := fun hh => hbf hh.symm
   have step3_cnad : ¬(c.onLine AD) := by sorry
   have step3_anbe : ¬(a.onLine BE) := by sorry
   have step3_hnde : ¬(h.onLine DE) := by sorry
@@ -47,6 +48,7 @@ theorem helper_2_7_step11 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Li
   have hADBE' : AD ≠ BE := fun hh => step3_anbe (hh ▸ haAD)
   have hABHF : AB ≠ HF := fun hh => step3_gnab (hh ▸ hgHF)
   have hHFDE : HF ≠ DE := fun hh => step3_hnde (hh ▸ hhHF)
+  have hDEAB' : DE ≠ AB := fun hh => step3_dnab (hh ▸ hdDE)
   -- non-intersections
   have step3_cfbe : ¬(CN.intersectsLine BE) := by sorry
   have step3_hkde : ¬(HF.intersectsLine DE) := by sorry

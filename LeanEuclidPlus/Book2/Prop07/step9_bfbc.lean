@@ -31,11 +31,14 @@ theorem helper_2_7_step9_bfbc (a b c d e n g h f : Point) (AB CN AD BE HF BD DE 
   have step3_bgd : between b g d := by sorry
   have hbg : b ≠ g := (between_symm b g d step3_bgd).2.1
   have hgd : g ≠ d := ((between_symm d g b (between_symm b g d step3_bgd).1).2.1).symm
+  have step3_anbe : ¬(a.onLine BE) := by sorry
   have step3_cnbe : ¬(c.onLine BE) := by sorry
-  have step3_bnhf : ¬(b.onLine HF) := by sorry
-  have hbf : b ≠ f := fun hh => step3_bnhf (hh ▸ hfHF)
   have step3_cab : c.onLine AB := by sorry
   have step3_gnab : ¬(g.onLine AB) := by sorry
+  have step3_bnhf : ¬(b.onLine HF) := by sorry
+  have hbf : b ≠ f := fun hh => step3_bnhf (hh ▸ hfHF)
+  have step3_cnad : ¬(c.onLine AD) := by sorry
+  have hADCN : AD ≠ CN := fun hh => step3_cnad (hh ▸ hcCN)
   have hCNBE : CN ≠ BE := fun hh => step3_cnbe (hh ▸ hcCN)
   have step9_tri : formTriangle c g b CN BD AB := by sorry
   have step9_ss : c.sameSide a BD := by sorry

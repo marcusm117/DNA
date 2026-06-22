@@ -11,11 +11,14 @@ open Elements.Book1
    (the square's two opposite sides), so CN ∥ BE by transitivity [Prop.~1.30]. The three lines are
    pairwise distinct (hypotheses). -/
 set_option systemE.solverTime 30 in
-theorem helper_2_7_step3_cfbe (CN AD BE : Line)
-    (hCNBE : CN ≠ BE) (hBEAD : BE ≠ AD) (hADCN : AD ≠ CN)
+theorem helper_2_7_step3_cfbe (a : Point) (CN AD BE : Line)
+    (haAD : a.onLine AD) (step3_anbe : ¬(a.onLine BE))
+    (hCNBE : CN ≠ BE) (hADCN : AD ≠ CN)
     (hCNAD : ¬(CN.intersectsLine AD)) (hADBE : ¬(AD.intersectsLine BE)) :
     ¬(CN.intersectsLine BE) := by
   euclid_intros
+  have hADBEne : AD ≠ BE := fun hh => step3_anbe (hh ▸ haAD)
+  have hBEAD : BE ≠ AD := fun hh => hADBEne hh.symm
   euclid_apply (proposition_30 CN BE AD)
   euclid_finish
 
