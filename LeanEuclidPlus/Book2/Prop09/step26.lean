@@ -1,14 +1,16 @@
 import SystemE
+import Book.Prop47
+import Helpers.OffLine
 import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-open Elements
+open Elements.Book1 Elements
 
 set_option systemE.solverTime 30 in
-theorem helper_2_9_step17
+theorem helper_2_9_step26
   (a b c d e f g e0 e1 : Point) (AB CE EB DF FG : Line)
   (hab_a : a.onLine AB) (hab_b : b.onLine AB) (hab_c : c.onLine AB) (hab_d : d.onLine AB)
   (hcdb : between c d b)
@@ -21,13 +23,10 @@ theorem helper_2_9_step17
   (hfg_f : f.onLine FG) (hfg_g : g.onLine FG)
   (hpar_df : ¬DF.intersectsLine CE)
   (hpar_fg : ¬FG.intersectsLine AB)
-  (h11 : ∠ c:e:b = ∟ / 2 ∧ ∠ e:b:c = ∟ / 2)
-  (h16 : ∠ f:d:b = ∟ ∧ ∠ b:f:d = ∟ / 2) :
-  ∠ f:b:d = ∠ d:f:b := by
-  -- @args: b c d e e0 e1 f AB CE DF EB
-  have step13_befb : between e f b := by sorry
-  have step16_fbd : ∠ f:b:d = ∠ e:b:c := by sorry
-  have step17_symm : ∠ d:f:b = ∠ b:f:d := by sorry
+  (hstep13 : ∠ e:g:f = ∟ ∧ ∠ e:f:g = ∟ / 2) :
+  |(e─f)| * |(e─f)| = |(e─g)| * |(e─g)| + |(g─f)| * |(g─f)| := by
+  have step26_formtri : formTriangle g e f CE EB FG := by sorry
+  euclid_apply (proposition_47 g e f CE EB FG)
   linarith
 
 end Elements.Book2
