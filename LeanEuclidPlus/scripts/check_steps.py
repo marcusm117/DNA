@@ -90,6 +90,8 @@ def save(prop_arg: str):
         print(f"no euclid_sentence steps found in {prop_arg} — nothing saved")
         return 2
     base = load_baseline()
+    rel = os.path.relpath(path, BOOK_ROOT)
+    base = {k: v for k, v in base.items() if v.get("file") != rel}  # drop old entries for this file
     base.update(steps)                     # merge: this prop's locators replace/add; others untouched
     with open(BASELINE, "w", encoding="utf-8") as f:
         json.dump(base, f, ensure_ascii=False, indent=2, sort_keys=True)

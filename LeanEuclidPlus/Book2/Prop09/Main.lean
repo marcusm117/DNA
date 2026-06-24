@@ -23,7 +23,6 @@ import Book2.Prop09.step18
 import Book2.Prop09.step19
 import Book2.Prop09.step20
 import Book2.Prop09.step21
-import Book2.Prop09.step22
 import Book2.Prop09.step23
 import Book2.Prop09.step24
 import Book2.Prop09.step25
@@ -34,10 +33,8 @@ import Book2.Prop09.step29
 import Book2.Prop09.step30
 import Book2.Prop09.step31
 import Book2.Prop09.step32
-import Book2.Prop09.step33
 import Book2.Prop09.step34
 import Book2.Prop09.step35
-import Book2.Prop09.step36
 import Book2.Prop09.step37
 import Book2.Prop09.step38
 import Book2.Prop09.step39
@@ -150,84 +147,72 @@ theorem proposition_9 : ∀ (a b c d : Point) (AB : Line),
     (step20 : |(a─c)| * |(a─c)| + |(c─e)| * |(c─e)| = 2 * (|(a─c)| * |(a─c)|)) := by euclid_apply (helper_2_9_step20 a c e (by assumption)); (try split_ands) <;> assumption
 
   euclid_sentence "2.9.21"
-    "And the square on $EA$ is equal to the (sum of the) squares on $AC$ and $CE$."
+    "And the square on $EA$ is equal to the (sum of the) squares on $AC$ and $CE$. For angle $ACE$ (is) a right-angle [Prop.~1.47]."
     (step21 : |(e─a)| * |(e─a)| = |(a─c)| * |(a─c)| + |(c─e)| * |(c─e)|) := by euclid_apply (helper_2_9_step21 a b c e e0 e1 AB CE EA (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
 
   euclid_sentence "2.9.22"
-    "For angle $ACE$ (is) a right-angle [Prop.~1.47]."
-    (step22 : ∠ a:c:e = ∟) := by euclid_apply (helper_2_9_step22 (by assumption)); (try split_ands) <;> assumption
-
-  euclid_sentence "2.9.23"
     "Thus, the (square) on $EA$ is double the (square) on $AC$."
     (step23 : |(e─a)| * |(e─a)| = 2 * (|(a─c)| * |(a─c)|)) := by euclid_apply (helper_2_9_step23 a c e (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.24"
+  euclid_sentence "2.9.23"
     "Again, since $EG$ is equal to $GF$, the (square) on $EG$ (is) also equal to the (square) on $GF$."
     (step24 : |(e─g)| * |(e─g)| = |(g─f)| * |(g─f)|) := by euclid_apply (helper_2_9_step24 e f g (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.25"
+  euclid_sentence "2.9.24"
     "Thus, the (sum of the squares) on $EG$ and $GF$ is double the square on $GF$."
     (step25 : |(e─g)| * |(e─g)| + |(g─f)| * |(g─f)| = 2 * (|(g─f)| * |(g─f)|)) := by euclid_apply (helper_2_9_step25 e f g (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.26"
+  euclid_sentence "2.9.25"
     "And the square on $EF$ is equal to the (sum of the) squares on $EG$ and $GF$ [Prop.~1.47]."
     (step26 : |(e─f)| * |(e─f)| = |(e─g)| * |(e─g)| + |(g─f)| * |(g─f)|) := by euclid_apply (helper_2_9_step26 a b c d e f g e0 e1 AB CE EB DF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.27"
+  euclid_sentence "2.9.26"
     "Thus, the square on $EF$ is double the (square) on $GF$."
     (step27 : |(e─f)| * |(e─f)| = 2 * (|(g─f)| * |(g─f)|)) := by euclid_apply (helper_2_9_step27 e f g (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.28"
+  euclid_sentence "2.9.27"
     "And $GF$ (is) equal to $CD$ [Prop.~1.34]."
     (step28 : |(g─f)| = |(c─d)|) := by euclid_apply (helper_2_9_step28 a b c d e f g e0 e1 AB CE EB DF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.29"
+  euclid_sentence "2.9.28"
     "Thus, the (square) on $EF$ is double the (square) on $CD$."
     (step29 : |(e─f)| * |(e─f)| = 2 * (|(c─d)| * |(c─d)|)) := by euclid_apply (helper_2_9_step29 c d e f g (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.30"
+  euclid_sentence "2.9.29"
     "And the (square) on $EA$ is also double the (square) on $AC$."
     (step30 : |(e─a)| * |(e─a)| = 2 * (|(a─c)| * |(a─c)|)) := by euclid_apply (helper_2_9_step30 a c e (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.31"
+  euclid_sentence "2.9.30"
     "Thus, the (sum of the) squares on $AE$ and $EF$ is double the (sum of the) squares on $AC$ and $CD$."
     (step31 : |(e─a)| * |(e─a)| + |(e─f)| * |(e─f)| = 2 * (|(a─c)| * |(a─c)| + |(c─d)| * |(c─d)|)) := by euclid_apply (helper_2_9_step31 a c d e f (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.32"
-    "And the square on $AF$ is equal to the (sum of the squares) on $AE$ and $EF$."
+  euclid_sentence "2.9.31"
+    "And the square on $AF$ is equal to the (sum of the squares) on $AE$ and $EF$. For the angle $AEF$ is a right-angle [Prop.~1.47]."
     (step32 : |(a─f)| * |(a─f)| = |(e─a)| * |(e─a)| + |(e─f)| * |(e─f)|) := by euclid_apply (helper_2_9_step32 a b c d e f e0 e1 AB CE EA EB DF AF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.33"
-    "For the angle $AEF$ is a right-angle [Prop.~1.47]."
-    (step33 : ∠ a:e:f = ∟) := by euclid_apply (helper_2_9_step33 a b c d e f e0 e1 AB CE EA EB DF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-
-  euclid_sentence "2.9.34"
+  euclid_sentence "2.9.32"
     "Thus, the square on $AF$ is double the (sum of the squares) on $AC$ and $CD$."
     (step34 : |(a─f)| * |(a─f)| = 2 * (|(a─c)| * |(a─c)| + |(c─d)| * |(c─d)|)) := by euclid_apply (helper_2_9_step34 a c d e f (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.35"
-    "And the (sum of the squares) on $AD$ and $DF$ (is) equal to the (square) on $AF$."
+  euclid_sentence "2.9.33"
+    "And the (sum of the squares) on $AD$ and $DF$ (is) equal to the (square) on $AF$. For the angle at $D$ is a right-angle [Prop.~1.47]."
     (step35 : |(a─d)| * |(a─d)| + |(d─f)| * |(d─f)| = |(a─f)| * |(a─f)|) := by euclid_apply (helper_2_9_step35 a b c d e f e0 e1 AB CE DF EB AF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.36"
-    "For the angle at $D$ is a right-angle [Prop.~1.47]."
-    (step36 : ∠ a:d:f = ∟) := by euclid_apply (helper_2_9_step36 a b c d e f e0 e1 AB CE DF EB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-
-  euclid_sentence "2.9.37"
+  euclid_sentence "2.9.34"
     "Thus, the (sum of the squares) on $AD$ and $DF$ is double the (sum of the) squares on $AC$ and $CD$."
     (step37 : |(a─d)| * |(a─d)| + |(d─f)| * |(d─f)| = 2 * (|(a─c)| * |(a─c)| + |(c─d)| * |(c─d)|)) := by euclid_apply (helper_2_9_step37 a c d f (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.38"
+  euclid_sentence "2.9.35"
     "And $DF$ (is) equal to $DB$."
     (step38 : |(d─f)| = |(d─b)|) := by euclid_apply (helper_2_9_step38 b d f (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.9.39"
+  euclid_sentence "2.9.36"
     "Thus, the (sum of the) squares on $AD$ and $DB$ is double the (sum of the) squares on $AC$ and $CD$."
     (step39 : |(a─d)| * |(a─d)| + |(d─b)| * |(d─b)| =
       2 * (|(a─c)| * |(a─c)| + |(c─d)| * |(c─d)|)) := by euclid_apply (helper_2_9_step39 a b c d f (by assumption) (by assumption)); (try split_ands) <;> assumption
 
   exact step39
-  euclid_conclude_sentence "2.9.40"
+  euclid_conclude_sentence "2.9.37"
     "Thus, if a straight-line is cut into equal and unequal (pieces, then) the (sum of the) squares on the unequal pieces of the whole (straight-line) is double the (sum of the) square on half (the straight-line) and (the square) on the (difference) between the (equal and unequal) pieces. (Which is) the very thing it was required to show."
 
 end Elements.Book2
