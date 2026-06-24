@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 -- step10 (2.9.10): CEA and CAE are each half a right-angle. From step8 (EAC+AEC = ∟)
 -- and step9 (EAC = AEC): each is ∟/2. angle_symm is applied DIRECTLY (it needs the
 -- distinctness c≠e,c≠a,e≠a, which the bare angle hyps don't supply); `linarith`

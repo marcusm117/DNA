@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 -- step3 (2.9.3): EA and EB are genuine lines through distinct points.
 -- distinctPointsOnLine e a EA = e.onLine EA ∧ a.onLine EA ∧ e≠a (likewise EB).
 -- e≠a, e≠b: e lies on the perpendicular CE; a,b lie on AB and (being ≠ c, with

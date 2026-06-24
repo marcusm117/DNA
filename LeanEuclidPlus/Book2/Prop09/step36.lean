@@ -1,5 +1,7 @@
 import SystemE
 import Helpers.OffLine
+import Book2.Prop09.step13_befb
+import Book2.Prop09.step36_pf
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -7,7 +9,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 theorem helper_2_9_step36
   (a b c d e f e0 e1 : Point) (AB CE DF EB : Line)
   (hab_a : a.onLine AB) (hab_b : b.onLine AB) (hab_c : c.onLine AB) (hab_d : d.onLine AB)
@@ -22,9 +23,9 @@ theorem helper_2_9_step36
   (hstep16 : ∠ f:d:b = ∟ ∧ ∠ b:f:d = ∟ / 2) :
   ∠ a:d:f = ∟ := by
   -- @args: b c d e e0 e1 f AB CE DF EB
-  have step13_befb : between e f b := by sorry
+  have step13_befb : between e f b := by euclid_apply (helper_2_9_step13_befb b c d e e0 e1 f AB CE DF EB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   have hfdb : ∠ f:d:b = ∟ := hstep16.1
-  have step36_pf : ∠ a:d:f = ∟ := by sorry
+  have step36_pf : ∠ a:d:f = ∟ := by euclid_apply (helper_2_9_step36_pf a b c d e f e0 e1 AB CE DF EB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   exact step36_pf
 
 end Elements.Book2

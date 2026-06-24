@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements.Book1
 
-set_option systemE.solverTime 30 in
 -- step16 helper: ∠f:b:d + ∠b:f:d = ∟. △BFD angle-sum (proposition_32) with the right
 -- angle ∠f:d:b = ∟ ⟹ the other two angles sum to ∟.
 theorem helper_2_9_step16_sum

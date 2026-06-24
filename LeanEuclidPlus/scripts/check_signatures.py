@@ -61,7 +61,7 @@ def _prop_files():
       Book 2 (folders): Book2/Prop*/Main.lean   (post-refactor)
       Book 2 (flat):    Book2/Prop*.lean         (any not-yet-migrated, for safety)
     De-duplicated, sorted."""
-    pats = ["Book/Prop*.lean", "Book2/Prop*/Main.lean", "Book2/Prop*.lean"]
+    pats = ["Book/Prop*.lean", "Book1/Prop*/Main.lean", "Book2/Prop*/Main.lean", "Book2/Prop*.lean"]
     rels = []
     for pat in pats:
         for path in glob.glob(os.path.join(BOOK_ROOT, pat)):

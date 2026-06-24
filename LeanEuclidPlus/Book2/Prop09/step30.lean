@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_9_step30
   (a c e : Point)
   (hstep23 : |(e─a)| * |(e─a)| = 2 * (|(a─c)| * |(a─c)|)) :

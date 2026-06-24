@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 -- step12 geometry: c's ray (ec) splits ∠aeb (a,c,b collinear, c between) giving
 -- ∠a:e:b = ∠a:e:c + ∠c:e:b, plus symmetry ∠a:e:c = ∠c:e:a. Pure geometry, NO ∟/2.
 theorem helper_2_9_step12_split

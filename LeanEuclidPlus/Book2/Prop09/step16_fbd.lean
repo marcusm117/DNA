@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 -- step16 helper: ∠f:b:d = ∠e:b:c (f on ray b→e via between e f b; d on ray b→c via
 -- between c d b). equal_angles at vertex b.
 theorem helper_2_9_step16_fbd

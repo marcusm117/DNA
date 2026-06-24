@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements.Book1
 
-set_option systemE.solverTime 30 in
 -- step13 helper: ∠g:e:f + ∠e:f:g = ∟. △EGF angle-sum (proposition_32) with the right
 -- angle ∠e:g:f = ∟ ⟹ the other two angles sum to ∟.
 theorem helper_2_9_step13_sum

@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 -- step13 betweenness: g (= FG ∩ CE) lies between e and c on CE. Chain:
 --   between e f b → f≠b; e off AB; f off AB → FG≠AB → g≠c;
 --   c,b sameSide FG (AB∥FG); e,b opposite FG (pasch_3); → e,c opposite FG;

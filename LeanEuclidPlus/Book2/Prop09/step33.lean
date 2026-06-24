@@ -1,10 +1,10 @@
 import SystemE
+import Book2.Prop09.step13_befb
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_9_step33
   (a b c d e f e0 e1 : Point) (AB CE EA EB DF : Line)
   (hab_a : a.onLine AB) (hab_b : b.onLine AB) (hab_c : c.onLine AB) (hab_d : d.onLine AB)
@@ -20,7 +20,7 @@ theorem helper_2_9_step33
   (hstep12 : ∠ a:e:b = ∟) :
   ∠ a:e:f = ∟ := by
   -- @args: b c d e e0 e1 f AB CE DF EB
-  have step13_befb : between e f b := by sorry
+  have step13_befb : between e f b := by euclid_apply (helper_2_9_step13_befb b c d e e0 e1 f AB CE DF EB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (equal_angles e a a f b EA EB)
   euclid_finish
 

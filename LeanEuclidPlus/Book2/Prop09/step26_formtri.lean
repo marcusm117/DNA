@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 theorem helper_2_9_step26_formtri
   (a b c d e f g e0 e1 : Point) (AB CE EB DF FG : Line)
   (hab_a : a.onLine AB) (hab_b : b.onLine AB) (hab_c : c.onLine AB) (hab_d : d.onLine AB)

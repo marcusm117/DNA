@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 -- step5 (2.9.5): FG is the line through F parallel to AB (proposition_31's outputs).
 theorem helper_2_9_step5
   (f : Point) (FG AB : Line)

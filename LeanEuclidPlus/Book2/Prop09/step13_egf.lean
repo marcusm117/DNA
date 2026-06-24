@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements.Book1
 
-set_option systemE.solverTime 30 in
 -- step13 right-angle leaf: ∠e:g:f = ∟. proposition_29'''' gives ∠e:g:f = ∠g:c:b with
 -- between e g c + f.sameSide b CE supplied (no SMT search); ∠g:c:b = ∟ (hrcb) closes it.
 theorem helper_2_9_step13_egf

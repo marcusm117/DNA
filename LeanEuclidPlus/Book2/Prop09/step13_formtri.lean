@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 -- step13 helper: formTriangle e g f CE FG EB. f ∉ CE (DF ∥ CE); the three sides are
 -- pairwise distinct (witnessed by f off CE for CE≠FG,EB≠CE; e off FG for FG≠EB).
 theorem helper_2_9_step13_formtri

@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 -- step13 root betweenness: f (= DF ∩ EB) lies between e and b on EB.
 -- e,b are on opposite sides of DF (e sameSide c across DF since CE∥DF; c,b opposite
 -- across DF via pasch_3 on between c d b with d ∈ DF); then pasch_4.

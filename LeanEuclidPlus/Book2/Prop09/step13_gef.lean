@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 -- step13 helper: ∠g:e:f = ∠c:e:b (g on ray c→e, f on ray e→b, so equal_angles).
 theorem helper_2_9_step13_gef
   (a b c e f g e0 e1 : Point) (AB CE EB : Line)

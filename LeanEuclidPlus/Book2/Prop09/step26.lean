@@ -2,6 +2,7 @@ import SystemE
 import Book.Prop47
 import Helpers.OffLine
 import Mathlib.Tactic.Linarith
+import Book2.Prop09.step26_formtri
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -9,7 +10,6 @@ namespace Elements.Book2
 
 open Elements.Book1 Elements
 
-set_option systemE.solverTime 30 in
 theorem helper_2_9_step26
   (a b c d e f g e0 e1 : Point) (AB CE EB DF FG : Line)
   (hab_a : a.onLine AB) (hab_b : b.onLine AB) (hab_c : c.onLine AB) (hab_d : d.onLine AB)
@@ -25,7 +25,7 @@ theorem helper_2_9_step26
   (hpar_fg : ¬FG.intersectsLine AB)
   (hstep13 : ∠ e:g:f = ∟ ∧ ∠ e:f:g = ∟ / 2) :
   |(e─f)| * |(e─f)| = |(e─g)| * |(e─g)| + |(g─f)| * |(g─f)| := by
-  have step26_formtri : formTriangle g e f CE EB FG := by sorry
+  have step26_formtri : formTriangle g e f CE EB FG := by euclid_apply (helper_2_9_step26_formtri a b c d e f g e0 e1 AB CE EB DF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (proposition_47 g e f CE EB FG)
   linarith
 

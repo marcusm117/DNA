@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 -- step13 helper: f.sameSide b CE. f lies between e,b on EB (between e f b), e ∈ CE, and
 -- f ∉ CE (DF ∥ CE), so pasch_2 gives f.sameSide b CE.
 theorem helper_2_9_step13_fsb

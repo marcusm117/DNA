@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements
 
-set_option systemE.solverTime 30 in
 -- step6 (2.9.6): AF is a genuine line through distinct points (a ≠ f).
 -- Off-line chain rooted at the cheap anchor ¬e0.onLine AB:
 --   ¬a.onLine CE   (witness e0 ∈ CE \ AB)

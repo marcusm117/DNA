@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 open Elements.Book1 Elements
 
-set_option systemE.solverTime 30 in
 theorem helper_2_9_step21
   (a b c e e0 e1 : Point) (AB CE EA : Line)
   (hab_a : a.onLine AB) (hab_b : b.onLine AB) (hab_c : c.onLine AB)

@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 -- step4 (2.9.4): DF is the line through D parallel to EC (proposition_31's outputs).
 theorem helper_2_9_step4
   (d : Point) (DF CE : Line)

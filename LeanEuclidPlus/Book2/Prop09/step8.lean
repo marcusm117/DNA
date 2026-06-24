@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 open Elements.Book1 Elements
 
-set_option systemE.solverTime 30 in
 -- step8 (2.9.8): the remaining angles EAC + AEC of △AEC sum to one right-angle
 -- (the third angle ACE is right). proposition_32 (triangle angle-sum); d=b is the
 -- point beyond C on line AC (between a c b). Off-line facts give formTriangle.

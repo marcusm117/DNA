@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 -- step13 helper: ∠g:c:b = ∟. CE⊥AB (step1 ∠a:c:e = ∟, with between a c b); g is on ray
 -- c→e (between e g c), so ∠g:c:b = ∠e:c:b = ∟.
 theorem helper_2_9_step13_rcb

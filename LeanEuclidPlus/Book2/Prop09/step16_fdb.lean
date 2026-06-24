@@ -9,7 +9,6 @@ namespace Elements.Book2
 
 open Elements.Book1 Elements
 
-set_option systemE.solverTime 30 in
 -- step16 right-angle: ∠f:d:b = ∟ (DF⊥AB). proposition_29'''' with DF∥CE and AB the
 -- transversal: ∠b:d:f = ∠d:c:g (f on DF, g on CE∩FG); f.sameSide g AB is cheap (FG∥AB);
 -- ∠d:c:g = ∟ (CE⊥AB). The off-line chain gives FG≠AB.

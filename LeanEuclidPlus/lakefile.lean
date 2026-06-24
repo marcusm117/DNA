@@ -14,6 +14,9 @@ lean_lib Helpers {
 lean_lib Book {
 }
 
+lean_lib Book1 {
+}
+
 lean_lib Book2 {
 }
 

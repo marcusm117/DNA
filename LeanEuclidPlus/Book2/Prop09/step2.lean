@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 -- step2 (2.9.2): CE = AC = CB. |c─e| = |a─c| comes from the prop-3 cut;
 -- |c─e| = |c─b| follows by transitivity with the hypothesis |a─c| = |c─b|.
 theorem helper_2_9_step2

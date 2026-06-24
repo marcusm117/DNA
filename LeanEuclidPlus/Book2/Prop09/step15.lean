@@ -2,6 +2,8 @@ import SystemE
 import Book.Prop06
 import Helpers.OffLine
 import Mathlib.Tactic.Linarith
+import Book2.Prop09.step13_befb
+import Book2.Prop09.step13_egc
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -9,7 +11,6 @@ namespace Elements.Book2
 
 open Elements.Book1 Elements
 
-set_option systemE.solverTime 30 in
 -- step15 (2.9.15): |EG| = |GF| (proposition_6 on △EGF). ∠g:e:f = ∠e:f:g (step14) and
 -- angle_symm give ∠g:e:f = ∠g:f:e; formTriangle g e f + prop_6 ⟹ |g─e| = |g─f|.
 -- between e g c (from step13_egc) gives e≠g for the off-line facts.
@@ -28,8 +29,8 @@ theorem helper_2_9_step15
   (hpar_fg : ¬FG.intersectsLine AB)
   (h14 : ∠ g:e:f = ∠ e:f:g) :
   |(e─g)| = |(g─f)| := by
-  have step13_befb : between e f b := by sorry
-  have step13_egc : between e g c := by sorry
+  have step13_befb : between e f b := by euclid_apply (helper_2_9_step13_befb b c d e e0 e1 f AB CE DF EB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step13_egc : between e g c := by euclid_apply (helper_2_9_step13_egc a b c e f g e0 e1 AB CE EB FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   have heCE : e.onLine CE := by
     euclid_apply (between_same_line_in c e e1 CE)
     assumption

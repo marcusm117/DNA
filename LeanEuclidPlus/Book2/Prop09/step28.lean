@@ -1,6 +1,7 @@
 import SystemE
 import Book.Prop34
 import Helpers.OffLine
+import Book2.Prop09.step28_pgram
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -8,7 +9,6 @@ namespace Elements.Book2
 
 open Elements.Book1 Elements
 
-set_option systemE.solverTime 30 in
 theorem helper_2_9_step28
   (a b c d e f g e0 e1 : Point) (AB CE EB DF FG : Line)
   (hab_a : a.onLine AB) (hab_b : b.onLine AB) (hab_c : c.onLine AB) (hab_d : d.onLine AB)
@@ -23,7 +23,7 @@ theorem helper_2_9_step28
   (hpar_df : ¬DF.intersectsLine CE)
   (hpar_fg : ¬FG.intersectsLine AB) :
   |(g─f)| = |(c─d)| := by
-  have step28_pgram : formParallelogram g f c d FG AB CE DF := by sorry
+  have step28_pgram : formParallelogram g f c d FG AB CE DF := by euclid_apply (helper_2_9_step28_pgram a b c d e f g e0 e1 AB CE EB DF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
   euclid_apply (line_from_points f c) as FC
   euclid_apply (proposition_34 g f c d FG AB CE DF FC)
   euclid_finish

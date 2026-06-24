@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 open Elements.Book1 Elements
 
-set_option systemE.solverTime 30 in
 -- step7 (2.9.7): in isoceles △AEC (AC = CE), the base angles at A and E are equal.
 -- proposition_5 needs a produced point beyond each base vertex (e1 beyond E; d'
 -- beyond A via extend_point). formTriangle needs CE≠AB and the off-CE / off-AB

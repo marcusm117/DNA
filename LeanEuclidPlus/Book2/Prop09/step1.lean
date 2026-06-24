@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 -- step1 (2.9.1): CE ⟂ AB at C, so ∠ACE = ∟.
 -- e0 is the prop-11 foot with ∠a:c:e0 = ∟; e lies on ray c→e1 (between c e e1),
 -- as does e0 (between c e0 e1), so ∠a:c:e = ∠a:c:e0 via equal_angles.

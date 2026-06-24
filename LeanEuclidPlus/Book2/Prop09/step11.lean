@@ -10,7 +10,6 @@ namespace Elements.Book2
 
 open Elements.Book1 Elements
 
-set_option systemE.solverTime 30 in
 -- step11 (2.9.11): by the same reasoning, △CEB (CE = CB, right at C) has its base
 -- angles each ∟/2. proposition_5 (base angles equal), proposition_32 (angle sum),
 -- the right angle ∠e:c:b = ∟ (from step1 + a,c,b collinear), and halving via linarith.
