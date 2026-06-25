@@ -21,7 +21,7 @@ theorem helper_2_7_step3_cnad (a b c d : Point) (AB AD : Line)
     euclid_apply (two_points_determine_line a c AB AD)
     euclid_finish
   rw [hABAD] at hbAB
-  have step3_collin : ∠ b:a:d ≠ ∟ := by euclid_apply (helper_2_7_step3_collin a b c d AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step3_collin : ∠ b:a:d ≠ ∟ := by euclid_apply (helper_2_7_step3_collin a b c d AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   exact step3_collin hbad
 
 end Elements.Book2

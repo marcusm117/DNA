@@ -15,7 +15,7 @@ theorem helper_2_6_step6_sska_aoff (a b c d e : Point) (AB CE : Line)
     (hce : |(c─e)| = |(c─d)|) (hdce : ∠ d:c:e = ∟) :
     ¬(a.onLine CE) := by
   euclid_intros
-  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (two_points_determine_line a c CE AB)
   euclid_finish
 

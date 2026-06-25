@@ -24,7 +24,7 @@ theorem helper_2_4_step7 (a b c d g : Point) (AB CF AD BD : Line)
   -- a ≠ d (side a─d = a─b > 0)
   have had : a ≠ d := by euclid_finish
   -- g is between b and d on the diagonal (shared with step5)
-  have step5_bgd : between b g d := by euclid_apply (helper_2_4_step5_bgd a b c d g AB CF AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_bgd : between b g d := by euclid_apply (helper_2_4_step5_bgd a b c d g AB CF AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- ∠ a:b:d = ∠ c:b:g: rays b→a = b→c (c between a,b) and b→d = b→g (g between b,d)
   euclid_apply (equal_angles b a c d g AB BD)
   euclid_finish

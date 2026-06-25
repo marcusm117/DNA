@@ -93,12 +93,17 @@ partial def elimDisjunction (decl : LocalDecl) : TacticM Unit := do
 /--
 Destruct all conjunctions in the local context.
 -/
-def elimAllConjunctions : TacticM Unit :=
-  withMainContext do
-    for decl in ← getLCtx do
-      if decl.isImplementationDetail then
-        continue
-      elimConjunction decl
+def elimAllConjunctions : TacticM Unit := do
+  -- No-op when there are no goals (e.g. a prior `exact` in `euclid_apply`'s close-directly-first
+  -- branch closed the goal). `withMainContext` would otherwise error on a goal-less state.
+  if (← getGoals).isEmpty then
+    pure ()
+  else
+    withMainContext do
+      for decl in ← getLCtx do
+        if decl.isImplementationDetail then
+          continue
+        elimConjunction decl
 
 /--
 Destruct all conjunctions in the local context.

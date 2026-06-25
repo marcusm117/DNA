@@ -22,7 +22,7 @@ theorem helper_2_7_step9 (a b c d e n g h f : Point) (AB CN AD BE HF BD DE : Lin
     (hbad : ∠ b:a:d = ∟) (habe : ∠ a:b:e = ∟) :
     |(b─f)| = |(b─c)| := by
   euclid_intros
-  have step9_bfbc : |(b─f)| = |(b─c)| := by euclid_apply (helper_2_7_step9_bfbc a b c d e n g h f AB CN AD BE HF BD DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_bfbc : |(b─f)| = |(b─c)| := by euclid_apply (helper_2_7_step9_bfbc a b c d e n g h f AB CN AD BE HF BD DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   exact step9_bfbc
 
 end Elements.Book2

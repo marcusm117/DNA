@@ -14,7 +14,7 @@ theorem helper_2_5_step6_doffce (a b c d e : Point) (AB CE : Line)
     (hacd : between a c d) (hcdb : between c d b)
     (hcelen : |(c─e)| = |(c─b)|) (hbce : ∠ b:c:e = ∟) :
     ¬(d.onLine CE) := by
-  have step6_big_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_5_step6_big_eoff b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_big_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_5_step6_big_eoff b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   intro hdCE
   euclid_apply (two_points_determine_line c d CE AB)
   euclid_finish

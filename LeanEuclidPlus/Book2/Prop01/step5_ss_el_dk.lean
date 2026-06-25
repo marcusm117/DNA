@@ -19,7 +19,7 @@ theorem helper_2_1_step5_ss_el_dk (b d e f k l : Point) (BC BF DK EL : Line)
     (hDKBF : ¬(DK.intersectsLine BF)) (hELBF : ¬(EL.intersectsLine BF)) :
     e.sameSide l DK := by
   euclid_intros
-  have step5_ss_el_dk_par : ¬(EL.intersectsLine DK) := by euclid_apply (helper_2_1_step5_ss_el_dk_par b d e f k l BC BF DK EL (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_ss_el_dk_par : ¬(EL.intersectsLine DK) := by euclid_apply (helper_2_1_step5_ss_el_dk_par b d e f k l BC BF DK EL (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have heoff : ¬(e.onLine DK) := by
     by_contra heon
     euclid_apply (intersection_lines_common_point e DK EL)

@@ -13,7 +13,7 @@ theorem helper_2_6_step2 (a b c d e : Point) (AB DE : Line)
     (hacb : between a c b) (habd : between a b d)
     (hce : |(c─e)| = |(c─d)|) (hdce : ∠ d:c:e = ∟) :
     distinctPointsOnLine d e DE := by
-  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_finish
 
 end Elements.Book2

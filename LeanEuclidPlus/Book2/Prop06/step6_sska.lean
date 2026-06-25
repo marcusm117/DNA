@@ -18,7 +18,7 @@ theorem helper_2_6_step6_sska (a b c d e k : Point) (AB CE AK : Line)
     (hAKCE : ¬(AK.intersectsLine CE)) :
     k.sameSide a CE := by
   euclid_intros
-  have step6_sska_aoff : ¬(a.onLine CE) := by euclid_apply (helper_2_6_step6_sska_aoff a b c d e AB CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_sska_aoff : ¬(a.onLine CE) := by euclid_apply (helper_2_6_step6_sska_aoff a b c d e AB CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hAKneCE : AK ≠ CE := fun h => step6_sska_aoff (h ▸ haAK)
   have hkoff : ¬(k.onLine CE) := by
     by_contra hkon

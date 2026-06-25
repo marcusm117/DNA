@@ -14,7 +14,7 @@ theorem helper_2_6_step9_aoffdf (a b c d f : Point) (AB DF : Line)
     (hacb : between a c b) (habd : between a b d)
     (hdf : |(d─f)| = |(c─d)|) (hcdf : ∠ c:d:f = ∟) :
     ¬(a.onLine DF) := by
-  have step7_foffab : ¬(f.onLine AB) := by euclid_apply (helper_2_6_step7_foffab a b c d f AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_foffab : ¬(f.onLine AB) := by euclid_apply (helper_2_6_step7_foffab a b c d f AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   intro haDF
   euclid_apply (two_points_determine_line a d DF AB)
   euclid_finish

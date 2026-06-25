@@ -33,13 +33,13 @@ theorem helper_2_4_step9_par (a b c d e g k : Point) (AB CF AD BE HK BD : Line)
   have hADCF : AD ≠ CF := fun h => hcnAD (h ▸ hcCF)
   have hBEAD : BE ≠ AD := fun h => hanBE (h ▸ haAD)
   -- c ∉ BE and g ∉ AB (off-line via the base/right-side incidences)
-  have step9_cnbe : ¬(c.onLine BE) := by euclid_apply (helper_2_4_step9_cnbe a b c AB BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_cnbe : ¬(c.onLine BE) := by euclid_apply (helper_2_4_step9_cnbe a b c AB BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hCFBE : CF ≠ BE := fun h => step9_cnbe (h ▸ hcCF)
-  have step9_gnab : ¬(g.onLine AB) := by euclid_apply (helper_2_4_step9_gnab a b d g AB BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_gnab : ¬(g.onLine AB) := by euclid_apply (helper_2_4_step9_gnab a b d g AB BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- CF ∥ BE, c.sameSide g BE, b ≠ k complete the parallelogram
-  have step9_cfbe : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_4_step9_cfbe CF AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step9_csg : c.sameSide g BE := by euclid_apply (helper_2_4_step9_csg c g CF BE (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step9_bk : b ≠ k := by euclid_apply (helper_2_4_step9_bk b g k AB HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_cfbe : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_4_step9_cfbe CF AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step9_csg : c.sameSide g BE := by euclid_apply (helper_2_4_step9_csg c g CF BE (by assumption) (by assumption) (by assumption) (by assumption))
+  have step9_bk : b ≠ k := by euclid_apply (helper_2_4_step9_bk b g k AB HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_finish
 
 end Elements.Book2

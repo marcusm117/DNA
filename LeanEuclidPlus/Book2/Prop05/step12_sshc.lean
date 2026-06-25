@@ -20,8 +20,8 @@ theorem helper_2_5_step12_sshc (a c d h k : Point) (AB AK DG : Line)
     c.sameSide h AK := by
   euclid_intros
   have had : a ≠ d := by euclid_finish
-  have step12_sshc_cd : c.sameSide d AK := by euclid_apply (helper_2_5_step12_sshc_cd a c d AB AK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step12_sshc_dh : d.sameSide h AK := by euclid_apply (helper_2_5_step12_sshc_dh a d h AB AK DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step12_sshc_cd : c.sameSide d AK := by euclid_apply (helper_2_5_step12_sshc_cd a c d AB AK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step12_sshc_dh : d.sameSide h AK := by euclid_apply (helper_2_5_step12_sshc_dh a d h AB AK DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   exact same_side_trans d c h AK ⟨same_side_symm c d AK step12_sshc_cd, step12_sshc_dh⟩
 
 end Elements.Book2

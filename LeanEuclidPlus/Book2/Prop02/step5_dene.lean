@@ -14,7 +14,7 @@ theorem helper_2_2_step5_dene (a b c d : Point) (AB DE AD : Line)
     (hdAD : d.onLine AD) (haAD : a.onLine AD) :
     DE ≠ AB := by
   euclid_intros
-  have step5_doff : ¬(d.onLine AB) := by euclid_apply (helper_2_2_step5_doff a b c d AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_doff : ¬(d.onLine AB) := by euclid_apply (helper_2_2_step5_doff a b c d AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_finish
 
 end Elements.Book2

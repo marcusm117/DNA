@@ -34,17 +34,17 @@ by
   euclid_apply (extend_point_longer BF b f (a₁─a₂)) as f'
   euclid_sentence "2.1.1"
     "For let $BF$ be drawn from point $B$, at right-angles to $BC$ [Prop.~1.11],"
-    (step1 : ∠ f:b:c = ∟) := by euclid_apply (helper_2_1_step1 b c f (by assumption)); (try split_ands) <;> assumption
+    (step1 : ∠ f:b:c = ∟) := by euclid_apply (helper_2_1_step1 b c f (by assumption))
 
   euclid_apply (proposition_3 b f' a₁ a₂ BF A) as g
   euclid_sentence "2.1.2"
     "and let $BG$ be made equal to $A$ [Prop.~1.3],"
-    (step2 : |(b─g)| = |(a₁─a₂)|) := by euclid_apply (helper_2_1_step2 a₁ a₂ b g (by assumption)); (try split_ands) <;> assumption
+    (step2 : |(b─g)| = |(a₁─a₂)|) := by euclid_apply (helper_2_1_step2 a₁ a₂ b g (by assumption))
 
   euclid_apply (proposition_31 g b c BC) as GH
   euclid_sentence "2.1.3"
     "and let $GH$ be drawn through (point) $G$, parallel to $BC$ [Prop.~1.31],"
-    (step3 : g.onLine GH ∧ ¬(GH.intersectsLine BC)) := by euclid_apply (helper_2_1_step3 g GH BC (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step3 : g.onLine GH ∧ ¬(GH.intersectsLine BC)) := by euclid_apply (helper_2_1_step3 g GH BC (by assumption) (by assumption))
 
   euclid_apply (proposition_31 d b f BF) as DK
   euclid_apply (proposition_31 e b f BF) as EL
@@ -56,35 +56,35 @@ by
     "and let $DK$, $EL$, and $CH$ be drawn through (points) $D$, $E$, and $C$ (respectively), parallel to $BG$ [Prop.~1.31]."
     (step4 : d.onLine DK ∧ ¬(DK.intersectsLine BF) ∧
       e.onLine EL ∧ ¬(EL.intersectsLine BF) ∧
-      c.onLine CH ∧ ¬(CH.intersectsLine BF)) := by euclid_apply (helper_2_1_step4 d e c DK EL CH BF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+      c.onLine CH ∧ ¬(CH.intersectsLine BF)) := by euclid_apply (helper_2_1_step4 d e c DK EL CH BF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.1.5"
     "So the (rectangle) $BH$ is equal to the (rectangles) $BK$, $DL$, and $EH$."
     (step5 : Triangle.area △ b:c:h + Triangle.area △ b:g:h =
       (Triangle.area △ b:d:k + Triangle.area △ b:g:k)
     + (Triangle.area △ d:e:l + Triangle.area △ d:k:l)
-    + (Triangle.area △ e:c:h + Triangle.area △ e:l:h)) := by euclid_apply (helper_2_1_step5 b c d e f f' g h k l BC GH BF DK EL CH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+    + (Triangle.area △ e:c:h + Triangle.area △ e:l:h)) := by euclid_apply (helper_2_1_step5 b c d e f f' g h k l BC GH BF DK EL CH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.1.6"
     "And $BH$ is the (rectangle contained) by $A$ and $BC$. For it is contained by $GB$ and $BC$, and $BG$ (is) equal to $A$."
-    (step6 : Triangle.area △ b:c:h + Triangle.area △ b:g:h = |(a₁─a₂)| * |(b─c)|) := by euclid_apply (helper_2_1_step6 a₁ a₂ b c f f' g h BC BF CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step6 : Triangle.area △ b:c:h + Triangle.area △ b:g:h = |(a₁─a₂)| * |(b─c)|) := by euclid_apply (helper_2_1_step6 a₁ a₂ b c f f' g h BC BF CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.1.7"
     "And $BK$ (is) the (rectangle contained) by $A$ and $BD$. For it is contained by $GB$ and $BD$, and $BG$ (is) equal to $A$."
-    (step7 : Triangle.area △ b:d:k + Triangle.area △ b:g:k = |(a₁─a₂)| * |(b─d)|) := by euclid_apply (helper_2_1_step7 a₁ a₂ b c d e f f' g k BC BF DK GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step7 : Triangle.area △ b:d:k + Triangle.area △ b:g:k = |(a₁─a₂)| * |(b─d)|) := by euclid_apply (helper_2_1_step7 a₁ a₂ b c d e f f' g k BC BF DK GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.1.8"
     "And $DL$ (is) the (rectangle contained) by $A$ and $DE$. For $DK$, that is to say $BG$ [Prop.~1.34], (is) equal to $A$."
-    (step8 : Triangle.area △ d:e:l + Triangle.area △ d:k:l = |(a₁─a₂)| * |(d─e)|) := by euclid_apply (helper_2_1_step8 a₁ a₂ b c d e f f' g k l BC BF DK EL GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step8 : Triangle.area △ d:e:l + Triangle.area △ d:k:l = |(a₁─a₂)| * |(d─e)|) := by euclid_apply (helper_2_1_step8 a₁ a₂ b c d e f f' g k l BC BF DK EL GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.1.9"
     "Similarly, $EH$ (is) also the (rectangle contained) by $A$ and $EC$."
-    (step9 : Triangle.area △ e:c:h + Triangle.area △ e:l:h = |(a₁─a₂)| * |(e─c)|) := by euclid_apply (helper_2_1_step9 a₁ a₂ b c d e f f' g h l BC BF EL CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step9 : Triangle.area △ e:c:h + Triangle.area △ e:l:h = |(a₁─a₂)| * |(e─c)|) := by euclid_apply (helper_2_1_step9 a₁ a₂ b c d e f f' g h l BC BF EL CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.1.10"
     "Thus, the (rectangle contained) by $A$ and $BC$ is equal to the (rectangles contained) by $A$ and $BD$, by $A$ and $DE$, and, finally, by $A$ and $EC$."
     (step10 : |(a₁─a₂)| * |(b─c)| =
-      |(a₁─a₂)| * |(b─d)| + |(a₁─a₂)| * |(d─e)| + |(a₁─a₂)| * |(e─c)|) := by euclid_apply (helper_2_1_step10 a₁ a₂ b c d e g h k l (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+      |(a₁─a₂)| * |(b─d)| + |(a₁─a₂)| * |(d─e)| + |(a₁─a₂)| * |(e─c)|) := by euclid_apply (helper_2_1_step10 a₁ a₂ b c d e g h k l (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   exact step10
   euclid_conclude_sentence "2.1.11"

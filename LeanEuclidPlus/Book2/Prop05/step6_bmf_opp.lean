@@ -23,10 +23,10 @@ theorem helper_2_5_step6_bmf_opp (b c d e f h : Point) (AB BE CE DG EF KM : Line
     (hcdb : between c d b) (hDGCE : ¬(DG.intersectsLine CE)) :
     ¬(b.sameSide f KM) := by
   euclid_intros
-  have step6_bmf_bopp : ¬(b.sameSide e DG) := by euclid_apply (helper_2_5_step6_bmf_bopp b c d e AB CE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_bmf_bopp : ¬(b.sameSide e DG) := by euclid_apply (helper_2_5_step6_bmf_bopp b c d e AB CE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hbe : b ≠ e := by euclid_finish
-  have step6_bmf_bhe : between b h e := by euclid_apply (helper_2_5_step6_bmf_bhe b e h BE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step6_bmf_fse : f.sameSide e KM := by euclid_apply (helper_2_5_step6_bmf_fse e f h EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_bmf_bhe : between b h e := by euclid_apply (helper_2_5_step6_bmf_bhe b e h BE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step6_bmf_fse : f.sameSide e KM := by euclid_apply (helper_2_5_step6_bmf_fse e f h EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (pasch_3 b h e KM)
   euclid_finish
 

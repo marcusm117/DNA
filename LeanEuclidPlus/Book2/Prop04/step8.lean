@@ -29,7 +29,7 @@ theorem helper_2_4_step8 (a b c d g h : Point) (AB CF AD BD HK : Line)
   -- a ≠ d (side a─d = a─b > 0)
   have had : a ≠ d := by euclid_finish
   -- the triangle c,g,b (sides CF, BD, AB) — its formation also pins b≠c, c≠g, b≠g
-  have step8_tri : formTriangle c g b CF BD AB := by euclid_apply (helper_2_4_step8_tri a b c d g AB CF AD BD HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step8_tri : formTriangle c g b CF BD AB := by euclid_apply (helper_2_4_step8_tri a b c d g AB CF AD BD HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- recast step7 into prop6's base-angle form: ∠ c:g:b = ∠ c:b:g
   have hbase : ∠ c:g:b = ∠ c:b:g := by
     have hbc : b ≠ c := by euclid_finish

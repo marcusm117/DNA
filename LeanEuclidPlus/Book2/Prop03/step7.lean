@@ -20,7 +20,7 @@ theorem helper_2_3_step7 (a b c d e : Point) (AB DE CD BE : Line)
     (hDEAB : ¬(DE.intersectsLine AB)) (hCDBE : ¬(CD.intersectsLine BE)) :
     Triangle.area △ c:d:e + Triangle.area △ c:e:b = |(b─c)| * |(b─c)| := by
   euclid_intros
-  have step7_par : formParallelogram c b d e AB DE CD BE := by euclid_apply (helper_2_3_step7_par a b c d e AB DE CD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_par : formParallelogram c b d e AB DE CD BE := by euclid_apply (helper_2_3_step7_par a b c d e AB DE CD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (rectangle_area c b d e AB DE CD BE)
   have hcb : |(c─b)| = |(b─c)| := by euclid_finish
   have hcd2 : |(c─d)| = |(b─c)| := by euclid_finish

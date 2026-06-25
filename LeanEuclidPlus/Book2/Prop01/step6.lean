@@ -20,8 +20,8 @@ theorem helper_2_1_step6 (a₁ a₂ b c f f' g h : Point) (BC BF CH GH : Line)
     (hhGH : h.onLine GH) :
     Triangle.area △ b:c:h + Triangle.area △ b:g:h = |(a₁─a₂)| * |(b─c)| := by
   euclid_intros
-  have step6_rangle : ∠ b:c:h = ∟ := by euclid_apply (helper_2_1_step6_rangle b c f f' g h BC BF CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step6_pgram : formParallelogram b g c h BF CH BC GH := by euclid_apply (helper_2_1_step6_pgram b c f f' g h BC BF CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_rangle : ∠ b:c:h = ∟ := by euclid_apply (helper_2_1_step6_rangle b c f f' g h BC BF CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step6_pgram : formParallelogram b g c h BF CH BC GH := by euclid_apply (helper_2_1_step6_pgram b c f f' g h BC BF CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (rectangle_area b g c h BF CH BC GH)
   euclid_finish
 

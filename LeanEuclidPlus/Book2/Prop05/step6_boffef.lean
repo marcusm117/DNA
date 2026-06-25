@@ -14,7 +14,7 @@ theorem helper_2_5_step6_boffef (a b c d e : Point) (AB CE EF : Line)
     (hcelen : |(c─e)| = |(c─b)|) (hbce : ∠ b:c:e = ∟)
     (hEFAB : ¬(EF.intersectsLine AB)) :
     ¬(b.onLine EF) := by
-  have step6_big_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_5_step6_big_eoff b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_big_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_5_step6_big_eoff b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   intro hbEF
   have hEFneAB : EF ≠ AB := fun heq => step6_big_eoff (heq ▸ heEF)
   euclid_apply (intersection_lines_common_point b EF AB)

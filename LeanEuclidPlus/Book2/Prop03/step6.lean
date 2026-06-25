@@ -30,13 +30,13 @@ theorem helper_2_3_step6 (a b c d e f : Point) (AB DE CD BE AF : Line)
     (hAFCD : ¬(AF.intersectsLine CD)) :
     Triangle.area △ a:f:d + Triangle.area △ a:d:c = |(a─c)| * |(c─b)| := by
   euclid_intros
-  have step5_edf : between e d f := by euclid_apply (helper_2_3_step5_edf a b c d e f AB DE CD BE AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step6_sameside : a.sameSide f CD := by euclid_apply (helper_2_3_step6_sameside a b c d e f AB DE CD BE AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step6_cd : c ≠ d := by euclid_apply (helper_2_3_step6_cd a b c d (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step6_fd : f ≠ d := by euclid_apply (helper_2_3_step6_fd d e f (by assumption)); (try split_ands) <;> assumption
-  have step6_par : formParallelogram a c f d AB DE AF CD := by euclid_apply (helper_2_3_step6_par a c d e f AB DE CD AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step6_area : Triangle.area △ a:f:d + Triangle.area △ a:d:c = |(a─c)| * |(a─f)| := by euclid_apply (helper_2_3_step6_area a c d e f AB DE CD AF (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step6_haf : |(a─f)| = |(c─d)| := by euclid_apply (helper_2_3_step6_haf a c d f AB DE CD AF (by assumption)); (try split_ands) <;> assumption
+  have step5_edf : between e d f := by euclid_apply (helper_2_3_step5_edf a b c d e f AB DE CD BE AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step6_sameside : a.sameSide f CD := by euclid_apply (helper_2_3_step6_sameside a b c d e f AB DE CD BE AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step6_cd : c ≠ d := by euclid_apply (helper_2_3_step6_cd a b c d (by assumption) (by assumption))
+  have step6_fd : f ≠ d := by euclid_apply (helper_2_3_step6_fd d e f (by assumption))
+  have step6_par : formParallelogram a c f d AB DE AF CD := by euclid_apply (helper_2_3_step6_par a c d e f AB DE CD AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step6_area : Triangle.area △ a:f:d + Triangle.area △ a:d:c = |(a─c)| * |(a─f)| := by euclid_apply (helper_2_3_step6_area a c d e f AB DE CD AF (by assumption) (by assumption) (by assumption) (by assumption))
+  have step6_haf : |(a─f)| = |(c─d)| := by euclid_apply (helper_2_3_step6_haf a c d f AB DE CD AF (by assumption))
   rw [step6_area, step6_haf, hcd]
 
 end Elements.Book2

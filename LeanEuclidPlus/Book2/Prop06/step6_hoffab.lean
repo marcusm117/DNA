@@ -19,7 +19,7 @@ theorem helper_2_6_step6_hoffab (a b c d e h : Point) (AB CE DE BG : Line)
     (hBGCE : ¬(BG.intersectsLine CE)) :
     ¬(h.onLine AB) := by
   euclid_intros
-  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_finish
 
 end Elements.Book2

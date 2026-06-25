@@ -16,8 +16,8 @@ theorem helper_2_1_step8_len_pgram (b d e f g k : Point) (BC GH BF DK : Line)
     (hdDK : d.onLine DK) (hkDK : k.onLine DK) (hDKBF : ¬(DK.intersectsLine BF)) :
     formParallelogram b d g k BC GH BF DK := by
   euclid_intros
-  have step8_len_ss : b.sameSide g DK := by euclid_apply (helper_2_1_step8_len_ss b d e f g BC BF DK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step8_len_neq : d ≠ k := by euclid_apply (helper_2_1_step8_len_neq d g k BC GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step8_len_ss : b.sameSide g DK := by euclid_apply (helper_2_1_step8_len_ss b d e f g BC BF DK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step8_len_neq : d ≠ k := by euclid_apply (helper_2_1_step8_len_neq d g k BC GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   refine ⟨hbBC, hdBC, hgGH, hkGH, hbBF, hgBF, ⟨hdDK, hkDK, step8_len_neq⟩, step8_len_ss, ?_, ?_⟩
   · euclid_finish
   · euclid_finish

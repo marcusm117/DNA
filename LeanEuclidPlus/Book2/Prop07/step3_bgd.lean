@@ -19,7 +19,7 @@ theorem helper_2_7_step3_bgd (a b c d g : Point) (AB CN AD BD : Line)
     (hCNAD : ¬(CN.intersectsLine AD)) :
     between b g d := by
   euclid_intros
-  have step3_bgd_ss : a.sameSide d CN := by euclid_apply (helper_2_7_step3_bgd_ss a b c d AB CN AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step3_bgd_ss : a.sameSide d CN := by euclid_apply (helper_2_7_step3_bgd_ss a b c d AB CN AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (pasch_3 a c b CN)
   euclid_apply (pasch_4 b g d CN BD)
   euclid_finish

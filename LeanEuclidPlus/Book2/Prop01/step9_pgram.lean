@@ -21,8 +21,8 @@ theorem helper_2_1_step9_pgram (b c d e f g h l : Point) (BC BF EL CH GH : Line)
     (hGHBC : ¬(GH.intersectsLine BC)) :
     formParallelogram e l c h EL CH BC GH := by
   euclid_intros
-  have step9_pgram_par : ¬(EL.intersectsLine CH) := by euclid_apply (helper_2_1_step9_pgram_par b c d e f h l BC BF EL CH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step9_pgram_ss : e.sameSide c GH ∧ l ≠ h := by euclid_apply (helper_2_1_step9_pgram_ss b c d e f g h l BC BF EL CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_pgram_par : ¬(EL.intersectsLine CH) := by euclid_apply (helper_2_1_step9_pgram_par b c d e f h l BC BF EL CH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step9_pgram_ss : e.sameSide c GH ∧ l ≠ h := by euclid_apply (helper_2_1_step9_pgram_ss b c d e f g h l BC BF EL CH GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   obtain ⟨hesc, hlh⟩ := step9_pgram_ss
   refine ⟨heEL, hlEL, hcCH, hhCH, heBC, hcBC, ⟨hlGH, hhGH, hlh⟩, hesc, step9_pgram_par, ?_⟩
   euclid_finish

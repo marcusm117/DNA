@@ -21,7 +21,7 @@ theorem helper_2_5_step15_bhe (b d e g h : Point) (AB BE EF KM : Line)
     between b h e := by
   euclid_intros
   -- @args: b d e g h AB EF KM
-  have step15_cle_opp : ¬(b.sameSide e KM) := by euclid_apply (helper_2_5_step15_cle_opp b d e g h AB EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step15_cle_opp : ¬(b.sameSide e KM) := by euclid_apply (helper_2_5_step15_cle_opp b d e g h AB EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hKMneBE : KM ≠ BE := fun heq => hboffKM (heq ▸ hbBE)
   have hbh : b ≠ h := fun heq => hboffKM (heq ▸ hhKM)
   have heh : e ≠ h := fun heq => heoffKM (heq ▸ hhKM)

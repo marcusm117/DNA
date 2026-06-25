@@ -21,8 +21,8 @@ theorem helper_2_1_step7 (a₁ a₂ b c d e f f' g k : Point) (BC BF DK GH : Lin
     (hkGH : k.onLine GH) :
     Triangle.area △ b:d:k + Triangle.area △ b:g:k = |(a₁─a₂)| * |(b─d)| := by
   euclid_intros
-  have step7_rangle : ∠ b:d:k = ∟ := by euclid_apply (helper_2_1_step7_rangle b c d e f f' g k BC BF DK GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step7_pgram : formParallelogram b g d k BF DK BC GH := by euclid_apply (helper_2_1_step7_pgram b d e f f' g k BC BF DK GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_rangle : ∠ b:d:k = ∟ := by euclid_apply (helper_2_1_step7_rangle b c d e f f' g k BC BF DK GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step7_pgram : formParallelogram b g d k BF DK BC GH := by euclid_apply (helper_2_1_step7_pgram b d e f f' g k BC BF DK GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (rectangle_area b g d k BF DK BC GH)
   euclid_finish
 

@@ -17,7 +17,7 @@ theorem helper_2_7_step2 (a b c d e n g h f : Point) (AB DE AD BE BD CN HF : Lin
     (hgHF : g.onLine HF) (hHFAB : ¬HF.intersectsLine AB) :
     distinctPointsOnLine b d BD ∧ (c.onLine CN ∧ ¬(CN.intersectsLine AD)) ∧
       (g.onLine HF ∧ ¬(HF.intersectsLine AB)) := by
-  have step2_dnab : ¬(d.onLine AB) := by euclid_apply (helper_2_7_step2_dnab a b d AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step2_dnab : ¬(d.onLine AB) := by euclid_apply (helper_2_7_step2_dnab a b d AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_finish
 
 end Elements.Book2

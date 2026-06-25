@@ -185,12 +185,17 @@ def EuclidApply (rule : Term) (idents : Array Ident)  : TacticM Unit := do
     | (``Exists, _) =>  -- τ is `∃ x, ...`
       evalTactic $ ← `(tactic| obtain ⟨$idents,*, ($(mkIdent hnm))⟩ := $rule)
     | _ =>
-      -- Try the destructuring `obtain ⟨h⟩` FIRST — byte-for-byte the previous behavior, so every proof
-      -- where it currently succeeds is UNCHANGED. Only if it FAILS (an `Eq`/atom with nothing to take
-      -- apart — `obtain ⟨h⟩` forces dependent elimination and errors) fall back to plain `obtain h`,
-      -- which just introduces the fact. The fallback fires only for cases that crash today (fast fail,
-      -- no slow backtrack). `elimAllConjunctions` below still splits any conjunction.
+      -- CLOSE-DIRECTLY FIRST: a fully-applied rule's conclusion may BE the current goal (the faithful
+      -- wire always has helper-conclusion == node-goal). `exact $rule` then closes it directly — ZERO
+      -- SMT, works for every claim shape (`∧`, `∨`, atomic, …). Citation recording already ran above
+      -- (appliedExt), so this loses nothing. On failure (conclusion ≠ goal — the old-style "add a
+      -- fact to context" use), fall through unchanged to the destructuring below. If `exact` closes
+      -- the goal, the trailing `elimAllConjunctions` is a no-op via its empty-goals guard (Util.lean).
+      -- NOTE: this requires faithful wires to carry NO trailing closer — the `(try split_ands) <;>
+      -- assumption` trailer errors "no goals" once `exact` closes. wire_main regenerates wires
+      -- trailer-free, so committed props must be unwired + rewired once this is live.
       evalTactic $ ← `(tactic| first
+        | exact $rule
         | (obtain ⟨$(mkIdent hnm)⟩ := $rule)
         | (obtain $(mkIdent hnm) := $rule))
 

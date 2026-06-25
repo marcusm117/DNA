@@ -63,23 +63,23 @@ theorem helper_2_4_step31 (a b c d e f g h k : Point) (AB CF AD BE HK BD DE : Li
   -- off-line roots and distinctness
   have had : a ≠ d := by euclid_finish
   have hde : d ≠ e := by euclid_finish
-  have step5_cnad : ¬(c.onLine AD) := by euclid_apply (helper_2_4_step5_cnad a b c d AB AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step8_dnab : ¬(d.onLine AB) := by euclid_apply (helper_2_4_step8_dnab a b d AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step9_anbe : ¬(a.onLine BE) := by euclid_apply (helper_2_4_step9_anbe a b e BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step15_ande : ¬(a.onLine DE) := by euclid_apply (helper_2_4_step15_ande a d AB DE (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_cnad : ¬(c.onLine AD) := by euclid_apply (helper_2_4_step5_cnad a b c d AB AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step8_dnab : ¬(d.onLine AB) := by euclid_apply (helper_2_4_step8_dnab a b d AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step9_anbe : ¬(a.onLine BE) := by euclid_apply (helper_2_4_step9_anbe a b e BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step15_ande : ¬(a.onLine DE) := by euclid_apply (helper_2_4_step15_ande a d AB DE (by assumption) (by assumption) (by assumption) (by assumption))
   have hbd : b ≠ d := fun hh => step8_dnab (hh ▸ hbAB)
-  have step5_bgd : between b g d := by euclid_apply (helper_2_4_step5_bgd a b c d g AB CF AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_bgd : between b g d := by euclid_apply (helper_2_4_step5_bgd a b c d g AB CF AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hbg : b ≠ g := (between_symm b g d step5_bgd).2.1
-  have step9_gnab : ¬(g.onLine AB) := by euclid_apply (helper_2_4_step9_gnab a b d g AB BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step25_cab : c.onLine AB := by euclid_apply (helper_2_4_step25_cab a b c AB (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step9_cnbe : ¬(c.onLine BE) := by euclid_apply (helper_2_4_step9_cnbe a b c AB BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step9_gnab : ¬(g.onLine AB) := by euclid_apply (helper_2_4_step9_gnab a b d g AB BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step25_cab : c.onLine AB := by euclid_apply (helper_2_4_step25_cab a b c AB (by assumption) (by assumption) (by assumption))
+  have step9_cnbe : ¬(c.onLine BE) := by euclid_apply (helper_2_4_step9_cnbe a b c AB BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- h ≠ d (h ∈ HK, d ∉ HK) for step22_hnde
   have hABHK0 : AB ≠ HK := fun hh => step9_gnab (hh ▸ hgHK)
   have hgd0 : g ≠ d := by euclid_finish
-  have step15_bnhk : ¬(b.onLine HK) := by euclid_apply (helper_2_4_step15_bnhk b g AB HK (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step22_dnhk : ¬(d.onLine HK) := by euclid_apply (helper_2_4_step22_dnhk b d g BD HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step15_bnhk : ¬(b.onLine HK) := by euclid_apply (helper_2_4_step15_bnhk b g AB HK (by assumption) (by assumption) (by assumption) (by assumption))
+  have step22_dnhk : ¬(d.onLine HK) := by euclid_apply (helper_2_4_step22_dnhk b d g BD HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hhd : h ≠ d := fun hh => step22_dnhk (hh ▸ hhHK)
-  have step22_hnde : ¬(h.onLine DE) := by euclid_apply (helper_2_4_step22_hnde a d h AD DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step22_hnde : ¬(h.onLine DE) := by euclid_apply (helper_2_4_step22_hnde a d h AD DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- line distinctness
   have hADCF : AD ≠ CF := fun hh => step5_cnad (hh ▸ hcCF)
   have hBEAD : BE ≠ AD := fun hh => step9_anbe (hh ▸ haAD)
@@ -92,13 +92,13 @@ theorem helper_2_4_step31 (a b c d e f g h k : Point) (AB CF AD BE HK BD DE : Li
   have hDEHK : DE ≠ HK := fun hh => step22_hnde (hh ▸ hhHK)
   have hHKDE : HK ≠ DE := fun hh => hDEHK hh.symm
   -- non-intersections + symmetric orientations
-  have step9_cfbe : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_4_step9_cfbe CF AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step22_hkde : ¬(HK.intersectsLine DE) := by euclid_apply (helper_2_4_step22_hkde HK DE AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step25_bead : ¬(BE.intersectsLine AD) := by euclid_apply (helper_2_4_step25_bead AD BE (by assumption)); (try split_ands) <;> assumption
-  have step25_abde : ¬(AB.intersectsLine DE) := by euclid_apply (helper_2_4_step25_abde AB DE (by assumption)); (try split_ands) <;> assumption
+  have step9_cfbe : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_4_step9_cfbe CF AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step22_hkde : ¬(HK.intersectsLine DE) := by euclid_apply (helper_2_4_step22_hkde HK DE AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step25_bead : ¬(BE.intersectsLine AD) := by euclid_apply (helper_2_4_step25_bead AD BE (by assumption))
+  have step25_abde : ¬(AB.intersectsLine DE) := by euclid_apply (helper_2_4_step25_abde AB DE (by assumption))
   -- distinctness of foot/corner points
   have hcg : c ≠ g := fun hh => step9_gnab (hh ▸ step25_cab)
-  have step25_gnbe : ¬(g.onLine BE) := by euclid_apply (helper_2_4_step25_gnbe g CF BE (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step25_gnbe : ¬(g.onLine BE) := by euclid_apply (helper_2_4_step25_gnbe g CF BE (by assumption) (by assumption) (by assumption))
   have hgd : g ≠ d := by euclid_finish
   -- more distinctness for the cuts and cgf
   have hbe2 : b ≠ e := heb.symm
@@ -114,26 +114,26 @@ theorem helper_2_4_step31 (a b c d e f g h k : Point) (AB CF AD BE HK BD DE : Li
     intro hcHK; euclid_apply (intersection_lines_common_point c AB HK); euclid_finish
   have hHKCF : HK ≠ CF := fun hh => hcnHK (hh ▸ hcCF)
   -- the sameSide facts for the three parallelograms
-  have step31_adbe : a.sameSide d BE := by euclid_apply (helper_2_4_step31_adbe a d AD BE (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step31_acde : a.sameSide c DE := by euclid_apply (helper_2_4_step31_acde a c AB DE (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step31_cbde : c.sameSide b DE := by euclid_apply (helper_2_4_step31_cbde c b AB DE (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step31_adbe : a.sameSide d BE := by euclid_apply (helper_2_4_step31_adbe a d AD BE (by assumption) (by assumption) (by assumption) (by assumption))
+  have step31_acde : a.sameSide c DE := by euclid_apply (helper_2_4_step31_acde a c AB DE (by assumption) (by assumption) (by assumption) (by assumption))
+  have step31_cbde : c.sameSide b DE := by euclid_apply (helper_2_4_step31_cbde c b AB DE (by assumption) (by assumption) (by assumption) (by assumption))
   -- the three parallelograms
-  have step31_par1 : formParallelogram a b d e AB DE AD BE := by euclid_apply (helper_2_4_step31_par1 a b d e AB DE AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step31_par2a : formParallelogram a d c f AD CF AB DE := by euclid_apply (helper_2_4_step31_par2a a d c f AD CF AB DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step31_par2b : formParallelogram c f b e CF BE AB DE := by euclid_apply (helper_2_4_step31_par2b c f b e CF BE AB DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step31_par1 : formParallelogram a b d e AB DE AD BE := by euclid_apply (helper_2_4_step31_par1 a b d e AB DE AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step31_par2a : formParallelogram a d c f AD CF AB DE := by euclid_apply (helper_2_4_step31_par2a a d c f AD CF AB DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step31_par2b : formParallelogram c f b e CF BE AB DE := by euclid_apply (helper_2_4_step31_par2b c f b e CF BE AB DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- betweennesses for the cuts
   have hef : e ≠ f := hfe.symm
-  have step22_adcf : a.sameSide d CF := by euclid_apply (helper_2_4_step22_adcf a d AD CF (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step22_becf : b.sameSide e CF := by euclid_apply (helper_2_4_step22_becf b e BE CF (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step22_dfe : between d f e := by euclid_apply (helper_2_4_step22_dfe a b c d e f DE CF AB AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step22_anhk : ¬(a.onLine HK) := by euclid_apply (helper_2_4_step22_anhk a g AB HK (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step22_abshk : a.sameSide b HK := by euclid_apply (helper_2_4_step22_abshk a b AB HK (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step22_ahd : between a h d := by euclid_apply (helper_2_4_step22_ahd a b d g h AD HK BD AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step15_bke : between b k e := by euclid_apply (helper_2_4_step15_bke a b d e g k BE HK DE BD AB CF AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step31_csb : c.sameSide b HK := by euclid_apply (helper_2_4_step31_csb c b AB HK (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step31_fsd : f.sameSide d HK := by euclid_apply (helper_2_4_step31_fsd f d DE HK (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step31_cfhk : ¬(c.sameSide f HK) := by euclid_apply (helper_2_4_step31_cfhk b c d f g HK BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step31_cgf : between c g f := by euclid_apply (helper_2_4_step31_cgf c f g CF HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step22_adcf : a.sameSide d CF := by euclid_apply (helper_2_4_step22_adcf a d AD CF (by assumption) (by assumption) (by assumption) (by assumption))
+  have step22_becf : b.sameSide e CF := by euclid_apply (helper_2_4_step22_becf b e BE CF (by assumption) (by assumption) (by assumption) (by assumption))
+  have step22_dfe : between d f e := by euclid_apply (helper_2_4_step22_dfe a b c d e f DE CF AB AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step22_anhk : ¬(a.onLine HK) := by euclid_apply (helper_2_4_step22_anhk a g AB HK (by assumption) (by assumption) (by assumption) (by assumption))
+  have step22_abshk : a.sameSide b HK := by euclid_apply (helper_2_4_step22_abshk a b AB HK (by assumption) (by assumption) (by assumption) (by assumption))
+  have step22_ahd : between a h d := by euclid_apply (helper_2_4_step22_ahd a b d g h AD HK BD AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step15_bke : between b k e := by euclid_apply (helper_2_4_step15_bke a b d e g k BE HK DE BD AB CF AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step31_csb : c.sameSide b HK := by euclid_apply (helper_2_4_step31_csb c b AB HK (by assumption) (by assumption) (by assumption) (by assumption))
+  have step31_fsd : f.sameSide d HK := by euclid_apply (helper_2_4_step31_fsd f d DE HK (by assumption) (by assumption) (by assumption) (by assumption))
+  have step31_cfhk : ¬(c.sameSide f HK) := by euclid_apply (helper_2_4_step31_cfhk b c d f g HK BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step31_cgf : between c g f := by euclid_apply (helper_2_4_step31_cgf c f g CF HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- telescope the three rectangle decompositions
   euclid_apply (sum_parallelograms_area a b d e c f AB DE AD BE)
   euclid_apply (sum_parallelograms_area a d c f h g AD CF AB DE)

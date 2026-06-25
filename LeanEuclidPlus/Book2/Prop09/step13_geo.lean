@@ -24,9 +24,9 @@ theorem helper_2_9_step13_geo
   (hbefb : between e f b)
   (hegf : ∠ e:g:f = ∟) :
   (∠ g:e:f = ∠ c:e:b) ∧ (∠ g:e:f + ∠ e:f:g = ∟) := by
-  have step13_gef : ∠ g:e:f = ∠ c:e:b := by euclid_apply (helper_2_9_step13_gef a b c e f g e0 e1 AB CE EB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step13_formtri : formTriangle e g f CE FG EB := by euclid_apply (helper_2_9_step13_formtri a b c d e f g e0 e1 AB CE DF EB FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step13_sum : ∠ g:e:f + ∠ e:f:g = ∟ := by euclid_apply (helper_2_9_step13_sum a b c e f g AB CE EB FG (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step13_gef : ∠ g:e:f = ∠ c:e:b := by euclid_apply (helper_2_9_step13_gef a b c e f g e0 e1 AB CE EB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step13_formtri : formTriangle e g f CE FG EB := by euclid_apply (helper_2_9_step13_formtri a b c d e f g e0 e1 AB CE DF EB FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step13_sum : ∠ g:e:f + ∠ e:f:g = ∟ := by euclid_apply (helper_2_9_step13_sum a b c e f g AB CE EB FG (by assumption) (by assumption) (by assumption) (by assumption))
   exact ⟨step13_gef, step13_sum⟩
 
 end Elements.Book2

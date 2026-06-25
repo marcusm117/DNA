@@ -25,7 +25,7 @@ theorem helper_2_5_step15_ss_eh (b d e g h : Point) (AB BE EF KM : Line)
   have hboffKM : ¬(b.onLine KM) := by
     intro hon; euclid_apply (intersection_lines_common_point b KM AB); euclid_finish
   -- @args: b d e g h AB BE EF KM
-  have step15_bhe : between b h e := by euclid_apply (helper_2_5_step15_bhe b d e g h AB BE EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step15_bhe : between b h e := by euclid_apply (helper_2_5_step15_bhe b d e g h AB BE EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hBEneAB : BE ≠ AB := fun heq => hhoffAB (heq ▸ hhBE)
   by_contra hne
   euclid_apply (intersection_lines_opposing e h AB BE)

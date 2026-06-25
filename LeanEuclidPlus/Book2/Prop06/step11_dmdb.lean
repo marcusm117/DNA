@@ -45,9 +45,9 @@ theorem helper_2_6_step11_dmdb (a b c d e h m : Point) (AB CE DF EF BG KM DE : L
   have hcene : c ≠ e := by euclid_finish
   have hde : d ≠ e := by euclid_finish
   -- the diagonal-angle chain
-  have step11_dmdb_iso : ∠ c:d:e = ∠ c:e:d := by euclid_apply (helper_2_6_step11_dmdb_iso c d e AB DE CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step11_dmdb_corr : ∠ d:h:b = ∠ c:e:d := by euclid_apply (helper_2_6_step11_dmdb_corr b c d e h BG CE DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step11_dmdb_tri : formTriangle b d h AB DE BG := by euclid_apply (helper_2_6_step11_dmdb_tri b d h AB DE BG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step11_dmdb_iso : ∠ c:d:e = ∠ c:e:d := by euclid_apply (helper_2_6_step11_dmdb_iso c d e AB DE CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step11_dmdb_corr : ∠ d:h:b = ∠ c:e:d := by euclid_apply (helper_2_6_step11_dmdb_corr b c d e h BG CE DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step11_dmdb_tri : formTriangle b d h AB DE BG := by euclid_apply (helper_2_6_step11_dmdb_tri b d h AB DE BG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- ray at d: ∠ c:d:e = ∠ b:d:h
   have hray2 : ∠ c:d:e = ∠ b:d:h := by
     euclid_apply (equal_angles d c b e h AB DE)

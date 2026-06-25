@@ -23,7 +23,7 @@ theorem helper_2_9_step28
   (hpar_df : ¬DF.intersectsLine CE)
   (hpar_fg : ¬FG.intersectsLine AB) :
   |(g─f)| = |(c─d)| := by
-  have step28_pgram : formParallelogram g f c d FG AB CE DF := by euclid_apply (helper_2_9_step28_pgram a b c d e f g e0 e1 AB CE EB DF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step28_pgram : formParallelogram g f c d FG AB CE DF := by euclid_apply (helper_2_9_step28_pgram a b c d e f g e0 e1 AB CE EB DF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (line_from_points f c) as FC
   euclid_apply (proposition_34 g f c d FG AB CE DF FC)
   euclid_finish

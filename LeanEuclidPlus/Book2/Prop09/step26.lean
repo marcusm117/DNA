@@ -25,7 +25,7 @@ theorem helper_2_9_step26
   (hpar_fg : ¬FG.intersectsLine AB)
   (hstep13 : ∠ e:g:f = ∟ ∧ ∠ e:f:g = ∟ / 2) :
   |(e─f)| * |(e─f)| = |(e─g)| * |(e─g)| + |(g─f)| * |(g─f)| := by
-  have step26_formtri : formTriangle g e f CE EB FG := by euclid_apply (helper_2_9_step26_formtri a b c d e f g e0 e1 AB CE EB DF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step26_formtri : formTriangle g e f CE EB FG := by euclid_apply (helper_2_9_step26_formtri a b c d e f g e0 e1 AB CE EB DF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (proposition_47 g e f CE EB FG)
   linarith
 

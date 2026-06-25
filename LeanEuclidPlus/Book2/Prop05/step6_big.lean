@@ -20,7 +20,7 @@ theorem helper_2_5_step6_big (a b c d e f : Point) (AB BF CE EF : Line)
   -- f ≠ e: e off BF (e.sameSide c BF), f ∈ BF. The hard conjunct b.sameSide c EF is its own sub-leaf;
   -- the rest of formParallelogram is incidences + the two parallels.
   have hfe : f ≠ e := by euclid_finish
-  have step6_big_ss : b.sameSide c EF := by euclid_apply (helper_2_5_step6_big_ss a b c d e AB EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_big_ss : b.sameSide c EF := by euclid_apply (helper_2_5_step6_big_ss a b c d e AB EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_finish
 
 end Elements.Book2

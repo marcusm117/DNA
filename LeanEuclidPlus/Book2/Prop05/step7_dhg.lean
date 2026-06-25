@@ -26,7 +26,7 @@ theorem helper_2_5_step7_dhg (b c d e g h : Point) (AB BE CE DG EF KM : Line)
   -- cannot be helper hypotheses; derive them via the step7_dhg_offs sub-node (which builds them
   -- in-body from the square + incidences), then proceed exactly as before.
   have step7_dhg_offs : (¬(e.onLine DG)) ∧ (¬(b.onLine DG)) ∧ (¬(KM.intersectsLine EF)) ∧
-      (¬(d.onLine KM)) ∧ (¬(b.onLine KM)) ∧ (¬(g.onLine KM)) := by euclid_apply (helper_2_5_step7_dhg_offs b c d e g h AB BE CE DG EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+      (¬(d.onLine KM)) ∧ (¬(b.onLine KM)) ∧ (¬(g.onLine KM)) := by euclid_apply (helper_2_5_step7_dhg_offs b c d e g h AB BE CE DG EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   obtain ⟨heoffDG, hboffDG, hKMEF, hdoffKM, hboffKM, hgoffKM⟩ := step7_dhg_offs
   euclid_intros
   -- c, b on opposite sides of DG (d between them, d on DG)

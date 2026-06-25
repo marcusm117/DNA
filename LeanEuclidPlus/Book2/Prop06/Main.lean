@@ -37,79 +37,79 @@ by
   euclid_sentence "2.6.1"
     "For let the square $CEFD$ be described on $CD$ [Prop.~1.46],"
     (step1 : |(c─e)| = |(c─d)| ∧ |(d─f)| = |(c─d)| ∧ |(e─f)| = |(c─d)| ∧
-      (∠ d:c:e = ∟) ∧ (∠ c:e:f = ∟) ∧ (∠ c:d:f = ∟) ∧ (∠ d:f:e = ∟)) := by euclid_apply (helper_2_6_step1 c d e f (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+      (∠ d:c:e = ∟) ∧ (∠ c:e:f = ∟) ∧ (∠ c:d:f = ∟) ∧ (∠ d:f:e = ∟)) := by euclid_apply (helper_2_6_step1 c d e f (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_apply (line_from_points d e) as DE
   euclid_sentence "2.6.2"
     "and let $DE$ be joined,"
-    (step2 : distinctPointsOnLine d e DE) := by euclid_apply (helper_2_6_step2 a b c d e AB DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step2 : distinctPointsOnLine d e DE) := by euclid_apply (helper_2_6_step2 a b c d e AB DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_apply (Elements.Book1.proposition_31 b c e CE) as BG
   euclid_apply (intersection_lines BG EF) as g
   euclid_apply (intersection_lines BG DE) as h
   euclid_sentence "2.6.3"
     "and let $BG$ be drawn through point $B$, parallel to either of $EC$ or $DF$ [Prop.~1.31],"
-    (step3 : b.onLine BG ∧ ¬(BG.intersectsLine CE)) := by euclid_apply (helper_2_6_step3 b BG CE (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step3 : b.onLine BG ∧ ¬(BG.intersectsLine CE)) := by euclid_apply (helper_2_6_step3 b BG CE (by assumption) (by assumption))
 
   euclid_apply (Elements.Book1.proposition_31 h a b AB) as KM
   euclid_apply (intersection_lines KM CE) as l
   euclid_apply (intersection_lines KM DF) as m
   euclid_sentence "2.6.4"
     "and let $KM$ be drawn through point $H$, parallel to either of $AB$ or $EF$ [Prop.~1.31],"
-    (step4 : h.onLine KM ∧ ¬(KM.intersectsLine AB)) := by euclid_apply (helper_2_6_step4 h KM AB (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step4 : h.onLine KM ∧ ¬(KM.intersectsLine AB)) := by euclid_apply (helper_2_6_step4 h KM AB (by assumption) (by assumption))
 
   euclid_apply (Elements.Book1.proposition_31 a c e CE) as AK
   euclid_apply (intersection_lines KM AK) as k
   euclid_sentence "2.6.5"
     "and finally let $AK$ be drawn through $A$, parallel to either of $CL$ or $DM$ [Prop.~1.31]."
-    (step5 : a.onLine AK ∧ ¬(AK.intersectsLine CE)) := by euclid_apply (helper_2_6_step5 a AK CE (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step5 : a.onLine AK ∧ ¬(AK.intersectsLine CE)) := by euclid_apply (helper_2_6_step5 a AK CE (by assumption) (by assumption))
 
   euclid_sentence "2.6.6"
     "Therefore, since $AC$ is equal to $CB$, (rectangle) $AL$ is also equal to (rectangle) $CH$ [Prop.~1.36]."
     (step6 : Triangle.area △ a:c:l + Triangle.area △ a:l:k =
-      Triangle.area △ c:b:h + Triangle.area △ c:h:l) := by euclid_apply (helper_2_6_step6 a b c d e k l h AB KM AK CE BG DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+      Triangle.area △ c:b:h + Triangle.area △ c:h:l) := by euclid_apply (helper_2_6_step6 a b c d e k l h AB KM AK CE BG DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.6.7"
     "But, (rectangle) $CH$ is equal to (rectangle) $HF$ [Prop.~1.43]."
     (step7 : Triangle.area △ c:b:h + Triangle.area △ c:h:l =
-      Triangle.area △ h:m:f + Triangle.area △ h:f:g) := by euclid_apply (helper_2_6_step7 a b c d e f g h l m AB DE CE DF EF BG KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+      Triangle.area △ h:m:f + Triangle.area △ h:f:g) := by euclid_apply (helper_2_6_step7 a b c d e f g h l m AB DE CE DF EF BG KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.6.8"
     "Thus, (rectangle) $AL$ is also equal to (rectangle) $HF$."
     (step8 : Triangle.area △ a:c:l + Triangle.area △ a:l:k =
-      Triangle.area △ h:m:f + Triangle.area △ h:f:g) := by euclid_apply (helper_2_6_step8 a c l k b h m f g (by assumption) (by assumption)); (try split_ands) <;> assumption
+      Triangle.area △ h:m:f + Triangle.area △ h:f:g) := by euclid_apply (helper_2_6_step8 a c l k b h m f g (by assumption) (by assumption))
 
   euclid_sentence "2.6.9"
     "Let (rectangle) $CM$ be added to both."
     (step9 : Triangle.area △ a:d:m + Triangle.area △ a:m:k =
       (Triangle.area △ a:c:l + Triangle.area △ a:l:k) +
-      (Triangle.area △ c:d:m + Triangle.area △ c:m:l)) := by euclid_apply (helper_2_6_step9 a b c d e f k l m h AB KM AK DF CE BG DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+      (Triangle.area △ c:d:m + Triangle.area △ c:m:l)) := by euclid_apply (helper_2_6_step9 a b c d e f k l m h AB KM AK DF CE BG DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.6.10"
     "Thus, the whole (rectangle) $AM$ is equal to the gnomon $NOP$."
     (step10 : Triangle.area △ a:d:m + Triangle.area △ a:m:k =
       (Triangle.area △ c:d:m + Triangle.area △ c:m:l) +
-      (Triangle.area △ h:m:f + Triangle.area △ h:f:g)) := by euclid_apply (helper_2_6_step10 a c d h m f g l k (by assumption) (by assumption)); (try split_ands) <;> assumption
+      (Triangle.area △ h:m:f + Triangle.area △ h:f:g)) := by euclid_apply (helper_2_6_step10 a c d h m f g l k (by assumption) (by assumption))
 
   euclid_sentence "2.6.11"
     "But, $AM$ is the (rectangle contained) by $AD$ and $DB$. For $DM$ is equal to $DB$."
-    (step11 : Triangle.area △ a:d:m + Triangle.area △ a:m:k = |(a─d)| * |(d─b)|) := by euclid_apply (helper_2_6_step11 a b c d e f g h l m k AB CE DF EF BG KM DE AK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step11 : Triangle.area △ a:d:m + Triangle.area △ a:m:k = |(a─d)| * |(d─b)|) := by euclid_apply (helper_2_6_step11 a b c d e f g h l m k AB CE DF EF BG KM DE AK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.6.12"
     "Thus, gnomon $NOP$ is also equal to the [rectangle contained] by $AD$ and $DB$."
     (step12 : (Triangle.area △ c:d:m + Triangle.area △ c:m:l) +
-      (Triangle.area △ h:m:f + Triangle.area △ h:f:g) = |(a─d)| * |(d─b)|) := by euclid_apply (helper_2_6_step12 a b d m k c l h f g (by assumption) (by assumption)); (try split_ands) <;> assumption
+      (Triangle.area △ h:m:f + Triangle.area △ h:f:g) = |(a─d)| * |(d─b)|) := by euclid_apply (helper_2_6_step12 a b d m k c l h f g (by assumption) (by assumption))
 
   euclid_sentence "2.6.13"
     "Let $LG$, which is equal to the square on $BC$, be added to both."
-    (step13 : Triangle.area △ l:h:g + Triangle.area △ l:g:e = |(c─b)| * |(c─b)|) := by euclid_apply (helper_2_6_step13 a b c d e f g h l AB CE DF EF BG KM DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step13 : Triangle.area △ l:h:g + Triangle.area △ l:g:e = |(c─b)| * |(c─b)|) := by euclid_apply (helper_2_6_step13 a b c d e f g h l AB CE DF EF BG KM DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.6.14"
     "Thus, the rectangle contained by $AD$ and $DB$, plus the square on $CB$, is equal to the gnomon $NOP$ and the (square) $LG$."
     (step14 : |(a─d)| * |(d─b)| + |(c─b)| * |(c─b)| =
       ((Triangle.area △ c:d:m + Triangle.area △ c:m:l) +
         (Triangle.area △ h:m:f + Triangle.area △ h:f:g)) +
-      (Triangle.area △ l:h:g + Triangle.area △ l:g:e)) := by euclid_apply (helper_2_6_step14 a b c d m l h f g e (by assumption) (by assumption)); (try split_ands) <;> assumption
+      (Triangle.area △ l:h:g + Triangle.area △ l:g:e)) := by euclid_apply (helper_2_6_step14 a b c d m l h f g e (by assumption) (by assumption))
 
   euclid_sentence "2.6.15"
     "But the gnomon $NOP$ and the (square) $LG$ is (equivalent to) the whole square $CEFD$, which is on $CD$."
@@ -117,11 +117,11 @@ by
         (Triangle.area △ h:m:f + Triangle.area △ h:f:g)) +
       (Triangle.area △ l:h:g + Triangle.area △ l:g:e) =
         Triangle.area △ c:e:f + Triangle.area △ c:f:d) ∧
-      (Triangle.area △ c:e:f + Triangle.area △ c:f:d = |(c─d)| * |(c─d)|)) := by euclid_apply (helper_2_6_step15 a b c d e f g h l m AB CE DF EF BG KM DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+      (Triangle.area △ c:e:f + Triangle.area △ c:f:d = |(c─d)| * |(c─d)|)) := by euclid_apply (helper_2_6_step15 a b c d e f g h l m AB CE DF EF BG KM DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
 
   euclid_sentence "2.6.16"
     "Thus, the rectangle contained by $AD$ and $DB$, plus the square on $CB$, is equal to the square on $CD$."
-    (step16 : |(a─d)| * |(d─b)| + |(c─b)| * |(c─b)| = |(c─d)| * |(c─d)|) := by euclid_apply (helper_2_6_step16 a b c d m l h f g e (by assumption) (by assumption)); (try split_ands) <;> assumption
+    (step16 : |(a─d)| * |(d─b)| + |(c─b)| * |(c─b)| = |(c─d)| * |(c─d)|) := by euclid_apply (helper_2_6_step16 a b c d m l h f g e (by assumption) (by assumption))
 
   exact step16
   euclid_conclude_sentence "2.6.17"

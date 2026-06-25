@@ -56,13 +56,13 @@ theorem helper_2_5_step13_dhdb (b c d e h : Point) (AB CE DG BE : Line)
     -- c,b,e all on BE would make ∠ b:c:e a straight/degenerate angle, contradicting ∠ b:c:e = ∟
     euclid_finish
   -- b,e opposite across DG (b,e off DG, the diagonal crosses DG at h between them)
-  have step13_dhdb_bopp : ¬(b.sameSide e DG) := by euclid_apply (helper_2_5_step13_dhdb_bopp b c d e AB CE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step13_dhdb_bopp : ¬(b.sameSide e DG) := by euclid_apply (helper_2_5_step13_dhdb_bopp b c d e AB CE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- figure sub-nodes
-  have step13_dhdb_bhe : between b h e := by euclid_apply (helper_2_5_step13_dhdb_bhe b e h BE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step13_dhdb_ssdc : d.sameSide c BE := by euclid_apply (helper_2_5_step13_dhdb_ssdc b c d AB BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step13_dhdb_iso : ∠ c:e:b = ∠ c:b:e := by euclid_apply (helper_2_5_step13_dhdb_iso b c e AB CE BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step13_dhdb_corr : ∠ d:h:b = ∠ c:e:b := by euclid_apply (helper_2_5_step13_dhdb_corr b c d e h DG CE BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step13_dhdb_tri : formTriangle d h b DG BE AB := by euclid_apply (helper_2_5_step13_dhdb_tri b d e h AB BE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step13_dhdb_bhe : between b h e := by euclid_apply (helper_2_5_step13_dhdb_bhe b e h BE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step13_dhdb_ssdc : d.sameSide c BE := by euclid_apply (helper_2_5_step13_dhdb_ssdc b c d AB BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step13_dhdb_iso : ∠ c:e:b = ∠ c:b:e := by euclid_apply (helper_2_5_step13_dhdb_iso b c e AB CE BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step13_dhdb_corr : ∠ d:h:b = ∠ c:e:b := by euclid_apply (helper_2_5_step13_dhdb_corr b c d e h DG CE BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step13_dhdb_tri : formTriangle d h b DG BE AB := by euclid_apply (helper_2_5_step13_dhdb_tri b d e h AB BE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- ray coincidence at b: ∠ c:b:e = ∠ d:b:h
   have hcbe : ∠ c:b:e = ∠ d:b:h := by
     euclid_apply (equal_angles b c d e h AB BE)

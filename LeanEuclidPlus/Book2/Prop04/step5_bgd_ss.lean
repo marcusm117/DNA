@@ -20,7 +20,7 @@ theorem helper_2_4_step5_bgd_ss (a b c d : Point) (AB CF AD : Line)
     (hCFAD : ¬(CF.intersectsLine AD)) :
     a.sameSide d CF := by
   euclid_intros
-  have step5_cnad : ¬(c.onLine AD) := by euclid_apply (helper_2_4_step5_cnad a b c d AB AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_cnad : ¬(c.onLine AD) := by euclid_apply (helper_2_4_step5_cnad a b c d AB AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hne : CF ≠ AD := by
     intro heq; rw [heq] at hcCF; exact step5_cnad hcCF
   have haoff : ¬(a.onLine CF) := by

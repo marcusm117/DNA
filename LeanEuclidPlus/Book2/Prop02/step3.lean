@@ -23,7 +23,7 @@ theorem helper_2_2_step3 (a b c d e f : Point) (AB DE AD BE CF : Line)
       (Triangle.area △ a:c:f + Triangle.area △ a:d:f)
     + (Triangle.area △ c:b:e + Triangle.area △ c:f:e) := by
   euclid_intros
-  have step3_dfe : between d f e := by euclid_apply (helper_2_2_step3_dfe a b c d e f AB DE AD BE CF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step3_dfe : between d f e := by euclid_apply (helper_2_2_step3_dfe a b c d e f AB DE AD BE CF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (sum_parallelograms_area d e a b f c DE AB AD BE)
   euclid_finish
 

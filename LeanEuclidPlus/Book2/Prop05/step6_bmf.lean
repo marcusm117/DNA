@@ -25,7 +25,7 @@ theorem helper_2_5_step6_bmf (b c d e f h m : Point) (AB BF BE EF CE DG KM : Lin
     between b m f := by
   euclid_intros
   -- b,f on opposite sides of KM (sub-leaf), m = KM ∩ BF, b ≠ f ⟹ pasch_4 places m between.
-  have step6_bmf_opp : ¬(b.sameSide f KM) := by euclid_apply (helper_2_5_step6_bmf_opp b c d e f h AB BE CE DG EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_bmf_opp : ¬(b.sameSide f KM) := by euclid_apply (helper_2_5_step6_bmf_opp b c d e f h AB BE CE DG EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (pasch_4 b m f KM BF)
   euclid_finish
 

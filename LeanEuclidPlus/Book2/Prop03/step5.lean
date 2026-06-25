@@ -24,7 +24,7 @@ theorem helper_2_3_step5 (a b c d e f : Point) (AB DE CD BE AF : Line)
     (hAFCD : ¬(AF.intersectsLine CD)) (heb : e ≠ b) :
     Triangle.area △ a:f:e + Triangle.area △ a:e:b = |(a─b)| * |(b─c)| := by
   euclid_intros
-  have step5_edf : between e d f := by euclid_apply (helper_2_3_step5_edf a b c d e f AB DE CD BE AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_edf : between e d f := by euclid_apply (helper_2_3_step5_edf a b c d e f AB DE CD BE AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (proposition_30 AF BE CD)
   euclid_apply (rectangle_area b a e f AB DE BE AF)
   have hba : |(a─b)| = |(b─a)| := by euclid_finish

@@ -27,12 +27,12 @@ theorem helper_2_4_step5 (a b c d g : Point) (AB CF AD BD : Line)
   euclid_intros
   -- a ≠ d: the side a─d equals a─b which is positive (a ≠ b), so a─d > 0 and a ≠ d
   have had : a ≠ d := by euclid_finish
-  have step5_bgd : between b g d := by euclid_apply (helper_2_4_step5_bgd a b c d g AB CF AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step5_ss : c.sameSide a BD := by euclid_apply (helper_2_4_step5_ss a b c d AB BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_bgd : between b g d := by euclid_apply (helper_2_4_step5_bgd a b c d g AB CF AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step5_ss : c.sameSide a BD := by euclid_apply (helper_2_4_step5_ss a b c d AB BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- g ≠ d, from g strictly between b and d
   have hgd : g ≠ d := ((between_symm d g b (between_symm b g d step5_bgd).1).2.1).symm
   -- the corresponding-angle equality, already rewritten to the goal's orientation
-  have step5_corr : ∠ c:g:b = ∠ a:d:b := by euclid_apply (helper_2_4_step5_corr a b c d g CF AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step5_corr : ∠ c:g:b = ∠ a:d:b := by euclid_apply (helper_2_4_step5_corr a b c d g CF AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   exact step5_corr
 
 end Elements.Book2

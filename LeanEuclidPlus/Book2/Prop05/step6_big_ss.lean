@@ -16,7 +16,7 @@ theorem helper_2_5_step6_big_ss (a b c d e : Point) (AB EF : Line)
     b.sameSide c EF := by
   euclid_intros
   have hbc : b ≠ c := by euclid_finish
-  have step6_big_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_5_step6_big_eoff b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step6_big_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_5_step6_big_eoff b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hne : EF ≠ AB := fun heq => step6_big_eoff (heq ▸ heEF)
   have hboff : ¬(b.onLine EF) := by
     intro hbon

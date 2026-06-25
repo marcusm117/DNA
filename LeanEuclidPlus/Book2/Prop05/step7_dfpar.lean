@@ -25,17 +25,17 @@ theorem helper_2_5_step7_dfpar (b c d e f g : Point) (AB BF CE DG EF : Line)
     (hcelen : |(c─e)| = |(c─b)|) :
     formParallelogram d g b f DG BF AB EF := by
   euclid_intros
-  have step7_dfpar_dgbf : ¬(DG.intersectsLine BF) := by euclid_apply (helper_2_5_step7_dfpar_dgbf b c d AB BF CE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_dfpar_dgbf : ¬(DG.intersectsLine BF) := by euclid_apply (helper_2_5_step7_dfpar_dgbf b c d AB BF CE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- @args: b c d e AB EF
-  have step7_dfpar_boff : ¬(b.onLine EF) := by euclid_apply (helper_2_5_step7_dfpar_boff b c d e AB EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_dfpar_boff : ¬(b.onLine EF) := by euclid_apply (helper_2_5_step7_dfpar_boff b c d e AB EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- @args: b c d f g AB BF DG EF
-  have step7_dfpar_goff : ¬(g.onLine BF) := by euclid_apply (helper_2_5_step7_dfpar_goff b c d f g AB BF DG EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_dfpar_goff : ¬(g.onLine BF) := by euclid_apply (helper_2_5_step7_dfpar_goff b c d f g AB BF DG EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   -- @args: b c d e AB EF
-  have step7_dfpar_doff : ¬(d.onLine EF) := by euclid_apply (helper_2_5_step7_dfpar_doff b c d e AB EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step7_dfpar_ss : d.sameSide b EF := by euclid_apply (helper_2_5_step7_dfpar_ss b d AB EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step7_dfpar_abef : ¬(AB.intersectsLine EF) := by euclid_apply (helper_2_5_step7_dfpar_abef AB EF (by assumption)); (try split_ands) <;> assumption
+  have step7_dfpar_doff : ¬(d.onLine EF) := by euclid_apply (helper_2_5_step7_dfpar_doff b c d e AB EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step7_dfpar_ss : d.sameSide b EF := by euclid_apply (helper_2_5_step7_dfpar_ss b d AB EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step7_dfpar_abef : ¬(AB.intersectsLine EF) := by euclid_apply (helper_2_5_step7_dfpar_abef AB EF (by assumption))
   have hgf : g ≠ f := fun heq => step7_dfpar_goff (heq ▸ hfBF)
-  have step7_dfpar_body : formParallelogram d g b f DG BF AB EF := by euclid_apply (helper_2_5_step7_dfpar_body b d f g AB BF DG EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step7_dfpar_body : formParallelogram d g b f DG BF AB EF := by euclid_apply (helper_2_5_step7_dfpar_body b d f g AB BF DG EF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   exact step7_dfpar_body
 
 end Elements.Book2

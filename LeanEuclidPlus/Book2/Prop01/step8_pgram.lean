@@ -21,8 +21,8 @@ theorem helper_2_1_step8_pgram (b c d e f g k l : Point) (BC BF DK EL GH : Line)
     (hGHBC : ¬(GH.intersectsLine BC)) :
     formParallelogram d k e l DK EL BC GH := by
   euclid_intros
-  have step8_pgram_par : ¬(DK.intersectsLine EL) := by euclid_apply (helper_2_1_step8_pgram_par b d e f k l BC BF DK EL (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step8_pgram_ss : d.sameSide e GH ∧ k ≠ l := by euclid_apply (helper_2_1_step8_pgram_ss b c d e f g k l BC BF DK EL GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step8_pgram_par : ¬(DK.intersectsLine EL) := by euclid_apply (helper_2_1_step8_pgram_par b d e f k l BC BF DK EL (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step8_pgram_ss : d.sameSide e GH ∧ k ≠ l := by euclid_apply (helper_2_1_step8_pgram_ss b c d e f g k l BC BF DK EL GH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   obtain ⟨hdse, hkl⟩ := step8_pgram_ss
   refine ⟨hdDK, hkDK, heEL, hlEL, hdBC, heBC, ⟨hkGH, hlGH, hkl⟩, hdse, step8_pgram_par, ?_⟩
   euclid_finish

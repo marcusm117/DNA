@@ -29,8 +29,8 @@ theorem helper_2_9_step32
   (hstep12 : ∠ a:e:b = ∟) :
   |(a─f)| * |(a─f)| = |(e─a)| * |(e─a)| + |(e─f)| * |(e─f)| := by
   -- @args: b c d e e0 e1 f AB CE DF EB
-  have step13_befb : between e f b := by euclid_apply (helper_2_9_step13_befb b c d e e0 e1 f AB CE DF EB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
-  have step32_formtri : formTriangle e a f EA AF EB := by euclid_apply (helper_2_9_step32_formtri a b c e f e0 e1 AB CE EA EB AF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step13_befb : between e f b := by euclid_apply (helper_2_9_step13_befb b c d e e0 e1 f AB CE DF EB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step32_formtri : formTriangle e a f EA AF EB := by euclid_apply (helper_2_9_step32_formtri a b c e f e0 e1 AB CE EA EB AF FG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have haef : ∠ a:e:f = ∟ := by euclid_finish
   euclid_apply (proposition_47 e a f EA AF EB)
   euclid_finish

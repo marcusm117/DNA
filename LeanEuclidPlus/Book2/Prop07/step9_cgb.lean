@@ -22,7 +22,7 @@ theorem helper_2_7_step9_cgb (a b c d g : Point) (AB CN AD BD : Line)
     ∠ c:g:b = ∠ g:b:c := by
   euclid_intros
   have had : a ≠ d := by euclid_finish
-  have step3_bgd : between b g d := by euclid_apply (helper_2_7_step3_bgd a b c d g AB CN AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step3_bgd : between b g d := by euclid_apply (helper_2_7_step3_bgd a b c d g AB CN AD BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   euclid_apply (equal_angles b a c d g AB BD)
   euclid_finish
 

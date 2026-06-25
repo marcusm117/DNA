@@ -19,7 +19,7 @@ theorem helper_2_6_step7_ssdc (a b c d e : Point) (AB EF CE : Line)
     d.sameSide c EF := by
   euclid_intros
   have hdc : d ≠ c := by euclid_finish
-  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
+  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
   have hne : EF ≠ AB := fun heq => step2_eoff (heq ▸ heEF)
   have hdoff : ¬(d.onLine EF) := by
     intro hdon

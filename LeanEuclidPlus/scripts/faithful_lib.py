@@ -672,11 +672,13 @@ def _body_regexes(book, prop, name):
         # the wire emits (full application). `(?:[^()]|\([^()]*\))*` matches flat chars OR a nested
         # `(…)` group, so the closing `)` is the helper-call's own. Without this, a wired body with
         # `(by assumption)` would not be recognized and integrity_scan/wire_main would mis-handle it.
-        # The trailer is the STRUCTURAL closer `(try split_ands) <;> assumption` (SMT-free); also accept
-        # a bare `euclid_finish` so legacy/hand-wired bodies still recognize as wired.
+        # NO TRAILER: Solve.lean's close-directly-first branch closes the goal INSIDE `euclid_apply`
+        # (via `exact`), so a wired body is just `:= by euclid_apply (helper …)` — the match ends at the
+        # helper call's `)` and consumes NO trailing whitespace/newline (an earlier `[ \t\r\n]*` + optional
+        # trailer ate the newline on unwire, concatenating the next line). Every committed prop is rewired
+        # to this exact shape, so no trailer-wire recognition is needed.
         ("wired", re.compile(r":=[ \t]*by[ \t\r\n]+euclid_apply[ \t]*\(\s*" + helper +
-                             r"\b(?:[^()]|\([^()]*\))*\)[ \t\r\n]*;?[ \t\r\n]*"
-                             r"(?:\(try split_ands\)[ \t]*<;>[ \t]*assumption|euclid_finish\b)")),
+                             r"\b(?:[^()]|\([^()]*\))*\)")),
         # SMELL (transient, `check_step --smell` only): the BARE claim fired straight at euclid_finish,
         # no decomposition. Distinct from `wired` (which REQUIRES the `euclid_apply (helper…)` prefix),
         # so a bare `:= by euclid_finish` matches ONLY here. Never written to disk persistently.
@@ -874,16 +876,16 @@ def wired_body(book, prop, name, objs, n_hyps):
     (type-match over the local context, including unnamed hyps), NEVER by the SMT solver. A hypothesis
     not present in context makes its `(by assumption)` fail loudly: that signals the helper signature is
     wrong — drop that hyp and derive it inside the helper body.
-    The goal is then closed STRUCTURALLY — NOT with `euclid_finish` (which would fall through to the SMT
-    solver over the parent's full context and blow the 30s wall even for a trivial leaf). `euclid_apply`
-    already `obtain`s the helper's conclusion and `elimAllConjunctions` (Solve.lean:190) recursively
-    destructs it into the claim's atoms in context, so `(try split_ands) <;> assumption` closes the goal
-    with ZERO SMT: `split_ands` splits a conjunctive claim into conjuncts, each matched by `assumption`
-    against a destructed atom (the `try` makes it a no-op for a single-atom claim). The citation is
-    recorded by the helper's `euclid_apply` (Solve.lean:166-173, before any branch), so dropping
-    `euclid_finish` loses nothing. Net: a leaf wire adds ~0 build time."""
+    The goal is closed DIRECTLY by `euclid_apply` itself: Solve.lean's close-directly-first branch runs
+    `exact $rule` when the fully-applied helper's conclusion is the goal (always true, by the naming law
+    — helper conclusion == node claim == node goal) — ZERO SMT, works for EVERY claim shape (`∧`, `∨`,
+    atomic, …). So NO trailing closer is emitted. (The older `(try split_ands) <;> assumption` trailer
+    errors "no goals" once `exact` closes; the wired-regex below still ACCEPTS it so pre-rewire / legacy
+    / hand-wired bodies keep recognizing as wired — but committed props must be unwired + rewired to
+    actually drop it.) The citation is recorded by the helper's `euclid_apply` (Solve.lean, before any
+    branch). Net: a leaf wire adds ~0 build time."""
     args = " ".join(objs + ["(by assumption)"] * n_hyps)
-    return f":= by euclid_apply ({helper_name(book, prop, name)} {args}); (try split_ands) <;> assumption"
+    return f":= by euclid_apply ({helper_name(book, prop, name)} {args})"
 
 
 def resolve_call_args(propdir, book, node):
