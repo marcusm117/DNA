@@ -1,6 +1,8 @@
 import SystemE
 import Book.Prop04
 import Mathlib.Tactic.Linarith
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
@@ -8,7 +10,6 @@ namespace Elements.Book1
    `area_congruence` area(DBC) = area(ACB). But D is strictly between B and A, so `sum_areas_if`
    splits ACB (base AB, apex C off AB) into area(ADC) + area(DBC) = area(ACB). Hence area(ADC) = 0,
    yet ADC is non-degenerate (A,D on AB, C off AB) so area(ADC) > 0 — contradiction. -/
-set_option systemE.solverTime 30 in
 theorem helper_1_6_step9 (a b c d : Point) (AB BC AC : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hab : a ≠ b)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC)

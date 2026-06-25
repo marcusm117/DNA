@@ -1,12 +1,13 @@
 import SystemE
 import Book.Prop04
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
 /- 1.6.8: the triangle DBC is equal to the triangle ACB [Prop.~1.4] — the full SAS congruence
    conclusion: base |d─c| = |a─b| plus the two remaining angles ∠b:d:c = ∠c:a:b and
    ∠b:c:d = ∠c:b:a. Same SAS application as step7 (sides + included angle), full conclusion. -/
-set_option systemE.solverTime 30 in
 theorem helper_1_6_step8 (a b c d : Point) (AB BC AC DC : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hab : a ≠ b)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC)

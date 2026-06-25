@@ -1,4 +1,6 @@
 import SystemE
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
@@ -6,7 +8,6 @@ namespace Elements.Book1
    (with a,b) `equal_angles b d a c c AB BC` yields ∠d:b:c = ∠a:b:c; with the hypothesis
    ∠a:b:c = ∠a:c:b, ∠d:b:c = ∠a:c:b. The full formTriangle atom set is passed so the `equal_angles`
    precondition (d.onLine AB, c≠b, ¬between d b a) discharges. -/
-set_option systemE.solverTime 30 in
 theorem helper_1_6_step6 (a b c d : Point) (AB BC AC : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hab : a ≠ b)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC)
