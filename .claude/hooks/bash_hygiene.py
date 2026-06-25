@@ -141,6 +141,23 @@ def main():
                      f"`check_signatures.py` / `wire_main.py`). Inline code (`-c`), a stdin heredoc "
                      f"(`python3 - <<EOF`), a process-substitution, or an ad-hoc script is blocked — "
                      f"read files with the Read tool, search with Grep/Glob. {ALLOWED_SUMMARY}")
+            # INTEGRITY GATE — always hard-deny, independent of hygiene.conf's ask/deny knob:
+            # `--save` rewrites the human-approved signature baselines (scripts/{step,proposition}_
+            # signatures.json). That is a HUMAN-only action at the Phase-A gate; the AI may run
+            # these scripts in check mode only. (settings.json globs can't enforce this —
+            # settings.local.json's broad `Bash(python3 *)` allow makes arg-specific denies
+            # bypassable by reformulation; this shlex'd token check is the airtight point.)
+            if arg in ("check_steps.py", "check_signatures.py") and "--save" in toks:
+                print(json.dumps({"hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "deny",
+                    "permissionDecisionReason":
+                        "`--save` rewrites the approved signature baseline "
+                        "(scripts/step_signatures.json / proposition_signatures.json) — a human-only "
+                        "action at the Phase-A gate. Run these scripts in check mode (no --save). "
+                        f"{ALLOWED_SUMMARY}",
+                }}))
+                sys.exit(0)
             continue  # ok: a sanctioned pipeline-script invocation
 
         if base in BARE_OK:

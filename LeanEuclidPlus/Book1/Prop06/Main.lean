@@ -46,8 +46,13 @@ theorem proposition_6 : ∀ (a b c : Point) (AB BC AC : Line),
         "The very notion (is) absurd [C.N.~5]."
         (step9 : False) := by sorry
       exact step9
-    · -- the symmetric case (AC greater) is the same argument with B, C exchanged.
-      sorry
+    · -- the symmetric case (AC greater): the symmetric mirror, helper_1_6_sym.
+      have hgt' : |(a─c)| > |(a─b)| := by
+        rcases step1 with h | h
+        · exact absurd h hgt
+        · exact h
+      have sym : False := by sorry
+      exact sym
   euclid_sentence "1.6.10"
     "Thus, $AB$ is not unequal to $AC$."
     (step10 : ¬ (|(a─b)| ≠ |(a─c)|)) := by sorry
