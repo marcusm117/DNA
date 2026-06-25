@@ -30,10 +30,10 @@ by
       (∠ b:c:d = ∟) ∧ (∠ c:d:e = ∟) ∧ (∠ c:b:e = ∟) ∧ (∠ b:e:d = ∟)) := by euclid_apply (helper_2_3_step1 b c d e (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
 
   euclid_sentence "2.3.2"
-    "and let $ED$ be drawn through to $F$,"
+    "and let $ED$ be drawn through to $F$," --He talks of F even though F is not constructed yet. This is why we must relax the faithfulness criterion or it would not compile.
     (step2 : f.onLine DE ∧ between e d f) := by euclid_apply (helper_2_3_step2 a b c d e f AB DE CD BE AF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption)); (try split_ands) <;> assumption
 
-  euclid_sentence "2.3.3"
+  euclid_sentence "2.3.3" -- sepcifically ideally prop 31 is used in this block. This introduces the line AF. However, the point F needs this line AF to be defined, and euclid kinda messes up the order so we sacrifice faithfulness slightly for correctness.
     "and let $AF$ be drawn through $A$, parallel to either of $CD$ or $BE$ [Prop.~1.31]."
     (step3 : a.onLine AF ∧ ¬(AF.intersectsLine CD)) := by euclid_apply (helper_2_3_step3 a AF CD (by assumption) (by assumption)); (try split_ands) <;> assumption
 
