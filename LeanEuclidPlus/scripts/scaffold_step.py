@@ -53,6 +53,20 @@ def main():
     helper_name = L.helper_name(book, prop, node_name)
     namespace = f"Elements.Book{book}"
     prop_rel = os.path.relpath(propdir, L.BOOK_ROOT)
+
+    # Build pre-populated assumption binder lines (if any).
+    assump_lines = ""
+    if node.assumptions:
+        lines = ["  -- Reasoning hypotheses (from @assumption — do NOT remove these types from the signature):"]
+        for i, (text, atype, _override) in enumerate(node.assumptions, 1):
+            lines.append(f'  (hassump{i} : {atype})   -- "{text}"')
+        assump_lines = "\n" + "\n".join(lines) + "\n"
+
+    if assump_lines:
+        thm_sig = f"theorem {helper_name}{assump_lines}  : {node.claim} := by sorry"
+    else:
+        thm_sig = f"theorem {helper_name} : {node.claim} := by sorry"
+
     content = f"""import SystemE
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
@@ -61,7 +75,7 @@ namespace {namespace}
 
 set_option systemE.solverTime 30 in
 -- TODO: fill object/hypothesis binders (run --context {node_name})
-theorem {helper_name} : {node.claim} := by sorry
+{thm_sig}
 
 end {namespace}
 """

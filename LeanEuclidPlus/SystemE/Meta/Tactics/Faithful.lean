@@ -121,4 +121,23 @@ elab_rules : tactic
 -- only RECORDS the annotations; the optional `lake exe` gate that reads them back from the
 -- compiled .olean is deferred (see plan / todos).
 
+/-- `euclid_assumption "euclid text" T` — discharge a reasoning-hypothesis slot in a wired proof.
+
+Used by `wire_main.py` for hypothesis binders that correspond to an explicit `-- @assumption`
+annotation: the English text is documentary (Lean ignores it); `show T` checks the binder type
+matches the expected goal; `assumption` closes it from the local context.
+
+The `use_override pf` form is used when the cited input is a conjunct projection (e.g. `step2.1`)
+that plain `assumption` cannot find — `exact pf` closes it instead. -/
+syntax (name := euclidAssumption)
+  "euclid_assumption" str term : tactic
+syntax (name := euclidAssumptionOverride)
+  "euclid_assumption" str term "use_override" term : tactic
+
+elab_rules : tactic
+  | `(tactic| euclid_assumption $_:str $t:term) => do
+    evalTactic (← `(tactic| show $t; assumption))
+  | `(tactic| euclid_assumption $_:str $t:term use_override $pf:term) => do
+    evalTactic (← `(tactic| show $t; exact $pf))
+
 end SystemE.Tactics

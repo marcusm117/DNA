@@ -93,9 +93,11 @@ Every build carries a 30s SMT cap (`solverTime`, the proving BUDGET) and is wrap
 up at the 30s cap, OR a >45s wall-kill, ⟹ the node is TOO BIG → DECOMPOSE into more backing files; NEVER
 raise the cap. (The 15s gap lets Lean's LOCATED "Could not prove" error surface before the wall SIGKILLs.)
 """
-import os, re, sys
+import os, re, sys, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # so `faithful_lib` resolves from any cwd
 import faithful_lib as L
+
+_BASELINE = os.path.join(L.BOOK_ROOT, "scripts", "step_signatures.json")
 
 
 # ── shared build-with-swap primitives (always revert) ───────────────────────────────────────────────
@@ -600,6 +602,51 @@ def _audit_with_manifest(propdir, order, success_msg, source):
             pass                                      # bookkeeping must never break the audit's exit code
 
 
+def _run_assumption_persistence(propdir):
+    """Source-only, instant. For every entry in step_signatures.json that belongs to this prop AND has
+    'assumptions', verify each saved assumption type is still present as a binder type in the backing
+    file. Returns True (ok) or False (printed failure). Called in mode_all after _run_dependency."""
+    if not os.path.exists(_BASELINE):
+        return True                         # no baseline yet — nothing to check (additive feature)
+    try:
+        base = json.load(open(_BASELINE, encoding="utf-8"))
+    except (ValueError, OSError):
+        return True                         # unreadable baseline — skip, don't block builds
+    book = L.book_num(propdir)
+    prop_prefix = os.path.relpath(propdir, L.BOOK_ROOT)   # e.g. "Book2/Prop09"
+    failures = []
+    for _loc, entry in sorted(base.items()):
+        assumps = entry.get("assumptions")
+        if not assumps:
+            continue
+        # Only check entries that belong to this prop (file path starts with prop_prefix).
+        if not entry.get("file", "").startswith(prop_prefix.replace(os.sep, "/")):
+            continue
+        name = entry.get("name", "")
+        bf = L.backing_file(propdir, name)
+        if bf is None:
+            continue    # no backing file yet — integrity_scan covers the missing-file case
+        try:
+            _objs, hyp_types = L.parse_helper_objs(bf, book, name)
+        except L.FaithfulError:
+            continue    # malformed backing file — integrity_scan will report it
+        norm_binder_types = {" ".join(t.split()) for t in hyp_types}
+        for a in assumps:
+            saved_type = " ".join(a["type"].split())
+            if saved_type not in norm_binder_types:
+                failures.append((name, a["type"], a.get("text", "")))
+    if failures:
+        print(f"FAIL (assumption persistence): {len(failures)} saved reasoning-hypothesis type(s) "
+              f"missing from backing file signatures in {prop_prefix}:")
+        for name, atype, text in failures:
+            label = f'  ("{text}")' if text else ""
+            print(f'  {name}.lean is missing type "{atype}"{label}')
+        print("  (These types were frozen by check_steps.py --save. "
+              "Do not remove @assumption hyp types from backing file signatures.)")
+        return False
+    return True
+
+
 def mode_all(propdir):
     problems = L.integrity_scan(propdir)
     if problems:
@@ -618,6 +665,10 @@ def mode_all(propdir):
     # criterion-3 dependency (source-only, instant) — enforce BEFORE the long build audit so a dep
     # violation can't slip through the agent's final gate (the step3-cited-Prop.1.31 class).
     if not _run_dependency(propdir):
+        return 1
+    # assumption persistence (source-only, instant) — verify every @assumption type saved at Phase-A
+    # gate is still present as a binder type in the backing file. Hard fail if missing.
+    if not _run_assumption_persistence(propdir):
         return 1
     order = L.audit_order(propdir)                    # whole prop, bottom-up
     n_names = len(order)

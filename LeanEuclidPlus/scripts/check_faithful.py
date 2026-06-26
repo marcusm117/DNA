@@ -286,6 +286,30 @@ def check_source(path: str) -> int:
         rc |= report("no forbidden bulk goal-closing tactics in the main proof body",
                      not bad, bad or ["none found"])
 
+    # @assumption text-substring check (criterion 4): every `-- @assumption ("text", ...)` annotation
+    # must have its English text as a normalized substring of the owning euclid_sentence's text.
+    # Scans the RAW source (annotations are comments, blanked in `src`). Positions align with `anns`
+    # (strip_comments replaces comment chars with spaces — character offsets are identical in raw/src).
+    assump_problems = []
+    for am in fl.ASSUMPTION_ANNOT.finditer(raw):
+        annot_text = am.group(1)
+        # Find the next euclid_sentence after this annotation (by source position).
+        after = [a for a in anns if a['start'] > am.start()]
+        if not after:
+            continue
+        owner = min(after, key=lambda a: a['start'])
+        if norm(annot_text) not in norm(owner['text']):
+            snippet = owner['text'][:80] + ("..." if len(owner['text']) > 80 else "")
+            assump_problems.append(
+                f"@assumption text \"{annot_text}\" is not a substring of sentence {owner['loc']}: "
+                f"\"{snippet}\"")
+    if assump_problems:
+        rc |= report("@assumption text is a normalized substring of its owning sentence",
+                     False, assump_problems)
+    elif fl.ASSUMPTION_ANNOT.search(raw):
+        rc |= report("@assumption text is a normalized substring of its owning sentence",
+                     True, [f"{sum(1 for _ in fl.ASSUMPTION_ANNOT.finditer(raw))} annotation(s) checked"])
+
     # Reminder: the third faithfulness criterion (each step's TYPE honestly captures its sentence)
     # is HUMAN-checked — no machine verifies it.
     print("  [note] not machine-checked: that each step's type honestly captures its sentence (review by hand)")

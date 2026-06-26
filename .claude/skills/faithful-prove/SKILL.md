@@ -186,6 +186,17 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
         **RECOMMENDED: run `python3 scripts/scaffold_step.py Book<N>/PropNN F`** — this creates the
         skeleton file with correct imports, namespace, theorem name (`helper_<book>_<prop>_<name>`),
         and claim type pre-filled from Main. You then edit it to add object/hypothesis binders.
+        **`@assumption` hyps — if the node has `-- @assumption` annotations in Main, scaffold also
+        pre-populates the backing file with those hypothesis types as `(hassump1 : T1) …` binders.
+        DO NOT REMOVE THESE BINDER TYPES FROM THE SIGNATURE.** You MAY:
+          - rename them (e.g. `hassump1` → `h_angle_b_half`)
+          - reorder binders (objects first, geometric context, then reasoning — standard layout)
+          - add more object and geometric context binders
+        But the TYPE of each pre-populated `hassump` binder MUST survive in the final signature.
+        `check_step --all` verifies assumption persistence against the frozen `step_signatures.json`
+        baseline and hard-fails if a saved type is missing. (If you find a pre-populated type that
+        SP can't discharge — the fact isn't in Main's context at that call site — that signals a
+        Phase-A annotation error; tell the human rather than silently removing the binder.)
         (The skeleton approach eliminates boilerplate errors and saves ~150 tokens per file.)
         If you prefer manual creation, the structure is:
         ```

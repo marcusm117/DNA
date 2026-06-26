@@ -187,7 +187,7 @@ sentence — you're probably trying to prove it, not state it.
    helper cone; deferred is NOT a failure). Both lines should be green/deferred before gate A.
 ```
 
-### A2 — fill the real claim types, ONE SENTENCE AT A TIME (Rule 2)
+### A2 — fill the real claim types and reasoning annotations, ONE SENTENCE AT A TIME (Rule 2)
 
 Go through the sentences strictly IN ORDER, ONE at a time — fully finishing (steps 1–5 below) for one
 `step_n` before touching the next. Do NOT batch several sentences into one pass:
@@ -196,6 +196,48 @@ Go through the sentences strictly IN ORDER, ONE at a time — fully finishing (s
    Rule 0 — the step's words, not the diagram's geometry. One step → one compact claim for its atomic
    idea (a sentence you split into several steps gives several small claims). Earlier steps' claims are
    available as context.
+
+1.5 [REASONING ANNOTATIONS — INPUTS-ONLY]
+   After writing the claim, look at the sentence's TEXT for EXPLICIT reasoning citations: "since X",
+   "for X [Prop.N]", "X being equal to Y". For each, decide whether X is:
+     (a) an INPUT the step CONSUMES — a prior step's conclusion or a construction property that
+         becomes a hypothesis binder — OR
+     (b) a fact the step itself PROVES — a conjunct of this step's own claim/conclusion.
+   (a) → add a `-- @assumption ("verbatim text substring", lean_type)` line DIRECTLY ABOVE the
+         euclid_sentence (possibly with `use_override <proofterm>` if the fact is a conjunct
+         projection that `assumption` can't crack, e.g. `use_override step2.1`).
+   (b) → do NOT annotate. It belongs in the claim, not in an @assumption.
+   **INPUTS-ONLY is the load-bearing rule.** A "since X" that appears in the claim as a proved
+   conjunct is NOT an @assumption — it is the claim. Only genuine INPUTS get annotated.
+
+   **When to annotate (examples):**
+   - "Since AB equals CE [step2]" — step2's conclusion is an input → @assumption it
+   - "for the angle is right [from the construction]" — if the right angle is a hypothesis binder
+     coming from an earlier step → @assumption it
+   **When NOT to annotate:**
+   - "Therefore X is Y" — X is Y IS the claim; no @assumption
+   - "So I say that angle FDB is right, for it equals ECB" — if "FDB is right" is a CONJUNCT OF THE
+     CLAIM, do NOT annotate it (it is what this step proves, not what it consumes)
+   - "Similarly" / "For the same reasons" / vague references → skip (don't fabricate)
+   **When in doubt: do NOT annotate.** Better to miss a citation than to annotate a proved conjunct.
+
+   **Format:**
+   ```lean
+   -- @assumption ("verbatim substring of sentence", lean_type)
+   -- @assumption ("another reason", lean_type2, use_override step2.1)
+   euclid_sentence "<loc>" "<text>" (stepN : <CLAIM>) := by sorry
+   ```
+   The text must be a verbatim substring of the sentence (checked by check_faithful.py). The lean_type
+   must match the EXACT normalized form of the hypothesis binder it will become (same orientation as
+   the binder — e.g. `|(c─e)| = |(a─c)|`, not `|(a─c)| = |(c─e)|`, if that's the binder's form).
+   Multiple @assumption lines stack above the sentence; @args may coexist below @assumption lines.
+
+   After annotating, run `python3 scripts/scaffold_step.py Book<N>/PropNN stepN` for this sentence
+   → creates `stepN.lean` with those hyp types pre-populated as `(hassump1 : T1) (hassump2 : T2) …`.
+   NOTE: scaffold creates the backing FILE but does NOT start Phase B; you still do NOT prove anything
+   in Phase A. If a backing file already exists (re-map), scaffold refuses to overwrite — skip it.
+   (Sentences with NO explicit reasoning citations: no @assumption, no scaffold in Phase A — their
+   backing file is created in Phase B as usual.)
 
 2. The Main sentence body STAYS `:= by sorry` (do NOT wire `euclid_apply (helper …)` into Main in
    Phase A — wiring is temporary in Phase B's per-step script and permanent only in Phase C):
@@ -245,6 +287,9 @@ When every claim is a real type and `Main.lean` elaborates (all step files are s
 this self-review pass over your own map (these are the exact issues humans keep catching — catch them
 yourself):
   □ No `True` and no vacuous/definitional claim (`|ab|=|ba|`, `x=x`) on any non-structural sentence (Rule 3).
+  □ Every `@assumption` annotation: (a) text is a verbatim substring of the sentence; (b) the annotated
+    type is a genuine INPUT the step consumes — NOT a conjunct of the step's own claim. (If unsure,
+    remove the annotation; the INPUTS-ONLY rule is load-bearing.)
   □ No construction-byproduct incidences in any claim type (Rule 3) — only what the sentence asserts.
   □ Every figure-area claim uses the figure's REAL corners; no region double-counted or omitted (Rule 0/3).
   □ No claim expanded into facts the text didn't state (one step → its one atomic idea; split a
@@ -255,9 +300,12 @@ Fix anything the checklist flags. THEN:
 - Report the sentence map: for each locator → its text → its `step_n` claim type, and call out any
   sentence whose faithful claim you were genuinely unsure of (e.g. near-structural "it is on XY"
   locating sentences) so the human can focus there.
-- STOP. The human reviews that each claim honestly captures its sentence (the one thing no script
-  checks), then runs `python3 scripts/check_steps.py --save Book<N>/PropNN/Main.lean` to freeze the
-  claims. Proving happens next via the `faithful-prove` skill.
+- STOP. The human reviews that each claim honestly captures its sentence AND that each @assumption
+  annotation is a genuine consumed input (both human-checked — no script fully verifies faithfulness).
+  The human then runs `python3 scripts/check_steps.py --save Book<N>/PropNN/Main.lean` to freeze the
+  claims AND the @assumption types into `step_signatures.json`. Proving happens next via
+  `faithful-prove`. (@assumption types are the source of truth — check_step --all enforces their
+  persistence in backing file signatures throughout Phase B.)
 
 **Do not start proving. Do not read axiom files. Do not write a header comment block** (brief
 `-- dev:` notes are fine; they get deleted later). If a claim seems impossible to state without

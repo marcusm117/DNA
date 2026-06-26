@@ -668,17 +668,20 @@ def _body_regexes(book, prop, name):
     return [
         ("sorry", re.compile(r":=[ \t]*by[ \t\r\n]+sorry\b")),
         ("trace", re.compile(r":=[ \t]*by[ \t\r\n]+trace_state[ \t\r\n]*;[ \t\r\n]*sorry\b")),
-        # The arg list may contain ONE level of nested parens — the `(by assumption)` hypothesis args
-        # the wire emits (full application). `(?:[^()]|\([^()]*\))*` matches flat chars OR a nested
-        # `(…)` group, so the closing `)` is the helper-call's own. Without this, a wired body with
-        # `(by assumption)` would not be recognized and integrity_scan/wire_main would mis-handle it.
+        # The arg list can contain typed hypothesis slots: `(by show T; assumption)` or
+        # `(by euclid_assumption "text" T)` / `(by euclid_assumption "text" T use_override pf)`.
+        # Types like `|(a─c)| = |(b─d)|` add a second level of nesting `(a─c)` inside the slot paren;
+        # `euclid_assumption "text with (angle)"` adds a quoted string that may contain parens.
+        # Pattern: `(?:[^()"]|"[^"]*"|\((?:[^()"]|"[^"]*")*\))*` handles:
+        #   - flat chars (not parens or quotes)
+        #   - quoted strings (skip their contents, so `"(angle)"` doesn't confuse paren counting)
+        #   - one-level nested `(…)` groups (the typed slot), themselves containing flat chars or strings
+        # This covers all current arg forms; the old `(by assumption)` (depth-1, no strings) still matches.
         # NO TRAILER: Solve.lean's close-directly-first branch closes the goal INSIDE `euclid_apply`
         # (via `exact`), so a wired body is just `:= by euclid_apply (helper …)` — the match ends at the
-        # helper call's `)` and consumes NO trailing whitespace/newline (an earlier `[ \t\r\n]*` + optional
-        # trailer ate the newline on unwire, concatenating the next line). Every committed prop is rewired
-        # to this exact shape, so no trailer-wire recognition is needed.
+        # helper call's `)`. Every committed prop is rewired to this exact shape.
         ("wired", re.compile(r":=[ \t]*by[ \t\r\n]+euclid_apply[ \t]*\(\s*" + helper +
-                             r"\b(?:[^()]|\([^()]*\))*\)")),
+                             r'(?:[^()"]|"[^"]*"|\((?:[^()"]|"[^"]*")*\))*\)')),
         # SMELL (transient, `check_step --smell` only): the BARE claim fired straight at euclid_finish,
         # no decomposition. Distinct from `wired` (which REQUIRES the `euclid_apply (helper…)` prefix),
         # so a bare `:= by euclid_finish` matches ONLY here. Never written to disk persistently.
@@ -706,20 +709,33 @@ HAVE_HEAD = re.compile(r'\bhave\s+(\w+)\s*:')
 # parent). Absent ⟹ the wiring defaults to the helper's own binder names. Only the SOURCE of the args
 # changes; SP still BUILDS the call, so wrong args fail loudly. The body-swap never touches this line.
 ARGS_ANNOT = re.compile(r'(?m)^[ \t]*--[ \t]*@args:[ \t]*(.*?)[ \t]*$')
+# Reasoning-citation annotation: `-- @assumption ("euclid text", lean_type[, use_override proofterm])`
+# placed above a euclid_sentence head. INPUTS-ONLY: annotates only a fact the step CONSUMES (a prior
+# step's conclusion / construction property that becomes a hypothesis binder) — never a fact the step
+# PROVES. Field 3 (if present) starts with `use_override ` — this both disambiguates from commas inside
+# lean_type and mirrors the `euclid_assumption … use_override pf` tactic syntax directly (the captured
+# string is emitted verbatim into the wired body, so `use_override step1.1` → tactic `… use_override
+# step1.1` where `step1.1` is the proof term).
+ASSUMPTION_ANNOT = re.compile(
+    r'(?m)^[ \t]*--[ \t]*@assumption[ \t]*\(\s*"([^"]*)"\s*,\s*(.+?)(?:\s*,\s*(use_override\s+.+?))?\s*\)[ \t]*$')
 
 
 class Node:
-    __slots__ = ("name", "file", "kind", "loc", "claim", "state", "body_start", "body_end", "args")
+    __slots__ = ("name", "file", "kind", "loc", "claim", "state", "body_start", "body_end",
+                 "args", "assumptions")
 
-    def __init__(self, name, file, kind, loc, claim, state, body_start, body_end, args=None):
+    def __init__(self, name, file, kind, loc, claim, state, body_start, body_end,
+                 args=None, assumptions=None):
         self.name, self.file, self.kind = name, file, kind
         self.loc, self.claim, self.state = loc, claim, state
         self.body_start, self.body_end = body_start, body_end   # span of the `:= by …` body in `file`
         self.args = args                                        # [tok,…] from a `-- @args:` line, or None
+        self.assumptions = assumptions                          # [(text, lean_type, override|None),…] or None
 
     def __repr__(self):
         a = f" @args={self.args}" if self.args is not None else ""
-        return f"<Node {self.name} ({self.kind}) {os.path.relpath(self.file, BOOK_ROOT)} [{self.state}]{a}>"
+        s = f" @assumptions={len(self.assumptions)}" if self.assumptions else ""
+        return f"<Node {self.name} ({self.kind}) {os.path.relpath(self.file, BOOK_ROOT)} [{self.state}]{a}{s}>"
 
 
 def _args_above(src, head_start):
@@ -733,6 +749,39 @@ def _args_above(src, head_start):
     prev_line = src[prev_start:line_start - 1]
     m = ARGS_ANNOT.match(prev_line)
     return m.group(1).split() if m else None
+
+
+def _assumptions_above(src, head_start):
+    """Collect all `-- @assumption (...)` lines in the contiguous annotation block immediately above
+    the node head (at `head_start`). Scans backwards, skipping `@assumption` / `@args` / blank lines
+    and stopping at the first line that is none of those. Returns a list of `(text, lean_type,
+    override)` tuples (override is a string like `"by exact step2.1"` or None), or None if none found.
+    INPUTS-ONLY: the caller (Phase A map / scaffold) is responsible for only annotating consumed inputs,
+    never proved conjuncts."""
+    line_start = src.rfind("\n", 0, head_start) + 1    # start of the head's own line
+    found = []
+    cursor = line_start
+    while cursor > 0:
+        prev_end = cursor - 1                          # the `\n` before this line
+        prev_start = src.rfind("\n", 0, prev_end) + 1  # start of the previous line
+        line = src[prev_start:prev_end]
+        stripped = line.strip()
+        if not stripped:                               # blank line — keep scanning
+            cursor = prev_start
+            continue
+        m = ASSUMPTION_ANNOT.match(line)
+        if m:
+            found.append((m.group(1), m.group(2).strip(), m.group(3)))
+            cursor = prev_start
+            continue
+        if ARGS_ANNOT.match(line):                     # @args line — skip, keep scanning
+            cursor = prev_start
+            continue
+        break                                          # any other non-blank line — stop
+    if not found:
+        return None
+    found.reverse()                                    # restore top-to-bottom order
+    return found
 
 
 def parse_nodes_in_file(path, book):
@@ -759,7 +808,8 @@ def parse_nodes_in_file(path, book):
                                 f"shape). The agent must NEVER hand-write a sentence body.")
         state, bs, be = body
         nodes.append(Node(name, path, "sentence", loc, claim.strip(), state, bs, be,
-                          _args_above(src, m.start())))
+                          _args_above(src, m.start()),
+                          _assumptions_above(src, m.start())))
     for m in HAVE_HEAD.finditer(src):
         name = m.group(1)
         try:
@@ -824,12 +874,13 @@ def backing_file(propdir, name):
 
 def parse_helper_objs(path, book, name):
     """Parse `theorem helper_<book>_<prop>_<name> (binders…) : claim :=` in its backing file and return
-    `(objs, n_hyps)`: the ordered list of OBJECT argument names (binders whose type is a geometric
-    sort Point/Line/Circle) and the COUNT of hypothesis (Prop-typed) binders, grouped-binder aware
-    (`(h1 h2 : T)` counts 2). The wire fully-applies the helper by passing `objs` positionally and one
-    `(by assumption)` per hypothesis binder (see `wired_body`). ABORT LOUD if the theorem is
-    missing/misnamed, or a binder's type LOOKS like a sort but isn't a known one (don't guess)."""
-    src = open(path, encoding="utf-8").read()
+    `(objs, hyp_types)`: the ordered list of OBJECT argument names (binders whose type is a geometric
+    sort Point/Line/Circle) and the ORDERED LIST of hypothesis (Prop-typed) binder TYPE STRINGS,
+    grouped-binder aware (`(h1 h2 : T)` contributes T twice). The wire fully-applies the helper by
+    passing `objs` positionally and one typed slot per hypothesis binder (see `wired_body`). ABORT LOUD
+    if the theorem is missing/misnamed, or a binder's type LOOKS like a sort but isn't a known one."""
+    raw = open(path, encoding="utf-8").read()
+    src = blank_comments(raw)            # strip `--`/`/- -/` so inline comments don't confuse binder scan
     expected = helper_name(book, prop_num(path), name)
     m = re.search(r"\btheorem\s+(helper_\w+)", src)
     if not m:
@@ -838,7 +889,7 @@ def parse_helper_objs(path, book, name):
         raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: theorem is '{m.group(1)}' but the "
                             f"naming law requires '{expected}' (file ↔ node ↔ helper must match)")
     i, n = m.end(), len(src)
-    objs, n_hyps = [], 0
+    objs, hyp_types = [], []
     while i < n:
         while i < n and src[i] in " \t\r\n":
             i += 1
@@ -860,38 +911,54 @@ def parse_helper_objs(path, book, name):
                                     f"unrecognized sort '{btype}' — known object sorts are "
                                     f"{sorted(GEOMETRIC_SORTS)}. Refusing to guess.")
             else:                                               # a Prop-typed hypothesis binder
-                n_hyps += len(idents)
+                hyp_types.extend([btype] * len(idents))
             i = close + 1
         else:
             raise FaithfulError(f"{os.path.relpath(path, BOOK_ROOT)}: unexpected token before the "
                                 f"result type of {expected} (only `(binder)` groups are supported)")
-    return objs, n_hyps
+    return objs, hyp_types
 
 
-def wired_body(book, prop, name, objs, n_hyps):
+def _norm(s):
+    """Collapse whitespace for type-string comparison."""
+    return " ".join(s.split())
+
+
+def wired_body(book, prop, name, objs, hyp_types, assumptions=None):
     """The canonical wired body string (single line). The helper is FULLY applied: its object binders
-    positionally (`objs`) and one `(by assumption)` per hypothesis binder. Full application makes the
+    positionally (`objs`) and one typed slot per hypothesis binder. Full application makes the
     `euclid_apply` term carry no remaining antecedent arrow, so it takes the no-SMT `obtain` branch
-    (SystemE/Meta/Tactics/Solve.lean) — every hypothesis is discharged by core-Lean `assumption`
-    (type-match over the local context, including unnamed hyps), NEVER by the SMT solver. A hypothesis
-    not present in context makes its `(by assumption)` fail loudly: that signals the helper signature is
-    wrong — drop that hyp and derive it inside the helper body.
-    The goal is closed DIRECTLY by `euclid_apply` itself: Solve.lean's close-directly-first branch runs
-    `exact $rule` when the fully-applied helper's conclusion is the goal (always true, by the naming law
-    — helper conclusion == node claim == node goal) — ZERO SMT, works for EVERY claim shape (`∧`, `∨`,
-    atomic, …). So NO trailing closer is emitted. (The older `(try split_ands) <;> assumption` trailer
-    errors "no goals" once `exact` closes; the wired-regex below still ACCEPTS it so pre-rewire / legacy
-    / hand-wired bodies keep recognizing as wired — but committed props must be unwired + rewired to
-    actually drop it.) The citation is recorded by the helper's `euclid_apply` (Solve.lean, before any
-    branch). Net: a leaf wire adds ~0 build time."""
-    args = " ".join(objs + ["(by assumption)"] * n_hyps)
+    (SystemE/Meta/Tactics/Solve.lean). A hypothesis not present in context makes its slot fail loudly.
+    The goal is closed DIRECTLY by `euclid_apply` itself (close-directly-first branch, zero SMT).
+
+    Slot format — matched by NORMALIZED TYPE (order-independent):
+      - Annotated reasoning hyp  → `(by euclid_assumption "text" T)` or
+                                   `(by euclid_assumption "text" T use_override pf)`
+      - Non-annotated structural hyp → `(by show T; assumption)`
+    The reader sees the TYPE of every slot. Both forms are mechanically checked by Lean."""
+    annot_map = {}
+    if assumptions:
+        for text, atype, override in assumptions:
+            annot_map[_norm(atype)] = (text, atype, override)
+    parts = list(objs)
+    for htype in hyp_types:
+        annot = annot_map.get(_norm(htype))
+        if annot:
+            text, lean_type, override = annot
+            if override:
+                parts.append(f'(by euclid_assumption "{text}" {lean_type} {override})')
+            else:
+                parts.append(f'(by euclid_assumption "{text}" {lean_type})')
+        else:
+            parts.append(f"(by show {htype}; assumption)")
+    args = " ".join(parts)
     return f":= by euclid_apply ({helper_name(book, prop, name)} {args})"
 
 
 def resolve_call_args(propdir, book, node):
-    """Return `(objs, n_hyps)` for wiring `node`'s call — the OBJECT arguments to pass and the number
-    of hypothesis binders (each wired as `(by assumption)`; see `wired_body`). The `@args` override is
-    OBJECT-ONLY (hyps are matched by type via `assumption`, never named per call site):
+    """Return `(objs, hyp_types)` for wiring `node`'s call — the OBJECT arguments to pass and the
+    ORDERED list of hypothesis binder type strings (see `wired_body`). The `@args` override is
+    OBJECT-ONLY (hyps are matched by type, never named per call site):
        - if the node carries a `-- @args:` annotation → its tokens VERBATIM as the objects (validated:
          token count == the helper's object-binder count, else FaithfulError — catches arity slips
          before any build). This is how a helper reused with DIFFERENT objects per parent supplies each
@@ -902,16 +969,16 @@ def resolve_call_args(propdir, book, node):
     bf = backing_file(propdir, node.name)
     if bf is None:
         raise FaithfulError(f"node '{node.name}' has no backing file '{node.name}.lean'")
-    binders, n_hyps = parse_helper_objs(bf, book, node.name)
+    binders, hyp_types = parse_helper_objs(bf, book, node.name)
     if node.args is None:
-        return binders, n_hyps
+        return binders, hyp_types
     if len(node.args) != len(binders):
         raise FaithfulError(
             f"node '{node.name}' in {os.path.relpath(node.file, BOOK_ROOT)}: `-- @args:` lists "
             f"{len(node.args)} arg(s) {node.args} but {helper_name(book, prop_num(propdir), node.name)} "
             f"takes {len(binders)} object binder(s) {binders}. The override must list EXACTLY the object "
             f"args, in order.")
-    return node.args, n_hyps
+    return node.args, hyp_types
 
 
 # ── the swap primitive (operates on a source STRING; callers handle disk + restore) ─────────────────
@@ -936,8 +1003,8 @@ def set_node_state(src, node, state, propdir, book):
     elif state == "smell":
         body = ":= by euclid_finish"
     elif state == "wired":
-        objs, n_hyps = resolve_call_args(propdir, book, node)
-        body = wired_body(book, prop_num(propdir), node.name, objs, n_hyps)
+        objs, hyp_types = resolve_call_args(propdir, book, node)
+        body = wired_body(book, prop_num(propdir), node.name, objs, hyp_types, node.assumptions)
     else:
         raise FaithfulError(f"unknown node state '{state}'")
     out = swap_node_body(src, node, body)
