@@ -121,23 +121,24 @@ elab_rules : tactic
 -- only RECORDS the annotations; the optional `lake exe` gate that reads them back from the
 -- compiled .olean is deferred (see plan / todos).
 
-/-- `euclid_assumption "euclid text" T` — discharge a reasoning-hypothesis slot in a wired proof.
+/-- `euclid_assumption "euclid text" (tac)` — every wired hypothesis slot, in ONE fixed shape.
 
-Used by `wire_main.py` for hypothesis binders that correspond to an explicit `-- @assumption`
-annotation: the English text is documentary (Lean ignores it); `show T` checks the binder type
-matches the expected goal; `assumption` closes it from the local context.
+A string (documentary — Lean ignores it; the faithfulness checker reads it to confirm a reasoning
+citation is a substring of its sentence) followed by a single **bracket-delimited** tactic that is the
+actual proof. `wire_main.py` emits exactly:
 
-The `use_override pf` form is used when the cited input is a conjunct projection (e.g. `step2.1`)
-that plain `assumption` cannot find — `exact pf` closes it instead. -/
+    (by euclid_assumption "TEXT" (show T; assumption))     -- structural (TEXT = "") and plain reasoning
+    (by euclid_assumption "TEXT" (show T; exact pf))       -- reasoning whose input is a conjunct projection
+
+The brackets bound the proof unambiguously (so the recognizer's balanced-paren scan finds its end at any
+depth, and Lean parses it as one parenthesized tactic); `show T` makes the slot's type visible and is
+checked against the goal; the trailing tactic closes it from context. The text is `"`-free by
+construction. There is no separate `use_override` syntax — an override is just `exact pf` inside the
+brackets. -/
 syntax (name := euclidAssumption)
-  "euclid_assumption" str term : tactic
-syntax (name := euclidAssumptionOverride)
-  "euclid_assumption" str term "use_override" term : tactic
+  "euclid_assumption" str tactic : tactic
 
 elab_rules : tactic
-  | `(tactic| euclid_assumption $_:str $t:term) => do
-    evalTactic (← `(tactic| show $t; assumption))
-  | `(tactic| euclid_assumption $_:str $t:term use_override $pf:term) => do
-    evalTactic (← `(tactic| show $t; exact $pf))
+  | `(tactic| euclid_assumption $_:str $t:tactic) => evalTactic t
 
 end SystemE.Tactics

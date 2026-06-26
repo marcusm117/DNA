@@ -228,8 +228,8 @@ def test_find_body_recognizes_euclid_assumption_override_slot():
     assert src[start:end] == body            # span covers the whole call paren, nothing trailing
 
 
-def test_find_body_recognizes_show_assumption_slot():
-    """A non-annotated hyp slot `(by show T; assumption)` with point-pairs is also recognized."""
+def test_find_body_recognizes_structural_slot():
+    """A non-annotated structural slot `(by euclid_assumption "" (show T; assumption))` is recognized."""
     body = L.wired_body(2, 99, "step3", ["a", "c", "e"],
                         ["|(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|"], None)
     src = f"    (step3 : |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|) {body}\n"
@@ -253,57 +253,66 @@ def test_find_body_paren_in_assumption_string_does_not_unbalance():
 
 # ── wired_body format ─────────────────────────────────────────────────────────
 
+# Every slot is the ONE fixed shape: (by euclid_assumption "TEXT" (show T; PROOF)).
+
 def test_wired_body_annotated_hyp_plain():
-    """An annotated hyp emits euclid_assumption "text" T (no override)."""
+    """Annotated hyp → (by euclid_assumption "text" (show T; assumption))."""
     assumptions = [("AC equals AC", "|(a─c)| = |(a─c)|", None)]
     hyp_types   = ["|(a─c)| = |(a─c)|"]
     body = L.wired_body(2, 99, "step2", ["a", "c", "e"], hyp_types, assumptions)
-    assert 'euclid_assumption "AC equals AC" |(a─c)| = |(a─c)|' in body
-    assert "use_override" not in body
-    assert "show" not in body
+    assert '(by euclid_assumption "AC equals AC" (show |(a─c)| = |(a─c)|; assumption))' in body
+    assert "exact" not in body
 
 
 def test_wired_body_annotated_hyp_override():
-    """An annotated hyp with use_override emits the full override form."""
+    """Override → (by euclid_assumption "text" (show T; exact pf)) — no `use_override` keyword."""
     assumptions = [("AC equals AC", "|(a─c)| = |(a─c)|", "use_override step1.1")]
     hyp_types   = ["|(a─c)| = |(a─c)|"]
     body = L.wired_body(2, 99, "step2", ["a", "c", "e"], hyp_types, assumptions)
-    assert 'euclid_assumption "AC equals AC" |(a─c)| = |(a─c)| use_override step1.1' in body
+    assert '(by euclid_assumption "AC equals AC" (show |(a─c)| = |(a─c)|; exact step1.1))' in body
+    assert "use_override" not in body
 
 
 def test_wired_body_non_annotated_hyp():
-    """A non-annotated hyp emits (by show T; assumption)."""
+    """Structural hyp → (by euclid_assumption "" (show T; assumption))."""
     hyp_types = ["|(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|"]
     body = L.wired_body(2, 99, "step3", ["a", "c", "e"], hyp_types, None)
-    assert "(by show |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|; assumption)" in body
-    assert "euclid_assumption" not in body
+    assert '(by euclid_assumption "" (show |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|; assumption))' in body
 
 
 def test_wired_body_mixed_hyps():
-    """Annotated and non-annotated hyps can coexist; matched by NORMALIZED TYPE."""
+    """Annotated and structural hyps coexist; both in the fixed shape, matched by NORMALIZED TYPE."""
     assumptions = [("AC equals AC", "|(a─c)| = |(a─c)|", None)]
     hyp_types   = ["|(a─c)| = |(a─c)|", "|(c─e)| = |(c─e)|"]
     body = L.wired_body(2, 99, "step_mixed", ["a"], hyp_types, assumptions)
-    assert 'euclid_assumption "AC equals AC"' in body
-    assert "(by show |(c─e)| = |(c─e)|; assumption)" in body
+    assert '(by euclid_assumption "AC equals AC" (show |(a─c)| = |(a─c)|; assumption))' in body
+    assert '(by euclid_assumption "" (show |(c─e)| = |(c─e)|; assumption))' in body
 
 
 def test_wired_body_no_assumptions():
-    """With no assumptions all hyps emit show T; assumption."""
+    """No annotations → every slot is the structural shape with empty text."""
     hyp_types = ["|(a─c)| = |(c─e)|", "∠ a:c:e = ∟"]
     body = L.wired_body(2, 99, "step_none", ["a", "c", "e"], hyp_types)
-    assert "(by show |(a─c)| = |(c─e)|; assumption)" in body
-    assert "(by show ∠ a:c:e = ∟; assumption)" in body
-    assert "euclid_assumption" not in body
+    assert '(by euclid_assumption "" (show |(a─c)| = |(c─e)|; assumption))' in body
+    assert '(by euclid_assumption "" (show ∠ a:c:e = ∟; assumption))' in body
 
 
 def test_wired_body_type_normalization():
     """Annotation type is matched after whitespace normalization."""
-    # Annotation has extra spaces; hyp_type in backing file is compact.
     assumptions = [("AC equals AC", "|(a─c)|  =  |(a─c)|", None)]
     hyp_types   = ["|(a─c)| = |(a─c)|"]
     body = L.wired_body(2, 99, "step_norm", ["a"], hyp_types, assumptions)
-    assert "euclid_assumption" in body
+    assert '(by euclid_assumption "AC equals AC" (show |(a─c)| = |(a─c)|; assumption))' in body
+
+
+def test_wired_body_multiline_type_collapsed_to_one_line():
+    """THE regression: a multi-line binder type must be emitted on ONE line (no newline survives),
+    so the inline `show` can't be truncated by Lean's indentation rule."""
+    hyp_types = ["Triangle.area △ c:d:h + Triangle.area △ c:h:l =\n      Triangle.area △ h:m:f + Triangle.area △ h:f:g"]
+    body = L.wired_body(2, 5, "step7", ["c", "d"], hyp_types, None)
+    assert "\n" not in body
+    assert ("(by euclid_assumption \"\" (show Triangle.area △ c:d:h + Triangle.area △ c:h:l = "
+            "Triangle.area △ h:m:f + Triangle.area △ h:f:g; assumption))") in body
 
 
 # ── check_faithful text-substring via ASSUMPTION_ANNOT ───────────────────────

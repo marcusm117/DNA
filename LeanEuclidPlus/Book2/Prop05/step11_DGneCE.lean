@@ -20,7 +20,7 @@ theorem helper_2_5_step11_DGneCE (a b c d e f : Point) (AB CE DG EF BF : Line)
   intro hDGeqCE
   have hdCE : d.onLine CE := hDGeqCE ▸ hdDG
   have hcd : c ≠ d := by euclid_finish
-  have step11_DGneCE_foff : ¬(f.onLine AB) := by euclid_apply (helper_2_5_step11_DGneCE_foff b c d f AB BF (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step11_DGneCE_foff : ¬(f.onLine AB) := by euclid_apply (helper_2_5_step11_DGneCE_foff b c d f AB BF (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BF; assumption)) (by euclid_assumption "" (show f.onLine BF; assumption)) (by euclid_assumption "" (show between c d b; assumption)) (by euclid_assumption "" (show ∠ c:b:f = ∟; assumption)) (by euclid_assumption "" (show |(b─f)| = |(c─b)|; assumption)))
   have hEFneAB : EF ≠ AB := fun heq => step11_DGneCE_foff (heq ▸ hfEF)
   -- AB = CE from c,d on both; proof inline: euclid_finish with c≠d,hcAB,hdAB,hcCE,hdCE
   have hABisCE : AB = CE := by

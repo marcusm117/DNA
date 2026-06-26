@@ -25,17 +25,17 @@ by
   -- @assumption ("AC equals AC", |(a─c)| = |(a─c)|, use_override step1.1)
   euclid_sentence "2.99.2"
     "Since AC equals AC, the sum of AC and CE equals AC plus CE."
-    (step2 : |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|) := by euclid_apply (helper_2_99_step2 a c e (by euclid_assumption "AC equals AC" |(a─c)| = |(a─c)| use_override step1.1))
+    (step2 : |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|) := by euclid_apply (helper_2_99_step2 a c e (by euclid_assumption "AC equals AC" (show |(a─c)| = |(a─c)|; exact step1.1)))
   euclid_sentence "2.99.3"
     "Therefore AC plus CE equals AC plus CE."
-    (step3 : |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|) := by euclid_apply (helper_2_99_step3 a c e (by show |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|; assumption))
+    (step3 : |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|) := by euclid_apply (helper_2_99_step3 a c e (by euclid_assumption "" (show |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|; assumption)))
   euclid_sentence "2.99.4"
     "The angle ACE equals itself."
     (step4 : ∠ a:c:e = ∠ a:c:e) := by euclid_apply (helper_2_99_step4 a c e)
   -- @args: a c e
   euclid_sentence "2.99.5"
     "Since the angle ACE equals the angle ACE, the angle ACE equals itself once more."
-    (step5 : ∠ a:c:e = ∠ a:c:e) := by euclid_apply (helper_2_99_step5 a c e (by show ∠ a:c:e = ∠ a:c:e; assumption))
+    (step5 : ∠ a:c:e = ∠ a:c:e) := by euclid_apply (helper_2_99_step5 a c e (by euclid_assumption "" (show ∠ a:c:e = ∠ a:c:e; assumption)))
   exact ⟨step3, step5⟩
 
 end Elements.Book2

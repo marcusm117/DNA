@@ -20,7 +20,7 @@ theorem helper_2_3_step7 (a b c d e : Point) (AB DE CD BE : Line)
     (hDEAB : ¬(DE.intersectsLine AB)) (hCDBE : ¬(CD.intersectsLine BE)) :
     Triangle.area △ c:d:e + Triangle.area △ c:e:b = |(b─c)| * |(b─c)| := by
   euclid_intros
-  have step7_par : formParallelogram c b d e AB DE CD BE := by euclid_apply (helper_2_3_step7_par a b c d e AB DE CD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step7_par : formParallelogram c b d e AB DE CD BE := by euclid_apply (helper_2_3_step7_par a b c d e AB DE CD BE (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show |(b─e)| = |(c─b)|; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show c.onLine CD; assumption)) (by euclid_assumption "" (show d.onLine CD; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show d.sameSide c BE; assumption)) (by euclid_assumption "" (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption "" (show ¬(CD.intersectsLine BE); assumption)))
   euclid_apply (rectangle_area c b d e AB DE CD BE)
   have hcb : |(c─b)| = |(b─c)| := by euclid_finish
   have hcd2 : |(c─d)| = |(b─c)| := by euclid_finish

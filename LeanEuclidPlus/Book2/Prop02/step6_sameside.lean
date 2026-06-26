@@ -21,7 +21,7 @@ theorem helper_2_2_step6_sameside (a b c d e : Point) (AB DE AD BE CF : Line)
     (hCFAD : ¬(CF.intersectsLine AD)) :
     b.sameSide e CF := by
   euclid_intros
-  have step5_hsq : formParallelogram d e a b DE AB AD BE := by euclid_apply (helper_2_2_step5_hsq a b d e AB DE AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step5_hsq : formParallelogram d e a b DE AB AD BE := by euclid_apply (helper_2_2_step5_hsq a b d e AB DE AD BE (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show e ≠ b; assumption)) (by euclid_assumption "" (show d.sameSide a BE; assumption)) (by euclid_assumption "" (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption "" (show ¬(AD.intersectsLine BE); assumption)))
   euclid_finish
 
 end Elements.Book2

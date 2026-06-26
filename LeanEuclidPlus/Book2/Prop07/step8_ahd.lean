@@ -18,7 +18,7 @@ theorem helper_2_7_step8_ahd (a b d g h : Point) (AB HF BD AD : Line)
     (hbgd : between b g d) :
     between a h d := by
   euclid_intros
-  have step8_abhf : a.sameSide b HF := by euclid_apply (helper_2_7_step8_abhf a b AB HF (by assumption) (by assumption) (by assumption) (by assumption))
+  have step8_abhf : a.sameSide b HF := by euclid_apply (helper_2_7_step8_abhf a b AB HF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show AB ≠ HF; assumption)) (by euclid_assumption "" (show ¬(HF.intersectsLine AB); assumption)))
   euclid_apply (pasch_3 b g d HF)
   euclid_apply (pasch_4 a h d HF AD)
   euclid_finish

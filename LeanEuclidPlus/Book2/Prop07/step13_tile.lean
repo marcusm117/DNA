@@ -41,15 +41,15 @@ theorem helper_2_7_step13_tile (a b c d e n g h f : Point) (AB CN AD BE HF BD DE
   euclid_intros
   have step13_cut1 : Triangle.area △ a:d:n + Triangle.area △ a:n:c
       + (Triangle.area △ c:n:e + Triangle.area △ c:e:b)
-      = Triangle.area △ a:d:e + Triangle.area △ a:e:b := by euclid_apply (helper_2_7_step13_cut1 a b c d e n AB DE AD BE (by assumption) (by assumption) (by assumption))
+      = Triangle.area △ a:d:e + Triangle.area △ a:e:b := by euclid_apply (helper_2_7_step13_cut1 a b c d e n AB DE AD BE (by euclid_assumption "" (show formParallelogram a b d e AB DE AD BE; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between d n e; assumption)))
   have step13_cutL : Triangle.area △ a:c:g + Triangle.area △ a:g:h
       + (Triangle.area △ h:g:n + Triangle.area △ h:n:d)
-      = Triangle.area △ a:c:n + Triangle.area △ a:n:d := by euclid_apply (helper_2_7_step13_cutL a d c n h g AD CN AB DE (by assumption) (by assumption) (by assumption))
+      = Triangle.area △ a:c:n + Triangle.area △ a:n:d := by euclid_apply (helper_2_7_step13_cutL a d c n h g AD CN AB DE (by euclid_assumption "" (show formParallelogram a d c n AD CN AB DE; assumption)) (by euclid_assumption "" (show between a h d; assumption)) (by euclid_assumption "" (show between c g n; assumption)))
   have step13_cutR : Triangle.area △ c:b:f + Triangle.area △ c:f:g
       + (Triangle.area △ g:f:e + Triangle.area △ g:e:n)
-      = Triangle.area △ c:n:e + Triangle.area △ c:e:b := by euclid_apply (helper_2_7_step13_cutR c n b e g f CN BE AB DE (by assumption) (by assumption) (by assumption))
+      = Triangle.area △ c:n:e + Triangle.area △ c:e:b := by euclid_apply (helper_2_7_step13_cutR c n b e g f CN BE AB DE (by euclid_assumption "" (show formParallelogram c n b e CN BE AB DE; assumption)) (by euclid_assumption "" (show between c g n; assumption)) (by euclid_assumption "" (show between b f e; assumption)))
   have step13_dgquad : Triangle.area △ d:h:g + Triangle.area △ d:g:n
-      = Triangle.area △ h:g:n + Triangle.area △ h:n:d := by euclid_apply (helper_2_7_step13_dgquad h g d n HF DE AD CN (by assumption))
+      = Triangle.area △ h:g:n + Triangle.area △ h:n:d := by euclid_apply (helper_2_7_step13_dgquad h g d n HF DE AD CN (by euclid_assumption "" (show formParallelogram h g d n HF DE AD CN; assumption)))
   euclid_finish
 
 end Elements.Book2

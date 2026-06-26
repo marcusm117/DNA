@@ -30,17 +30,17 @@ theorem helper_2_5_step11_ahpar (a d e h k l : Point) (AB KM AK DG CE : Line)
   euclid_intros
   -- a.sameSide k DG (A.sameSide C L4=DG), AK ∥ DG, AB ∥ KM (symm), k≠h, d≠h
   -- k ≠ h from between k l h (l strictly between them on KM)
-  have step11_ahpar_kh : k ≠ h := by euclid_apply (helper_2_5_step11_ahpar_kh k h l KM (by assumption) (by assumption) (by assumption) (by assumption))
+  have step11_ahpar_kh : k ≠ h := by euclid_apply (helper_2_5_step11_ahpar_kh k h l KM (by euclid_assumption "" (show k.onLine KM; assumption)) (by euclid_assumption "" (show h.onLine KM; assumption)) (by euclid_assumption "" (show l.onLine KM; assumption)) (by euclid_assumption "" (show between k l h; assumption)))
   -- d ≠ h: d ∈ AB, h ∈ KM, distinct lines
-  have step11_ahpar_dh : d ≠ h := by euclid_apply (helper_2_5_step11_ahpar_dh d h g (by assumption))
+  have step11_ahpar_dh : d ≠ h := by euclid_apply (helper_2_5_step11_ahpar_dh d h g (by euclid_assumption "" (show between d h g; assumption)))
   -- AK ∥ DG: from AK ∥ CE ∥ DG (proposition_30). AK ≠ DG from k ∈ AK∩KM and h ∈ DG∩KM and k≠h.
-  have step11_ahpar_akdg : ¬(AK.intersectsLine DG) := by euclid_apply (helper_2_5_step11_ahpar_akdg a d k h e l AK DG CE KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step11_ahpar_akdg : ¬(AK.intersectsLine DG) := by euclid_apply (helper_2_5_step11_ahpar_akdg a d k h e l AK DG CE KM (by euclid_assumption "" (show a.onLine AK; assumption)) (by euclid_assumption "" (show d.onLine DG; assumption)) (by euclid_assumption "" (show k.onLine AK; assumption)) (by euclid_assumption "" (show h.onLine DG; assumption)) (by euclid_assumption "" (show k.onLine KM; assumption)) (by euclid_assumption "" (show h.onLine KM; assumption)) (by euclid_assumption "" (show e.onLine CE; assumption)) (by euclid_assumption "" (show l.onLine CE; assumption)) (by euclid_assumption "" (show l.onLine KM; assumption)) (by euclid_assumption "" (show ¬(a.onLine CE); assumption)) (by euclid_assumption "" (show ¬(d.onLine CE); assumption)) (by euclid_assumption "" (show ¬(e.onLine DG); assumption)) (by euclid_assumption "" (show k ≠ h; assumption)) (by euclid_assumption "" (show ¬(AK.intersectsLine CE); assumption)) (by euclid_assumption "" (show ¬(DG.intersectsLine CE); assumption)))
   -- a ∉ DG (needed for ssak): a ∈ AK, AK ∥ DG (step11_ahpar_akdg gives AK ≠ DG from context)
-  have step11_ahpar_aoffDG : ¬(a.onLine DG) := by euclid_apply (helper_2_5_step11_ahpar_aoffDG a d k h l AK DG CE KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step11_ahpar_aoffDG : ¬(a.onLine DG) := by euclid_apply (helper_2_5_step11_ahpar_aoffDG a d k h l AK DG CE KM (by euclid_assumption "" (show a.onLine AK; assumption)) (by euclid_assumption "" (show d.onLine DG; assumption)) (by euclid_assumption "" (show ¬(d.onLine CE); assumption)) (by euclid_assumption "" (show k.onLine AK; assumption)) (by euclid_assumption "" (show k.onLine KM; assumption)) (by euclid_assumption "" (show h.onLine DG; assumption)) (by euclid_assumption "" (show h.onLine KM; assumption)) (by euclid_assumption "" (show l.onLine KM; assumption)) (by euclid_assumption "" (show l.onLine CE; assumption)) (by euclid_assumption "" (show k ≠ h; assumption)) (by euclid_assumption "" (show ¬(AK.intersectsLine DG); assumption)) (by euclid_assumption "" (show ¬(DG.intersectsLine CE); assumption)))
   -- a.sameSide k DG (position 8 = A.sameSide C L4=DG)
-  have step11_ahpar_ssak : a.sameSide k DG := by euclid_apply (helper_2_5_step11_ahpar_ssak a k AK DG (by assumption) (by assumption) (by assumption) (by assumption))
+  have step11_ahpar_ssak : a.sameSide k DG := by euclid_apply (helper_2_5_step11_ahpar_ssak a k AK DG (by euclid_assumption "" (show a.onLine AK; assumption)) (by euclid_assumption "" (show k.onLine AK; assumption)) (by euclid_assumption "" (show ¬(a.onLine DG); assumption)) (by euclid_assumption "" (show ¬(AK.intersectsLine DG); assumption)))
   -- AB ∥ KM (¬AB∩KM via intersection_symm from hKMAB)
-  have step11_ahpar_abkm : ¬(AB.intersectsLine KM) := by euclid_apply (helper_2_5_step11_ahpar_abkm AB KM (by assumption))
+  have step11_ahpar_abkm : ¬(AB.intersectsLine KM) := by euclid_apply (helper_2_5_step11_ahpar_abkm AB KM (by euclid_assumption "" (show ¬(KM.intersectsLine AB); assumption)))
   exact ⟨haAB, hdAB, hkKM, hhKM, haAK, hkAK, ⟨hdDG, hhDG, step11_ahpar_dh⟩, step11_ahpar_ssak,
          step11_ahpar_abkm, step11_ahpar_akdg⟩
 

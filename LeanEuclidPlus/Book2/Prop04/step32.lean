@@ -27,17 +27,17 @@ theorem helper_2_4_step32 (a b d e : Point) (BE AD AB DE : Line)
   euclid_intros
   -- ADEB parallelogram preamble
   have had : a ≠ d := by euclid_finish
-  have step8_dnab : ¬(d.onLine AB) := by euclid_apply (helper_2_4_step8_dnab a b d AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step8_dnab : ¬(d.onLine AB) := by euclid_apply (helper_2_4_step8_dnab a b d AB (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show a ≠ d; assumption)) (by euclid_assumption "" (show ∠ b:a:d = ∟; assumption)))
   have hABDE : AB ≠ DE := fun hh => step8_dnab (hh ▸ hdDE)
-  have step25_bead : ¬(BE.intersectsLine AD) := by euclid_apply (helper_2_4_step25_bead AD BE (by assumption))
-  have step25_abde : ¬(AB.intersectsLine DE) := by euclid_apply (helper_2_4_step25_abde AB DE (by assumption))
+  have step25_bead : ¬(BE.intersectsLine AD) := by euclid_apply (helper_2_4_step25_bead AD BE (by euclid_assumption "" (show ¬(AD.intersectsLine BE); assumption)))
+  have step25_abde : ¬(AB.intersectsLine DE) := by euclid_apply (helper_2_4_step25_abde AB DE (by euclid_assumption "" (show ¬(DE.intersectsLine AB); assumption)))
   have hed2 : e ≠ d := by euclid_finish
-  have step25_bchk2 : b.sameSide a DE := by euclid_apply (helper_2_4_step25_bchk2 b a AB DE (by assumption) (by assumption) (by assumption) (by assumption))
-  have step25_bigpar : formParallelogram b e a d BE AD AB DE := by euclid_apply (helper_2_4_step25_bigpar b e a d BE AD AB DE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step25_bchk2 : b.sameSide a DE := by euclid_apply (helper_2_4_step25_bchk2 b a AB DE (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show AB ≠ DE; assumption)) (by euclid_assumption "" (show ¬(DE.intersectsLine AB); assumption)))
+  have step25_bigpar : formParallelogram b e a d BE AD AB DE := by euclid_apply (helper_2_4_step25_bigpar b e a d BE AD AB DE (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show ¬(BE.intersectsLine AD); assumption)) (by euclid_assumption "" (show ¬(AB.intersectsLine DE); assumption)) (by euclid_assumption "" (show b.sameSide a DE; assumption)) (by euclid_assumption "" (show e ≠ d; assumption)))
   -- the rectangle area (one triangulation) and the bridge to ours
-  have step32_rect : Triangle.area △ b:a:d + Triangle.area △ b:e:d = |(a─b)| * |(a─b)| := by euclid_apply (helper_2_4_step32_rect a b d e BE AD AB DE (by assumption) (by assumption) (by assumption))
+  have step32_rect : Triangle.area △ b:a:d + Triangle.area △ b:e:d = |(a─b)| * |(a─b)| := by euclid_apply (helper_2_4_step32_rect a b d e BE AD AB DE (by euclid_assumption "" (show formParallelogram b e a d BE AD AB DE; assumption)) (by euclid_assumption "" (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption "" (show |(b─e)| = |(a─b)|; assumption)))
   have step32_bridge : Triangle.area △ a:d:e + Triangle.area △ a:e:b
-      = Triangle.area △ b:a:d + Triangle.area △ b:e:d := by euclid_apply (helper_2_4_step32_bridge a b d e BE AD AB DE (by assumption))
+      = Triangle.area △ b:a:d + Triangle.area △ b:e:d := by euclid_apply (helper_2_4_step32_bridge a b d e BE AD AB DE (by euclid_assumption "" (show formParallelogram b e a d BE AD AB DE; assumption)))
   rw [step32_bridge, step32_rect]
 
 end Elements.Book2

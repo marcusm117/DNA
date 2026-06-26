@@ -20,8 +20,8 @@ theorem helper_2_5_step12_sshc (a c d h k : Point) (AB AK DG : Line)
     c.sameSide h AK := by
   euclid_intros
   have had : a ≠ d := by euclid_finish
-  have step12_sshc_cd : c.sameSide d AK := by euclid_apply (helper_2_5_step12_sshc_cd a c d AB AK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
-  have step12_sshc_dh : d.sameSide h AK := by euclid_apply (helper_2_5_step12_sshc_dh a d h AB AK DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step12_sshc_cd : c.sameSide d AK := by euclid_apply (helper_2_5_step12_sshc_cd a c d AB AK (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AK; assumption)) (by euclid_assumption "" (show between a c d; assumption)) (by euclid_assumption "" (show AK ≠ AB; assumption)))
+  have step12_sshc_dh : d.sameSide h AK := by euclid_apply (helper_2_5_step12_sshc_dh a d h AB AK DG (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AK; assumption)) (by euclid_assumption "" (show d.onLine DG; assumption)) (by euclid_assumption "" (show h.onLine DG; assumption)) (by euclid_assumption "" (show a ≠ d; assumption)) (by euclid_assumption "" (show AK ≠ AB; assumption)) (by euclid_assumption "" (show ¬(AK.intersectsLine DG); assumption)))
   exact same_side_trans d c h AK ⟨same_side_symm c d AK step12_sshc_cd, step12_sshc_dh⟩
 
 end Elements.Book2

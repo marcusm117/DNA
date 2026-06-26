@@ -965,26 +965,41 @@ def wired_body(book, prop, name, objs, hyp_types, assumptions=None):
     (SystemE/Meta/Tactics/Solve.lean). A hypothesis not present in context makes its slot fail loudly.
     The goal is closed DIRECTLY by `euclid_apply` itself (close-directly-first branch, zero SMT).
 
-    Slot format — matched by NORMALIZED TYPE (order-independent):
-      - Annotated reasoning hyp  → `(by euclid_assumption "text" T)` or
-                                   `(by euclid_assumption "text" T use_override pf)`
-      - Non-annotated structural hyp → `(by show T; assumption)`
-    The reader sees the TYPE of every slot. Both forms are mechanically checked by Lean."""
+    Slot format — ONE fixed, bracket-delimited shape for EVERY hypothesis slot:
+        (by euclid_assumption "TEXT" (show T; PROOF))
+      - structural (no annotation) → TEXT = ""              , PROOF = assumption
+      - reasoning  (annotated)     → TEXT = the citation text, PROOF = assumption
+      - reasoning + override       → TEXT = the citation text, PROOF = exact <pf>
+
+    100%-ROBUSTNESS comes from exactly two properties, both fully controlled here:
+      1. BRACKETS bound the proof — `(show T; PROOF)` is one balanced `(...)`, so the recognizer
+         (a balanced-paren scan, NOT a regex) finds its end unambiguously at ANY nesting depth, and
+         Lean parses it as a single parenthesized tactic. The fixed `euclid_assumption "…" (…)` head
+         is identical for every slot.
+      2. SINGLE-LINE type — `T` is `_norm`-collapsed to one line before embedding. The one and only
+         generation failure ever seen was a multi-line binder type whose continuation fell below Lean's
+         `colGt` and got truncated at `=`; with no newline in `T` that cannot happen. (`resolve_call_args`
+         has already remapped `T` into the call site's `@args` object names, so `show T` matches the goal.)
+    `TEXT` is `"`-free by construction (the `-- @assumption` regex forbids `"` inside it), so the string
+    literal can't break either. The annotated slot is identified by matching `_norm(T)` against the
+    `@assumption` annotation's (also normalized) type."""
     annot_map = {}
     if assumptions:
         for text, atype, override in assumptions:
             annot_map[_norm(atype)] = (text, atype, override)
     parts = list(objs)
     for htype in hyp_types:
-        annot = annot_map.get(_norm(htype))
+        t = _norm(htype)                       # single-line type — the load-bearing collapse
+        annot = annot_map.get(t)
         if annot:
-            text, lean_type, override = annot
-            if override:
-                parts.append(f'(by euclid_assumption "{text}" {lean_type} {override})')
+            text, _lean_type, override = annot
+            if override:                       # override is e.g. "use_override step1.1" → proof `exact step1.1`
+                proof = f"exact {override.split(None, 1)[1]}"
             else:
-                parts.append(f'(by euclid_assumption "{text}" {lean_type})')
+                proof = "assumption"
+            parts.append(f'(by euclid_assumption "{text}" (show {t}; {proof}))')
         else:
-            parts.append(f"(by show {htype}; assumption)")
+            parts.append(f'(by euclid_assumption "" (show {t}; assumption))')
     args = " ".join(parts)
     return f":= by euclid_apply ({helper_name(book, prop, name)} {args})"
 

@@ -20,7 +20,7 @@ theorem helper_2_7_step11_dne (a b c d e n g : Point) (AB CN AD BE DE : Line)
     (hadcn : a.sameSide d CN) :
     between d n e := by
   euclid_intros
-  have step11_bse : b.sameSide e CN := by euclid_apply (helper_2_7_step11_bse b e BE CN (by assumption) (by assumption) (by assumption) (by assumption))
+  have step11_bse : b.sameSide e CN := by euclid_apply (helper_2_7_step11_bse b e BE CN (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show CN ≠ BE; assumption)) (by euclid_assumption "" (show ¬(CN.intersectsLine BE); assumption)))
   euclid_apply (pasch_3 a c b CN)
   euclid_apply (pasch_4 d n e CN DE)
   euclid_finish

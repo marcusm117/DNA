@@ -22,7 +22,7 @@ theorem helper_2_1_step9_len (a₁ a₂ b d e f g l : Point) (BC GH BF EL : Line
     |(e─l)| = |(a₁─a₂)| := by
   euclid_intros
   euclid_apply (between_same_line_in b g f' BF)
-  have step9_len_pgram : formParallelogram b e g l BC GH BF EL := by euclid_apply (helper_2_1_step9_len_pgram b d e f g l BC GH BF EL (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step9_len_pgram : formParallelogram b e g l BC GH BF EL := by euclid_apply (helper_2_1_step9_len_pgram b d e f g l BC GH BF EL (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show d.onLine BC; assumption)) (by euclid_assumption "" (show e.onLine BC; assumption)) (by euclid_assumption "" (show between b d e; assumption)) (by euclid_assumption "" (show b.onLine BF; assumption)) (by euclid_assumption "" (show g.onLine BF; assumption)) (by euclid_assumption "" (show f.onLine BF; assumption)) (by euclid_assumption "" (show ¬(f.onLine BC); assumption)) (by euclid_assumption "" (show g.onLine GH; assumption)) (by euclid_assumption "" (show ¬(g.onLine BC); assumption)) (by euclid_assumption "" (show l.onLine GH; assumption)) (by euclid_assumption "" (show ¬(GH.intersectsLine BC); assumption)) (by euclid_assumption "" (show e.onLine EL; assumption)) (by euclid_assumption "" (show l.onLine EL; assumption)) (by euclid_assumption "" (show ¬(EL.intersectsLine BF); assumption)))
   euclid_apply (proposition_34' b e g l BC GH BF EL)
   euclid_finish
 

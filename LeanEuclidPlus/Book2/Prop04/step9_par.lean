@@ -33,13 +33,13 @@ theorem helper_2_4_step9_par (a b c d e g k : Point) (AB CF AD BE HK BD : Line)
   have hADCF : AD ≠ CF := fun h => hcnAD (h ▸ hcCF)
   have hBEAD : BE ≠ AD := fun h => hanBE (h ▸ haAD)
   -- c ∉ BE and g ∉ AB (off-line via the base/right-side incidences)
-  have step9_cnbe : ¬(c.onLine BE) := by euclid_apply (helper_2_4_step9_cnbe a b c AB BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step9_cnbe : ¬(c.onLine BE) := by euclid_apply (helper_2_4_step9_cnbe a b c AB BE (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show ¬(a.onLine BE); assumption)))
   have hCFBE : CF ≠ BE := fun h => step9_cnbe (h ▸ hcCF)
-  have step9_gnab : ¬(g.onLine AB) := by euclid_apply (helper_2_4_step9_gnab a b d g AB BD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step9_gnab : ¬(g.onLine AB) := by euclid_apply (helper_2_4_step9_gnab a b d g AB BD (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show b ≠ g; assumption)) (by euclid_assumption "" (show ¬(d.onLine AB); assumption)))
   -- CF ∥ BE, c.sameSide g BE, b ≠ k complete the parallelogram
-  have step9_cfbe : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_4_step9_cfbe CF AD BE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
-  have step9_csg : c.sameSide g BE := by euclid_apply (helper_2_4_step9_csg c g CF BE (by assumption) (by assumption) (by assumption) (by assumption))
-  have step9_bk : b ≠ k := by euclid_apply (helper_2_4_step9_bk b g k AB HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step9_cfbe : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_4_step9_cfbe CF AD BE (by euclid_assumption "" (show CF ≠ BE; assumption)) (by euclid_assumption "" (show BE ≠ AD; assumption)) (by euclid_assumption "" (show AD ≠ CF; assumption)) (by euclid_assumption "" (show ¬(CF.intersectsLine AD); assumption)) (by euclid_assumption "" (show ¬(AD.intersectsLine BE); assumption)))
+  have step9_csg : c.sameSide g BE := by euclid_apply (helper_2_4_step9_csg c g CF BE (by euclid_assumption "" (show c.onLine CF; assumption)) (by euclid_assumption "" (show g.onLine CF; assumption)) (by euclid_assumption "" (show CF ≠ BE; assumption)) (by euclid_assumption "" (show ¬(CF.intersectsLine BE); assumption)))
+  have step9_bk : b ≠ k := by euclid_apply (helper_2_4_step9_bk b g k AB HK (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show k.onLine HK; assumption)) (by euclid_assumption "" (show g.onLine HK; assumption)) (by euclid_assumption "" (show ¬(g.onLine AB); assumption)) (by euclid_assumption "" (show ¬(HK.intersectsLine AB); assumption)))
   euclid_finish
 
 end Elements.Book2

@@ -16,7 +16,7 @@ theorem helper_2_5_step11_ahpar_aoffDG (a d k h l : Point) (AK DG CE KM : Line)
     (hAKDG : ¬(AK.intersectsLine DG)) (hDGCE : ¬(DG.intersectsLine CE)) :
     ¬(a.onLine DG) := by
   euclid_intros
-  have step11_ahpar_aoffDG_ne : AK ≠ DG := by euclid_apply (helper_2_5_step11_ahpar_aoffDG_ne d k h l AK DG CE KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step11_ahpar_aoffDG_ne : AK ≠ DG := by euclid_apply (helper_2_5_step11_ahpar_aoffDG_ne d k h l AK DG CE KM (by euclid_assumption "" (show d.onLine DG; assumption)) (by euclid_assumption "" (show ¬(d.onLine CE); assumption)) (by euclid_assumption "" (show k.onLine AK; assumption)) (by euclid_assumption "" (show k.onLine KM; assumption)) (by euclid_assumption "" (show h.onLine DG; assumption)) (by euclid_assumption "" (show h.onLine KM; assumption)) (by euclid_assumption "" (show l.onLine KM; assumption)) (by euclid_assumption "" (show l.onLine CE; assumption)) (by euclid_assumption "" (show k ≠ h; assumption)) (by euclid_assumption "" (show ¬(DG.intersectsLine CE); assumption)))
   euclid_apply (intersection_lines_common_point a AK DG)
   euclid_finish
 

@@ -23,7 +23,7 @@ theorem helper_2_5_step15_cle (c d e g h l : Point) (AB CE DG EF KM : Line)
     (hloffDG : ¬(l.onLine DG)) :
     between c l e := by
   euclid_intros
-  have step15_cle_opp : ¬(c.sameSide e KM) := by euclid_apply (helper_2_5_step15_cle_opp c d e g h AB EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step15_cle_opp : ¬(c.sameSide e KM) := by euclid_apply (helper_2_5_step15_cle_opp c d e g h AB EF KM (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show g.onLine EF; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show h.onLine KM; assumption)) (by euclid_assumption "" (show between d h g; assumption)) (by euclid_assumption "" (show ¬(KM.intersectsLine EF); assumption)) (by euclid_assumption "" (show ¬(KM.intersectsLine AB); assumption)))
   have hKMneCE : KM ≠ CE := fun heq => hcoffKM (heq ▸ hcCE)
   have hlh : l ≠ h := fun heq => hloffDG (heq ▸ hhDG)
   have hcl : c ≠ l := fun heq => hcoffKM (heq ▸ hlKM)

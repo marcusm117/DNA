@@ -18,7 +18,7 @@ theorem helper_2_1_step5_ss_ch_el (b c e f h : Point) (BC BF EL CH : Line)
     (heEL : e.onLine EL) (hELBF : ¬(EL.intersectsLine BF)) (hCHBF : ¬(CH.intersectsLine BF)) :
     c.sameSide h EL := by
   euclid_intros
-  have step5_ss_ch_el_par : ¬(CH.intersectsLine EL) := by euclid_apply (helper_2_1_step5_ss_ch_el_par b c e f h BC BF EL CH (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step5_ss_ch_el_par : ¬(CH.intersectsLine EL) := by euclid_apply (helper_2_1_step5_ss_ch_el_par b c e f h BC BF EL CH (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show e.onLine BC; assumption)) (by euclid_assumption "" (show b ≠ c; assumption)) (by euclid_assumption "" (show b ≠ e; assumption)) (by euclid_assumption "" (show e ≠ c; assumption)) (by euclid_assumption "" (show b.onLine BF; assumption)) (by euclid_assumption "" (show f.onLine BF; assumption)) (by euclid_assumption "" (show ¬(f.onLine BC); assumption)) (by euclid_assumption "" (show c.onLine CH; assumption)) (by euclid_assumption "" (show h.onLine CH; assumption)) (by euclid_assumption "" (show ¬(h.onLine BC); assumption)) (by euclid_assumption "" (show e.onLine EL; assumption)) (by euclid_assumption "" (show ¬(CH.intersectsLine BF); assumption)) (by euclid_assumption "" (show ¬(EL.intersectsLine BF); assumption)))
   have hcoff : ¬(c.onLine EL) := by
     by_contra hcon
     euclid_apply (intersection_lines_common_point c EL CH)

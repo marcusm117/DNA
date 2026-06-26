@@ -21,8 +21,8 @@ theorem helper_2_7_step4_cgn (b c d n g : Point) (AB DE HF BD CN : Line)
     (hbgd : between b g d) :
     between c g n := by
   euclid_intros
-  have step3_bchk : b.sameSide c HF := by euclid_apply (helper_2_7_step3_bchk b c AB HF (by assumption) (by assumption) (by assumption) (by assumption))
-  have step4_nsd : n.sameSide d HF := by euclid_apply (helper_2_7_step4_nsd n d DE HF (by assumption) (by assumption) (by assumption) (by assumption))
+  have step3_bchk : b.sameSide c HF := by euclid_apply (helper_2_7_step3_bchk b c AB HF (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show AB ≠ HF; assumption)) (by euclid_assumption "" (show ¬(HF.intersectsLine AB); assumption)))
+  have step4_nsd : n.sameSide d HF := by euclid_apply (helper_2_7_step4_nsd n d DE HF (by euclid_assumption "" (show n.onLine DE; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show HF ≠ DE; assumption)) (by euclid_assumption "" (show ¬(HF.intersectsLine DE); assumption)))
   euclid_apply (pasch_3 b g d HF)
   euclid_apply (pasch_4 c g n HF CN)
   euclid_finish

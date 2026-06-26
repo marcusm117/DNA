@@ -23,10 +23,10 @@ theorem helper_2_5_step6_bmf_opp (b c d e f h : Point) (AB BE CE DG EF KM : Line
     (hcdb : between c d b) (hDGCE : ¬(DG.intersectsLine CE)) :
     ¬(b.sameSide f KM) := by
   euclid_intros
-  have step6_bmf_bopp : ¬(b.sameSide e DG) := by euclid_apply (helper_2_5_step6_bmf_bopp b c d e AB CE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step6_bmf_bopp : ¬(b.sameSide e DG) := by euclid_apply (helper_2_5_step6_bmf_bopp b c d e AB CE DG (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e.onLine CE; assumption)) (by euclid_assumption "" (show d.onLine DG; assumption)) (by euclid_assumption "" (show between c d b; assumption)) (by euclid_assumption "" (show ¬(DG.intersectsLine CE); assumption)))
   have hbe : b ≠ e := by euclid_finish
-  have step6_bmf_bhe : between b h e := by euclid_apply (helper_2_5_step6_bmf_bhe b e h BE DG (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
-  have step6_bmf_fse : f.sameSide e KM := by euclid_apply (helper_2_5_step6_bmf_fse e f h EF KM (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step6_bmf_bhe : between b h e := by euclid_apply (helper_2_5_step6_bmf_bhe b e h BE DG (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show h.onLine BE; assumption)) (by euclid_assumption "" (show h.onLine DG; assumption)) (by euclid_assumption "" (show ¬(e.onLine DG); assumption)) (by euclid_assumption "" (show ¬(b.onLine DG); assumption)) (by euclid_assumption "" (show b ≠ e; assumption)) (by euclid_assumption "" (show ¬(b.sameSide e DG); assumption)))
+  have step6_bmf_fse : f.sameSide e KM := by euclid_apply (helper_2_5_step6_bmf_fse e f h EF KM (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show h.onLine KM; assumption)) (by euclid_assumption "" (show ¬(h.onLine EF); assumption)) (by euclid_assumption "" (show ¬(KM.intersectsLine EF); assumption)))
   euclid_apply (pasch_3 b h e KM)
   euclid_finish
 

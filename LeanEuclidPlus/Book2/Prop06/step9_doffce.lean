@@ -13,7 +13,7 @@ theorem helper_2_6_step9_doffce (a b c d e : Point) (AB CE : Line)
     (hacb : between a c b) (habd : between a b d)
     (hce : |(c─e)| = |(c─d)|) (hdce : ∠ d:c:e = ∟) :
     ¬(d.onLine CE) := by
-  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step2_eoff : ¬(e.onLine AB) := by euclid_apply (helper_2_6_step2_eoff a b c d e AB (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show |(c─e)| = |(c─d)|; assumption)) (by euclid_assumption "" (show ∠ d:c:e = ∟; assumption)))
   intro hdCE
   euclid_apply (two_points_determine_line d c CE AB)
   euclid_finish

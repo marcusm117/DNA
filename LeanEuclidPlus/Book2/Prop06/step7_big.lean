@@ -16,7 +16,7 @@ theorem helper_2_6_step7_big (a b c d e f : Point) (AB DF CE EF : Line)
     (hecDF : e.sameSide c DF) (hdce : ∠ d:c:e = ∟) :
     formParallelogram d f c e DF CE AB EF := by
   euclid_intros
-  have step7_ssdc : d.sameSide c EF := by euclid_apply (helper_2_6_step7_ssdc a b c d e AB EF CE (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step7_ssdc : d.sameSide c EF := by euclid_apply (helper_2_6_step7_ssdc a b c d e AB EF CE (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e.onLine CE; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show |(c─e)| = |(c─d)|; assumption)) (by euclid_assumption "" (show ¬(EF.intersectsLine AB); assumption)) (by euclid_assumption "" (show ∠ d:c:e = ∟; assumption)))
   have hfe : f ≠ e := by euclid_finish
   euclid_finish
 

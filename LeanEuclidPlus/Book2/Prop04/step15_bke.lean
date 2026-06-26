@@ -30,20 +30,20 @@ theorem helper_2_4_step15_bke (a b d e g k : Point) (BE HK DE BD AB CF AD : Line
   -- distinctness d ≠ g from between b g d
   have hdg : d ≠ g := by euclid_finish
   -- off-line points and line distinctness
-  have step15_bnhk : ¬(b.onLine HK) := by euclid_apply (helper_2_4_step15_bnhk b g AB HK (by assumption) (by assumption) (by assumption) (by assumption))
-  have step15_dnhk : ¬(d.onLine HK) := by euclid_apply (helper_2_4_step15_dnhk b d g BD HK (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
-  have step15_ande : ¬(a.onLine DE) := by euclid_apply (helper_2_4_step15_ande a d AB DE (by assumption) (by assumption) (by assumption) (by assumption))
+  have step15_bnhk : ¬(b.onLine HK) := by euclid_apply (helper_2_4_step15_bnhk b g AB HK (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show g.onLine HK; assumption)) (by euclid_assumption "" (show ¬(g.onLine AB); assumption)) (by euclid_assumption "" (show ¬(HK.intersectsLine AB); assumption)))
+  have step15_dnhk : ¬(d.onLine HK) := by euclid_apply (helper_2_4_step15_dnhk b d g BD HK (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine HK; assumption)) (by euclid_assumption "" (show d ≠ g; assumption)) (by euclid_assumption "" (show ¬(b.onLine HK); assumption)))
+  have step15_ande : ¬(a.onLine DE) := by euclid_apply (helper_2_4_step15_ande a d AB DE (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show ¬(d.onLine AB); assumption)) (by euclid_assumption "" (show ¬(DE.intersectsLine AB); assumption)))
   have hDEHK : DE ≠ HK := fun h => step15_dnhk (h ▸ hdDE)
   have hHKAB' : HK ≠ AB := fun h => hgnAB (h ▸ hgHK)
   have hABDE : AB ≠ DE := fun h => step15_ande (h ▸ haAB)
   -- b ≠ k since b ∉ HK, k ∈ HK
   have hbk : b ≠ k := fun h => step15_bnhk (h ▸ hkHK)
   -- DE ∥ HK and hence d.sameSide e HK; also e ∉ HK ⟹ e ≠ k
-  have step15_dehk : ¬(DE.intersectsLine HK) := by euclid_apply (helper_2_4_step15_dehk DE HK AB (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step15_dehk : ¬(DE.intersectsLine HK) := by euclid_apply (helper_2_4_step15_dehk DE HK AB (by euclid_assumption "" (show DE ≠ HK; assumption)) (by euclid_assumption "" (show HK ≠ AB; assumption)) (by euclid_assumption "" (show AB ≠ DE; assumption)) (by euclid_assumption "" (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption "" (show ¬(HK.intersectsLine AB); assumption)))
   have henhk : ¬(e.onLine HK) := by
     intro hon; euclid_apply (intersection_lines_common_point e DE HK); euclid_finish
   have hek : e ≠ k := fun h => henhk (h ▸ hkHK)
-  have step15_dse : d.sameSide e HK := by euclid_apply (helper_2_4_step15_dse d e DE HK (by assumption) (by assumption) (by assumption) (by assumption))
+  have step15_dse : d.sameSide e HK := by euclid_apply (helper_2_4_step15_dse d e DE HK (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show DE ≠ HK; assumption)) (by euclid_assumption "" (show ¬(DE.intersectsLine HK); assumption)))
   -- b, d on opposite sides of HK (g between them, g ∈ HK); k between b, e
   euclid_apply (pasch_3 b g d HK)
   euclid_apply (pasch_4 b k e HK BE)

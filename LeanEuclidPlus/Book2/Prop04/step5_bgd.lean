@@ -19,7 +19,7 @@ theorem helper_2_4_step5_bgd (a b c d g : Point) (AB CF AD BD : Line)
     (hCFAD : ¬(CF.intersectsLine AD)) :
     between b g d := by
   euclid_intros
-  have step5_bgd_ss : a.sameSide d CF := by euclid_apply (helper_2_4_step5_bgd_ss a b c d AB CF AD (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption) (by assumption))
+  have step5_bgd_ss : a.sameSide d CF := by euclid_apply (helper_2_4_step5_bgd_ss a b c d AB CF AD (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine CF; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show a ≠ d; assumption)) (by euclid_assumption "" (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption "" (show ¬(CF.intersectsLine AD); assumption)))
   -- a, b on opposite sides of CF (c between them, c on CF)
   euclid_apply (pasch_3 a c b CF)
   euclid_apply (pasch_4 b g d CF BD)
