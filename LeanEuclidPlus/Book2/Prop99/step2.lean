@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_99_step2 (a c e : Point)
   -- Reasoning hypotheses (from @assumption — do NOT remove these types from the signature):
   (hassump1 : |(a─c)| = |(a─c)|)   -- "AC equals AC"

@@ -668,20 +668,11 @@ def _body_regexes(book, prop, name):
     return [
         ("sorry", re.compile(r":=[ \t]*by[ \t\r\n]+sorry\b")),
         ("trace", re.compile(r":=[ \t]*by[ \t\r\n]+trace_state[ \t\r\n]*;[ \t\r\n]*sorry\b")),
-        # The arg list can contain typed hypothesis slots: `(by show T; assumption)` or
-        # `(by euclid_assumption "text" T)` / `(by euclid_assumption "text" T use_override pf)`.
-        # Types like `|(a─c)| = |(b─d)|` add a second level of nesting `(a─c)` inside the slot paren;
-        # `euclid_assumption "text with (angle)"` adds a quoted string that may contain parens.
-        # Pattern: `(?:[^()"]|"[^"]*"|\((?:[^()"]|"[^"]*")*\))*` handles:
-        #   - flat chars (not parens or quotes)
-        #   - quoted strings (skip their contents, so `"(angle)"` doesn't confuse paren counting)
-        #   - one-level nested `(…)` groups (the typed slot), themselves containing flat chars or strings
-        # This covers all current arg forms; the old `(by assumption)` (depth-1, no strings) still matches.
-        # NO TRAILER: Solve.lean's close-directly-first branch closes the goal INSIDE `euclid_apply`
-        # (via `exact`), so a wired body is just `:= by euclid_apply (helper …)` — the match ends at the
-        # helper call's `)`. Every committed prop is rewired to this exact shape.
-        ("wired", re.compile(r":=[ \t]*by[ \t\r\n]+euclid_apply[ \t]*\(\s*" + helper +
-                             r'(?:[^()"]|"[^"]*"|\((?:[^()"]|"[^"]*")*\))*\)')),
+        # NOTE: the WIRED shape (`:= by euclid_apply (helper …)`) is NOT a regex here — its arg list can
+        # nest parens to ARBITRARY depth (a typed hyp slot `(by … |(a─c)| = |(c─e)| …)` puts point-pairs
+        # `(a─c)` two levels deep inside the call paren, and `euclid_assumption "text (…)"` strings may
+        # contain parens too). A fixed-depth regex silently mis-classifies those. `find_body` recognizes
+        # the wired shape via the `_WIRED_ANCHOR` prefix + a string-aware balanced-paren scan instead.
         # SMELL (transient, `check_step --smell` only): the BARE claim fired straight at euclid_finish,
         # no decomposition. Distinct from `wired` (which REQUIRES the `euclid_apply (helper…)` prefix),
         # so a bare `:= by euclid_finish` matches ONLY here. Never written to disk persistently.
@@ -689,10 +680,53 @@ def _body_regexes(book, prop, name):
     ]
 
 
+def _wired_anchor(book, prop, name):
+    """Regex matching only the PREFIX of a wired body — `:= by euclid_apply (helper_<book>_<prop>_<name>`
+    up to (and including) the call's opening `(`. Group 1 is that `(`. The helper-name anchor (with `\\b`)
+    keeps a real `have` that calls a DIFFERENT helper from being read as this node's wired body. The arg
+    list past the `(` is bounded by `_scan_balanced_parens`, not by this regex (see `_body_regexes`)."""
+    helper = re.escape(helper_name(book, prop, name))
+    return re.compile(r":=[ \t]*by[ \t\r\n]+euclid_apply[ \t]*(\()\s*" + helper + r"\b")
+
+
+def _scan_balanced_parens(src, open_idx):
+    """`src[open_idx]` must be `(`. Return the index just past its matching `)`, or None if it never
+    closes before EOF. Parens inside `"…"` string literals are ignored (so an `euclid_assumption
+    "text (with parens)" …` slot doesn't unbalance the count); `\\"` is honored inside a string. This
+    is how a wired body of any nesting depth is bounded — point-pairs `(a─c)` inside typed hyp slots
+    push the args two-plus levels deep, which no fixed-depth regex can track."""
+    depth, i, n, in_str = 0, open_idx, len(src), False
+    while i < n:
+        c = src[i]
+        if in_str:
+            if c == "\\":
+                i += 2
+                continue
+            if c == '"':
+                in_str = False
+        elif c == '"':
+            in_str = True
+        elif c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                return i + 1
+        i += 1
+    return None
+
+
 def find_body(src, sep_idx, book, prop, name):
     """`sep_idx` is the index of a node's `:=`. Match the canonical body anchored there. Return
-    (state, start, end) where state ∈ {sorry,trace,wired} and src[start:end] is the whole body
+    (state, start, end) where state ∈ {sorry,trace,wired,smell} and src[start:end] is the whole body
     (from `:=`). Return None if no canonical shape matches (⟹ not a pipeline node)."""
+    # WIRED first: anchor on `:= by euclid_apply (helper…`, then balanced-paren scan to the matching `)`
+    # (the args nest to arbitrary depth — regex can't bound them; see `_body_regexes`/`_scan_balanced_parens`).
+    wm = _wired_anchor(book, prop, name).match(src, sep_idx)
+    if wm:
+        end = _scan_balanced_parens(src, wm.start(1))   # group 1 == the call's opening `(`
+        if end is not None:
+            return "wired", wm.start(), end
     for state, rx in _body_regexes(book, prop, name):
         m = rx.match(src, sep_idx)
         if m:

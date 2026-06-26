@@ -168,6 +168,45 @@ def test_parse_helper_objs_inline_comment(tmp_path):
     assert hyp_types == ["|(a─c)| = |(a─c)|"]
 
 
+# ── find_body recognizes the generated wired body (round-trip) ───────────────
+# Regression: the generated wired body nests point-pairs `(a─c)` inside the typed hyp slot,
+# pushing the call-paren args two levels deep. find_body MUST still classify it as "wired"
+# (a fixed-depth regex silently mis-read these → parse_nodes_in_file aborted "not canonical").
+
+def test_find_body_recognizes_euclid_assumption_override_slot():
+    body = L.wired_body(2, 99, "step2", ["a", "c", "e"],
+                        ["|(a─c)| = |(a─c)|"],
+                        [("AC equals AC", "|(a─c)| = |(a─c)|", "use_override step1.1")])
+    src = f"    (step2 : |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|) {body}\n"
+    sep = src.index(":=")
+    state, start, end = L.find_body(src, sep, 2, 99, "step2")
+    assert state == "wired"
+    assert src[start:end] == body            # span covers the whole call paren, nothing trailing
+
+
+def test_find_body_recognizes_show_assumption_slot():
+    """A non-annotated hyp slot `(by show T; assumption)` with point-pairs is also recognized."""
+    body = L.wired_body(2, 99, "step3", ["a", "c", "e"],
+                        ["|(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|"], None)
+    src = f"    (step3 : |(a─c)| + |(c─e)| = |(a─c)| + |(c─e)|) {body}\n"
+    sep = src.index(":=")
+    state, start, end = L.find_body(src, sep, 2, 99, "step3")
+    assert state == "wired"
+    assert src[start:end] == body
+
+
+def test_find_body_paren_in_assumption_string_does_not_unbalance():
+    """A `(` inside the euclid_assumption text string must not close the call paren early."""
+    body = L.wired_body(2, 99, "step2", ["a"],
+                        ["|(a─c)| = |(a─c)|"],
+                        [("AC (the base) equals AC", "|(a─c)| = |(a─c)|", None)])
+    src = f"    (step2 : |(a─c)| = |(a─c)|) {body}\n"
+    sep = src.index(":=")
+    state, start, end = L.find_body(src, sep, 2, 99, "step2")
+    assert state == "wired"
+    assert src[start:end] == body
+
+
 # ── wired_body format ─────────────────────────────────────────────────────────
 
 def test_wired_body_annotated_hyp_plain():
