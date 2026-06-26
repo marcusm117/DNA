@@ -1,1 +1,1 @@
-Let AC and CE be segments, noting that each equals itself. Since AC equals AC, the sum of AC and CE equals AC plus CE. Therefore AC plus CE equals AC plus CE.
+Let AC and CE be segments, noting that each equals itself. Since AC equals AC, the sum of AC and CE equals AC plus CE. Therefore AC plus CE equals AC plus CE. The angle ACE equals itself. Since the angle ACE equals the angle ACE, the angle ACE equals itself once more.

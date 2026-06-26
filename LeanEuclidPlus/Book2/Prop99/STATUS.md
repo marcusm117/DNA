@@ -11,7 +11,9 @@
 | 1  | step1 | ✓ | cone certified, inputs fresh |
 | 2  | step2 | ✓ | cone certified, inputs fresh |
 | 3  | step3 | ✓ | cone certified, inputs fresh |
+| 4  | step4 | ✓ | cone certified, inputs fresh |
+| 5  | step5 | ✓ | cone certified, inputs fresh |
 
 whole-prop checks: criterion-3 deps ✓ · integrity ✓ · no orphans ✓
 
-**3/3 Main nodes ✓ · 3/3 whole-prop checks.** ⟹ check_step --all is GUARANTEED to pass.
+**5/5 Main nodes ✓ · 3/3 whole-prop checks.** ⟹ check_step --all is GUARANTEED to pass.

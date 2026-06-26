@@ -989,6 +989,35 @@ def wired_body(book, prop, name, objs, hyp_types, assumptions=None):
     return f":= by euclid_apply ({helper_name(book, prop, name)} {args})"
 
 
+def _ident_char(c):
+    """Lean-identifier continuation char for the purpose of name substitution: letters/digits
+    (incl. Greek + subscript digits, which are alnum), `_`, and `'` (so `f'`/`a₁` stay ONE token).
+    `.` is deliberately NOT an ident char, so `a.onLine` tokenizes as `a` · `.` · `onLine` — we
+    rename the point `a` without touching the projection."""
+    return c.isalnum() or c in "_'"
+
+
+def _subst_idents(s, mapping):
+    """Single-pass, identifier-boundary-aware rename of `s`: every maximal identifier token equal to a
+    key of `mapping` is replaced by its value; everything else (operators, notation `∠ |─| △ : .`,
+    spaces) passes through untouched. Single-pass means a chained remap like {a→b, b→c} renames each
+    token exactly once (no `a→b→c` cascade) — the correct simultaneous substitution. Used to rewrite a
+    hypothesis-binder TYPE from the helper's binder names into a call site's `@args` object names."""
+    out, i, n = [], 0, len(s)
+    while i < n:
+        if _ident_char(s[i]):
+            j = i
+            while j < n and _ident_char(s[j]):
+                j += 1
+            tok = s[i:j]
+            out.append(mapping.get(tok, tok))
+            i = j
+        else:
+            out.append(s[i])
+            i += 1
+    return "".join(out)
+
+
 def resolve_call_args(propdir, book, node):
     """Return `(objs, hyp_types)` for wiring `node`'s call — the OBJECT arguments to pass and the
     ORDERED list of hypothesis binder type strings (see `wired_body`). The `@args` override is
@@ -996,10 +1025,17 @@ def resolve_call_args(propdir, book, node):
        - if the node carries a `-- @args:` annotation → its tokens VERBATIM as the objects (validated:
          token count == the helper's object-binder count, else FaithfulError — catches arity slips
          before any build). This is how a helper reused with DIFFERENT objects per parent supplies each
-         site's actuals.
+         site's actuals. The hyp TYPES are also remapped binder-name→arg-name (see below).
        - else → the helper's own object-binder names (the default; correct when names already match).
     SP still BUILDS the resulting call, so wrong/misordered/out-of-scope tokens fail loudly there — the
-    annotation only changes WHICH objects are passed, never whether the call is accepted."""
+    annotation only changes WHICH objects are passed, never whether the call is accepted.
+
+    `@args` REMAP of hyp types: `hyp_types` are parsed in the helper's OWN binder names, but under an
+    `@args` remap the call's expected slot type is that binder type with the call objects substituted
+    in. `wired_body` emits `(by show <type>; assumption)`, so the emitted `<type>` MUST be in the call
+    site's names — otherwise `show` asserts the wrong proposition and the build fails. We substitute the
+    binder→arg object map into each hyp type here. (With no `@args`, objs == binders, so the identity
+    map leaves types unchanged.)"""
     bf = backing_file(propdir, node.name)
     if bf is None:
         raise FaithfulError(f"node '{node.name}' has no backing file '{node.name}.lean'")
@@ -1012,6 +1048,9 @@ def resolve_call_args(propdir, book, node):
             f"{len(node.args)} arg(s) {node.args} but {helper_name(book, prop_num(propdir), node.name)} "
             f"takes {len(binders)} object binder(s) {binders}. The override must list EXACTLY the object "
             f"args, in order.")
+    remap = {b: a for b, a in zip(binders, node.args) if b != a}
+    if remap:
+        hyp_types = [_subst_idents(t, remap) for t in hyp_types]
     return node.args, hyp_types
 
 

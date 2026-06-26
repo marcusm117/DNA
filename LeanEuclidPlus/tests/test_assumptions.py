@@ -168,6 +168,50 @@ def test_parse_helper_objs_inline_comment(tmp_path):
     assert hyp_types == ["|(a─c)| = |(a─c)|"]
 
 
+# ── @args remap of hyp types (the bug: show T must use call-site names) ──────
+
+def test_subst_idents_simple_rename():
+    out = L._subst_idents("|(c─f)| = |(h─k)|", {"f": "n", "k": "f"})
+    assert out == "|(c─n)| = |(h─f)|"          # simultaneous: the new `f` is NOT re-renamed
+
+
+def test_subst_idents_word_boundary():
+    # `c` must not be renamed inside `CF`/`onLine`; only the standalone token.
+    out = L._subst_idents("c.onLine CF", {"c": "x"})
+    assert out == "x.onLine CF"
+
+
+def test_subst_idents_keeps_primes_and_subscripts_whole():
+    out = L._subst_idents("|(f'─a₁)|", {"f": "ZZ", "a": "YY"})
+    assert out == "|(f'─a₁)|"                  # f' and a₁ are single tokens, not f / a
+
+
+def test_subst_idents_angle_notation():
+    out = L._subst_idents("∠ x:y:z = ∠ x:y:z", {"x": "a", "y": "c", "z": "e"})
+    assert out == "∠ a:c:e = ∠ a:c:e"
+
+
+def test_resolve_call_args_remaps_hyp_types(tmp_path):
+    """resolve_call_args substitutes the @args object map into the hyp types, so the wired
+    `show T` is in call-site names (regression for the @args bug)."""
+    lean = textwrap.dedent("""\
+        import SystemE
+        namespace Elements.Book2
+        theorem helper_2_99_stepR (x y z : Point)
+            (h : ∠ x:y:z = ∠ x:y:z) :
+            ∠ x:y:z = ∠ x:y:z := h
+        end Elements.Book2
+    """)
+    prop_dir = tmp_path / "Book2" / "Prop99"
+    prop_dir.mkdir(parents=True)
+    (prop_dir / "stepR.lean").write_text(lean, encoding="utf-8")
+    node = L.Node("stepR", str(prop_dir / "stepR.lean"), "sentence", "2.99.R",
+                  "∠ a:c:e = ∠ a:c:e", "sorry", 0, 0, args=["a", "c", "e"])
+    objs, hyp_types = L.resolve_call_args(str(prop_dir), 2, node)
+    assert objs == ["a", "c", "e"]
+    assert hyp_types == ["∠ a:c:e = ∠ a:c:e"]   # remapped from x:y:z
+
+
 # ── find_body recognizes the generated wired body (round-trip) ───────────────
 # Regression: the generated wired body nests point-pairs `(a─c)` inside the typed hyp slot,
 # pushing the call-paren args two levels deep. find_body MUST still classify it as "wired"
