@@ -96,4 +96,13 @@ theorem offLine_of_parallel' (x w : Point) (L M : Line)
   euclid_apply (intersection_lines_common_point x M L)
   euclid_finish
 
+/- Line-distinctness from an off-line anchor — the ubiquitous `fun h => hpM (h ▸ hpL)` term written
+   inline ~60× across Prop04–09 (and the precondition feedstock for `not_intersects_trans`'s three
+   line-≠ args and the no-witness off-line / sameSide siblings, which REQUIRE an explicit `L ≠ M`).
+   `p` lies on `L` but off `M`, so `L = M` would put `p` on `M` — impossible. Pure term, zero SMT.
+   For the flipped `M ≠ L`, use `(line_ne_of_offLine p L M hpL hpM).symm`. -/
+theorem line_ne_of_offLine (p : Point) (L M : Line)
+    (hpL : p.onLine L) (hpM : ¬(p.onLine M)) : L ≠ M :=
+  fun h => hpM (h ▸ hpL)
+
 end Elements

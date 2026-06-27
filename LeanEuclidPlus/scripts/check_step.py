@@ -604,17 +604,22 @@ def _audit_with_manifest(propdir, order, success_msg, source):
 
 def _run_assumption_persistence(propdir):
     """Source-only, instant. For every entry in step_signatures.json that belongs to this prop AND has
-    'assumptions', verify each saved assumption type is still present as a binder type in the backing
-    file. Returns True (ok) or False (printed failure). Called in mode_all after _run_dependency."""
+    'assumptions', check whether each saved assumption type is still a binder type in the backing file.
+    Drift is a NON-BLOCKING WARNING (returns nothing): @assumption types are Phase-A's best-guess
+    reasoning map, recorded from the sentence TEXT before the true call-site context is known. Phase B
+    is permitted to DROP a cited input that turns out to be derived in-cone / not consumed, or RETYPE
+    one to the literal context atom (see the faithful-prove skill). Faithfulness is unaffected —
+    criterion 1 still reproduces the full sentence text, and the load-bearing claim TYPE stays frozen
+    and is enforced HARD by check_steps.py. Called in mode_all after _run_dependency."""
     if not os.path.exists(_BASELINE):
-        return True                         # no baseline yet — nothing to check (additive feature)
+        return                              # no baseline yet — nothing to check (additive feature)
     try:
         base = json.load(open(_BASELINE, encoding="utf-8"))
     except (ValueError, OSError):
-        return True                         # unreadable baseline — skip, don't block builds
+        return                              # unreadable baseline — skip
     book = L.book_num(propdir)
     prop_prefix = os.path.relpath(propdir, L.BOOK_ROOT)   # e.g. "Book2/Prop09"
-    failures = []
+    drifts = []
     for _loc, entry in sorted(base.items()):
         assumps = entry.get("assumptions")
         if not assumps:
@@ -634,17 +639,17 @@ def _run_assumption_persistence(propdir):
         for a in assumps:
             saved_type = " ".join(a["type"].split())
             if saved_type not in norm_binder_types:
-                failures.append((name, a["type"], a.get("text", "")))
-    if failures:
-        print(f"FAIL (assumption persistence): {len(failures)} saved reasoning-hypothesis type(s) "
-              f"missing from backing file signatures in {prop_prefix}:")
-        for name, atype, text in failures:
+                drifts.append((name, a["type"], a.get("text", "")))
+    if drifts:
+        print(f"WARNING (assumption drift, non-blocking): {len(drifts)} @assumption type(s) frozen at "
+              f"Phase A are no longer backing-file binders in {prop_prefix}:")
+        for name, atype, text in drifts:
             label = f'  ("{text}")' if text else ""
-            print(f'  {name}.lean is missing type "{atype}"{label}')
-        print("  (These types were frozen by check_steps.py --save. "
-              "Do not remove @assumption hyp types from backing file signatures.)")
-        return False
-    return True
+            print(f'  {name}.lean no longer takes "{atype}"{label}')
+        print("  ALLOWED: Phase B may drop a cited input that is derived in-cone / not consumed, or "
+              "retype it to the context atom (faithful-prove skill). Faithfulness is preserved by "
+              "criterion 1 (full sentence text) + the frozen claim type. If intended, re-run "
+              "`check_steps.py --save` to refreeze.")
 
 
 def mode_all(propdir):
@@ -666,10 +671,11 @@ def mode_all(propdir):
     # violation can't slip through the agent's final gate (the step3-cited-Prop.1.31 class).
     if not _run_dependency(propdir):
         return 1
-    # assumption persistence (source-only, instant) — verify every @assumption type saved at Phase-A
-    # gate is still present as a binder type in the backing file. Hard fail if missing.
-    if not _run_assumption_persistence(propdir):
-        return 1
+    # assumption drift (source-only, instant) — surface, as a NON-BLOCKING warning, any @assumption type
+    # frozen at Phase A that is no longer a backing-file binder. Phase B is allowed to drop/retype a
+    # cited input the real context shows isn't consumed (faithful-prove skill); the load-bearing claim
+    # TYPE stays frozen + hard-enforced by check_steps.py, and criterion 1 keeps the sentence text.
+    _run_assumption_persistence(propdir)
     order = L.audit_order(propdir)                    # whole prop, bottom-up
     n_names = len(order)
     n_occ = sum(len(occs) for _, occs in order)

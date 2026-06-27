@@ -47,8 +47,9 @@ itself was mid-compile at the kill — which warm deps prevent.
    := by sorry` per sentence + the intro/conclude bookends. **Every body is `:= by sorry`; no step
    files yet.** Elaborates cheap (all-sorry, SMT-free). STOPS for you.
 
-   **Sanity-check Criterion 1 (concatenated sentence texts == the canonical original) — both must PASS:**
-   - regex (quick, no build):
+   **Sanity-check Criterion 1 (concatenated sentence texts == the canonical original) AND Criterion 4
+   (every `-- @assumption ("text", …)` text is a substring of its sentence) — both must PASS:**
+   - regex (quick, no build) — checks criterion 1 AND criterion 4:
    ```
    python3 scripts/check_faithful.py "Book2/Prop04/Main.lean"
    ```
@@ -58,12 +59,20 @@ itself was mid-compile at the kill — which warm deps prevent.
    scripts/check_faithful.sh Book2.Prop04.Main
    ```
 
-**▶ 2. HUMAN GATE A — review + freeze the claims.**
-   Read each claim type: does it honestly say what that Euclid sentence says? (The one thing no
-   machine checks; use `Book2/data/diagrams/4.png` to resolve labels.) When happy:
+**▶ 2. HUMAN GATE A — review + freeze the claims (and record the @assumption map).**
+   Read each claim type: does it honestly say what that Euclid sentence says? Also eyeball each
+   `-- @assumption` line: is it a genuine *consumed input*, not a conjunct the step proves? (Both are
+   human-checked — no machine fully verifies faithfulness; use `Book2/data/diagrams/4.png` to resolve
+   labels.) When happy:
    ```
    python3 scripts/check_steps.py --save Book2/Prop04/Main.lean
    ```
+   This freezes the claim TYPES **hard** and records the `@assumption` types. NOTE: the `@assumption`
+   types are only Phase-A's best-guess reasoning map — Phase B may legitimately **drop/retype** a cited
+   input the real call-site context shows isn't consumed, so `check_step --all` (and gate-C
+   `check_steps.py`) report `@assumption` drift as a **non-blocking WARNING**, while claim-type drift
+   stays a hard fail. If a Phase-B `@assumption` change is intended, just re-run `check_steps.py --save`
+   to refreeze the map.
 
 **3. Phase B — prove (skill):**  `/faithful-prove Book2/Prop04/Main.lean`
    The agent creates each `stepN.lean` and proves it, decomposing recursively (adding `have`+backing
@@ -104,7 +113,7 @@ itself was mid-compile at the kill — which warm deps prevent.
 | script | purpose | who |
 |---|---|---|
 | `check_signatures.py` `[--save]` | guard proposition **statements** (must never change) | human, once + gate C |
-| `check_steps.py [--save] <Main>` | guard approved **claim types** (frozen after gate A) | human, gate A + gate C |
+| `check_steps.py [--save] <Main>` | guard approved **claim types** (frozen-hard after gate A) + record the `@assumption` map (drift is a non-blocking WARNING — Phase B may drop/retype an input) | human, gate A + gate C |
 | `check_step.py <propdir> <node>` | certify ONLY that one node (SF→SP→P, stops at first fail) — does NOT check its sub-nodes | agent (Phase B) |
 | `check_step.py <propdir> --subtree <node>` | certify a node's WHOLE CONE (it + every sub-node it transitively contains), bottom-up, scoped — doesn't touch other steps; confirms a container/step is done | agent (Phase B) |
 | `check_step.py <propdir> --sufficient/--suppliable/--provable <node>` | run just one of SF/SP/P (diagnostics; `--provable` reports remaining-sorry file:lines) | agent (Phase B) |
@@ -113,7 +122,7 @@ itself was mid-compile at the kill — which warm deps prevent.
 | `check_step.py <propdir> --smell <node>` | SM pre-decompose sanity check: fire the bare claim at `euclid_finish` (short solver cap) — "closes" ⟹ don't decompose / "not closed" ⟹ decompose / "SAT" ⟹ claim is false. Deliberate; the no-flag path does NOT run it | agent (Phase B) |
 | `check_step.py <propdir> --check` | instant, no-build integrity scan (naming law, caps, no stray imports, no stray sorry, + criterion-3 deps) | agent (Phase B) |
 | `check_step.py <propdir> --dependency` (`--deps`) | instant, no-build criterion-3 check, BOTH arms: every cited `[Prop.~B.N]` satisfied by a Main construction (`… as …`) OR its sentence's helper cone. Number-only; isolate fast before `--all` (which also runs it). The book-aware authority is the human's gate-C olean check — don't game it | agent (**Phase B** — needs helpers) |
-| `check_step.py <propdir> --all` | WHOLE-prop bottom-up audit (SP every node + P every LEAF + no-stray-sorry + criterion-3 deps); the FINAL gate, run ONCE; exit 0 ⟹ Phase C guaranteed | agent (end of B) + human (gate B) |
+| `check_step.py <propdir> --all` | WHOLE-prop bottom-up audit (SP every node + P every LEAF + no-stray-sorry + criterion-3 deps); the FINAL gate, run ONCE; exit 0 ⟹ Phase C guaranteed. Also surfaces `@assumption` drift as a non-blocking WARNING (does not affect exit code) | agent (end of B) + human (gate B) |
 | `check_step.py <propdir> --whatchanged` (`--changed`) | instant, READ-ONLY (no build, no lock): after editing a file, report the MINIMAL set of certified nodes to re-check + WHY + the exact commands. Reads the certification manifest (written by `--all`/`--subtree`/each per-node PASS) and diffs input-file hashes. Use it instead of re-running `--all` after a fix | agent + human |
 | `check_step.py <propdir> --status` (`--checklist`) | instant, READ-ONLY (no build, no lock, never writes): the durable RESUME BOARD — Main's own nodes (source order), each rolled up over its cone against the manifest into done/stale/todo, plus the 3 whole-prop checks (deps/integrity/orphans) + the exact NEXT `--subtree` commands. All-✓ + 3/3 ⟹ `--all` is GUARANTEED to pass. The committed mirror `PropNN/STATUS.md` is regenerated by `--all`/`--subtree`/per-node PASS (the same writers as the manifest) | agent + human |
 | `check_step.py <propdir> --drive` | auto-loop `--subtree` over every Main node `--status` would report not-`done` (todo or stale), in source order, stopping at the first failure — covers cold-start (empty manifest) and warm-resume (skips already-`done` nodes) the same way, so you don't hand-drive `--status`'s printed command list yourself | agent (Phase B) |

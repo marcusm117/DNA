@@ -14,9 +14,10 @@ description: >
 
 This is **half library, half recipe book — and the split matters.**
 
-- For the **off-line (Family 1)**, **sameSide (Family 3)**, **area-recast (Family 6)**,
-  **right-angle-from-co-interior (Family 7)**, and **parallel-transitivity (Family 7)** shapes, there is
-  now an **importable lemma** in `LeanEuclidPlus/Helpers/{OffLine,SameSide,Area,RightAngle,Parallel}.lean`.
+- For the **off-line (Family 1)**, **line-distinctness (Family 2)**, **sameSide (Family 3)**,
+  **area-recast (Family 6)**, **right-angle-from-co-interior (Family 7)**, **parallel-transitivity
+  (Family 7)**, and **corresponding-angles (Family 7)** shapes, there is
+  now an **importable lemma** in `LeanEuclidPlus/Helpers/{OffLine,SameSide,Area,RightAngle,Parallel,Angle}.lean`.
   These shapes turned out NOT to be irreducibly figure-specific: each needs only 3–5 LOCAL atomic
   incidence facts (`p.onLine L`, `¬(p.onLine L)`, `p≠q`, `¬(L.intersectsLine M)`, …) — exactly what the
   parent already supplies — so a generic lemma takes those atoms as hypotheses and does NOT thread the
@@ -108,8 +109,17 @@ The bread-and-butter precondition for almost everything else (distinctness, same
   the hyps, don't add depth).
 
 ## FAMILY 2 — two lines distinct  (`L ≠ M`)
+
+> **LIBRARY — `Helpers/OffLine.lean`** for the off-line-anchor shape (the one that recurs ~60× as an
+> inline term across Prop04–09 and is the precondition feedstock for `not_intersects_trans`'s three
+> line-≠ args and the no-witness off-line / sameSide siblings):
+> `line_ne_of_offLine p L M` — `p.onLine L`, `¬(p.onLine M)` ⟹ `L ≠ M`. Pure term, zero SMT. For the
+> flipped `M ≠ L` use `(line_ne_of_offLine p L M …).symm`. (Equivalent to the hand term below — use
+> whichever reads cleaner; both are free.)
+
 - **From an off-line point** (cheapest): if you already have `¬p.onLine M` and `p.onLine L`, then
-  `L ≠ M` is the term `fun h => hpoffM (h ▸ hpL)`. No tactic, no search. *Ref: `Book2/Prop04/step9_par.lean:29`.*
+  `L ≠ M` is the term `fun h => hpoffM (h ▸ hpL)` (or `line_ne_of_offLine p L M hpL hpoffM` from the
+  library box). No tactic, no search. *Ref: `Book2/Prop04/step9_par.lean:29`.*
 - **OFF-BASE ANCHOR** for the `euclid_finish` route: supply a point on EACH line that sits OFF the shared
   base, so distinctness proves fast instead of searching the whole figure (e.g. `f` on `BF` off `BC`
   witnesses `BF ≠ BC`). *Ref: the `f`/`hfoffBC` binders threaded through `Book2/Prop01/step6_pgram.lean`.*
@@ -225,8 +235,16 @@ The "a transversal foot / intersection point lands between two others" shape. **
 > **LIBRARY — `Helpers/Parallel.lean`** for parallel-transitivity:
 > `not_intersects_trans L1 L2 L3` — `¬(L1.intersectsLine L2)`, `¬(L2.intersectsLine L3)`, and the three
 > pairwise `≠` (`L1≠L2`, `L2≠L3`, `L1≠L3`) ⟹ `¬(L1.intersectsLine L3)`, via `proposition_30`. Derive the
-> three line-≠ as cheap off-line-anchor terms (Family 2) first, then one `euclid_apply`. The
-> corresponding-angles / isosceles recipes below stay figure-specific leaves — no library lemma.
+> three line-≠ as cheap off-line-anchor terms (`line_ne_of_offLine`, Family 2) first, then one `euclid_apply`.
+>
+> **LIBRARY — `Helpers/Angle.lean`** for the corresponding-angle-at-feet shape (recurs across the
+> II.5/II.6/II.7 isosceles arguments — Prop05 step13_dhdb_corr, Prop06 step11_dmdb_corr, Prop07 step9_corr):
+> `corresponding_angle b c d e h L1 L2 T` — `L1 ∥ L2` (`¬(L1.intersectsLine L2)`); transversal `T` through
+> `b`, near foot `h∈L1`, far foot `e∈L2` with `between b h e`; `d∈L1`, `c∈L2` with `d.sameSide c T` ⟹
+> `∠ d:h:b = ∠ c:e:b`. Atomic hyps. The conclusion orientation is Prop05's; Prop06/07 cut the SAME figure
+> but close the rays to a differently-named far endpoint — **PROMOTE an orientation sibling** into Angle.lean
+> when you hit one (identical body modulo which endpoint the rays close to), exactly as OffLine/SameSide carry
+> siblings. The isosceles recipe below stays a figure-specific leaf — no library lemma.
 
 - **Parallel transitivity** (`¬CF.intersectsLine BE` from `CF ∥ AD` and `AD ∥ BE`): ⟨OLD HAND FORM — use
   `not_intersects_trans` from the library box above; this is the chain it encapsulates⟩. The three lines
@@ -237,8 +255,12 @@ The "a transversal foot / intersection point lands between two others" shape. **
   co-interior angles sum to two right angles — `g.sameSide h BC` sub-node (Family 3), then
   `euclid_apply (proposition_29''''' g h b c BF CH BC)`; `euclid_finish` (the solver finishes the
   `∠g:b:c = ∠f:b:c = ∟` ray-rewrite). *Ref (PROVEN): `Book2/Prop01/step6_rangle.lean:24-33`.*
-- **Corresponding angles** (`∠c:g:b = ∠a:d:b`): `proposition_29''''` with the transversal `sameSide`
-  (Family 3) + the interior `between` (Family 4) in hand. *Ref: `Book2/Prop04/step5_corr.lean`.*
+- **Corresponding angles** (`∠c:g:b = ∠a:d:b`): ⟨use `corresponding_angle` from the library box above
+  when the figure matches its orientation; this is the chain it encapsulates / the FALLBACK for a
+  different orientation⟩. `proposition_29''''` with the transversal `sameSide` (Family 3) + the interior
+  `between` (Family 4) in hand, then a ray-coincidence `equal_angles` + symmetry `euclid_finish`.
+  *Ref: `Book2/Prop04/step5_corr.lean`, `Book2/Prop05/step13_dhdb_corr.lean`,
+  `Book2/Prop06/step11_dmdb_corr.lean`, `Book2/Prop07/step9_corr.lean` (the four orientations).*
 - **Isosceles: equal base angles → equal sides** (`|b─c| = |c─g|`): build `formTriangle` (Family 5),
   recast the angle equality into prop-6 base-angle orientation with `angle_symm` (a real-valued rewrite,
   `rw [hstep7, hsym]`), then `euclid_apply (proposition_6 c g b CF BD AB)`; `euclid_finish`.
@@ -262,3 +284,11 @@ the algebra at once — split the algebra out (one `have h… := by euclid_finis
 put the ARITHMETIC in Mathlib. *Ref: `Book2/Prop09/step10.lean` (`euclid_apply angle_symm` then `linarith`
 for the `2·∠ = ∟ ⟹ ∠ = ∟/2` halving); `Book2/Prop01/step10.lean` (`euclid_finish` over 5 area-equations —
 also valid); `Book2/Prop03/step8.lean` (`rw [← step5, step4, step6, step7]`).*
+
+- **ANGLE-HALVING is a recurring `linarith` shape (Prop09 step10/step11/step12), NOT a library lemma.**
+  From equal base angles `∠X = ∠Y` (isosceles, via prop_5/prop_6 + `angle_symm` to orient) and an
+  angle-sum `∠X + ∠Y = ∟` (or `… = ∟ + ∟` minus a right angle, via prop_32), each base angle is `∟/2`:
+  `have : 2 * (∠X) = ∟ := by linarith` then `linarith`. The SMT translator can't carry `∟/2`; keep the
+  GEOMETRY (`angle_symm`, prop_5/_32 equalities) as `have`s and let `linarith` do the halving. It's two
+  lines inline — do NOT extract a lemma (the content is the geometry, not the arithmetic). *Ref:
+  `Book2/Prop09/step10.lean`, `step11.lean` (prop_5 base angles + prop_32 sum + `2*∠=∟` halve).*

@@ -64,7 +64,9 @@ def extract_file(path: str):
     """Return {loc -> {file, line, name, claim, assumptions?}} for every euclid_sentence in one .lean
     file. `assumptions` is present (and non-empty) only when the node has `-- @assumption` annotations;
     each entry is `{"text": str, "type": str}` or `{"text": str, "type": str, "override": str}`.
-    `@assumption` is the source of truth — saved here at gate, enforced by `check_step --all`."""
+    `@assumption` types are Phase-A's best-guess reasoning map (saved here at gate). Unlike the claim
+    type, they are NOT frozen-hard: Phase B may drop/retype a cited input the real context shows isn't
+    consumed (see faithful-prove), so drift against this baseline is a WARNING, not a failure."""
     raw = open(path, encoding="utf-8").read()
     rel = os.path.relpath(path, BOOK_ROOT)
     # Use faithful_lib to get Node objects (with .assumptions populated) for assumption data.
@@ -179,17 +181,22 @@ def diff(prop_arg: str = None):
         print(f"REMOVED  {k}  (approved in {base[k]['file']}:{base[k]['line']})")
     for k in sorted(added):
         print(f"ADDED    {k}  ({cur[k]['file']}:{cur[k]['line']}) — not in approved baseline")
+    # @assumption drift is a NON-BLOCKING warning: Phase B is allowed to drop/retype a cited input the
+    # real call-site context shows isn't consumed (faithful-prove). Only the claim TYPE is frozen-hard.
     for k, atype, text in sorted(assump_changed):
-        print(f"ASSUMPTION REMOVED  {k}: annotation type \"{atype}\" (\"{text}\") no longer in source")
+        print(f"WARNING (assumption drift)  {k}: frozen annotation type \"{atype}\" (\"{text}\") no "
+              f"longer in source — allowed if Phase B dropped/retyped it; re-run `--save` to refreeze")
 
-    if changed or removed or added or assump_changed:
+    if changed or removed or added:
         print(f"\nFAIL: {len(changed)} changed, {len(removed)} removed, {len(added)} added"
-              + (f", {len(assump_changed)} assumption(s) removed" if assump_changed else "")
-              + ". Claim types and assumption annotations are frozen after Phase-A approval — "
+              ". Claim types are frozen after Phase-A approval — "
               "if a change is intended, get it re-approved and re-run `--save`.")
         return 1
-    print(f"OK: all {len(keys)} approved step claim(s) unchanged"
-          + (f" in {os.path.relpath(resolve(prop_arg), BOOK_ROOT)}" if prop_arg else ""))
+    msg = (f"OK: all {len(keys)} approved step claim(s) unchanged"
+           + (f" in {os.path.relpath(resolve(prop_arg), BOOK_ROOT)}" if prop_arg else ""))
+    if assump_changed:
+        msg += f"  ({len(assump_changed)} @assumption drift warning(s) above — non-blocking)"
+    print(msg)
     return 0
 
 

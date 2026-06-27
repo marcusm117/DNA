@@ -187,16 +187,30 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
         skeleton file with correct imports, namespace, theorem name (`helper_<book>_<prop>_<name>`),
         and claim type pre-filled from Main. You then edit it to add object/hypothesis binders.
         **`@assumption` hyps — if the node has `-- @assumption` annotations in Main, scaffold also
-        pre-populates the backing file with those hypothesis types as `(hassump1 : T1) …` binders.
-        DO NOT REMOVE THESE BINDER TYPES FROM THE SIGNATURE.** You MAY:
+        pre-populates the backing file with those hypothesis types as `(hassump1 : T1) …` binders.**
+        These types are **Phase A's best-guess** reasoning map — written from the sentence TEXT, before
+        Phase A knew the true call-site context. You MAY freely:
           - rename them (e.g. `hassump1` → `h_angle_b_half`)
           - reorder binders (objects first, geometric context, then reasoning — standard layout)
           - add more object and geometric context binders
-        But the TYPE of each pre-populated `hassump` binder MUST survive in the final signature.
-        `check_step --all` verifies assumption persistence against the frozen `step_signatures.json`
-        baseline and hard-fails if a saved type is missing. (If you find a pre-populated type that
-        SP can't discharge — the fact isn't in Main's context at that call site — that signals a
-        Phase-A annotation error; tell the human rather than silently removing the binder.)
+        **You MAY ALSO correct a `@assumption` against the real context — the latitude Phase A lacks:**
+          - **DROP** a pre-populated `@assumption` binder (AND delete its matching `-- @assumption` line
+            in Main, so the two stay in sync) when the real context shows the cited fact is **derived
+            inside this step's cone, or simply not consumed at this site**. This is the INPUTS-ONLY
+            correction Phase A couldn't make. Faithfulness is **not** lost: criterion 1 still reproduces
+            the full sentence text — `@assumption` is only the finer input→fact map, and a reason that
+            the step *derives* rather than *consumes* doesn't belong in it.
+          - **RETYPE** a binder (orientation / atom form) to the literal atom the context has, and update
+            the `-- @assumption` line's type to match so the citation still maps in the wired output.
+        **Editing the `-- @assumption` COMMENT lines in Main is allowed** (they are annotations, not
+        wiring — Main's proof bodies stay `:= by sorry`; the script still does all wiring). Keep the
+        backing-file binder and the Main `-- @assumption` line consistent (drop/retype both together).
+        **Do NOT:** drop a binder merely to dodge a hard SP when the fact genuinely IS available at the
+        site (that just re-derives it in-cone with extra SMT — keep it threaded); and **NEVER** touch
+        the claim TYPE (frozen, human-gated). `check_step --all` reports `@assumption` drift vs the
+        gate-A baseline as a **non-blocking WARNING** (claim-type drift stays a hard fail in
+        `check_steps.py`). **Note each drop/retype + the reason** so the human can re-run
+        `check_steps.py --save` to refreeze at gate C.
         (The skeleton approach eliminates boilerplate errors and saves ~150 tokens per file.)
         If you prefer manual creation, the structure is:
         ```

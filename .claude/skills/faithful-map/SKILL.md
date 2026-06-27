@@ -303,9 +303,11 @@ Fix anything the checklist flags. THEN:
 - STOP. The human reviews that each claim honestly captures its sentence AND that each @assumption
   annotation is a genuine consumed input (both human-checked — no script fully verifies faithfulness).
   The human then runs `python3 scripts/check_steps.py --save Book<N>/PropNN/Main.lean` to freeze the
-  claims AND the @assumption types into `step_signatures.json`. Proving happens next via
-  `faithful-prove`. (@assumption types are the source of truth — check_step --all enforces their
-  persistence in backing file signatures throughout Phase B.)
+  claims AND record the @assumption types into `step_signatures.json`. Proving happens next via
+  `faithful-prove`. (The claim TYPE is frozen-hard. The @assumption types are only Phase-A's
+  best-guess reasoning map: Phase B may drop/retype a cited input the real context shows isn't
+  consumed, so check_step --all reports @assumption drift as a non-blocking WARNING — re-`--save`
+  to refreeze if the change is intended.)
 
 **Do not start proving. Do not read axiom files. Do not write a header comment block** (brief
 `-- dev:` notes are fine; they get deleted later). If a claim seems impossible to state without
