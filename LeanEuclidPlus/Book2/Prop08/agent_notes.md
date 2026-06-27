@@ -47,3 +47,118 @@ Implementation notes:
 - step8.lean intentionally uses step8_gkqr : formParallelogram g k q r MN OP CH BL rather than the rotated Prop. 1.43 orientation; the step8 combine proves the required orientation from that claim.
 - step8_knrp is copied from the certified step7_knrp cone with node names changed only.
 - Next Main node is step12; no backing file has been created for it yet.
+
+
+## Continuation checkpoint - step12, step13 (2026-06-27)
+
+Certified in this pass:
+- step12 subtree COMPLETE. Finished the three missing step12_gkgq_ang sub-leaves:
+  - step12_gkgq_ang_qkd : between q k d  — pasch_4 q k d BL ED, with q.sameSide c BL from
+    sameSide_of_parallel'(c q c CH BL) and ¬CH∥BL via proposition_30 CH BL AE (needs the three
+    line-≠ derived from off-line anchors). Plus between c b d.
+  - step12_gkgq_ang_kqe : between k q e  — pasch_4 k q e CH ED, with ¬k.sameSide e CH from
+    pasch_3 a c b CH + a.sameSide e CH + b.sameSide k CH (sameSide_of_parallel' across CH).
+  - step12_gkgq_ang_gsaed : g.sameSide a ED — TWO legs: a.sameSide c ED (pasch_2 d c a ED, between a c d)
+    and g.sameSide c ED (between c g q via pasch_4 c g q MN CH using ¬c.sameSide q MN from
+    between q k d + c.sameSide d MN). Takes between q k d as a hyp (it is an earlier sibling have).
+- step12_gkgq_ang_qkd was SLIMMED: dropped its two unused formTriangle hyps so ALL remaining hyps are
+  suppliable from Main context everywhere → it is now a REUSABLE shared between-q-k-d helper.
+
+- step13 subtree COMPLETE (rectangle AG = MQ, mirrors step6). Uses proposition_36 a c g m m g q o
+  AE CH AB MN MN OP (parallels AE∥CH, equal bases CG=GQ = step12). Cone:
+  - step13_acgm : formParallelogram a m c g AE CH AB MN ; step13_mogq : formParallelogram m o g q AE CH MN OP
+  - step13_amo : between a m o (pasch_4 a m o MN AE; ¬a.sameSide o MN from between q k d + a.sameSide d MN
+    + o.sameSide q MN)
+  - step13_mnop : ¬MN∥OP (not_intersects_trans MN AB OP) — HOISTED to container, reused by mogq & amo.
+  - REUSES step12_gkgq_ang_qkd as a have-node at the step13 container level (cross-cone shared helper —
+    works fine once it was slimmed).
+
+KEY TECHNIQUE for the 2nd half (steps 13-18 mirror 6-11): the transversal order `between q k d` on ED is
+needed repeatedly for vertical/horizontal betweenness + parallel-line distinctness; reuse the slimmed
+step12_gkgq_ang_qkd helper rather than re-deriving. Line-≠ of parallels (MN≠AB etc.) anchors on
+e∉AB (offLine_of_right_angle) and the diagonal (k≠d, q≠d from between q k d). ¬L1∥L3 transitivity =
+Elements.not_intersects_trans (Helpers.Parallel) needing all three line-≠.
+
+Next Main node: step14 (rectangle QL=RF, mirrors step7, lower band OP-EF; EF∥AB is GIVEN in context).
+step7_gkqr_chbl (¬CH∥BL) and step7_knrp_bldf (¬BL∥DF) are reusable shared helpers from Main context.
+
+
+## Continuation checkpoint - steps 14,15,16,17,18,19 DONE (2026-06-27)
+
+- step14 (QL=RF, mirror step7, lower band OP-EF): prop_36' h q r l l r p f EF OP CH BL BL DF (base
+  QR=RP=step5, parallels OP-EF oriented so base on OP). Reuses step7_gkqr_chbl, step7_knrp_bldf, qkd.
+  New shared leaf step14_efop (¬EF∥OP via not_intersects_trans EF AB OP; EF∥AB is GIVEN). EF≠OP derived
+  in the container (real have) and passed to the two parallelogram leaves (needed for l≠r/f≠p).
+- step15 (MQ=QL complements in parallelogram ML, Prop 1.43, mirror step8 = HARDEST). Relabel of step8:
+  column CH→AE,BL→CH,DF→BL ; row AB→MN,MN→OP,OP→EF ; diagonal ED fixed ; interior point k→q.
+  Big parallelogram ML = formParallelogram k l m e BL AE MN EF (corners K,L,M,e; diagonal e-K on ED).
+  prop_43 k m e l g h o r q BL AE MN EF ED CH OP. CRITICAL: needs parallelogram_area' for BOTH the
+  QRHL (RHS) AND the MOGQ (LHS=step13_mogq) rectangles, because prop_43's output triangulation uses the
+  g-o / r-h diagonals but the goal uses m-q / q-l diagonals (step8 only needed ONE because its LHS matched
+  by pure permutation). Cone: step15_klme, step15_krgq (GR on-diag), step15_qhoe (OH on-diag; split into
+  qhoe_qoffab/qhoe_eoffop/qhoe_ss because the 3 line-uniqueness+sameSide blew 45s in one leaf — use
+  two_points_determine_line EXPLICITLY for line-uniqueness, it's much lighter than one big euclid_finish),
+  step15_qrhl (reuses qoffab+eoffop+step14_hqbl), step13_mogq (reuse), step15_ke, step15_krl (reuses
+  qoffab+eoffop; ¬k.sameSide l OP via pasch_3 e q k OP + l.sameSide e OP).
+  Also SLIMMED step12_gkgq_ang_kqe (dropped formTriangle hyps) → reusable like qkd.
+- steps 16,17,18: pure arithmetic (mirror 9,10,11). 16=euclid_finish from step13/14/15; 17=conjunction;
+  18=linarith from step17.
+- step19: = step11 restated (exact h_step11).
+
+LESSON: line-uniqueness via euclid_finish over big context is SLOW (~15-20s each); two stacked in one
+leaf → >45s. Either split into sub-leaves, or use explicit `euclid_apply (two_points_determine_line …)`.
+
+## Continuation checkpoint - steps 20,21,22,23,28 DONE (2026-06-27)
+
+- step20 (gnomon 8 figs = 4*AK): linarith from step11 (4sq=4CK), step18 (4rect=4AG), and step20_ak
+  (AK=CK+AG). step20_ak uses sum_parallelograms_area a b m k c g AB MN AE BL (cut the big rectangle ABKM
+  by c on AB and g on MN) + parallelogram_area' on CBKG (reuses step6_cbgk via h_cbgk hyp) to bridge
+  triangulation. Sub-leaves step20_akpar (formParallelogram a b m k AB MN AE BL) + step20_mgk (between m g k,
+  pasch_4 m g k CH MN). Reuses qkd, step7_gkqr_chbl, step6_cbgk. NOTE: needed h_q_ch in the container sig.
+- step21 (AK=|ab|*|bd|): rectangle_area a b m k AB MN AE BL needs ∠a:m:k=∟ — proved via
+  Elements.corresponding_angle e d k a m MN AB AE (gives ∠k:m:e=∠d:a:e=∟) + step21_ame (between a m e,
+  pasch_4 a m e MN AE using between e k d from qkd+kqe) ⟹ ∠a:m:k=∟. prop_34 gives |a-m|=|b-k|; step12_bdbk
+  gives |b-d|=|b-k|. KEY: orient rectangle_area so its output triangulation (area a:m:k + a:b:k) MATCHES
+  the goal — avoids needing a parallelogram_area' bridge.
+- step22 = step20 restated (exact). step23 = linarith from step20,step21. step28 = euclid_finish from
+  step1's |(b─d)|=|(c─b)| atom (NOT the conjunction — Main destructures step1; take the atom h_bd).
+
+REMAINING: step24 (OH square = |ac|^2), step25 (arith from 23,24), step26 (gnomon+OH = square AEFD,
+  BIG figure decomposition — hardest remaining), step27 (arith from 25,26 + square AEFD=|ad|^2), step29
+  (final, arith from 27,28).
+- step24: OH rectangle = formParallelogram o q e h OP EF AE CH. rectangle_area o q e h OP EF AE CH with
+  ∠o:e:h=∟ → area(o:h:e)+area(o:q:h)=|o-q|*|o-e|. Need |o-q|=|a-c| (prop_34 on ACQO rectangle) AND
+  |o-e|=|a-c| (HARD: triangle o-e-q is right-isosceles since diagonal ED makes ∠o:e:q=∠a:e:d=45° — the
+  square's diagonal bisects the right corner via isosceles ADE/prop_5 with h_ae_eq |a-e|=|a-d|; then
+  prop_6 gives |o-e|=|o-q|). ∠o:e:h=∟ from ∠a:e:f=∟ (square corner at e).
+- step26: whole square AEFD = the 9 pieces. Likely several sum_parallelograms_area/sum_areas applications.
+
+## STATE after this session: steps 1-23 + 28 ALL certified (24/29). Remaining: 24, 25, 26, 27, 29.
+
+Detailed recipes for the remaining 5 (all chain: 25←23,24 ; 27←25,26 ; 29←27,28):
+- **step24** (OH square = |ac|^2): rectangle_area o q e h OP EF AE CH (a_p=o,b_p=q,c_p=e,d_p=h;
+  ∠o:e:h=∟) → area(o:e:h)+area(o:q:h)=|o-q|*|o-e|. Sub-leaves needed:
+    · step24_ohpar : formParallelogram o q e h OP EF AE CH (o.sameSide e CH via AE∥CH; q≠h via ¬EF∥OP;
+      reuse efop).
+    · step24_oeh : ∠o:e:h=∟ — = ∠a:e:f=∟ (square corner) via ray ids: need between a o e (o between a,e
+      on AE, like step21_ame but o) AND between e h f (h between e,f on EF). corresponding-angle or
+      direct ray-equality euclid_finish once those betweens are in hand.
+    · step24_oqac : |o-q|=|a-c| — prop_34 on rectangle ACQO = formParallelogram a c o q AB OP AE CH.
+    · step24_oeoq : |o-e|=|o-q| — right-isosceles △oeq (formTriangle o e q AE ED OP): ∠o:e:q=∠a:e:d
+      (o on ray e-a, q on ray e-d, both via betweenness on AE/ED) and ∠a:e:d=∟/2 from prop_5 on isosceles
+      △ADE (|a-e|=|a-d|=h_ae_eq) + angle-sum; right angle ∠e:o:q=∟ (AE⊥OP); prop_6 ⟹ |o-e|=|o-q|.
+    Then container: rectangle_area + euclid_finish with |o-q|=|a-c|, |o-e|=|o-q|.
+- **step25**: linarith from step23 (4|ab||bd| = gnomon-8) and step24 (OH=|ac|^2). claim = gnomon-8 + OH.
+- **step26** (gnomon-8 + OH = square AEFD = area(a:e:f)+area(a:f:d)): the BIG total decomposition — the
+  whole square AEFD partitions into all 9 figures. Expect repeated sum_parallelograms_area / sum_areas_if
+  over the grid (rows AB-MN-OP-EF × cols AE-CH-BL-DF). This is the largest remaining cone; budget like step15.
+- **step27**: from step25 (=...= gnomon+OH) and step26 (gnomon+OH = area AEFD) and square AEFD=|ad|^2
+  (rectangle_area on AEFD square, or area(a:e:f)+area(a:f:d)=|a-d|*|a-d| since side|a-e|=|a-d|). linarith/euclid_finish.
+- **step29**: from step27 (4|ab||bd|+|ac|^2=|ad|^2) and step28 (|bd|=|bc|) and |ad|=|ab|+|bd| (between a b d):
+  substitute → 4|ab||bc|+|ac|^2 = (|ab|+|bc|)^2. euclid_finish/ring with the length identities.
+
+Reusable shared helpers established this session (slimmed, Main-suppliable): step12_gkgq_ang_qkd (between q k d),
+step12_gkgq_ang_kqe (between k q e), step7_gkqr_chbl (¬CH∥BL), step7_knrp_bldf (¬BL∥DF), step13_mnop (¬MN∥OP),
+step14_efop (¬EF∥OP), step15_mnef (¬MN∥EF), step15_qhoe_qoffab (¬q.onLine AB), step15_qhoe_eoffop (¬e.onLine OP),
+step6_cbgk, step12_bdbk, step13_mogq, step14_hqbl. Pattern: line-≠ anchors on e∉AB + the diagonal order;
+use two_points_determine_line EXPLICITLY (not big euclid_finish) for line-uniqueness to stay <30s.

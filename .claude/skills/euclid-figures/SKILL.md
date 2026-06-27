@@ -125,6 +125,30 @@ The bread-and-butter precondition for almost everything else (distinctness, same
   witnesses `BF ≠ BC`). *Ref: the `f`/`hfoffBC` binders threaded through `Book2/Prop01/step6_pgram.lean`.*
 - GOTCHA: distinctness is a precondition of `proposition_30`, `formTriangle`, and most pgram assembly —
   derive the needed `L ≠ M` facts as small leaves/terms FIRST so the big call has them in hand.
+- GOTCHA — **`intersectsLine` is NOT definitionally symmetric; flip with a TERM, not `euclid_finish`.**
+  `intersection_symm L M : L.intersectsLine M → M.intersectsLine L`. To turn a context `¬(M.intersectsLine L)`
+  into the `¬(L.intersectsLine M)` a lemma/prop wants, write the term `fun h => hML (intersection_symm L M h)`
+  — do NOT `euclid_apply (intersection_symm …); euclid_finish` (it fails "Could not prove False"). Mind the
+  arg order: `intersection_symm L M` proves `L∩M → M∩L`. *Ref: `Book2/Prop10/step6.lean` (`hCEFD`).*
+
+## LINES MEET — `L.intersectsLine M`  (Euclid's Postulate 5 / "produced … will meet")
+The shape behind every "being produced, the lines will meet at G" sentence (e.g. II.10), and the
+precondition of `intersection_lines L M as g`.
+> **NO Post-5 axiom exists.** `find.py --concludes intersectsLine` returns only `intersection_lines_opposing`
+> (two points on M on OPPOSITE sides of L) and `intersection_lines_common_point` (a shared point + `L≠M`).
+> When the crossing is by PRODUCTION (the meet point G is beyond the named points, so every named point of
+> each line is on the SAME side of the other), `intersection_lines_opposing` does NOT apply with the named
+> points, and a THIN `euclid_finish` (just the `<2 right angles` sum) **FAILS** — there is no rule
+> "converging lines meet".
+- **THE FIX: hand `euclid_finish` the WHOLE figure, not just the angle sum.** With the perpendicular,
+  BOTH parallels (`¬EF∩AD`, `¬FD∩CE`), the betweenness, and the co-interior facts (`∠CEF+∠EFD=2∟`,
+  `∠FEB+∠EFD<2∟`) all in the leaf's context, `euclid_finish` DOES derive `EB.intersectsLine FD` — the
+  solver reconstructs the crossing from the full diagram. The lesson generalizes: for a meeting goal,
+  slim NOTHING — give the leaf the rich figure context. *Ref (PROVEN): `Book2/Prop10/step8.lean`
+  (thin context fails, full-figure context succeeds); `step7.lean` (the `<2∟` inequality, same rich-context
+  `euclid_finish` derives the interior-ray ordering).*
+- The follow-on "they meet" sentence just consumes the meeting (`:= hmeet`); the `as g` construction then
+  fires. *Ref: `Book2/Prop10/step9.lean`.*
 
 ## FAMILY 3 — same side of a line  (`p.sameSide q L`)
 
@@ -292,3 +316,11 @@ also valid); `Book2/Prop03/step8.lean` (`rw [← step5, step4, step6, step7]`).*
   GEOMETRY (`angle_symm`, prop_5/_32 equalities) as `have`s and let `linarith` do the halving. It's two
   lines inline — do NOT extract a lemma (the content is the geometry, not the arithmetic). *Ref:
   `Book2/Prop09/step10.lean`, `step11.lean` (prop_5 base angles + prop_32 sum + `2*∠=∟` halve).*
+- GOTCHA — **a `∠…=∟/2` (or `2*x`) fact ANYWHERE in a `euclid_finish` context CRASHES the translator**
+  ("[Smt.Translator] Improper numeric"), even when the goal is pure geometry — because `euclid_finish`
+  translates the WHOLE local context to SMT. So when a step CONSUMES a `∟/2` half-angle (e.g. a
+  vertical-angle or remaining-angle step that takes `∠e:b:c=∟/2` as a hyp): prove the geometry part with
+  the `∟/2` hyp **CLEARED** — `have hgeom : <pure angle eq> := by clear hhalf; euclid_apply …; euclid_finish`
+  — then combine with `linarith [hhalf, hgeom]`. Never let the `∟/2` reach `euclid_finish`. (All of
+  Prop09's halving uses `linarith` for exactly this reason.) *Diagnosed in `Book2/Prop10/step16.lean`
+  (vertical angle `proposition_15`: the `∟/2` hyp crashed `euclid_finish` until cleared).*
