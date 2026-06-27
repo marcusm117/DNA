@@ -51,6 +51,41 @@ chain (sentences 16–20). The square-algebra tail (24–41) mirrors Prop09 clos
   gives between e b g — look at pasch_3/pasch_4 or intersection betweenness). Then step16 = container:
   hvert (prop_15, clear hassump) + linarith. step16.lean currently a clean sorry stub with this plan inline.
 
+## ✓ STEPS 16–21 CERTIFIED (session 4)
+- **step16** ∠d:b:g=∟/2 — CONTAINER: sub-node `step16_beg : between e b g` (rich figure context, mirrors
+  step8; the focused ~25-fact sig builds where the full-Main context timed out) + inline `proposition_15
+  e g c d b EB AD` (clear hhalf, gives ∠e:b:c=∠d:b:g) + `linarith [hhalf, hvert]`. GOTCHA: set the `have`
+  to ONE conjunct only (`∠e:b:c=∠d:b:g`, not the full ∧) — euclid_apply closes the matching conjunct +
+  antecedent and leaves the OTHER conjunct as a stuck goal.
+- **step17** ∠b:d:g=∟ — LEAF: `proposition_29''' g e d c FD CE AD` (alternate angles ∠g:d:c=∠d:c:e); the
+  antecedent `g.opposingSides e AD` discharges from rich context (same as step16_beg). No ∟/2 in sig.
+- **step18** ∠d:g:b=∟/2 — CONTAINER: sub-node `step18_tri : formTriangle g b d EB AD FD` (rich context for
+  the 3 line-≠ conjuncts) + `proposition_32 g b d` (angle sum ∠g:b:d+∠b:d:g+∠d:g:b=2∟) + angle_symm +
+  linarith. GOTCHA: euclid_finish CANNOT derive the triangle angle sum from axioms alone — needs prop_32
+  (→ formTriangle). And formTriangle needs pairwise line-≠ (off-line anchors) — rich context.
+- **step19** ∠d:g:b=∠d:b:g — LEAF, pure `linarith [hstep16, hstep18]` (both ∟/2). No SMT.
+- **step20** |b─d|=|g─d| — CONTAINER: sub-node `step20_tri : formTriangle d b g AD EB FD` (apex d) +
+  `proposition_6 d b g AD EB FD` (equal base angles ∠d:b:g=∠d:g:b via step19 ⟹ |d─b|=|d─g|). MIND the
+  orientation: Main's step19 is literally `∠d:g:b = ∠d:b:g` (NOT the reverse) — match it in the sig.
+- **step21** ∠f:e:g=∟/2 — HARDEST. CONTAINER w/ 4 sub-nodes:
+  `step21_pgram` (formParallelogram c e d f CE FD AD EF — rectangle CEFD; rich context + off-line chain
+  like Prop09 step28_pgram), `step21_fright` (∠e:f:g=∟ via `proposition_34 c e d f CE FD AD EF ED` with
+  LOCAL `line_from_points e d as ED` for the diagonal — needs FULL figure context to place g),
+  `step21_sum` (∠f:e:g+∠e:f:g+∠e:g:f=2∟ via `proposition_32 e f g` with LOCAL `line_from_points e g as EG`
+  + angle_symm to reorient), `step21_egf` (∠e:g:f=∟/2 — the @assumption was NOT suppliable, so DERIVE it:
+  ray g→e=g→b & g→f=g→d ⟹ ∠e:g:f=∠d:g:b=∟/2 step18). Combine via linarith.
+  KEY LESSONS: (1) prop_34 on a rectangle needs a LOCAL diagonal line (line_from_points) — the figure's
+  diagonals aren't constructed; (2) the step21 @assumption ∠e:g:f=∟/2 is NOT in Main context — derive via
+  step21_egf (drop the @assumption, it's a non-blocking drift WARNING); (3) triangle EFG needs LOCAL EG line.
+
+## REMAINING — step22..step41
+- step22 ∠e:g:f=∠f:e:g — reuse `step21_egf` (∠e:g:f=∟/2) + step21 (∠f:e:g=∟/2), linarith. step21_egf is
+  suppliable at step22 (rich ctx + step18 both present).
+- step23 |g─f|=|e─f| [prop_6] — isosceles △EFG from step22 (∠e:g:f=∠f:e:g); formTriangle EFG needs LOCAL EG.
+- step24–41 square algebra (mirror Prop09 19–39): prop_47 Pythagoras, prop_34 (EF=CD, reuses step21_pgram +
+  LOCAL diagonal), prop_6, final telescope → |ad|²+|db|²=2(|ac|²+|cd|²). @assumptions step24 (EC=CA),
+  step28 (FG=EF) — verify suppliable; derive if not (as step21 showed).
+
 ## REMAINING — step16..step41 (OLD next plan below)
 - step7 : ∠f:e:b + ∠e:f:d < ∟+∟ — needs FEB < CEF (ray e→b inside ∠CEF), then subtract step6.
 - step8/step9 : EB.intersectsLine FD — Euclid's Post 5. **No angle-sum→meet axiom found** via

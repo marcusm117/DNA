@@ -113,7 +113,7 @@ theorem proposition_10 : ∀ (a b c d : Point) (AD : Line),
     "So side $BD$ is also equal to side $GD$ [Prop.~1.6]."
     (step20 : |(b─d)| = |(g─d)|) := by sorry
 
-  -- @assumption ("since $EGF$ is half a right-angle", ∠ e:g:f = ∟ / 2)
+  -- ∠EGF = ∟/2 is derived inside this cone (step21_egf = ∠d:g:b via ray coincidence), not an input.
   euclid_sentence "2.10.21"
     "Again, since $EGF$ is half a right-angle, and the (angle) at $F$ (is) a right-angle, for it is equal to the opposite (angle) at $C$ [Prop.~1.34], the remaining (angle) $FEG$ is thus half a right-angle."
     (step21 : ∠ f:e:g = ∟ / 2) := by sorry
@@ -126,7 +126,7 @@ theorem proposition_10 : ∀ (a b c d : Point) (AD : Line),
     "So the side $GF$ is also equal to the side $EF$ [Prop.~1.6]."
     (step23 : |(g─f)| = |(e─f)|) := by sorry
 
-  -- @assumption ("$EC$ is equal to $CA$", |(e─c)| = |(c─a)|)
+  -- @assumption ("$EC$ is equal to $CA$", |(c─e)| = |(a─c)|)
   euclid_sentence "2.10.24"
     "And since [$EC$ is equal to $CA$] the square on $EC$ is [also] equal to the square on $CA$."
     (step24 : |(e─c)| * |(e─c)| = |(c─a)| * |(c─a)|) := by sorry
@@ -143,7 +143,7 @@ theorem proposition_10 : ∀ (a b c d : Point) (AD : Line),
     "Thus, the square on $EA$ is double the square on $AC$."
     (step27 : |(e─a)| * |(e─a)| = 2 * (|(a─c)| * |(a─c)|)) := by sorry
 
-  -- @assumption ("$FG$ is equal to $EF$", |(f─g)| = |(e─f)|)
+  -- @assumption ("$FG$ is equal to $EF$", |(g─f)| = |(e─f)|)
   euclid_sentence "2.10.28"
     "Again, since $FG$ is equal to $EF$, the (square) on $FG$ is also equal to the (square) on $FE$."
     (step28 : |(f─g)| * |(f─g)| = |(f─e)| * |(f─e)|) := by sorry

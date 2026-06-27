@@ -162,3 +162,54 @@ step12_gkgq_ang_kqe (between k q e), step7_gkqr_chbl (¬CH∥BL), step7_knrp_bld
 step14_efop (¬EF∥OP), step15_mnef (¬MN∥EF), step15_qhoe_qoffab (¬q.onLine AB), step15_qhoe_eoffop (¬e.onLine OP),
 step6_cbgk, step12_bdbk, step13_mogq, step14_hqbl. Pattern: line-≠ anchors on e∉AB + the diagonal order;
 use two_points_determine_line EXPLICITLY (not big euclid_finish) for line-uniqueness to stay <30s.
+
+## Continuation checkpoint — steps 24,25,27,29 DONE; step26 in progress (2026-06-27)
+
+STATE: 28/29 Main nodes certified. ONLY step26 remains. step27 + step29 done first (independent
+arithmetic — their hyps are Main-present claims, so order-rule's stability concern doesn't apply):
+- **step27** (4|ab||bd|+|ac|²=|ad|²): container + leaf `step27_sq` (△aef+△afd = |ad|² via
+  rectangle_area a d e f, square formPar proven inline). CRITICAL GOTCHA: euclid_finish FAILS with
+  "[Smt.Translator] Improper numeric" whenever a *product* term (|ad|*|ad|, 4*(|ab|*|bd|)) sits in a
+  *hypothesis* (h_step25 has products). So the SMT work (formPar + rectangle_area) is ISOLATED in
+  step27_sq whose context is product-FREE (only the product GOAL, which the translator accepts), and
+  step27.lean itself just `linarith`s over step25/step26/step27_sq. Products-as-atoms are fine for linarith.
+- **step29** (4|ab||bc|+|ac|²=(|ab|+|bc|)²): PURE term/rw, NO euclid_finish. `between_if a b d h_abd`
+  gives |ab|+|bd|=|ad| (segment addition); then `rw [← h_step28, h_ad_bd]; exact h_step27`. No SMT →
+  product-hyps harmless. Only needs objects a b c d + h_abd + h_step27 + h_step28.
+
+**step26 (the BIG tiling) — structure is SOUND (SF+SP+Combine pass); sub-nodes in progress.**
+Container `step26.lean` has 21 have-nodes + `linarith`. The 8 `sum_parallelograms_area` cuts are stated
+in CANONICAL vertex-orders that (a) chain perfectly and (b) match the goal's exact cell triangulations,
+so the final linarith closes with NO area_symm/bridge hyps needed in the container. The canonical equalities:
+```
+sq1:  △a:e:f + △a:f:d = (△a:m:n + △a:n:d) + (△m:n:f + △m:f:e)        -- square cut by MN
+sq2:  △m:n:f + △m:f:e = (△m:n:p + △m:p:o) + (△o:p:f + △o:f:e)        -- upper region cut by OP
+btm1: △a:m:n + △a:n:d = (△a:c:g + △a:g:m) + (△c:g:n + △c:n:d)        -- bottom strip cut by CH
+btm2: △c:g:n + △c:n:d = (△g:c:b + △g:b:k) + (△k:b:d + △k:d:n)        -- bottom-rest cut by BL
+mid1: △m:n:p + △m:p:o = (△m:g:q + △m:q:o) + (△g:q:p + △g:p:n)        -- mid strip cut by CH
+mid2: △g:q:p + △g:p:n = (△g:k:r + △g:r:q) + (△k:n:p + △k:p:r)        -- mid-rest cut by BL
+top1: △o:p:f + △o:f:e = (△o:q:h + △o:h:e) + (△q:h:f + △q:f:p)        -- top strip cut by CH
+top2: △q:h:f + △q:f:p = (△q:r:l + △q:l:h) + (△r:p:f + △r:f:l)        -- top-rest cut by BL
+```
+Each cut backing file: prove the intermediate formParallelogram INLINE (~4 have's, like step13_acgm),
+take the 2 betweenness facts as HYPS, `euclid_apply (sum_parallelograms_area <par> <e> <f> <4 lines>)`
+then `euclid_finish` (normalizes the raw conclusion's vertex-perms to the canonical goal). The
+parallelogram vertex order for sum_parallelograms_area a b c d e f is a-b/c-d = the two sides carrying
+the cut points, a-d_arg = the diagonal whose 2 halves appear on the RHS — re-derive per cut (worked
+out above; e.g. sq1 uses `sum_parallelograms_area a e d f m n AE DF AB EF`).
+
+Container reused have-nodes (already proven, SP-pass at step26): step12_gkgq_ang_qkd, step12_gkgq_ang_kqe
+(diagonal ED order — NOT in Main, must re-derive as have-nodes BEFORE the parallel helpers that need them),
+step15_mnef (¬MN∥EF), step13_mnop (¬MN∥OP), step21_ame (between a m e). NOTE step13_amo is NOT usable
+(needs h_mnop ¬MN∥OP not Main-suppliable) — use a fresh step26_moe for between m o e instead.
+
+NEW betweenness leaves needed (9): dnf, npf, moe, mgn, gkn, oqp, qrp, ehf, hlf. Template = step26_dnf
+(CERTIFIED): mirror of step21_ame — `offLine_of_right_angle` anchor, derive between e X d (X = k on MN
+or q on OP) from qkd/kqe, `pasch_3 e X d <line>` (X.onLine <line>), then `¬<a-side>.sameSide <f-side>
+<line>` via euclid_finish using the parallel fact (EF∥MN from step15_mnef for dnf; analogously EF∥OP =
+step14_efop for npf/top; MN∥OP = step13_mnop), then `pasch_4 <lo> <pt> <hi> <line> <ptline>`.
+⭐ intersectsLine is NOT defeq-symmetric — match the helper's orientation EXACTLY (step15_mnef gives
+¬(MN.intersectsLine EF), so the hyp is ¬(MN.intersectsLine EF), not ¬(EF.intersectsLine MN)).
+step26_dnf DONE. Remaining 8 betweenness + 8 cuts to write. Each cut also needs the inline formParallelogram
+for its strip/rest-piece (a d m n / c d g n / m n o p / g n q p / o p e f / q p h f / a e d f / m e n f).
+
