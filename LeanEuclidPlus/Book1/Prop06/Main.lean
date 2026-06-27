@@ -27,9 +27,10 @@ theorem proposition_6 : ∀ (a b c : Point) (AB BC AC : Line),
   -- Euclid argues by contradiction: suppose AB ≠ AC; each case is absurd.
   have habsurd : ¬ (|(a─b)| ≠ |(a─c)|) := by
     intro hne
+    -- @assumption ("$AB$ is unequal to $AC$", |(a─b)| ≠ |(a─c)|)
     euclid_sentence "1.6.1"
       "For if $AB$ is unequal to $AC$ then one of them is greater."
-      (step1 : |(a─b)| > |(a─c)| ∨ |(a─c)| > |(a─b)|) := by euclid_apply (helper_1_6_step1 a b c (by euclid_assumption "" (show |(a─b)| ≠ |(a─c)|; assumption)))
+      (step1 : |(a─b)| > |(a─c)| ∨ |(a─c)| > |(a─b)|) := by euclid_apply (helper_1_6_step1 a b c (by euclid_assumption "$AB$ is unequal to $AC$" (show |(a─b)| ≠ |(a─c)|; assumption)))
     by_cases hgt : |(a─b)| > |(a─c)|
     · -- Euclid's written case: let AB be the greater.
       euclid_sentence "1.6.2"
