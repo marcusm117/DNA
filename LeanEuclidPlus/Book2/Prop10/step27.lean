@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 /- 2.10.27: square on EA = double the square on AC. From step26 (|e─a|² = |e─c|² + |c─a|²) and step25
    (|e─c|² + |c─a|² = 2|c─a|²); the |c─a| ↔ |a─c| orientation is segment symmetry. Pure linarith. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step27
   (a c e : Point)
   (hstep26 : |(e─a)| * |(e─a)| = |(e─c)| * |(e─c)| + |(c─a)| * |(c─a)|)

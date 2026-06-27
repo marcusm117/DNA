@@ -11,7 +11,6 @@ open Elements.Book1 Elements
 -- step11 (2.10.11): in isosceles △AEC (AC = CE), base angles ∠EAC = ∠AEC [Prop.~1.5].
 -- proposition_5 needs a produced point beyond each base vertex (e1 beyond E; d' beyond A).
 -- formTriangle needs CE≠AD + off-line facts, from the ¬e0.onLine AD anchor (library lemmas).
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step11
   (a b c e e0 e1 : Point) (AD EA CE : Line)
   (hab_a : a.onLine AD) (hab_c : c.onLine AD)

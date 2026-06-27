@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.10.20 sub: d, b, g form a triangle with apex d (AD = d─b, EB = b─g, FD = d─g) — the formTriangle
    precondition of proposition_6 for the isosceles conclusion |d─b| = |d─g|. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step20_tri
   (a b c d e e0 e1 f g : Point) (AD CE EB EF FD : Line)
   (hab_a : a.onLine AD) (hab_c : c.onLine AD) (hab_b : b.onLine AD) (hab_d : d.onLine AD)

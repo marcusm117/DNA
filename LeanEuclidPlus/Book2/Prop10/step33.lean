@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 /- 2.10.33: square on EG = double the square on CD. From step31 (|e─g|² = 2|e─f|²) and step32
    (|e─f| = |c─d|, squared). Pure linarith over the locked equations. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step33
   (c d e f g : Point)
   (hstep31 : |(e─g)| * |(e─g)| = 2 * (|(e─f)| * |(e─f)|))

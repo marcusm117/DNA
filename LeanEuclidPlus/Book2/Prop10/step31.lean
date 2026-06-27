@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 /- 2.10.31: square on EG = double the square on EF. From step30 (|e─g|² = |g─f|² + |f─e|²) and
    step29 (|g─f|² + |f─e|² = 2|e─f|²). Pure linarith. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step31
   (e f g : Point)
   (hstep30 : |(e─g)| * |(e─g)| = |(g─f)| * |(g─f)| + |(f─e)| * |(f─e)|)

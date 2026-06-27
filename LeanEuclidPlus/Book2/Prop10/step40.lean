@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.10.40: |DG| = |DB. From step20 (|b─d| = |g─d|) by segment symmetry (|d─g| = |g─d| = |b─d| = |d─b|).
    Pure rw. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step40
   (b d g : Point)
   (hstep20 : |(b─d)| = |(g─d)|) :

@@ -12,7 +12,6 @@ open Elements.Book1 Elements
 /- 2.10.26: square on EA = squares on EC + CA [Prop.~1.47]. △ECA is right-angled at C (∠a:c:e = ∟,
    step1), so proposition_47 (Pythagoras) gives |e─a|² = |e─c|² + |c─a|². formTriangle ECA + the right
    angle discharge from the figure context. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step26
   (a b c d e e0 e1 f g : Point) (AD CE EA EB EF FD : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD) (hab_d : d.onLine AD)

@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.10.18 sub: g, b, d form a triangle (EB = g─b, AD = b─d, FD = g─d). formTriangle needs the three
    lines pairwise distinct; the figure anchors (e off AD on EB, b on AD not FD, d on FD not EB) let
    euclid_finish derive them. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step18_tri
   (a b c d e e0 e1 f g : Point) (AD CE EB EF FD : Line)
   (hab_a : a.onLine AD) (hab_c : c.onLine AD) (hab_b : b.onLine AD) (hab_d : d.onLine AD)

@@ -10,7 +10,6 @@ open Elements.Book1 Elements
 /- 2.10.17: ∠BDG = ∟. It equals ∠DCE (alternate angles [Prop.~1.29]: FD ∥ CE cut by transversal AD),
    and ∠DCE = ∟ since CE ⊥ AD. proposition_29''' g e d c FD CE AD gives ∠g:d:c = ∠d:c:e; b,c are on
    the same ray from d on AD so ∠b:d:g = ∠g:d:c, hence ∠b:d:g = ∠d:c:e = ∟. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step17
   (a b c d e e0 e1 f g : Point) (AD CE EB EF FD : Line)
   (hab_a : a.onLine AD) (hab_c : c.onLine AD) (hab_b : b.onLine AD) (hab_d : d.onLine AD)

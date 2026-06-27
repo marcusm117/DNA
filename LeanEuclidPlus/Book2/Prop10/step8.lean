@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book2
 
 -- step8 (2.10.8): Post 5 — EB and FD meet. TEST 2: rich figure context + euclid_finish.
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step8
   (a b c d e e0 e1 f : Point) (AD CE EF FD EB : Line)
   (hab_a : a.onLine AD) (hab_c : c.onLine AD) (hab_b : b.onLine AD) (hab_d : d.onLine AD)

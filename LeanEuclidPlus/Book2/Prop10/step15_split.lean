@@ -9,7 +9,6 @@ open Elements
 
 -- step15 geometry: c's ray (ec) splits ∠AEB (a,c,b collinear, c between), so
 -- ∠a:e:b = ∠a:e:c + ∠c:e:b. Pure geometry; needs c off EA and c off EB.
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step15_split
   (a b c e e0 e1 : Point) (AD CE EA EB : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD)

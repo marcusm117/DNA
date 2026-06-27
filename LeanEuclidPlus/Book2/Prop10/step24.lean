@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- 2.10.24: square on EC = square on CA. From |c─e| = |a─c| (EC = CA, the construction/step2 fact) by
    segment symmetry, then squaring. Pure rw (segment_symmetric), no SMT. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step24
   (a c e : Point)
   (hce_ac : |(c─e)| = |(a─c)|) :

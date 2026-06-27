@@ -12,7 +12,6 @@ open Elements.Book1 Elements
 /- 2.10.36: square on AG = squares on AE + EG [Prop.~1.47]. △AEG is right-angled at E (∠a:e:g = ∟ =
    ∠a:e:b since g is on the ray e→b, and ∠a:e:b = ∟ by step15), so proposition_47 gives |a─g|² =
    |a─e|² + |e─g|². The triangle side EG is local (line_from_points e g). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step36
   (a b c d e e0 e1 f g : Point) (AD CE EA EB EF FD AG : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD) (hab_d : d.onLine AD)

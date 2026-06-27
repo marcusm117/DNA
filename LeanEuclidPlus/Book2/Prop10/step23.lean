@@ -10,7 +10,6 @@ open Elements.Book1 Elements
 /- 2.10.23: |GF| = |EF| [Prop.~1.6]. △EFG is isosceles: equal base angles ∠e:g:f = ∠f:e:g (step22) at g
    and e give equal sides |f─g| = |f─e| (proposition_6 f g e, apex f). The triangle side GE is built
    locally (line_from_points g e) for formTriangle's precondition. No ∟/2 facts here. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step23
   (a b c d e e0 e1 f g : Point) (AD CE EB EF FD : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD) (hab_d : d.onLine AD)

@@ -12,7 +12,6 @@ open Elements.Book1 Elements
 /- 2.10.38: squares on AD + DG = square on AG [Prop.~1.47]. △ADG is right-angled at D (∠a:d:g = ∟; FD ⊥
    AD, so the angle at d between da = AD and dg = FD is right — cf. step17 ∠b:d:g = ∟), so proposition_47
    gives |a─g|² = |a─d|² + |d─g|². All three lines (AD, AG, FD) are constructed. linarith flips it. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step38
   (a b c d e e0 e1 f g : Point) (AD CE EB EF FD AG : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD) (hab_d : d.onLine AD)

@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 /- 2.10.35: squares on AE + EG = double the (squares on AC + CD). From step34 (square on EA = 2·square on
    AC) and step33 (square on EG = 2·square on CD); segment symmetry reconciles |a─e|/|e─a|. Pure linarith. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step35
   (a c d e g : Point)
   (hstep34 : |(e─a)| * |(e─a)| = 2 * (|(a─c)| * |(a─c)|))

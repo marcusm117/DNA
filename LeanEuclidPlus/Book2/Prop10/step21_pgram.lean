@@ -10,7 +10,6 @@ open Elements
 
 /- 2.10.21 sub: CEFD is a parallelogram (CE ∥ FD, EF ∥ CD=AD), with the right-angle corner at C —
    the formParallelogram precondition of proposition_34 (angle-at-F = angle-at-C). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step21_pgram
   (a b c d e e0 e1 f g : Point) (AD CE EB EF FD : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD) (hab_d : d.onLine AD)

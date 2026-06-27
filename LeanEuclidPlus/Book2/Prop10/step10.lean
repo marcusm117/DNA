@@ -10,7 +10,6 @@ open Elements
 -- step10 (2.10.10): AG is a genuine line through distinct points (a ≠ g).
 -- g ∈ EB, and a ∉ EB by the off-line chain rooted at ¬e0.onLine AD (mirror of Prop09 step6):
 --   ¬a.onLine CE (witness e0) → ¬e.onLine AD (witness a) → ¬a.onLine EB (witness e) → a ≠ g.
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step10
   (a b c e e0 e1 g : Point) (AD CE EB AG : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD)

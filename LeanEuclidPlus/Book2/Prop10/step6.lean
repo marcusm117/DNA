@@ -12,7 +12,6 @@ open Elements.Book1 Elements
 -- step6 (2.10.6): EF crosses the parallels CE and FD at the feet e (on CE) and f (on FD),
 -- so the co-interior angles ∠CEF and ∠EFD sum to two right-angles (proposition_29''''').
 -- Preconditions: e off AD (so EF≠AD, c.sameSide d EF via the parallel witness e) and CE∥FD.
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step6
   (a b c d e e0 e1 f : Point) (AD CE EF FD : Line)
   (hab_a : a.onLine AD) (hab_c : c.onLine AD) (hab_d : d.onLine AD)

@@ -11,7 +11,6 @@ open Elements.Book1 Elements
 /- 2.10.21 sub: the three angles of △EFG sum to ∟+∟ (proposition_32). The triangle side EG is built
    locally (line_from_points e g). The raw sum is reoriented to ∠f:e:g + ∠e:f:g + ∠e:g:f via
    angle_symm so the parent's linarith can use it directly. No ∟/2 facts here (pure geometry). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step21_sum
   (a b c d e e0 e1 f g : Point) (AD CE EB EF FD : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD) (hab_d : d.onLine AD)

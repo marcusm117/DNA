@@ -7,7 +7,6 @@ namespace Elements.Book2
 -- step7 (2.10.7): FEB + EFD < two right-angles. ray e→b is interior to ∠FEC (b between c,d on the
 -- base, e above), so ∠f:e:b < ∠c:e:f; add step6 (∠c:e:f + ∠e:f:d = ∟+∟). Rich figure context lets
 -- euclid_finish derive the interior ordering.
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step7
   (a b c d e e0 e1 f : Point) (AD CE EF FD EB : Line)
   (hab_a : a.onLine AD) (hab_c : c.onLine AD) (hab_b : b.onLine AD) (hab_d : d.onLine AD)

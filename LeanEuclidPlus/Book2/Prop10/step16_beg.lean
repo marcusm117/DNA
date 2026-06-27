@@ -7,7 +7,6 @@ namespace Elements.Book2
 /- 2.10.16 sub: e, b, g are collinear on EB (b = EB ∩ AD), with e above AD (on CE ⊥ AD) and
    g below AD (on FD ∥ CE, the EB-meeting point). Hence e, g on opposite sides of AD and the
    crossing point b lies between them: between e b g. Focused figure context (mirrors step8). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step16_beg
   (a b c d e e0 e1 f g : Point) (AD CE EB EF FD : Line)
   (hab_a : a.onLine AD) (hab_c : c.onLine AD) (hab_b : b.onLine AD) (hab_d : d.onLine AD)

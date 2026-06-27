@@ -12,7 +12,6 @@ open Elements.Book1 Elements
 -- step13 (2.10.13): ∠EAC and ∠AEC are each half a right-angle [Prop.~1.32].
 -- proposition_32 gives the triangle angle-sum ∠EAC + ∠ACE + ∠CEA = 2∟; with the right angle
 -- ∠ACE=∟ (step1/step12) and the base-angle equality ∠EAC=∠AEC (step11), linarith halves each.
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step13
   (a b c e e0 e1 : Point) (AD EA CE : Line)
   (hab_a : a.onLine AD) (hab_c : c.onLine AD)

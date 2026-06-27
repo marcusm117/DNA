@@ -10,7 +10,6 @@ open Elements.Book1 Elements
 /- 2.10.21 sub: the angle at F (∠e:f:g) is a right-angle. It equals the opposite angle ∠ECD at C
    [Prop.~1.34] (parallelogram diagonal ED built locally for proposition_34's precondition); ∠ECD = ∟
    since CE ⊥ AD. The full figure context lets euclid_finish place g and close the right-angle goal. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step21_fright
   (a b c d e e0 e1 f g : Point) (AD CE EB EF FD : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD) (hab_d : d.onLine AD)

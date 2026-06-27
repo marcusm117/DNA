@@ -12,7 +12,6 @@ open Elements.Book1 Elements
 
 -- step14 (2.10.14): for the same reasons, △CEB (CE = CB, right at C) has base angles ∠CEB, ∠EBC each
 -- ∟/2. proposition_5 (base angles equal), proposition_32 (angle sum), right angle ∠e:c:b=∟, halve.
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step14
   (a b c e e0 e1 : Point) (AD CE EB : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD)

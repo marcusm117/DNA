@@ -11,7 +11,6 @@ open Elements
 -- e≠a, e≠b: e lies on the perpendicular CE; a,b lie on AD and (being ≠ c, with
 -- e0 ∈ CE \ AD forcing CE≠AD) are off CE. The off-CE facts come from the shared
 -- offLine_of_two_points lemma (witness e0); e.onLine CE from between.
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step3
   (a b c e e0 e1 : Point) (AD CE EA EB : Line)
   (hab_a : a.onLine AD) (hab_b : b.onLine AD) (hab_c : c.onLine AD)

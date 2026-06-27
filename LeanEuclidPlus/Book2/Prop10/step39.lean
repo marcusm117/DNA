@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 /- 2.10.39: squares on AD + DG = double the (squares on AC + CD). From step38 (|a─d|² + |d─g|² = |a─g|²)
    and step37 (|a─g|² = 2(|a─c|² + |c─d|²)). Pure linarith. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_10_step39
   (a c d g : Point)
   (hstep38 : |(a─d)| * |(a─d)| + |(d─g)| * |(d─g)| = |(a─g)| * |(a─g)|)
