@@ -41,6 +41,7 @@ in the goal, so it is discharged in pure Lean once the lengths are pinned).
 -- $BD$ be drawn from point $B$, perpendicular to $CA$ produced [Prop.~1.12]. I say
 -- that the square on $BC$ is greater than the (sum of the) squares on $BA$ and $AC$
 -- by twice the rectangle contained by $CA$ and $AD$.
+set_option systemE.solverTime 30 in
 theorem proposition_12 : ∀ (a b c d : Point) (AB BC CA : Line),
   formTriangle a b c AB BC CA ∧ (∠ b:a:c : ℝ) > ∟ ∧
   d.onLine CA ∧ between d a c ∧ (∠ b:d:c : ℝ) = ∟ →
