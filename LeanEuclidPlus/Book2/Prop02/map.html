@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Proof map — Prop02</title>
+<style>
+:root {
+  --bg:        #0d0f18;
+  --panel:     #13151f;
+  --border:    #232636;
+  --font:      "JetBrains Mono","Fira Code","Cascadia Code","Menlo",monospace;
+  --sz:        12px;
+  --lh:        1.65;
+  --c-sent:    #52e3c2;
+  --c-have:    #f5a623;
+  --c-thm:     #7eb6ff;
+  --c-plain:   #cdd6f4;
+  --c-dimmed:  #454a68;
+  --c-bg-sent: rgba(82,227,194,.075);
+  --c-bg-have: rgba(245,166,35,.075);
+  --c-bg-thm:  rgba(126,182,255,.055);
+  --conn-gap:  88px;
+  --card-gap:  8px;
+  --max-line-w: 9999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); }
+body {
+  color: var(--c-plain);
+  font-family: var(--font);
+  font-size: var(--sz);
+  line-height: var(--lh);
+  padding-bottom: 80px;
+  /* page scrolls natively — no overflow constraints */
+}
+
+/* ── fixed toolbar (stays in view during both X and Y scroll) ── */
+.toolbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: #0c0e17;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 20px;
+  display: flex; gap: 28px; align-items: center; flex-wrap: wrap;
+}
+.toolbar h1 {
+  font-size: 13px; font-weight: 600; color: var(--c-thm);
+  white-space: nowrap; margin-right: 8px;
+}
+.ctrl { display: flex; align-items: center; gap: 7px; }
+.ctrl label { font-size: 10px; color: var(--c-dimmed); white-space: nowrap; }
+.ctrl input[type=range] {
+  width: 110px; accent-color: var(--c-sent); cursor: pointer;
+}
+.ctrl .val {
+  font-size: 10.5px; color: #9aa0c0; min-width: 36px;
+}
+.legend {
+  display: flex; gap: 14px; margin-left: auto; flex-wrap: wrap; align-items: center;
+}
+.leg { display:flex; align-items:center; gap:5px; font-size:9.5px; color:var(--c-dimmed); }
+.leg-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+
+/* ── page body — top padding clears the fixed toolbar ── */
+.page { padding: 20px 24px; padding-top: 56px; }
+
+/* ── outer (SVG anchor) ── */
+.outer {
+  display: flex; gap: 0;
+  align-items: flex-start;
+  position: relative;
+}
+#svg-layer {
+  position: absolute; top: 0; left: 0;
+  pointer-events: none; overflow: visible; z-index: 10;
+}
+
+/* ── column header ── */
+.col-header {
+  padding: 5px 12px;
+  background: #181a27;
+  border-bottom: 1px solid var(--border);
+  font-size: 9px; color: var(--c-dimmed);
+  letter-spacing: .08em; text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Main.lean panel ── */
+.main-col {
+  flex: 0 0 auto;
+  width: max-content;
+  min-width: 200px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;       /* clip to card edges cleanly */
+  align-self: flex-start;
+}
+.code-body { padding: 6px 0; }
+
+/* ── code lines ── */
+.code-line {
+  display: flex;
+  align-items: baseline;
+  padding: 0 10px;
+  white-space: pre;          /* default: never wrap */
+}
+/* when wrap mode is active (class on <html>), lines wrap at --max-line-w */
+html.wrap-lines .code-line {
+  white-space: pre-wrap;
+  max-width: var(--max-line-w);
+  overflow-wrap: break-word;
+  word-break: normal;
+  /* cards must also stop expanding horizontally */
+  overflow-x: hidden;
+}
+html.wrap-lines .main-col,
+html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); }
+
+.code-line.plain     { color: var(--c-plain); }
+.code-line.collapsed { color: var(--c-dimmed); font-style: italic;
+                       white-space: pre-wrap; }   /* always wraps */
+.code-line.theorem   { background: var(--c-bg-thm);  color: var(--c-thm);  font-weight: 600; }
+.code-line.sentence  { background: var(--c-bg-sent); color: var(--c-sent); }
+.code-line.have      { background: var(--c-bg-have); color: var(--c-have); }
+.ln {
+  flex-shrink: 0; width: 24px;
+  color: var(--c-dimmed); font-size: 9px;
+  text-align: right; padding-right: 7px;
+  user-select: none;
+}
+
+/* ── assumption toggle ── */
+.hyp-btn {
+  display: inline;
+  background: #1e2236; border: 1px solid #353b56;
+  border-radius: 3px; color: #7a88bb;
+  font: var(--sz)/1 var(--font);
+  font-size: calc(var(--sz) * 0.83);
+  padding: 0 4px; margin-left: 4px;
+  cursor: pointer; vertical-align: baseline; white-space: nowrap;
+  transition: background .1s, color .1s;
+}
+.hyp-btn:hover { background: #272d48; color: #aab8e8; }
+.hyp-body { color: #666c90; }
+
+/* ── depth columns ── */
+.depth-cols { display: flex; gap: 0; align-items: flex-start; }
+.depth-col {
+  flex: 0 0 auto;
+  width: max-content;
+  display: flex; flex-direction: column; gap: var(--card-gap);
+  padding-left: var(--conn-gap);
+}
+
+/* ── cards ── */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;          /* clip cleanly; content sets width via max-content */
+  width: max-content;
+  min-width: 180px;
+}
+.card.sent-card { border-color: rgba(82,227,194,.20); }
+.card.have-card { border-color: rgba(245,166,35,.16); }
+.card-header {
+  padding: 5px 10px; background: #181a27;
+  border-bottom: 1px solid var(--border);
+  font-size: 10px; color: var(--c-dimmed);
+  display: flex; gap: 6px; align-items: center; white-space: nowrap;
+}
+.cname       { font-weight: 600; }
+.cname.s     { color: var(--c-sent); }
+.cname.h     { color: var(--c-have); }
+.depth-badge {
+  margin-left: auto; font-size: 9px;
+  background: #1e2236; color: #444a68;
+  padding: 1px 5px; border-radius: 3px;
+}
+/* card body: NO scroll, NO height cap — show everything */
+.card-body { padding: 5px 0; }
+.card-body .code-line { font-size: calc(var(--sz) * 0.95); }
+
+/* ── Per-card LOD via data-lod attribute ── */
+
+/* compact: hide tactic body lines, show signature */
+[data-lod="compact"] .code-line[data-role="body"] { display: none; }
+[data-lod="compact"].card-body { padding-bottom: 2px; }
+
+/* minimal: just the header pill, no body at all */
+[data-lod="minimal"] .card-body  { display: none; }
+[data-lod="minimal"].card {
+  background: none; border-color: transparent; border-radius: 0;
+}
+[data-lod="minimal"] .card-header {
+  background: #1e2236; border: 1px solid #353b56;
+  border-radius: 5px; padding: 3px 9px;
+}
+[data-lod="minimal"] .depth-badge { display: none; }
+/* Main col in minimal/compact: same rules */
+.main-col[data-lod="compact"] .code-line[data-role="body"] { display: none; }
+.main-col[data-lod="minimal"] .code-body { display: none; }
+
+/* ── LOD global buttons ── */
+.lod-group { display: flex; gap: 3px; }
+.lod-btn {
+  background: #1a1d2e; border: 1px solid #353b56;
+  border-radius: 4px; color: #5a6080; font: 10px/1 var(--font);
+  padding: 3px 8px; cursor: pointer; white-space: nowrap;
+  transition: background .1s, color .1s, border-color .1s;
+}
+.lod-btn:hover  { background: #242840; color: #9aa0c0; }
+.lod-btn.active {
+  background: #272d48; border-color: var(--c-sent);
+  color: var(--c-sent);
+}
+/* ── per-card cycle button ── */
+.node-lod-btn {
+  margin-left: auto;
+  background: none; border: none;
+  color: #3a4060; font: 9px/1 var(--font);
+  cursor: pointer; padding: 1px 4px;
+  border-radius: 3px;
+  transition: color .1s, background .1s;
+  flex-shrink: 0;
+}
+.node-lod-btn:hover { color: #9aa0c0; background: #1e2236; }
+/* colour the button to reflect current state */
+[data-lod="full"]    .node-lod-btn { color: #52e3c2; }
+[data-lod="compact"] .node-lod-btn { color: #f5a623; }
+[data-lod="minimal"] .node-lod-btn { color: #3a4060; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <h1>Proof map — Prop02</h1>
+  <div class="ctrl">
+    <label for="sz-slider">Font</label>
+    <input type="range" id="sz-slider" min="9" max="20" step="0.5" value="12">
+    <span class="val" id="sz-val">12px</span>
+  </div>
+  <div class="ctrl">
+    <label for="lh-slider">Row&nbsp;height</label>
+    <input type="range" id="lh-slider" min="1.0" max="3.2" step="0.1" value="1.65">
+    <span class="val" id="lh-val">1.7×</span>
+  </div>
+  <div class="ctrl">
+    <label for="gap-slider">Node&nbsp;gap</label>
+    <input type="range" id="gap-slider" min="40" max="400" step="10" value="88">
+    <span class="val" id="gap-val">88px</span>
+  </div>
+  <div class="ctrl">
+    <label for="mw-slider">Max&nbsp;width</label>
+    <input type="range" id="mw-slider" min="200" max="2000" step="50" value="2000">
+    <span class="val" id="mw-val">&#8734;</span>
+  </div>
+  <div class="lod-group">
+    <button class="lod-btn"        data-lod="full"    onclick="setAllLod('full')">Full</button>
+    <button class="lod-btn"        data-lod="compact" onclick="setAllLod('compact')">Compact</button>
+    <button class="lod-btn active" data-lod="minimal" onclick="setAllLod('minimal')">Minimal</button>
+  </div>
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#7eb6ff"></div>theorem</div>
+    <div class="leg"><div class="leg-dot" style="background:#52e3c2"></div>euclid_sentence</div>
+    <div class="leg"><div class="leg-dot" style="background:#f5a623"></div>have node (dashed)</div>
+    <div class="leg" style="color:#7a88bb">&#9658; = assumptions folded</div>
+  </div>
+</div>
+<div class="page">
+<div class="outer">
+  <svg id="svg-layer"></svg>
+  <div class="main-col" data-lod="full">
+<div class="col-header">Main.lean<button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+<div class="code-body">
+<div class="code-line collapsed" data-role="sig"><span class="ln"></span>-- (18 import / namespace lines)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem proposition_2 : ∀ (a b c : Point) (AB : Line),</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>  distinctPointsOnLine a b AB ∧ c.onLine AB ∧ between a c b →</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>  |(a─b)| * |(b─c)| + |(b─a)| * |(a─c)| = |(a─b)| * |(a─b)| :=</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>by</div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>  euclid_intro_sentence &quot;2.2.0&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">7</span>    &quot;If a straight-line is cut at random, (then) the (sum of the) rectangle(s) contained by the whole (straight-line), and each of the pieces (of the straight-line), is equal to the square on the whole. For let the straight-line $AB$ be cut, at random, at point $C$. I say that the rectangle contained by $AB$ and $BC$, plus the rectangle contained by $BA$ and $AC$, is equal to the square on $AB$.&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">9</span>  euclid_apply (Elements.Book1.proposition_46 a b AB) as (d, e, DE, AD, BE)</div>
+<div class="code-line sentence" data-role="body" id="step1" data-connects="step1" data-kind="sentence"><span class="ln">10</span>  euclid_sentence &quot;2.2.1&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">11</span>    &quot;For let the square $ADEB$ be described on $AB$ [Prop.~1.46],&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span>    (step1 : |(a─d)| = |(a─b)| ∧ |(b─e)| = |(a─b)| ∧ |(d─e)| = |(a─b)| ∧</div>
+<div class="code-line plain" data-role="body"><span class="ln">13</span>      (∠ b:a:d = ∟) ∧ (∠ a:d:e = ∟) ∧ (∠ a:b:e = ∟) ∧ (∠ b:e:d = ∟)) := by euclid_apply (helper_2_2_step1 a b d e<button class="hyp-btn" data-uid="1" data-n="7" data-noun="hyps" onclick="toggleHyp(this)" title="7 assumption(s)">[7&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb1" style="display:none">(by euclid_assumption &quot;&quot; (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show |(b─e)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show |(d─e)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption &quot;&quot; (show ∠ a:d:e = ∟; assumption)) (by euclid_assumption &quot;&quot; (show ∠ a:b:e = ∟; assumption)) (by euclid_assumption &quot;&quot; (show ∠ b:e:d = ∟; assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">15</span>  euclid_apply (Elements.Book1.proposition_31 c a d AD) as CF</div>
+<div class="code-line plain" data-role="body"><span class="ln">16</span>  euclid_apply (intersection_lines CF DE) as f</div>
+<div class="code-line sentence" data-role="body" id="step2" data-connects="step2" data-kind="sentence"><span class="ln">17</span>  euclid_sentence &quot;2.2.2&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">18</span>    &quot;and let $CF$ be drawn through $C$, parallel to either of $AD$ or $BE$ [Prop.~1.31].&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">19</span>    (step2 : c.onLine CF ∧ ¬(CF.intersectsLine AD)) := by euclid_apply (helper_2_2_step2 c CF AD<button class="hyp-btn" data-uid="2" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb2" style="display:none">(by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line sentence" data-role="body" id="step3" data-connects="step3" data-kind="sentence"><span class="ln">21</span>  euclid_sentence &quot;2.2.3&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">22</span>    &quot;So the (square) $AE$ is equal to the (rectangles) $AF$ and $CE$.&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">23</span>    (step3 : Triangle.area △ a:d:e + Triangle.area △ a:b:e =</div>
+<div class="code-line plain" data-role="body"><span class="ln">24</span>      (Triangle.area △ a:c:f + Triangle.area △ a:d:f)</div>
+<div class="code-line plain" data-role="body"><span class="ln">25</span>    + (Triangle.area △ c:b:e + Triangle.area △ c:f:e)) := by euclid_apply (helper_2_2_step3 a b c d e f AB DE AD BE CF<button class="hyp-btn" data-uid="3" data-n="19" data-noun="hyps" onclick="toggleHyp(this)" title="19 assumption(s)">[19&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb3" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)) (by euclid_assumption &quot;&quot; (show e ≠ b; assumption)) (by euclid_assumption &quot;&quot; (show a ≠ b; assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line sentence" data-role="body" id="step4" data-connects="step4" data-kind="sentence"><span class="ln">27</span>  euclid_sentence &quot;2.2.4&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">28</span>    &quot;And $AE$ is the square on $AB$.&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">29</span>    (step4 : Triangle.area △ a:d:e + Triangle.area △ a:b:e = |(a─b)| * |(a─b)|) := by euclid_apply (helper_2_2_step4 a b d e AB DE AD BE<button class="hyp-btn" data-uid="4" data-n="15" data-noun="hyps" onclick="toggleHyp(this)" title="15 assumption(s)">[15&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb4" style="display:none">(by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show |(d─e)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show e ≠ b; assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">31</span>  -- @assumption (&quot;$AD$ (is) equal to $AB$&quot;, |(a─d)| = |(a─b)|)</div>
+<div class="code-line sentence" data-role="body" id="step5" data-connects="step5" data-kind="sentence"><span class="ln">32</span>  euclid_sentence &quot;2.2.5&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">33</span>    &quot;And $AF$ (is) the rectangle contained by the (straight-lines) $BA$ and $AC$. For it is contained by $DA$ and $AC$, and $AD$ (is) equal to $AB$.&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">34</span>    (step5 : Triangle.area △ a:c:f + Triangle.area △ a:d:f = |(b─a)| * |(a─c)|) := by euclid_apply (helper_2_2_step5 a b c d e f AB DE AD BE CF<button class="hyp-btn" data-uid="5" data-n="21" data-noun="hyps" onclick="toggleHyp(this)" title="21 assumption(s)">[21&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb5" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine CF; assumption)) (by euclid_assumption &quot;$AD$ (is) equal to $AB$&quot; (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show ∠ a:d:e = ∟; assumption)) (by euclid_assumption &quot;&quot; (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption &quot;&quot; (show e ≠ b; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">36</span>  -- @assumption (&quot;$BE$ (is) equal to $AB$&quot;, |(b─e)| = |(a─b)|)</div>
+<div class="code-line sentence" data-role="body" id="step6" data-connects="step6" data-kind="sentence"><span class="ln">37</span>  euclid_sentence &quot;2.2.6&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">38</span>    &quot;And $CE$ (is) the (rectangle contained) by $AB$ and $BC$. For $BE$ (is) equal to $AB$.&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">39</span>    (step6 : Triangle.area △ c:b:e + Triangle.area △ c:f:e = |(a─b)| * |(b─c)|) := by euclid_apply (helper_2_2_step6 a b c d e f AB DE AD BE CF<button class="hyp-btn" data-uid="6" data-n="22" data-noun="hyps" onclick="toggleHyp(this)" title="22 assumption(s)">[22&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb6" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine CF; assumption)) (by euclid_assumption &quot;$BE$ (is) equal to $AB$&quot; (show |(b─e)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show ∠ b:e:d = ∟; assumption)) (by euclid_assumption &quot;&quot; (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption &quot;&quot; (show e ≠ b; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line sentence" data-role="body" id="step7" data-connects="step7" data-kind="sentence"><span class="ln">41</span>  euclid_sentence &quot;2.2.7&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">42</span>    &quot;Thus, the (rectangle contained) by $BA$ and $AC$, plus the (rectangle contained) by $AB$ and $BC$, is equal to the square on $AB$.&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">43</span>    (step7 : |(b─a)| * |(a─c)| + |(a─b)| * |(b─c)| = |(a─b)| * |(a─b)|) := by euclid_apply (helper_2_2_step7 a b c d e f<button class="hyp-btn" data-uid="7" data-n="4" data-noun="hyps" onclick="toggleHyp(this)" title="4 assumption(s)">[4&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb7" style="display:none">(by euclid_assumption &quot;&quot; (show Triangle.area △ a:d:e + Triangle.area △ a:b:e = (Triangle.area △ a:c:f + Triangle.area △ a:d:f) + (Triangle.area △ c:b:e + Triangle.area △ c:f:e); assumption)) (by euclid_assumption &quot;&quot; (show Triangle.area △ a:d:e + Triangle.area △ a:b:e = |(a─b)| * |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show Triangle.area △ a:c:f + Triangle.area △ a:d:f = |(b─a)| * |(a─c)|; assumption)) (by euclid_assumption &quot;&quot; (show Triangle.area △ c:b:e + Triangle.area △ c:f:e = |(a─b)| * |(b─c)|; assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">45</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln">46</span>  euclid_conclude_sentence &quot;2.2.8&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln">47</span>    &quot;Thus, if a straight-line is cut at random, (then) the (sum of the) rectangle(s) contained by the whole (straight-line), and each of the pieces (of the straight-line), is equal to the square on the whole. (Which is) the very thing it was required to show.&quot;</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">49</span>end Elements.Book2</div>
+</div></div>
+
+  <div class="depth-cols">
+<div class="depth-col">
+<div class="col-header">Step files</div>
+<div class="card sent-card" id="card-step1" data-lod="minimal">
+  <div class="card-header"><span class="cname s">step1.lean</span><span class="depth-badge">step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step1 (a b d e : Point)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (had : |(a─d)| = |(a─b)|) (hbe : |(b─e)| = |(a─b)|) (hde : |(d─e)| = |(a─b)|)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (hbad : ∠ b:a:d = ∟) (hade : ∠ a:d:e = ∟) (habe : ∠ a:b:e = ∟) (hbed : ∠ b:e:d = ∟) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    |(a─d)| = |(a─b)| ∧ |(b─e)| = |(a─b)| ∧ |(d─e)| = |(a─b)| ∧</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>      (∠ b:a:d = ∟) ∧ (∠ a:d:e = ∟) ∧ (∠ a:b:e = ∟) ∧ (∠ b:e:d = ∟) := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>  exact ⟨had, hbe, hde, hbad, hade, habe, hbed⟩</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">8</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step2" data-lod="minimal">
+  <div class="card-header"><span class="cname s">step2.lean</span><span class="depth-badge">step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step2 (c : Point) (CF AD : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hcCF : c.onLine CF) (hCFAD : ¬(CF.intersectsLine AD)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    c.onLine CF ∧ ¬(CF.intersectsLine AD) := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span>  exact ⟨hcCF, hCFAD⟩</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step3" data-lod="minimal">
+  <div class="card-header"><span class="cname s">step3.lean</span><span class="depth-badge">step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step3 (a b c d e f : Point) (AB DE AD BE CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hacb : between a c b)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (heBE : e.onLine BE) (hbBE : b.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hcCF : c.onLine CF) (hfCF : f.onLine CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    (hdsaBE : d.sameSide a BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">9</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE))</div>
+<div class="code-line plain" data-role="sig"><span class="ln">10</span>    (hCFAD : ¬(CF.intersectsLine AD)) (heb : e ≠ b) (hab : a ≠ b) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">11</span>    Triangle.area △ a:d:e + Triangle.area △ a:b:e =</div>
+<div class="code-line plain" data-role="sig"><span class="ln">12</span>      (Triangle.area △ a:c:f + Triangle.area △ a:d:f)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">13</span>    + (Triangle.area △ c:b:e + Triangle.area △ c:f:e) := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">14</span>  euclid_intros</div>
+<div class="code-line have" data-role="body" id="c1-step3_dfe" data-connects="step3_dfe" data-kind="have"><span class="ln">15</span>  have step3_dfe : between d f e := by euclid_apply (helper_2_2_step3_dfe a b c d e f AB DE AD BE CF<button class="hyp-btn" data-uid="8" data-n="17" data-noun="hyps" onclick="toggleHyp(this)" title="17 assumption(s)">[17&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb8" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">16</span>  euclid_apply (sum_parallelograms_area d e a b f c DE AB AD BE)</div>
+<div class="code-line plain" data-role="body"><span class="ln">17</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">19</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step4" data-lod="minimal">
+  <div class="card-header"><span class="cname s">step4.lean</span><span class="depth-badge">step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step4 (a b d e : Point) (AB DE AD BE : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hbBE : b.onLine BE) (heBE : e.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (had : |(a─d)| = |(a─b)|) (hde : |(d─e)| = |(a─b)|)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hbad : ∠ b:a:d = ∟)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    (hdsaBE : d.sameSide a BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">9</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE)) (heb : e ≠ b) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">10</span>    Triangle.area △ a:d:e + Triangle.area △ a:b:e = |(a─b)| * |(a─b)| := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">11</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span>  euclid_apply (rectangle_area d e a b DE AB AD BE)</div>
+<div class="code-line plain" data-role="body"><span class="ln">13</span>  have hde2 : |(d─e)| = |(a─b)| := hde</div>
+<div class="code-line plain" data-role="body"><span class="ln">14</span>  have hda : |(d─a)| = |(a─b)| := by euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln">15</span>  have hprod : |(a─b)| * |(a─b)| = |(d─e)| * |(d─a)| := by rw [hde2, hda]</div>
+<div class="code-line plain" data-role="body"><span class="ln">16</span>  rw [hprod]</div>
+<div class="code-line plain" data-role="body"><span class="ln">17</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">19</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step5" data-lod="minimal">
+  <div class="card-header"><span class="cname s">step5.lean</span><span class="depth-badge">step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5 (a b c d e f : Point) (AB DE AD BE CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hacb : between a c b)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (hbBE : b.onLine BE) (heBE : e.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hcCF : c.onLine CF) (hfCF : f.onLine CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    (had : |(a─d)| = |(a─b)|) (hade : ∠ a:d:e = ∟) (hbad : ∠ b:a:d = ∟)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">9</span>    (heb : e ≠ b) (hdsaBE : d.sameSide a BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">10</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE))</div>
+<div class="code-line plain" data-role="sig"><span class="ln">11</span>    (hCFAD : ¬(CF.intersectsLine AD)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">12</span>    Triangle.area △ a:c:f + Triangle.area △ a:d:f = |(b─a)| * |(a─c)| := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">13</span>  euclid_intros</div>
+<div class="code-line have" data-role="body" id="c1-step5_sameside" data-connects="step5_sameside" data-kind="have"><span class="ln">14</span>  have step5_sameside : a.sameSide d CF := by euclid_apply (helper_2_2_step5_sameside a b c d e AB DE AD BE CF<button class="hyp-btn" data-uid="9" data-n="16" data-noun="hyps" onclick="toggleHyp(this)" title="16 assumption(s)">[16&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb9" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show e ≠ b; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step5_adne" data-connects="step5_adne" data-kind="have"><span class="ln">15</span>  have step5_adne : a ≠ d := by euclid_apply (helper_2_2_step5_adne a b c d<button class="hyp-btn" data-uid="10" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb10" style="display:none">(by euclid_assumption &quot;&quot; (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show between a c b; assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step5_dene" data-connects="step5_dene" data-kind="have"><span class="ln">16</span>  have step5_dene : DE ≠ AB := by euclid_apply (helper_2_2_step5_dene a b c d AB DE AD<button class="hyp-btn" data-uid="11" data-n="8" data-noun="hyps" onclick="toggleHyp(this)" title="8 assumption(s)">[8&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb11" style="display:none">(by euclid_assumption &quot;&quot; (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption &quot;&quot; (show a ≠ d; assumption)) (by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step5_cf" data-connects="step5_cf" data-kind="have"><span class="ln">17</span>  have step5_cf : c ≠ f := by euclid_apply (helper_2_2_step5_cf c f AB DE<button class="hyp-btn" data-uid="12" data-n="4" data-noun="hyps" onclick="toggleHyp(this)" title="4 assumption(s)">[4&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb12" style="display:none">(by euclid_assumption &quot;&quot; (show DE ≠ AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step5_par" data-connects="step5_par" data-kind="have"><span class="ln">18</span>  have step5_par : formParallelogram a c d f AB DE AD CF := by euclid_apply (helper_2_2_step5_par a b c d e f AB DE AD CF<button class="hyp-btn" data-uid="13" data-n="15" data-noun="hyps" onclick="toggleHyp(this)" title="15 assumption(s)">[15&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb13" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.sameSide d CF; assumption)) (by euclid_assumption &quot;&quot; (show c ≠ f; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step3_dfe" data-connects="step3_dfe" data-kind="have"><span class="ln">19</span>  have step3_dfe : between d f e := by euclid_apply (helper_2_2_step3_dfe a b c d e f AB DE AD BE CF<button class="hyp-btn" data-uid="14" data-n="17" data-noun="hyps" onclick="toggleHyp(this)" title="17 assumption(s)">[17&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb14" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step5_adf" data-connects="step5_adf" data-kind="have"><span class="ln">20</span>  have step5_adf : ∠ a:d:f = ∟ := by euclid_apply (helper_2_2_step5_adf a d e f AD DE<button class="hyp-btn" data-uid="15" data-n="8" data-noun="hyps" onclick="toggleHyp(this)" title="8 assumption(s)">[8&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb15" style="display:none">(by euclid_assumption &quot;&quot; (show ∠ a:d:e = ∟; assumption)) (by euclid_assumption &quot;&quot; (show between d f e; assumption)) (by euclid_assumption &quot;&quot; (show a ≠ d; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step5_area" data-connects="step5_area" data-kind="have"><span class="ln">21</span>  have step5_area : Triangle.area △ a:d:f + Triangle.area △ a:c:f = |(a─c)| * |(a─d)| := by euclid_apply (helper_2_2_step5_area a c d f AB DE AD CF<button class="hyp-btn" data-uid="16" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb16" style="display:none">(by euclid_assumption &quot;&quot; (show formParallelogram a c d f AB DE AD CF; assumption)) (by euclid_assumption &quot;&quot; (show ∠ a:d:f = ∟; assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">22</span>  have hba : |(a─d)| = |(b─a)| := by euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln">23</span>  have hprod : |(b─a)| * |(a─c)| = |(a─c)| * |(a─d)| := by rw [hba]; ring</div>
+<div class="code-line plain" data-role="body"><span class="ln">24</span>  rw [hprod, ← step5_area]</div>
+<div class="code-line plain" data-role="body"><span class="ln">25</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">27</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step6" data-lod="minimal">
+  <div class="card-header"><span class="cname s">step6.lean</span><span class="depth-badge">step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step6 (a b c d e f : Point) (AB DE AD BE CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hacb : between a c b)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (hbBE : b.onLine BE) (heBE : e.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hcCF : c.onLine CF) (hfCF : f.onLine CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    (hbe : |(b─e)| = |(a─b)|) (hbed : ∠ b:e:d = ∟)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">9</span>    (had : |(a─d)| = |(a─b)|) (hbad : ∠ b:a:d = ∟)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">10</span>    (heb : e ≠ b) (hdsaBE : d.sameSide a BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">11</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE))</div>
+<div class="code-line plain" data-role="sig"><span class="ln">12</span>    (hCFAD : ¬(CF.intersectsLine AD)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">13</span>    Triangle.area △ c:b:e + Triangle.area △ c:f:e = |(a─b)| * |(b─c)| := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">14</span>  euclid_intros</div>
+<div class="code-line have" data-role="body" id="c1-step6_cfbe" data-connects="step6_cfbe" data-kind="have"><span class="ln">15</span>  have step6_cfbe : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_2_step6_cfbe a b c d e f AB DE AD BE CF<button class="hyp-btn" data-uid="17" data-n="17" data-noun="hyps" onclick="toggleHyp(this)" title="17 assumption(s)">[17&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb17" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step6_sameside" data-connects="step6_sameside" data-kind="have"><span class="ln">16</span>  have step6_sameside : b.sameSide e CF := by euclid_apply (helper_2_2_step6_sameside a b c d e AB DE AD BE CF<button class="hyp-btn" data-uid="18" data-n="17" data-noun="hyps" onclick="toggleHyp(this)" title="17 assumption(s)">[17&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb18" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show e ≠ b; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step5_adne" data-connects="step5_adne" data-kind="have"><span class="ln">17</span>  have step5_adne : a ≠ d := by euclid_apply (helper_2_2_step5_adne a b c d<button class="hyp-btn" data-uid="19" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb19" style="display:none">(by euclid_assumption &quot;&quot; (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption &quot;&quot; (show between a c b; assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step5_dene" data-connects="step5_dene" data-kind="have"><span class="ln">18</span>  have step5_dene : DE ≠ AB := by euclid_apply (helper_2_2_step5_dene a b c d AB DE AD<button class="hyp-btn" data-uid="20" data-n="8" data-noun="hyps" onclick="toggleHyp(this)" title="8 assumption(s)">[8&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb20" style="display:none">(by euclid_assumption &quot;&quot; (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption &quot;&quot; (show a ≠ d; assumption)) (by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step5_cf" data-connects="step5_cf" data-kind="have"><span class="ln">19</span>  have step5_cf : c ≠ f := by euclid_apply (helper_2_2_step5_cf c f AB DE<button class="hyp-btn" data-uid="21" data-n="4" data-noun="hyps" onclick="toggleHyp(this)" title="4 assumption(s)">[4&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb21" style="display:none">(by euclid_assumption &quot;&quot; (show DE ≠ AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step6_par" data-connects="step6_par" data-kind="have"><span class="ln">20</span>  have step6_par : formParallelogram b c e f AB DE BE CF := by euclid_apply (helper_2_2_step6_par a b c d e f AB DE BE CF<button class="hyp-btn" data-uid="22" data-n="15" data-noun="hyps" onclick="toggleHyp(this)" title="15 assumption(s)">[15&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb22" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show b.sameSide e CF; assumption)) (by euclid_assumption &quot;&quot; (show c ≠ f; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine BE); assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step3_dfe" data-connects="step3_dfe" data-kind="have"><span class="ln">21</span>  have step3_dfe : between d f e := by euclid_apply (helper_2_2_step3_dfe a b c d e f AB DE AD BE CF<button class="hyp-btn" data-uid="23" data-n="17" data-noun="hyps" onclick="toggleHyp(this)" title="17 assumption(s)">[17&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb23" style="display:none">(by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show c.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine CF; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption &quot;&quot; (show ¬(CF.intersectsLine AD); assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step6_bef" data-connects="step6_bef" data-kind="have"><span class="ln">22</span>  have step6_bef : ∠ b:e:f = ∟ := by euclid_apply (helper_2_2_step6_bef b d e f DE BE<button class="hyp-btn" data-uid="24" data-n="8" data-noun="hyps" onclick="toggleHyp(this)" title="8 assumption(s)">[8&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb24" style="display:none">(by euclid_assumption &quot;&quot; (show ∠ b:e:d = ∟; assumption)) (by euclid_assumption &quot;&quot; (show between d f e; assumption)) (by euclid_assumption &quot;&quot; (show e ≠ b; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show f.onLine DE; assumption)))</span></div>
+<div class="code-line have" data-role="body" id="c1-step6_area" data-connects="step6_area" data-kind="have"><span class="ln">23</span>  have step6_area : Triangle.area △ c:b:e + Triangle.area △ c:f:e = |(b─c)| * |(b─e)| := by euclid_apply (helper_2_2_step6_area b c e f AB DE BE CF<button class="hyp-btn" data-uid="25" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb25" style="display:none">(by euclid_assumption &quot;&quot; (show formParallelogram b c e f AB DE BE CF; assumption)) (by euclid_assumption &quot;&quot; (show ∠ b:e:f = ∟; assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">24</span>  have hprod : |(a─b)| * |(b─c)| = |(b─c)| * |(b─e)| := by rw [hbe]; ring</div>
+<div class="code-line plain" data-role="body"><span class="ln">25</span>  rw [hprod]</div>
+<div class="code-line plain" data-role="body"><span class="ln">26</span>  exact step6_area</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">28</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step7" data-lod="minimal">
+  <div class="card-header"><span class="cname s">step7.lean</span><span class="depth-badge">step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step7 (a b c d e f : Point)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (step3 : Triangle.area △ a:d:e + Triangle.area △ a:b:e =</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>      (Triangle.area △ a:c:f + Triangle.area △ a:d:f)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    + (Triangle.area △ c:b:e + Triangle.area △ c:f:e))</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (step4 : Triangle.area △ a:d:e + Triangle.area △ a:b:e = |(a─b)| * |(a─b)|)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (step5 : Triangle.area △ a:c:f + Triangle.area △ a:d:f = |(b─a)| * |(a─c)|)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (step6 : Triangle.area △ c:b:e + Triangle.area △ c:f:e = |(a─b)| * |(b─c)|) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    |(b─a)| * |(a─c)| + |(a─b)| * |(b─c)| = |(a─b)| * |(a─b)| := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">9</span>  rw [← step5, ← step6, ← step3, step4]</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">11</span>end Elements.Book2</div>
+  </div>
+</div>
+</div>
+<div class="depth-col">
+<div class="col-header">Sub-step files</div>
+<div class="card have-card" id="card-step3_dfe" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step3_dfe.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step3_dfe (a b c d e f : Point) (AB DE AD BE CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hacb : between a c b)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (heBE : e.onLine BE) (hbBE : b.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hcCF : c.onLine CF) (hfCF : f.onLine CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    (hdsaBE : d.sameSide a BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">9</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE))</div>
+<div class="code-line plain" data-role="sig"><span class="ln">10</span>    (hCFAD : ¬(CF.intersectsLine AD)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">11</span>    between d f e := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">13</span>  euclid_apply (proposition_30 CF BE AD)</div>
+<div class="code-line plain" data-role="body"><span class="ln">14</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">16</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step5_sameside" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step5_sameside.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5_sameside (a b c d e : Point) (AB DE AD BE CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hacb : between a c b)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (hbBE : b.onLine BE) (heBE : e.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hcCF : c.onLine CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    (heb : e ≠ b) (hdsaBE : d.sameSide a BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">9</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE))</div>
+<div class="code-line plain" data-role="sig"><span class="ln">10</span>    (hCFAD : ¬(CF.intersectsLine AD)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">11</span>    a.sameSide d CF := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span>  euclid_intros</div>
+<div class="code-line have" data-role="body" id="c2-step5_hsq" data-connects="step5_hsq" data-kind="have"><span class="ln">13</span>  have step5_hsq : formParallelogram d e a b DE AB AD BE := by euclid_apply (helper_2_2_step5_hsq a b d e AB DE AD BE<button class="hyp-btn" data-uid="26" data-n="12" data-noun="hyps" onclick="toggleHyp(this)" title="12 assumption(s)">[12&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb26" style="display:none">(by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e ≠ b; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">14</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">16</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step5_adne" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step5_adne.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5_adne (a b c d : Point)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (had : |(a─d)| = |(a─b)|) (hacb : between a c b) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    a ≠ d := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step5_dene" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step5_dene.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5_dene (a b c d : Point) (AB DE AD : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hbad : ∠ b:a:d = ∟) (had : a ≠ d) (hacb : between a c b)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    DE ≠ AB := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">7</span>  euclid_intros</div>
+<div class="code-line have" data-role="body" id="c2-step5_doff" data-connects="step5_doff" data-kind="have"><span class="ln">8</span>  have step5_doff : ¬(d.onLine AB) := by euclid_apply (helper_2_2_step5_doff a b c d AB<button class="hyp-btn" data-uid="27" data-n="5" data-noun="hyps" onclick="toggleHyp(this)" title="5 assumption(s)">[5&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb27" style="display:none">(by euclid_assumption &quot;&quot; (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption &quot;&quot; (show between a c b; assumption)) (by euclid_assumption &quot;&quot; (show a ≠ d; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">9</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">11</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step5_cf" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step5_cf.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5_cf (c f : Point) (AB DE : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hDEAB2 : DE ≠ AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (hcAB : c.onLine AB) (hfDE : f.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hDEAB : ¬(DE.intersectsLine AB)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    c ≠ f := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">7</span>  by_contra hcon</div>
+<div class="code-line plain" data-role="body"><span class="ln">8</span>  euclid_apply (intersection_lines_common_point c DE AB)</div>
+<div class="code-line plain" data-role="body"><span class="ln">9</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">11</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step5_par" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step5_par.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5_par (a b c d e f : Point) (AB DE AD CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hacb : between a c b) (hasd : a.sameSide d CF) (hcf : c ≠ f)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (hcCF : c.onLine CF) (hfCF : f.onLine CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hCFAD : ¬(CF.intersectsLine AD)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    formParallelogram a c d f AB DE AD CF := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">9</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">10</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step5_adf" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step5_adf.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5_adf (a d e f : Point) (AD DE : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hade : ∠ a:d:e = ∟) (hdfe : between d f e) (hadne : a ≠ d)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    ∠ a:d:f = ∟ := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">7</span>  euclid_apply (equal_angles d e f a a DE AD)</div>
+<div class="code-line plain" data-role="body"><span class="ln">8</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">10</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step5_area" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step5_area.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5_area (a c d f : Point) (AB DE AD CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hpar : formParallelogram a c d f AB DE AD CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (hadf : ∠ a:d:f = ∟) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    Triangle.area △ a:d:f + Triangle.area △ a:c:f = |(a─c)| * |(a─d)| := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span>  euclid_apply (rectangle_area a c d f AB DE AD CF)</div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">8</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step6_cfbe" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step6_cfbe.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step6_cfbe (a b c d e f : Point) (AB DE AD BE CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hacb : between a c b)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (heBE : e.onLine BE) (hbBE : b.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hcCF : c.onLine CF) (hfCF : f.onLine CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    (hdsaBE : d.sameSide a BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">9</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE))</div>
+<div class="code-line plain" data-role="sig"><span class="ln">10</span>    (hCFAD : ¬(CF.intersectsLine AD)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">11</span>    ¬(CF.intersectsLine BE) := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">13</span>  euclid_apply (proposition_30 CF BE AD)</div>
+<div class="code-line plain" data-role="body"><span class="ln">14</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">16</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step6_sameside" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step6_sameside.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step6_sameside (a b c d e : Point) (AB DE AD BE CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hacb : between a c b)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (hbBE : b.onLine BE) (heBE : e.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hcCF : c.onLine CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    (heb : e ≠ b) (hdsaBE : d.sameSide a BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">9</span>    (hCFBE : ¬(CF.intersectsLine BE))</div>
+<div class="code-line plain" data-role="sig"><span class="ln">10</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE))</div>
+<div class="code-line plain" data-role="sig"><span class="ln">11</span>    (hCFAD : ¬(CF.intersectsLine AD)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">12</span>    b.sameSide e CF := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">13</span>  euclid_intros</div>
+<div class="code-line have" data-role="body" id="c2-step5_hsq" data-connects="step5_hsq" data-kind="have"><span class="ln">14</span>  have step5_hsq : formParallelogram d e a b DE AB AD BE := by euclid_apply (helper_2_2_step5_hsq a b d e AB DE AD BE<button class="hyp-btn" data-uid="28" data-n="12" data-noun="hyps" onclick="toggleHyp(this)" title="12 assumption(s)">[12&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb28" style="display:none">(by euclid_assumption &quot;&quot; (show d.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine DE; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine AB; assumption)) (by euclid_assumption &quot;&quot; (show d.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show a.onLine AD; assumption)) (by euclid_assumption &quot;&quot; (show b.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e.onLine BE; assumption)) (by euclid_assumption &quot;&quot; (show e ≠ b; assumption)) (by euclid_assumption &quot;&quot; (show d.sameSide a BE; assumption)) (by euclid_assumption &quot;&quot; (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption &quot;&quot; (show ¬(AD.intersectsLine BE); assumption)))</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">15</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">17</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step6_par" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step6_par.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step6_par (a b c d e f : Point) (AB DE BE CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hacb : between a c b) (hbse : b.sameSide e CF) (hcf : c ≠ f)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hcAB : c.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hbBE : b.onLine BE) (heBE : e.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (hcCF : c.onLine CF) (hfCF : f.onLine CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hCFBE : ¬(CF.intersectsLine BE)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    formParallelogram b c e f AB DE BE CF := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">9</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">10</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step6_bef" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step6_bef.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step6_bef (b d e f : Point) (DE BE : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hbed : ∠ b:e:d = ∟) (hdfe : between d f e) (hebne : e ≠ b)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (hbBE : b.onLine BE) (heBE : e.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE) (hfDE : f.onLine DE) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    ∠ b:e:f = ∟ := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">7</span>  euclid_apply (equal_angles e d f b b DE BE)</div>
+<div class="code-line plain" data-role="body"><span class="ln">8</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">10</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step6_area" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step6_area.lean</span><span class="depth-badge">sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step6_area (b c e f : Point) (AB DE BE CF : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hpar : formParallelogram b c e f AB DE BE CF)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (hbef : ∠ b:e:f = ∟) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    Triangle.area △ c:b:e + Triangle.area △ c:f:e = |(b─c)| * |(b─e)| := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span>  euclid_apply (rectangle_area b c e f AB DE BE CF)</div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">8</span>end Elements.Book2</div>
+  </div>
+</div>
+</div>
+<div class="depth-col">
+<div class="col-header">Sub-sub-step files</div>
+<div class="card have-card" id="card-step5_hsq" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step5_hsq.lean</span><span class="depth-badge">sub-sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5_hsq (a b d e : Point) (AB DE AD BE : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hdDE : d.onLine DE) (heDE : e.onLine DE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    (hdAD : d.onLine AD) (haAD : a.onLine AD)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span>    (hbBE : b.onLine BE) (heBE : e.onLine BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span>    (heb : e ≠ b) (hdsaBE : d.sameSide a BE)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">7</span>    (hDEAB : ¬(DE.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE)) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">8</span>    formParallelogram d e a b DE AB AD BE := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">9</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">10</span>  euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span>end Elements.Book2</div>
+  </div>
+</div>
+<div class="card have-card" id="card-step5_doff" data-lod="minimal">
+  <div class="card-header"><span class="cname h">step5_doff.lean</span><span class="depth-badge">sub-sub-step</span><button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span>theorem helper_2_2_step5_doff (a b c d : Point) (AB : Line)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span>    (hbad : ∠ b:a:d = ∟) (hacb : between a c b) (had : a ≠ d)</div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span>    (haAB : a.onLine AB) (hbAB : b.onLine AB) :</div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span>    ¬(d.onLine AB) := by</div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span>  euclid_intros</div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span>  by_contra hcon</div>
+<div class="code-line plain" data-role="body"><span class="ln">7</span>  by_cases hbet : between b a d</div>
+<div class="code-line plain" data-role="body"><span class="ln">8</span>  · euclid_apply (flat_angle_onlyif b a d)</div>
+<div class="code-line plain" data-role="body"><span class="ln">9</span>    euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln">10</span>  · euclid_apply (degenerated_angle_if a b d AB)</div>
+<div class="code-line plain" data-role="body"><span class="ln">11</span>    euclid_finish</div>
+<div class="code-line plain" data-role="body"><span class="ln"></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">13</span>end Elements.Book2</div>
+  </div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+<script>
+
+const root  = document.documentElement;
+const svg   = document.getElementById("svg-layer");
+const outer = document.querySelector(".outer");
+
+/* ── connectors ── */
+function visibleMidRight(el) {
+  // Walk up to find the nearest visible ancestor that has real height.
+  // A line hidden by display:none has h=0; use its card's header instead.
+  let probe = el;
+  while (probe) {
+    const r = probe.getBoundingClientRect();
+    if (r.height > 0) {
+      const OR = outer.getBoundingClientRect();
+      return { x: r.right - OR.left, y: (r.top + r.bottom) / 2 - OR.top };
+    }
+    probe = probe.closest(".card-body, .card, .main-col")?.nextElementSibling
+            ? null
+            : probe.parentElement?.closest(".card, .main-col");
+  }
+  return null;
+}
+
+function drawConnectors() {
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  const OR = outer.getBoundingClientRect();
+
+  document.querySelectorAll("[data-connects]").forEach(src => {
+    const card = document.getElementById("card-" + src.dataset.connects);
+    if (!card) return;
+
+    // Source anchor: the highlighted line if visible, else the card it lives in
+    const srcR = src.getBoundingClientRect();
+    let p1;
+    if (srcR.height > 0) {
+      p1 = { x: srcR.right - OR.left, y: (srcR.top + srcR.bottom) / 2 - OR.top };
+    } else {
+      // source line is hidden (LOD) — find its containing card and use that
+      const srcCard = src.closest(".card, .main-col");
+      if (!srcCard) return;
+      const scr = srcCard.getBoundingClientRect();
+      if (scr.height === 0) return;
+      p1 = { x: scr.right - OR.left, y: (scr.top + scr.bottom) / 2 - OR.top };
+    }
+
+    // Target anchor: card header (always visible in all LOD modes)
+    const hdr = card.querySelector(".card-header");
+    const hr  = hdr.getBoundingClientRect();
+    if (hr.height === 0) return;
+    const p2  = { x: hr.left - OR.left, y: (hr.top + hr.bottom) / 2 - OR.top };
+
+    const dx = Math.max(16, Math.abs(p2.x - p1.x) * 0.42);
+    const d  = `M${p1.x},${p1.y} C${p1.x+dx},${p1.y} ${p2.x-dx},${p2.y} ${p2.x},${p2.y}`;
+    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d", d);
+    const sent = src.dataset.kind === "sentence";
+    path.setAttribute("stroke", sent ? "rgba(82,227,194,.48)" : "rgba(245,166,35,.45)");
+    path.setAttribute("stroke-width", "1.6");
+    path.setAttribute("fill", "none");
+    if (!sent) path.setAttribute("stroke-dasharray", "5 3");
+    svg.appendChild(path);
+  });
+
+  const tot = outer.getBoundingClientRect();
+  svg.setAttribute("width",  Math.ceil(tot.width)  + 2);
+  svg.setAttribute("height", Math.ceil(tot.height) + 2);
+}
+
+/* ── assumption toggle ── */
+function toggleHyp(btn) {
+  const body = document.getElementById("hb" + btn.dataset.uid);
+  const open = body.style.display !== "none";
+  body.style.display = open ? "none" : "inline";
+  btn.innerHTML = open
+    ? `[${btn.dataset.n}&nbsp;${btn.dataset.noun}&nbsp;&#9658;]`
+    : `[${btn.dataset.n}&nbsp;${btn.dataset.noun}&nbsp;&#9660;]`;
+  requestAnimationFrame(drawConnectors);
+}
+
+/* ── sliders ── */
+const szSlider  = document.getElementById("sz-slider");
+const lhSlider  = document.getElementById("lh-slider");
+const gapSlider = document.getElementById("gap-slider");
+const mwSlider  = document.getElementById("mw-slider");
+const szVal     = document.getElementById("sz-val");
+const lhVal     = document.getElementById("lh-val");
+const gapVal    = document.getElementById("gap-val");
+const mwVal     = document.getElementById("mw-val");
+
+function applySliders() {
+  const sz  = parseFloat(szSlider.value);
+  const lh  = parseFloat(lhSlider.value);
+  const gap = parseInt(gapSlider.value);
+  const mw  = parseInt(mwSlider.value);
+
+  root.style.setProperty("--sz",       sz  + "px");
+  root.style.setProperty("--lh",       lh);
+  root.style.setProperty("--conn-gap", gap + "px");
+  root.style.setProperty("--card-gap", Math.round(gap * 0.12) + "px");
+
+  if (mw >= 2000) {
+    // unlimited: remove wrap mode
+    root.classList.remove("wrap-lines");
+    root.style.setProperty("--max-line-w", "9999px");
+    mwVal.textContent = "∞";
+  } else {
+    root.classList.add("wrap-lines");
+    root.style.setProperty("--max-line-w", mw + "px");
+    mwVal.textContent = mw + "px";
+  }
+
+  szVal.textContent  = sz + "px";
+  lhVal.textContent  = lh.toFixed(1) + "×";
+  gapVal.textContent = gap + "px";
+  requestAnimationFrame(drawConnectors);
+}
+
+szSlider.addEventListener("input",  applySliders);
+lhSlider.addEventListener("input",  applySliders);
+gapSlider.addEventListener("input", applySliders);
+mwSlider.addEventListener("input",  applySliders);
+
+/* ── LOD ── */
+const LOD_CYCLE = ["minimal", "compact", "full"];
+
+function setCardLod(el, level) {
+  el.setAttribute("data-lod", level);
+  const btn = el.querySelector(".node-lod-btn");
+  if (btn) btn.title = "Current: " + level + " — click to cycle";
+}
+
+/* global buttons: apply level to every card + Main */
+function setAllLod(level) {
+  document.querySelectorAll(".card, .main-col").forEach(c => setCardLod(c, level));
+  document.querySelectorAll(".lod-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.lod === level));
+  requestAnimationFrame(drawConnectors);
+}
+
+/* per-card cycle button: minimal → compact → full → minimal */
+function cycleCardLod(btn) {
+  const card = btn.closest(".card, .main-col");
+  const cur  = card.getAttribute("data-lod") || "minimal";
+  const next = LOD_CYCLE[(LOD_CYCLE.indexOf(cur) + 1) % LOD_CYCLE.length];
+  setCardLod(card, next);
+  requestAnimationFrame(drawConnectors);
+}
+
+/* initial draw */
+window.addEventListener("load", () => {
+  applySliders();
+  drawConnectors();
+});
+window.addEventListener("resize", drawConnectors);
+
+</script>
+</body>
+</html>
