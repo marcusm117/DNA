@@ -121,7 +121,7 @@ theorem proposition_11 : ∀ (a b : Point) (AB : Line),
     "Thus, the rectangle contained by $AB$ and $BH$ is equal to the square on $HA$."
     (step23 : |(a─b)| * |(b─h)| = |(a─h)| * |(a─h)|) := by sorry
 
-  sorry
+  exact ⟨h, by sorry, step8⟩
   euclid_conclude_sentence "2.11.24"
     "Thus, the given straight-line $AB$ has been cut at (point) $H$ such as to make the rectangle contained by $AB$ and $BH$ equal to the square on $HA$. (Which is) the very thing it was required to do."
 
