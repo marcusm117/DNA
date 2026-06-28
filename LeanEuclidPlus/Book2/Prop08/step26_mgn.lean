@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- between m g n : g = CH ∩ MN lies between m and n on MN. CH separates m (AE side)
    from n (DF side). Rich context (right-angle anchor h_dae + diagonal ED) so the
    off-line / sameSide facts derive; parallels AE∥CH, DF∥CH supplied as hyps. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_mgn (a b c d e g k m n q : Point)
     (AB AE CH DF MN ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step7_gkqr_kner (k r : Point) (OP : Line)
     (h_r_op : r.onLine OP) (h_k_off_op : ¬(k.onLine OP)) :
     k ≠ r := by

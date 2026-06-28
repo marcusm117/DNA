@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- between o q p : q = CH ∩ OP lies between o and p on OP. CH separates o (AE side)
    from p (DF side): between a c d, c on CH ⟹ a,d opposite sides of CH; o~a (AE∥CH),
    p~d (DF∥CH). pasch_4 o q p CH OP. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_oqp (a b c d e k o q p : Point)
     (AB AE CH DF OP ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

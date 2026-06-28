@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book2
 
 /- mid1: middle strip (m-n-o-p) cut by CH (g on m-n, q on o-p). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_mid1 (m n o p g q : Point)
     (AE CH DF MN OP : Line)
     (h_m_ae : m.onLine AE) (h_o_ae : o.onLine AE)

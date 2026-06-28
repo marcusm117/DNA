@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- Square AEFD as formParallelogram a e d f (consecutive a-e-f-d: AE, EF, DF, AB),
    oriented so the MN cut points m (on a-e) and n (on d-f) lie on the a-b / c-d sides.
    Used by step26_sq1. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_aefd (a b c d e f : Point)
     (AB AE DF EF : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

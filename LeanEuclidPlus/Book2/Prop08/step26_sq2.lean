@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- sq2: upper region (m-e-n-f) cut by OP (o on m-e, p on n-f) — its 2 halves (diagonal
    m-f) equal the mid-strip halves + top-strip halves. Canonical vertex orders. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_sq2 (a b c d e f m n o p : Point)
     (AB AE DF EF MN OP : Line)
     (h_a_ab : a.onLine AB) (h_d_ab : d.onLine AB)

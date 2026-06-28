@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- between d n f : n = MN ∩ DF lies between d and f on DF. MN separates d (on AB)
    from f (on EF); the diagonal ED crosses MN at k, and EF∥MN (h_efmn) puts f on
    e's side. Mirror of `between a m e` on the DF side. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_dnf (a b c d e f k n q : Point)
     (AB AE DF EF ED MN : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

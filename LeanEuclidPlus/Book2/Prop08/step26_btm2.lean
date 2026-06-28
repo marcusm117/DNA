@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book2
 
 /- btm2: bottom-rest rectangle (c-d-g-n) cut by BL (b on c-d, k on g-n). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_btm2 (a b c d g k n : Point)
     (AB CH DF MN BL : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

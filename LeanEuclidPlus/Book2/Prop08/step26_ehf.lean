@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- between e h f : h = CH ∩ EF lies between e and f on EF. CH separates e (AE side)
    from f (DF side): between a c d, c on CH ⟹ a,d opposite sides of CH; e~a (AE∥CH),
    f~d (DF∥CH). pasch_4 e h f CH EF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_ehf (a b c d e f h k q : Point)
     (AB AE CH DF EF ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

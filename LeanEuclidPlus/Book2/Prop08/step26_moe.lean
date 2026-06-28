@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- between m o e : o = OP ∩ AE lies between m and e on AE. OP separates m (MN side,
    below) from e (EF side, above): diagonal ED crosses OP at q; m~k~d (MN∥OP), e~e
    top (EF∥OP). pasch_4 m o e OP AE. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_moe (a b c d e f k m o q : Point)
     (AB AE DF EF ED MN OP : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

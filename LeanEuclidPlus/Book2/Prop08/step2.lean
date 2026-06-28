@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step2 (a d e f : Point)
     (h_ef : |(e─f)| = |(a─d)|) (h_ae : |(a─e)| = |(a─d)|)
     (h_df : |(d─f)| = |(a─d)|) (h_dae : ∠ d:a:e = ∟)

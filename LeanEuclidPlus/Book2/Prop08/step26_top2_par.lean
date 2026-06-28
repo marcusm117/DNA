@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 /- Top-rest formParallelogram q p h f (q-p on OP, h-f on EF, q-h on CH, p-f on DF).
    Used by step26_top2. Needs OP∥EF (h_efop), CH∥DF (h_chdf). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_top2_par (a b c d e f m n o h q p : Point)
     (AB AE CH DF EF OP ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- between g k n : k = BL ∩ MN lies between g and n on MN. BL separates g (CH side)
    from n (DF side): between c b d with b on BL ⟹ c,d opposite sides of BL; g~c
    (CH∥BL), n~d (DF∥BL). pasch_4 g k n BL MN. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_gkn (a b c d e g k n q : Point)
     (AB AE CH BL DF MN ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

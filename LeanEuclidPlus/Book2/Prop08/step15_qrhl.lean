@@ -1,10 +1,12 @@
 import SystemE
+import Book2.Prop08.step15_qhoe_qoffab
+import Book2.Prop08.step15_qhoe_eoffop
+import Book2.Prop08.step14_hqbl
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step15_qrhl (a b c d e h k l q r : Point)
     (AB AE BL CH ED EF OP : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)
@@ -21,11 +23,11 @@ theorem helper_2_8_step15_qrhl (a b c d e h k l q r : Point)
     (h_chbl : ¬(CH.intersectsLine BL)) (h_efop : ¬(EF.intersectsLine OP))
     (h_qkd : between q k d) (h_kqe : between k q e) :
     formParallelogram q r h l OP EF CH BL := by
-  have step15_qhoe_qoffab : ¬(q.onLine AB) := by sorry
+  have step15_qhoe_qoffab : ¬(q.onLine AB) := by euclid_apply (helper_2_8_step15_qhoe_qoffab a b d e k q AB AE ED (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine ED; assumption)) (by euclid_assumption "" (show d.onLine ED; assumption)) (by euclid_assumption "" (show k.onLine ED; assumption)) (by euclid_assumption "" (show q.onLine ED; assumption)) (by euclid_assumption "" (show |(a─e)| = |(a─d)|; assumption)) (by euclid_assumption "" (show ∠ d:a:e = ∟; assumption)) (by euclid_assumption "" (show between q k d; assumption)))
   have hne_op_ab : OP ≠ AB := fun heq => step15_qhoe_qoffab (heq ▸ h_q_op)
-  have step15_qhoe_eoffop : ¬(e.onLine OP) := by sorry
+  have step15_qhoe_eoffop : ¬(e.onLine OP) := by euclid_apply (helper_2_8_step15_qhoe_eoffop d e k q AB ED OP (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show e.onLine ED; assumption)) (by euclid_assumption "" (show d.onLine ED; assumption)) (by euclid_assumption "" (show k.onLine ED; assumption)) (by euclid_assumption "" (show q.onLine ED; assumption)) (by euclid_assumption "" (show q.onLine OP; assumption)) (by euclid_assumption "" (show ¬(OP.intersectsLine AB); assumption)) (by euclid_assumption "" (show between k q e; assumption)) (by euclid_assumption "" (show OP ≠ AB; assumption)))
   have hne_ef_op : EF ≠ OP := fun heq => step15_qhoe_eoffop (heq ▸ h_e_ef)
-  have step14_hqbl : h.sameSide q BL := by sorry
+  have step14_hqbl : h.sameSide q BL := by euclid_apply (helper_2_8_step14_hqbl a b c d e h q AB AE BL CH (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine AE; assumption)) (by euclid_assumption "" (show |(a─e)| = |(a─d)|; assumption)) (by euclid_assumption "" (show c.onLine CH; assumption)) (by euclid_assumption "" (show h.onLine CH; assumption)) (by euclid_assumption "" (show q.onLine CH; assumption)) (by euclid_assumption "" (show b.onLine BL; assumption)) (by euclid_assumption "" (show ¬(CH.intersectsLine AE); assumption)) (by euclid_assumption "" (show ∠ d:a:e = ∟; assumption)) (by euclid_assumption "" (show ¬(CH.intersectsLine BL); assumption)))
   euclid_finish
 
 end Elements.Book2

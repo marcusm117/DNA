@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 /- Upper region formParallelogram m e n f (m-e on AE, n-f on DF, m-n on MN, e-f on EF).
    Used by step26_sq2. Needs AE∥DF (h_ae_df), MN∥EF (h_efmn). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_sq2_par (a b c d e f m n : Point)
     (AB AE DF EF MN ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

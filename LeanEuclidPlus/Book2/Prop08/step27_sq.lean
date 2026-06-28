@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- Square AEFD area as two triangles: △aef + △afd = |ad|*|ad|.
    Product-free context (only geometric facts), so euclid_finish can run; the
    lone product lives in the goal, which the SMT translator accepts. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step27_sq (a b c d e f : Point)
     (AB AE DF EF : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

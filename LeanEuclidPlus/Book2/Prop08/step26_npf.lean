@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- between n p f : p = OP ∩ DF lies between n and f on DF. OP separates n (below, MN
    side) from f (above, EF side). Diagonal ED crosses OP at q; e,d opposite sides of OP;
    n~k (MN∥OP), k~d (k between q∈OP and d), f~e (EF∥OP). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_npf (a b c d e f k n p q : Point)
     (AB AE DF EF ED MN OP : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

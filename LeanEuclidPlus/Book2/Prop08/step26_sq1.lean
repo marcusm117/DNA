@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- sq1: square AEFD cut by MN (m on AE, n on DF) — the 2 halves (diagonal a-f, = goal RHS)
    equal the bottom-strip halves + upper-region halves. Canonical vertex orders. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_sq1 (a b c d e f m n : Point)
     (AB AE DF EF MN : Line)
     (h_a_ab : a.onLine AB) (h_d_ab : d.onLine AB)

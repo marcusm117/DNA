@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step8_knrp_nnep (k n p : Point) (MN OP : Line)
     (h_k_mn : k.onLine MN) (h_n_mn : n.onLine MN) (h_p_op : p.onLine OP)
     (h_k_off_op : ¬(k.onLine OP)) (h_mn_op : ¬(MN.intersectsLine OP)) :

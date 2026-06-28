@@ -9,7 +9,6 @@ namespace Elements.Book2
    |ad| = |ab|+|bd| (segment addition from `between a b d`). Since |bd| = |bc|,
    |ad| = |ab|+|bc|, so |ad|² is exactly the square on AB-and-BC-as-one-line.
    Pure term/rw — no euclid_finish, so the product terms pose no problem. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step29 (a b c d : Point)
     (h_abd : between a b d)
     (h_step27 : 4 * (|(a─b)| * |(b─d)|) + |(a─c)| * |(a─c)| = |(a─d)| * |(a─d)|)

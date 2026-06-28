@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step8_dnp_qpmn (g k n q r p : Point) (MN OP CH BL DF : Line)
     (h_gkqr : formParallelogram g k q r MN OP CH BL)
     (h_knrp : formParallelogram k n r p MN OP BL DF) :

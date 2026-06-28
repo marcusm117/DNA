@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book2
 
 /- mid2: middle-rest rectangle (g-n-q-p) cut by BL (k on g-n, r on q-p). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_mid2 (g k n q r p : Point)
     (CH DF MN OP BL : Line)
     (h_g_ch : g.onLine CH) (h_q_ch : q.onLine CH)

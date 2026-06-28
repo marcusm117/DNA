@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step8_dpcq_ss (c d q : Point) (AB OP : Line)
     (h_c_ab : c.onLine AB) (h_d_ab : d.onLine AB) (h_q_op : q.onLine OP)
     (h_op_ab : ¬(OP.intersectsLine AB)) (h_q_off_ab : ¬(q.onLine AB)) :

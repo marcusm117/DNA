@@ -6,7 +6,6 @@ namespace Elements.Book2
 
 /- btm1: bottom strip (a-d-m-n) cut by CH (c on a-d, g on m-n) — its 2 halves (diagonal
    a-n) equal AG + the bottom-rest halves. Canonical vertex orders. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_btm1 (a b c d e m n g : Point)
     (AB AE CH DF MN ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

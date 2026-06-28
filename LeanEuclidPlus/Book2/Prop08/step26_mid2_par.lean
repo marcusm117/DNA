@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 /- Mid-rest formParallelogram g n q p (g-n on MN, q-p on OP, g-q on CH, n-p on DF).
    Used by step26_mid2. Needs MN∥OP (h_mnop), CH∥DF (h_chdf). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_mid2_par (a b c d e m g n o q p : Point)
     (AB AE CH DF MN OP ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

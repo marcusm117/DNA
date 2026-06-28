@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step3 (b c k q : Point) (AB AE BL CH MN OP : Line)
     (h_c_ch : c.onLine CH) (h_ch_ae : ¬(CH.intersectsLine AE))
     (h_b_bl : b.onLine BL) (h_bl_ae : ¬(BL.intersectsLine AE))

@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book2
 
 /- top1: top strip (o-p-e-f) cut by CH (q on o-p, h on e-f). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_top1 (o q p e h f : Point)
     (AE CH DF EF OP : Line)
     (h_e_ae : e.onLine AE) (h_o_ae : o.onLine AE)

@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book2
 
 /- top2: top-rest rectangle (q-p-h-f) cut by BL (r on q-p, l on h-f). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_top2 (q r p h l f : Point)
     (CH DF EF OP BL : Line)
     (h_q_ch : q.onLine CH) (h_h_ch : h.onLine CH)

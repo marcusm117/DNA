@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step23 (a b c d e f g k n m o q r l h p : Point)
     (h_step20 : (Triangle.area △ g:c:b + Triangle.area △ g:b:k) +
       (Triangle.area △ k:b:d + Triangle.area △ k:d:n) +

@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 /- Mid strip formParallelogram m n o p (m-n on MN, o-p on OP, m-o on AE, n-p on DF).
    Used by step26_mid1. Needs MN∥OP (h_mnop), AE∥DF (h_ae_df). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_mid1_par (a b c d e m n o p : Point)
     (AB AE DF MN OP ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

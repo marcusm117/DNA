@@ -1,10 +1,12 @@
 import SystemE
+import Book2.Prop08.step8_dnp_qcbl
+import Book2.Prop08.step8_dnp_qkd
+import Book2.Prop08.step8_dnp_qpmn
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step8_dnp (a b c d e f g k n q r p : Point)
     (AB AE BL CH DF ED MN OP : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)
@@ -32,9 +34,9 @@ theorem helper_2_8_step8_dnp (a b c d e f g k n q r p : Point)
     (h_dq : distinctPointsOnLine d q ED)
     (h_knrp : formParallelogram k n r p MN OP BL DF) :
     between d n p := by
-  have step8_dnp_qcbl : q.sameSide c BL := by sorry
-  have step8_dnp_qkd : between q k d := by sorry
-  have step8_dnp_qpmn : q.sameSide p MN := by sorry
+  have step8_dnp_qcbl : q.sameSide c BL := by euclid_apply (helper_2_8_step8_dnp_qcbl a b c d e g k q r AB AE BL CH MN OP (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine AE; assumption)) (by euclid_assumption "" (show |(a─e)| = |(a─d)|; assumption)) (by euclid_assumption "" (show c.onLine CH; assumption)) (by euclid_assumption "" (show q.onLine CH; assumption)) (by euclid_assumption "" (show b.onLine BL; assumption)) (by euclid_assumption "" (show ¬(CH.intersectsLine AE); assumption)) (by euclid_assumption "" (show ∠ d:a:e = ∟; assumption)) (by euclid_assumption "" (show formParallelogram g k q r MN OP CH BL; assumption)))
+  have step8_dnp_qkd : between q k d := by euclid_apply (helper_2_8_step8_dnp_qkd a b c d e k q AB AE BL ED (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine ED; assumption)) (by euclid_assumption "" (show d.onLine ED; assumption)) (by euclid_assumption "" (show k.onLine ED; assumption)) (by euclid_assumption "" (show q.onLine ED; assumption)) (by euclid_assumption "" (show |(a─e)| = |(a─d)|; assumption)) (by euclid_assumption "" (show b.onLine BL; assumption)) (by euclid_assumption "" (show k.onLine BL; assumption)) (by euclid_assumption "" (show ∠ d:a:e = ∟; assumption)) (by euclid_assumption "" (show distinctPointsOnLine d q ED; assumption)) (by euclid_assumption "" (show q.sameSide c BL; assumption)))
+  have step8_dnp_qpmn : q.sameSide p MN := by euclid_apply (helper_2_8_step8_dnp_qpmn g k n q r p MN OP CH BL DF (by euclid_assumption "" (show formParallelogram g k q r MN OP CH BL; assumption)) (by euclid_assumption "" (show formParallelogram k n r p MN OP BL DF; assumption)))
   euclid_apply (pasch_3 q k d MN)
   euclid_apply (pasch_4 d n p MN DF)
   euclid_finish

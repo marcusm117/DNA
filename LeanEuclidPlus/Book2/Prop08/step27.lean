@@ -1,5 +1,6 @@
 import SystemE
 import Mathlib.Tactic.Linarith
+import Book2.Prop08.step27_sq
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -9,7 +10,6 @@ namespace Elements.Book2
    Combine step25 (LHS = 9 figures), step26 (9 figures = △aef+△afd) and the
    square-area fact step27_sq (△aef+△afd = |ad|²) by linarith. No euclid_finish
    here, so the product-terms in the hyps/goal are handled as atoms by linarith. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step27 (a b c d e f g k n m o q r l h p : Point)
     (AB AE DF EF : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)
@@ -41,7 +41,7 @@ theorem helper_2_8_step27 (a b c d e f g k n m o q r l h p : Point)
       (Triangle.area △ o:q:h + Triangle.area △ o:h:e) =
       Triangle.area △ a:e:f + Triangle.area △ a:f:d) :
     4 * (|(a─b)| * |(b─d)|) + |(a─c)| * |(a─c)| = |(a─d)| * |(a─d)| := by
-  have step27_sq : Triangle.area △ a:e:f + Triangle.area △ a:f:d = |(a─d)| * |(a─d)| := by sorry
+  have step27_sq : Triangle.area △ a:e:f + Triangle.area △ a:f:d = |(a─d)| * |(a─d)| := by euclid_apply (helper_2_8_step27_sq a b c d e f AB AE DF EF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine AE; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show |(a─e)| = |(a─d)|; assumption)) (by euclid_assumption "" (show |(d─f)| = |(a─d)|; assumption)) (by euclid_assumption "" (show ¬(AE.intersectsLine DF); assumption)) (by euclid_assumption "" (show ¬(EF.intersectsLine AB); assumption)) (by euclid_assumption "" (show ∠ d:a:e = ∟; assumption)) (by euclid_assumption "" (show ∠ a:e:f = ∟; assumption)))
   linarith
 
 end Elements.Book2

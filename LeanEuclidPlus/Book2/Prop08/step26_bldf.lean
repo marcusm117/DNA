@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- DF ∥ BL : ¬(BL.intersectsLine DF). Both parallel to AE (BL∥AE via h_bl_ae,
    AE∥DF via h_ae_df), by transitivity (not_intersects_trans BL AE DF). Reused by
    the BL-separation betweenness leaves (gkn, qrp, hlf). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_bldf (a b c d e l : Point)
     (AB AE BL DF ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

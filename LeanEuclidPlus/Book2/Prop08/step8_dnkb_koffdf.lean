@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step8_dnkb_koffdf (a b d f k : Point) (AB BL DF : Line)
     (h_b_ab : b.onLine AB) (h_abd : between a b d) (h_d_ab : d.onLine AB)
     (h_d_df : d.onLine DF) (h_f_df : f.onLine DF)

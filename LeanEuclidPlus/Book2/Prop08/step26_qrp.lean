@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- between q r p : r = BL ∩ OP lies between q and p on OP. BL separates q (CH side)
    from p (DF side): between c b d, b on BL ⟹ c,d opposite sides of BL; q~c (CH∥BL),
    p~d (DF∥BL). pasch_4 q r p BL OP. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_qrp (a b c d e k q r p : Point)
     (AB AE CH BL DF OP ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

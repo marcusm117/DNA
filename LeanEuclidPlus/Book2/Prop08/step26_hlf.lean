@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- between h l f : l = BL ∩ EF lies between h and f on EF. BL separates h (CH side)
    from f (DF side): between c b d, b on BL ⟹ c,d opposite sides of BL; h~c (CH∥BL),
    f~d (DF∥BL). pasch_4 h l f BL EF. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_hlf (a b c d e f h l k q : Point)
     (AB AE CH BL DF EF ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

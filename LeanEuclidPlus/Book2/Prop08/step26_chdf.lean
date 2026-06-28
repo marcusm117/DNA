@@ -9,7 +9,6 @@ namespace Elements.Book2
 /- DF ∥ CH : ¬(CH.intersectsLine DF). Both are parallel to AE (CH∥AE via h_ch_ae,
    AE∥DF via h_ae_df), so by transitivity (Helpers.Parallel.not_intersects_trans
    CH AE DF). Reused by the CH/BL-separation betweenness leaves. -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_chdf (a b c d e g : Point)
     (AB AE CH DF ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)

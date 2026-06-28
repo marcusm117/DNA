@@ -8,7 +8,6 @@ namespace Elements.Book2
 
 /- Top strip formParallelogram o p e f (o-p on OP, e-f on EF, o-e on AE, p-f on DF).
    Used by step26_top1. Needs OP∥EF (h_efop), AE∥DF (h_ae_df). -/
-set_option systemE.solverTime 30 in
 theorem helper_2_8_step26_top1_par (a b c d e f m o p : Point)
     (AB AE DF EF OP ED : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)
