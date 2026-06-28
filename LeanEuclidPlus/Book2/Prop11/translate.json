@@ -1,0 +1,241 @@
+[
+  {
+    "index": 0,
+    "role": "intro",
+    "text": "To cut a given straight-line such that the rectangle contained by the whole (straight-line), and one of the pieces (of the straight-line), is equal to the square on the remaining piece. Let $AB$ be the given straight-line. So it is required to cut $AB$ such that the rectangle contained by the whole (straight-line), and one of the pieces (of the straight-line), is equal to the square on the remaining piece.",
+    "lean_claim": null
+  },
+  {
+    "index": 1,
+    "step_name": "step1",
+    "role": "construction",
+    "text": "For let the square $ABDC$ be described on $AB$ [Prop.~1.46],",
+    "lean_claim": "formParallelogram c d a b CD AB AC BD ∧ |(c─d)| = |(a─b)| ∧ |(a─c)| = |(a─b)| ∧ |(b─d)| = |(a─b)| ∧ ∠ b:a:c = ∟ ∧ ∠ a:c:d = ∟ ∧ ∠ a:b:d = ∟ ∧ ∠ c:d:b = ∟",
+    "construction": {
+      "calls": [
+        {"call": "proposition_46 a b AB", "as": "c, d, CD, AC, BD"}
+      ]
+    },
+    "assumptions": []
+  },
+  {
+    "index": 2,
+    "step_name": "step2",
+    "role": "construction",
+    "text": "and let $AC$ be cut in half at point $E$ [Prop.~1.10],",
+    "lean_claim": "between a e c ∧ |(a─e)| = |(e─c)|",
+    "construction": {
+      "calls": [
+        {"call": "proposition_10 a c AC", "as": "e"}
+      ]
+    },
+    "assumptions": []
+  },
+  {
+    "index": 3,
+    "step_name": "step3",
+    "role": "construction",
+    "text": "and let $BE$ be joined.",
+    "lean_claim": "distinctPointsOnLine b e BE",
+    "construction": {
+      "calls": [
+        {"call": "line_from_points b e", "as": "BE"}
+      ]
+    },
+    "assumptions": []
+  },
+  {
+    "index": 4,
+    "step_name": "step4",
+    "role": "construction",
+    "text": "And let $CA$ be drawn through to (point) $F$,",
+    "lean_claim": "between c a f0 ∧ f0.onLine AC",
+    "construction": {
+      "calls": [
+        {"call": "extend_point_longer AC c a (b─e)", "as": "f0"}
+      ]
+    },
+    "assumptions": []
+  },
+  {
+    "index": 5,
+    "step_name": "step5",
+    "role": "construction",
+    "text": "and let $EF$ be made equal to $BE$ [Prop.~1.3].",
+    "lean_claim": "between e f f0 ∧ |(e─f)| = |(b─e)|",
+    "construction": {
+      "calls": [
+        {"call": "proposition_3 e f0 b e AC BE", "as": "f"}
+      ]
+    },
+    "assumptions": []
+  },
+  {
+    "index": 6,
+    "step_name": "step6",
+    "role": "construction",
+    "text": "And let the square $FH$ be described on $AF$ [Prop.~1.46],",
+    "lean_claim": "formParallelogram h g a f GH AC AH FG ∧ |(h─g)| = |(a─f)| ∧ |(a─h)| = |(a─f)| ∧ |(f─g)| = |(a─f)| ∧ ∠ f:a:h = ∟ ∧ ∠ a:f:g = ∟ ∧ ∠ a:h:g = ∟ ∧ ∠ f:g:h = ∟",
+    "construction": {
+      "calls": [
+        {"call": "proposition_46 a f AC", "as": "h, g, GH, AH, FG"}
+      ]
+    },
+    "assumptions": []
+  },
+  {
+    "index": 7,
+    "step_name": "step7",
+    "role": "construction",
+    "text": "and let $GH$ be drawn through to (point) $K$.",
+    "lean_claim": "k.onLine GH ∧ k.onLine CD",
+    "construction": {
+      "calls": [
+        {"call": "intersection_lines GH CD", "as": "k"}
+      ]
+    },
+    "assumptions": []
+  },
+  {
+    "index": 8,
+    "step_name": "step8",
+    "role": "deduction",
+    "text": "I say that $AB$ has been cut at $H$ such as to make the rectangle contained by $AB$ and $BH$ equal to the square on $AH$.",
+    "lean_claim": "|(a─b)| * |(b─h)| = |(a─h)| * |(a─h)|",
+    "assumptions": []
+  },
+  {
+    "index": 9,
+    "step_name": "step9",
+    "role": "deduction",
+    "text": "For since the straight-line $AC$ has been cut in half at $E$, and $FA$ has been added to it, the rectangle contained by $CF$ and $FA$, plus the square on $AE$, is thus equal to the square on $EF$ [Prop.~2.6].",
+    "lean_claim": "|(c─f)| * |(f─a)| + |(a─e)| * |(a─e)| = |(e─f)| * |(e─f)|",
+    "assumptions": [
+      {"substring": "the straight-line $AC$ has been cut in half at $E$, and $FA$ has been added to it", "lean_type": "|(a─e)| = |(e─c)| ∧ between c a f"}
+    ]
+  },
+  {
+    "index": 10,
+    "step_name": "step10",
+    "role": "deduction",
+    "text": "And $EF$ (is) equal to $EB$.",
+    "lean_claim": "|(e─f)| = |(e─b)|",
+    "assumptions": []
+  },
+  {
+    "index": 11,
+    "step_name": "step11",
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $CF$ and $FA$, plus the (square) on $AE$, is equal to the (square) on $EB$.",
+    "lean_claim": "|(c─f)| * |(f─a)| + |(a─e)| * |(a─e)| = |(e─b)| * |(e─b)|",
+    "assumptions": []
+  },
+  {
+    "index": 12,
+    "step_name": "step12",
+    "role": "deduction",
+    "text": "But, the (sum of the squares) on $BA$ and $AE$ is equal to the (square) on $EB$. For the angle at $A$ (is) a right-angle [Prop.~1.47].",
+    "lean_claim": "|(b─a)| * |(b─a)| + |(a─e)| * |(a─e)| = |(e─b)| * |(e─b)|",
+    "assumptions": [
+      {"substring": "the angle at $A$ (is) a right-angle", "lean_type": "∠ b:a:c = ∟"}
+    ]
+  },
+  {
+    "index": 13,
+    "step_name": "step13",
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $CF$ and $FA$, plus the (square) on $AE$, is equal to the (sum of the squares) on $BA$ and $AE$.",
+    "lean_claim": "|(c─f)| * |(f─a)| + |(a─e)| * |(a─e)| = |(b─a)| * |(b─a)| + |(a─e)| * |(a─e)|",
+    "assumptions": []
+  },
+  {
+    "index": 14,
+    "step_name": "step14",
+    "role": "deduction",
+    "text": "Let the square on $AE$ have been subtracted from both.",
+    "lean_claim": "|(c─f)| * |(f─a)| = |(a─b)| * |(a─b)|",
+    "assumptions": []
+  },
+  {
+    "index": 15,
+    "step_name": "step15",
+    "role": "deduction",
+    "text": "Thus, the remaining rectangle contained by $CF$ and $FA$ is equal to the square on $AB$.",
+    "lean_claim": "|(c─f)| * |(f─a)| = |(a─b)| * |(a─b)|",
+    "assumptions": []
+  },
+  {
+    "index": 16,
+    "step_name": "step16",
+    "role": "deduction",
+    "text": "And $FK$ is the (rectangle contained) by $CF$ and $FA$. For $AF$ (is) equal to $FG$.",
+    "lean_claim": "Triangle.area △ f:g:k + Triangle.area △ f:c:k = |(c─f)| * |(f─a)|",
+    "assumptions": [
+      {"substring": "$AF$ (is) equal to $FG$", "lean_type": "|(a─f)| = |(f─g)|"}
+    ]
+  },
+  {
+    "index": 17,
+    "step_name": "step17",
+    "role": "deduction",
+    "text": "And $AD$ (is) the (square) on $AB$.",
+    "lean_claim": "Triangle.area △ a:b:d + Triangle.area △ a:c:d = |(a─b)| * |(a─b)|",
+    "assumptions": []
+  },
+  {
+    "index": 18,
+    "step_name": "step18",
+    "role": "deduction",
+    "text": "Thus, the (rectangle) $FK$ is equal to the (square) $AD$.",
+    "lean_claim": "Triangle.area △ f:g:k + Triangle.area △ f:c:k = Triangle.area △ a:b:d + Triangle.area △ a:c:d",
+    "assumptions": []
+  },
+  {
+    "index": 19,
+    "step_name": "step19",
+    "role": "deduction",
+    "text": "Let (rectangle) $AK$ be subtracted from both.",
+    "lean_claim": "Triangle.area △ f:g:h + Triangle.area △ f:a:h = Triangle.area △ h:b:d + Triangle.area △ h:k:d",
+    "assumptions": []
+  },
+  {
+    "index": 20,
+    "step_name": "step20",
+    "role": "deduction",
+    "text": "Thus, the remaining (square) $FH$ is equal to the (rectangle) $HD$.",
+    "lean_claim": "Triangle.area △ f:g:h + Triangle.area △ f:a:h = Triangle.area △ h:b:d + Triangle.area △ h:k:d",
+    "assumptions": []
+  },
+  {
+    "index": 21,
+    "step_name": "step21",
+    "role": "deduction",
+    "text": "And $HD$ is the (rectangle contained) by $AB$ and $BH$. For $AB$ (is) equal to $BD$.",
+    "lean_claim": "Triangle.area △ h:b:d + Triangle.area △ h:k:d = |(a─b)| * |(b─h)|",
+    "assumptions": [
+      {"substring": "$AB$ (is) equal to $BD$", "lean_type": "|(a─b)| = |(b─d)|"}
+    ]
+  },
+  {
+    "index": 22,
+    "step_name": "step22",
+    "role": "deduction",
+    "text": "And $FH$ (is) the (square) on $AH$.",
+    "lean_claim": "Triangle.area △ f:g:h + Triangle.area △ f:a:h = |(a─h)| * |(a─h)|",
+    "assumptions": []
+  },
+  {
+    "index": 23,
+    "step_name": "step23",
+    "role": "deduction",
+    "text": "Thus, the rectangle contained by $AB$ and $BH$ is equal to the square on $HA$.",
+    "lean_claim": "|(a─b)| * |(b─h)| = |(a─h)| * |(a─h)|",
+    "assumptions": []
+  },
+  {
+    "index": 24,
+    "role": "conclusion",
+    "text": "Thus, the given straight-line $AB$ has been cut at (point) $H$ such as to make the rectangle contained by $AB$ and $BH$ equal to the square on $HA$. (Which is) the very thing it was required to do.",
+    "lean_claim": null
+  }
+]

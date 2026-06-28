@@ -1,0 +1,197 @@
+[
+  {
+    "index": 0,
+    "role": "intro",
+    "text": "To cut a given straight-line such that the rectangle contained by the whole (straight-line), and one of the pieces (of the straight-line), is equal to the square on the remaining piece. Let $AB$ be the given straight-line. So it is required to cut $AB$ such that the rectangle contained by the whole (straight-line), and one of the pieces (of the straight-line), is equal to the square on the remaining piece."
+  },
+  {
+    "index": 1,
+    "role": "construction",
+    "text": "For let the square $ABDC$ be described on $AB$ [Prop.~1.46],",
+    "construction_cite": "1.46",
+    "objects_introduced": ["$ABDC$"]
+  },
+  {
+    "index": 2,
+    "role": "construction",
+    "text": "and let $AC$ be cut in half at point $E$ [Prop.~1.10],",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$E$"]
+  },
+  {
+    "index": 3,
+    "role": "construction",
+    "text": "and let $BE$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$BE$"]
+  },
+  {
+    "index": 4,
+    "role": "construction",
+    "text": "And let $CA$ be drawn through to (point) $F$,",
+    "construction_cite": null,
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "index": 5,
+    "role": "construction",
+    "text": "and let $EF$ be made equal to $BE$ [Prop.~1.3].",
+    "construction_cite": "1.3",
+    "objects_introduced": []
+  },
+  {
+    "index": 6,
+    "role": "construction",
+    "text": "And let the square $FH$ be described on $AF$ [Prop.~1.46],",
+    "construction_cite": "1.46",
+    "objects_introduced": ["$FH$"]
+  },
+  {
+    "index": 7,
+    "role": "construction",
+    "text": "and let $GH$ be drawn through to (point) $K$.",
+    "construction_cite": null,
+    "objects_introduced": ["$K$"]
+  },
+  {
+    "index": 8,
+    "role": "deduction",
+    "text": "I say that $AB$ has been cut at $H$ such as to make the rectangle contained by $AB$ and $BH$ equal to the square on $AH$.",
+    "assertion": "AB has been cut at H so that rectangle AB*BH = square on AH",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 9,
+    "role": "deduction",
+    "text": "For since the straight-line $AC$ has been cut in half at $E$, and $FA$ has been added to it, the rectangle contained by $CF$ and $FA$, plus the square on $AE$, is thus equal to the square on $EF$ [Prop.~2.6].",
+    "assertion": "rectangle CF*FA + square AE = square EF",
+    "justifications": [
+      {"substring": "the straight-line $AC$ has been cut in half at $E$, and $FA$ has been added to it", "kind": "prior_fact"}
+    ],
+    "proof_cite": "2.6"
+  },
+  {
+    "index": 10,
+    "role": "deduction",
+    "text": "And $EF$ (is) equal to $EB$.",
+    "assertion": "EF equals EB",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 11,
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $CF$ and $FA$, plus the (square) on $AE$, is equal to the (square) on $EB$.",
+    "assertion": "rectangle CF*FA + square AE = square EB",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 12,
+    "role": "deduction",
+    "text": "But, the (sum of the squares) on $BA$ and $AE$ is equal to the (square) on $EB$. For the angle at $A$ (is) a right-angle [Prop.~1.47].",
+    "assertion": "square BA + square AE = square EB",
+    "justifications": [
+      {"substring": "the angle at $A$ (is) a right-angle", "kind": "prior_fact"}
+    ],
+    "proof_cite": "1.47"
+  },
+  {
+    "index": 13,
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $CF$ and $FA$, plus the (square) on $AE$, is equal to the (sum of the squares) on $BA$ and $AE$.",
+    "assertion": "rectangle CF*FA + square AE = square BA + square AE",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 14,
+    "role": "deduction",
+    "text": "Let the square on $AE$ have been subtracted from both.",
+    "assertion": "subtract square AE from both sides",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 15,
+    "role": "deduction",
+    "text": "Thus, the remaining rectangle contained by $CF$ and $FA$ is equal to the square on $AB$.",
+    "assertion": "rectangle CF*FA = square AB",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 16,
+    "role": "deduction",
+    "text": "And $FK$ is the (rectangle contained) by $CF$ and $FA$. For $AF$ (is) equal to $FG$.",
+    "assertion": "FK is the rectangle contained by CF and FA",
+    "justifications": [
+      {"substring": "$AF$ (is) equal to $FG$", "kind": "prior_fact"}
+    ],
+    "proof_cite": null
+  },
+  {
+    "index": 17,
+    "role": "deduction",
+    "text": "And $AD$ (is) the (square) on $AB$.",
+    "assertion": "AD is the square on AB",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 18,
+    "role": "deduction",
+    "text": "Thus, the (rectangle) $FK$ is equal to the (square) $AD$.",
+    "assertion": "rectangle FK = square AD",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 19,
+    "role": "deduction",
+    "text": "Let (rectangle) $AK$ be subtracted from both.",
+    "assertion": "subtract rectangle AK from both",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 20,
+    "role": "deduction",
+    "text": "Thus, the remaining (square) $FH$ is equal to the (rectangle) $HD$.",
+    "assertion": "square FH = rectangle HD",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 21,
+    "role": "deduction",
+    "text": "And $HD$ is the (rectangle contained) by $AB$ and $BH$. For $AB$ (is) equal to $BD$.",
+    "assertion": "HD is the rectangle contained by AB and BH",
+    "justifications": [
+      {"substring": "$AB$ (is) equal to $BD$", "kind": "prior_fact"}
+    ],
+    "proof_cite": null
+  },
+  {
+    "index": 22,
+    "role": "deduction",
+    "text": "And $FH$ (is) the (square) on $AH$.",
+    "assertion": "FH is the square on AH",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 23,
+    "role": "deduction",
+    "text": "Thus, the rectangle contained by $AB$ and $BH$ is equal to the square on $HA$.",
+    "assertion": "rectangle AB*BH = square HA",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 24,
+    "role": "conclusion",
+    "text": "Thus, the given straight-line $AB$ has been cut at (point) $H$ such as to make the rectangle contained by $AB$ and $BH$ equal to the square on $HA$. (Which is) the very thing it was required to do."
+  }
+]

@@ -19,6 +19,7 @@ theorem helper_2_8_step26_mid1_par (a b c d e m n o p : Point)
     (h_o_op : o.onLine OP) (h_p_op : p.onLine OP)
     (h_e_ed : e.onLine ED) (h_d_ed : d.onLine ED)
     (h_ae_eq : |(a─e)| = |(a─d)|)
+    (h_moe : between m o e) (h_npf : between n p f)
     (h_mn_ab : ¬(MN.intersectsLine AB)) (h_op_ab : ¬(OP.intersectsLine AB))
     (h_ae_df : ¬(AE.intersectsLine DF)) (h_mnop : ¬(MN.intersectsLine OP))
     (h_dae : ∠ d:a:e = ∟) :
@@ -26,11 +27,15 @@ theorem helper_2_8_step26_mid1_par (a b c d e m n o p : Point)
   have h_e_off_ab : ¬(e.onLine AB) := by
     euclid_apply (Elements.offLine_of_right_angle a d e AB)
     euclid_finish
-  have h_n_off_op : ¬(n.onLine OP) := by
+  have h_m_off_op : ¬(m.onLine OP) := by
     euclid_finish
-  have hne_mn_op : MN ≠ OP := fun heq => h_n_off_op (heq ▸ h_n_mn)
-  have h_mo_op : m.sameSide o OP := by
-    euclid_apply (Elements.sameSide_of_parallel_both m o AE OP)
+  have hne_mn_op : MN ≠ OP := fun heq => h_m_off_op (heq ▸ h_m_mn)
+  have h_d_off_ae : ¬(d.onLine AE) := by
+    euclid_apply (Elements.offLine_of_two_points d a e AB AE)
+    euclid_finish
+  have hne_ae_df : AE ≠ DF := fun heq => h_d_off_ae (heq.symm ▸ h_d_df)
+  have h_mo_df : m.sameSide o DF := by
+    euclid_apply (Elements.sameSide_of_parallel_both m o AE DF)
     euclid_finish
   euclid_finish
 

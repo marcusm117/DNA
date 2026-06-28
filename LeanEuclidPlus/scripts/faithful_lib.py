@@ -1680,6 +1680,44 @@ def node_inputs(propdir, name, occs):
     return sorted(files)
 
 
+def subtree_inputs(propdir, root, occs=None):
+    """The complete input-file set for a whole-cone certificate rooted at `root`.
+    Unlike the per-node `files` table, this snapshot is used by Main status and must
+    not be refreshed by a later plain `check_step <node>`; otherwise a local node
+    recheck could mask that the Main subtree was not re-audited."""
+    occs = occs or parse_occurrences(propdir)
+    files = set()
+    for name in cone_names(propdir, root):
+        files.update(node_inputs(propdir, name, occs))
+    return sorted(files)
+
+
+def subtree_certificate(propdir, root, occs=None):
+    """A self-contained certificate snapshot for a successfully audited subtree."""
+    inputs = subtree_inputs(propdir, root, occs)
+    hashes = {}
+    for f in inputs:
+        sha = file_sha(os.path.join(BOOK_ROOT, f))
+        if sha is not None:
+            hashes[f] = sha
+    return {
+        "nodes": sorted(cone_names(propdir, root), key=natural_key),
+        "files": hashes,
+    }
+
+
+def changed_snapshot(files):
+    """Diff a saved {relpath: sha} snapshot against disk now."""
+    changed = {}
+    for f, sha in sorted((files or {}).items()):
+        now = file_sha(os.path.join(BOOK_ROOT, f))
+        if now is None:
+            changed[f] = "deleted"
+        elif now != sha:
+            changed[f] = "modified"
+    return changed
+
+
 def read_manifest(propdir):
     """Load the manifest dict, or {} if absent/unreadable/corrupt (never raises — a bad manifest just
     means 'nothing known yet, re-audit')."""
@@ -1744,34 +1782,54 @@ def status_rows(propdir):
     diverge). Returns `(rows, checks)`:
       rows = [(main_node_name, state, detail), …] in Main SOURCE order. state ∈ {"done","stale","todo"}.
       checks = {"deps": bool, "integrity": bool, "orphans": [name, …]} — the 3 whole-prop checks.
-    A Main node's state is a ROLLUP over Cone(node) against the certification manifest:
-      "todo"  — some cone node was never certified (named; or "no backing file yet" for an unbacked leaf)
-      "stale" — every cone node is certified, but ≥1 of its recorded input files changed on disk (named)
-      "done"  — every cone node certified AND every recorded input file still matches on disk
+    A Main node's state is based ONLY on a successful `--subtree <main-node>` (or `--all`) certificate,
+    and Main nodes are valid only as an in-order prefix:
+      "todo"  — this Main subtree was never certified, or an earlier Main subtree is missing/stale
+      "stale" — this Main subtree was certified, but ≥1 of its own saved input-file hashes changed
+      "done"  — this Main subtree was certified by `--subtree`/`--all`, inputs fresh, and all earlier
+                Main subtrees are also done
     Tolerant: a parse/structural error degrades to `checks = {"error": str(e)}` rather than raising — a
     read-only board must never crash a resume."""
     try:
         main_nodes = main_nodes_in_order(propdir)
         manifest = read_manifest(propdir)
-        certified = manifest.get("certified", {})
-        changed = changed_files(manifest)
+        subtrees = manifest.get("subtrees", {})
         rows = []
+        prefix_ok = True
+        first_bad = None
         for nd in main_nodes:
             name = nd.name
-            cone = cone_names(propdir, name)
-            missing = sorted((n for n in cone if n not in certified), key=natural_key)
-            if missing:
-                if cone == {name} and backing_file(propdir, name) is None:
+            if not prefix_ok:
+                rows.append((name, "todo", f"blocked until earlier Main node `{first_bad}` is subtree-certified"))
+                continue
+
+            rec = subtrees.get(name)
+            if not rec:
+                if backing_file(propdir, name) is None:
                     rows.append((name, "todo", "no backing file yet"))
                 else:
-                    rows.append((name, "todo", f"cone has uncertified node(s): {', '.join(missing)}"))
+                    rows.append((name, "todo", f"Main subtree not certified — run --subtree {name}"))
+                prefix_ok = False
+                first_bad = name
                 continue
-            stale_files = sorted({f for n in cone for f in certified[n].get("inputs", []) if f in changed})
+
+            old_nodes = set(rec.get("nodes", []))
+            now_nodes = cone_names(propdir, name)
+            if old_nodes != now_nodes:
+                rows.append((name, "stale", f"cone membership changed since audit (--subtree {name})"))
+                prefix_ok = False
+                first_bad = name
+                continue
+
+            changed = changed_snapshot(rec.get("files", {}))
+            stale_files = sorted(changed)
             if stale_files:
                 rows.append((name, "stale",
                             f"{', '.join(stale_files)} changed since audit (--subtree {name})"))
+                prefix_ok = False
+                first_bad = name
             else:
-                rows.append((name, "done", "cone certified, inputs fresh"))
+                rows.append((name, "done", "Main subtree certified, inputs fresh"))
         checks = {
             "deps": not dependency_problems(propdir),
             "integrity": not integrity_scan(propdir),
@@ -1797,7 +1855,7 @@ def write_status_md(propdir, source):
         f"This is the committed human mirror.",
         f"> Snapshot as of audit: `{source}`.",
         f"> For LIVE state run:  `python3 scripts/check_step.py {rel} --status`",
-        "> Legend: ✓ done (cone certified + inputs unchanged) · ⚠ stale (an input changed) · ○ todo",
+        "> Legend: ✓ done (Main subtree certified + inputs unchanged) · ⚠ stale (an input changed) · ○ todo",
         "",
     ]
     if "error" in checks:

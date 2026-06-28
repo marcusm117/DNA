@@ -18,6 +18,7 @@ theorem helper_2_8_step26_btm1_par (a b c d e m n : Point)
     (h_m_mn : m.onLine MN) (h_n_mn : n.onLine MN)
     (h_e_ed : e.onLine ED) (h_d_ed : d.onLine ED)
     (h_ae_eq : |(a─e)| = |(a─d)|)
+    (h_ame : between a m e)
     (h_mn_ab : ¬(MN.intersectsLine AB)) (h_ae_df : ¬(AE.intersectsLine DF))
     (h_dae : ∠ d:a:e = ∟) :
     formParallelogram a d m n AB MN AE DF := by

@@ -1,0 +1,72 @@
+[
+  {
+    "index": 0,
+    "role": "intro",
+    "text": "In obtuse-angled triangles, the square on the side subtending the obtuse angle is greater than the (sum of the) squares on the sides containing the obtuse angle by twice the (rectangle) contained by one of the sides around the obtuse angle, to which a perpendicular (straight-line) falls, and the (straight-line) cut off outside (the triangle) by the perpendicular (straight-line) towards the obtuse angle. Let $ABC$ be an obtuse-angled triangle, having the angle $BAC$ obtuse. And let $BD$ be drawn from point $B$, perpendicular to $CA$ produced [Prop.~1.12]. I say that the square on $BC$ is greater than the (sum of the) squares on $BA$ and $AC$ by twice the rectangle contained by $CA$ and $AD$."
+  },
+  {
+    "index": 1,
+    "role": "deduction",
+    "text": "For since the straight-line $CD$ has been cut, at random, at point $A$, the (square) on $DC$ is thus equal to the (sum of the) squares on $CA$ and $AD$, and twice the rectangle contained by $CA$ and $AD$ [Prop.~2.4].",
+    "assertion": "square DC = square CA + square AD + 2 * rectangle CA*AD",
+    "justifications": [
+      {"substring": "the straight-line $CD$ has been cut, at random, at point $A$", "kind": "prior_fact"}
+    ],
+    "proof_cite": "2.4"
+  },
+  {
+    "index": 2,
+    "role": "deduction",
+    "text": "Let the (square) on $DB$ be added to both.",
+    "assertion": "add square DB to both sides",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 3,
+    "role": "deduction",
+    "text": "Thus, the (sum of the squares) on $CD$ and $DB$ is equal to the (sum of the) squares on $CA$, $AD$, and $DB$, and twice the [rectangle contained] by $CA$ and $AD$.",
+    "assertion": "square CD + square DB = square CA + square AD + square DB + 2 * rectangle CA*AD",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 4,
+    "role": "deduction",
+    "text": "But, the (square) on $CB$ is equal to the (sum of the squares) on $CD$ and $DB$. For the angle at $D$ (is) a right-angle [Prop.~1.47].",
+    "assertion": "square CB = square CD + square DB",
+    "justifications": [
+      {"substring": "the angle at $D$ (is) a right-angle", "kind": "prior_fact"}
+    ],
+    "proof_cite": "1.47"
+  },
+  {
+    "index": 5,
+    "role": "deduction",
+    "text": "And the (square) on $AB$ (is) equal to the (sum of the squares) on $AD$ and $DB$ [Prop.~1.47].",
+    "assertion": "square AB = square AD + square DB",
+    "justifications": [],
+    "proof_cite": "1.47"
+  },
+  {
+    "index": 6,
+    "role": "deduction",
+    "text": "Thus, the square on $CB$ is equal to the (sum of the) squares on $CA$ and $AB$, and twice the rectangle contained by $CA$ and $AD$.",
+    "assertion": "square CB = square CA + square AB + 2 * rectangle CA*AD",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 7,
+    "role": "deduction",
+    "text": "So the square on $CB$ is greater than the (sum of the) squares on $CA$ and $AB$ by twice the rectangle contained by $CA$ and $AD$.",
+    "assertion": "square CB exceeds square CA + square AB by 2 * rectangle CA*AD",
+    "justifications": [],
+    "proof_cite": null
+  },
+  {
+    "index": 8,
+    "role": "conclusion",
+    "text": "Thus, in obtuse-angled triangles, the square on the side subtending the obtuse angle is greater than the (sum of the) squares on the sides containing the obtuse angle by twice the (rectangle) contained by one of the sides around the obtuse angle, to which a perpendicular (straight-line) falls, and the (straight-line) cut off outside (the triangle) by the perpendicular (straight-line) towards the obtuse angle. (Which is) the very thing it was required to show."
+  }
+]

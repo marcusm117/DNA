@@ -569,20 +569,27 @@ def _restamp_node(propdir, name, kind):
         pass                                          # bookkeeping must never break the actual check result
 
 
-def _audit_with_manifest(propdir, order, success_msg, source):
+def _audit_with_manifest(propdir, order, success_msg, source, subtree_roots=()):
     """Run `_audit`, recording every node that passes into the certification manifest (merged into any
     existing on-disk manifest), and persisting it on return — whether the audit PASSES or STOPS at a
     failure (so the certified bottom-up prefix is always saved). `source` labels the run ('--all' or
     '--subtree <node>'). The manifest stores, per certified node, its kind + input files, plus a sha256
-    of every input file AT THIS AUDIT'S TIME — `--whatchanged` diffs those hashes. Returns _audit's code."""
+    of every input file AT THIS AUDIT'S TIME — `--whatchanged` diffs those hashes.
+    The listed `subtree_roots` are recorded separately as whole-cone certificates as soon as their
+    entire cone is contained in the passed prefix. Thus a failing `--all` still refreshes the earlier
+    Main subtrees it really audited before the failure. `--status` uses those subtree certificates for
+    Main rows, so a plain `check_step <node>` cannot make a Main step appear done. Returns _audit's code."""
     occs = L.parse_occurrences(propdir)
     manifest = L.read_manifest(propdir)
     manifest["prop"] = os.path.relpath(propdir, L.BOOK_ROOT)
     manifest["updated"] = source
     files = dict(manifest.get("files", {}))
     certified = dict(manifest.get("certified", {}))
+    subtrees = dict(manifest.get("subtrees", {}))
+    passed = set()
 
     def on_pass(name, kind):
+        passed.add(name)
         inputs = L.node_inputs(propdir, name, occs)
         certified[name] = {"kind": kind, "inputs": inputs}
         for f in inputs:                              # re-hash each input at this audit's time
@@ -591,10 +598,15 @@ def _audit_with_manifest(propdir, order, success_msg, source):
                 files[f] = sha
 
     try:
-        return _audit(propdir, order, success_msg, on_pass=on_pass)
+        rc = _audit(propdir, order, success_msg, on_pass=on_pass)
+        return rc
     finally:
+        for root in subtree_roots:
+            if L.cone_names(propdir, root) <= passed:
+                subtrees[root] = L.subtree_certificate(propdir, root, occs)
         manifest["files"] = files
         manifest["certified"] = certified
+        manifest["subtrees"] = subtrees
         L.write_manifest(propdir, manifest)
         try:
             L.write_status_md(propdir, source)
@@ -683,12 +695,13 @@ def mode_all(propdir):
           f"{f' / {n_occ} call-site(s)' if n_occ != n_names else ''} in "
           f"{os.path.relpath(propdir, L.BOOK_ROOT)} (sub-nodes before their parents):")
     rel = os.path.relpath(propdir, L.BOOK_ROOT)
+    main_roots = [nd.name for nd in L.main_nodes_in_order(propdir)]
     return _audit_with_manifest(propdir, order,
                   f"PASS: all {n_names} node(s) certified — every leaf builds ZERO-sorry, every call "
                   f"site supplies its hyps (isolated SP, no SMT), every container's combine is certified "
                   f"by its OWN combine-check, and integrity_scan found no stray sorry ⇒ the Phase-C wired "
                   f"build is GUARANTEED green AND sorry-free. Run `python3 scripts/wire_main.py {rel}`.",
-                  source="--all")
+                  source="--all", subtree_roots=main_roots)
 
 
 def mode_subtree(propdir, root):
@@ -708,11 +721,13 @@ def mode_subtree(propdir, root):
     print(f"[check_step --subtree {root}] auditing the {root} cone — {n_names} node(s)"
           f"{f' / {n_occ} in-cone call-site(s)' if n_occ != n_names else ''} in "
           f"{os.path.relpath(propdir, L.BOOK_ROOT)} (sub-nodes before {root}):")
+    main_roots = {nd.name for nd in L.main_nodes_in_order(propdir)}
+    subtree_roots = [root] if root in main_roots else []
     return _audit_with_manifest(propdir, order,
                   f"PASS: {root}'s subtree certified (SF/SP over every in-cone call site + P every leaf "
                   f"in the cone). This is NOT the whole prop — keep driving the remaining steps, then "
                   f"run `check_step {os.path.relpath(propdir, L.BOOK_ROOT)} --all` ONCE at the very end.",
-                  source=f"--subtree {root}")
+                  source=f"--subtree {root}", subtree_roots=subtree_roots)
 
 
 def mode_drive(propdir):
@@ -917,17 +932,7 @@ def mode_status(propdir):
         print(f"  {symbol[state]} {name:<8} {detail}")
 
     not_done = [name for name, state, _ in rows if state != "done"]
-    if not_done:
-        idx_first_bad = next(i for i, (_, s, _) in enumerate(rows) if s != "done")
-        last_good = rows[idx_first_bad - 1][0] if idx_first_bad > 0 else None
-        later_good = [name for name, s, _ in rows[idx_first_bad:] if s == "done"]
-        if later_good:
-            print(f"\n  (⚠ OUT OF ORDER: {', '.join(later_good)} ✓ but earlier node(s) "
-                  f"{', '.join(not_done)} are not — drive Main's nodes in order; this is a soft hint, "
-                  f"not a hard gate.)")
-        elif last_good:
-            print(f"\n  (soft hint: {last_good} ✓ but {', '.join(not_done)} not — drive Main's nodes "
-                  f"in order; once ✓ a node is DONE.)")
+    first_not_done = not_done[0] if not_done else None
 
     print("\n  whole-prop checks (instant, source-only):")
     print(f"    {'✓' if checks['deps'] else '✗'} criterion-3 deps         every cited "
@@ -948,14 +953,15 @@ def mode_status(propdir):
               "then Phase C.")
         return 0
 
-    blocking = [f"{name} ({state})" for name, state, _ in rows if state != "done"]
+    blocking = [f"{first_not_done} ({next(state for name, state, _ in rows if name == first_not_done)})"] \
+        if first_not_done else []
     if checks["orphans"]:
         blocking.append(f"orphan {', '.join(checks['orphans'])} (wire it or delete it)")
     print(f"  → NOT all-green — --all will NOT pass yet. Blocking: {', '.join(blocking)}.")
 
-    print("\n  NEXT (Main order — a node passing re-stamps its hashes):")
-    for name in not_done:
-        print(f"    python3 scripts/check_step.py {rel} --subtree {name}")
+    if first_not_done:
+        print("\n  NEXT (Main order — only --subtree certifies a Main row):")
+        print(f"    python3 scripts/check_step.py {rel} --subtree {first_not_done}")
     return 0
 
 

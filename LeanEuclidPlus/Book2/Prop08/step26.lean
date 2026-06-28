@@ -30,7 +30,8 @@ theorem helper_2_8_step26 (a b c d e f g k n m o q r l h p : Point)
     (h_ch_ae : ¬(CH.intersectsLine AE)) (h_bl_ae : ¬(BL.intersectsLine AE))
     (h_mn_ab : ¬(MN.intersectsLine AB)) (h_op_ab : ¬(OP.intersectsLine AB))
     (h_ae_df : ¬(AE.intersectsLine DF)) (h_ef_ab : ¬(EF.intersectsLine AB))
-    (h_dae : ∠ d:a:e = ∟) (h_aef : ∠ a:e:f = ∟) (h_adf : ∠ a:d:f = ∟) :
+    (h_dae : ∠ d:a:e = ∟) (h_aef : ∠ a:e:f = ∟) (h_adf : ∠ a:d:f = ∟)
+    (h_bd_eq : |(b─d)| = |(c─b)|) :
     (Triangle.area △ g:c:b + Triangle.area △ g:b:k) +
       (Triangle.area △ k:b:d + Triangle.area △ k:d:n) +
       (Triangle.area △ g:k:r + Triangle.area △ g:r:q) +
@@ -60,6 +61,7 @@ theorem helper_2_8_step26 (a b c d e f g k n m o q r l h p : Point)
   have step26_qrp : between q r p := by sorry
   have step26_ehf : between e h f := by sorry
   have step26_hlf : between h l f := by sorry
+  have step15_qhoe_qoffab : ¬(q.onLine AB) := by sorry
   -- the 8 sum_parallelograms_area cuts (canonical, exact goal vertex orders)
   have step26_aefd : formParallelogram a e d f AE DF AB EF := by sorry
   have step26_sq2_par : formParallelogram m e n f AE DF MN EF := by sorry

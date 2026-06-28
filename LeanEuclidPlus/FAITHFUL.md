@@ -41,11 +41,27 @@ itself was mid-compile at the kill — which warm deps prevent.
 
 ## PER PROP (e.g. Prop04) — three phases, two human gates (▶)
 
-**1. Phase A — translate (skill):**  `/faithful-map Book2/Prop04/Main.lean`
-   Wipes the old proof; writes `Main.lean` = the (untouched) proposition signature + `euclid_intros`
-   + the object-producing constructions + one `euclid_sentence "loc" "verbatim" (stepN : <claim>)
-   := by sorry` per sentence + the intro/conclude bookends. **Every body is `:= by sorry`; no step
-   files yet.** Elaborates cheap (all-sorry, SMT-free). STOPS for you.
+**1. Phase A — translate (3-stage pipeline):**
+
+   Phase A is now split into three isolated stages to prevent token waste. Run them in order:
+
+   **Stage 1 — Split (text-only):**  `/faithful-split Book2/Prop04`
+   Agent reads ONLY `Book2/data/texts_proofs/4.txt`. Splits the English into atomic assertions,
+   marks roles (intro/construction/deduction/conclusion), and identifies justification substrings.
+   Outputs `Book2/Prop04/split.json`. **Human reviews the splits before proceeding.**
+
+   **Stage 2 — Translate (diagram + vocab):**  `/faithful-translate Book2/Prop04`
+   Agent reads `split.json` + the diagram + the prop's theorem signature + cited construction prop
+   signatures. Translates each assertion into a Lean claim type using the vocabulary embedded in
+   the skill. Outputs `Book2/Prop04/translate.json`. **Human reviews the claims before proceeding.**
+
+   **Stage 3 — Assemble (deterministic script, no LLM):**
+   ```
+   python3 scripts/faithful_map_assemble.py Book2/Prop04
+   ```
+   Reads `translate.json` + existing Main.lean signature. Writes the complete `Main.lean` with
+   `euclid_sentence` blocks, constructions, `@assumption` annotations, and `:= by sorry` bodies.
+   **Every body is `:= by sorry`; no step files yet.** Elaborates cheap (all-sorry, SMT-free).
 
    **Sanity-check Criterion 1 (concatenated sentence texts == the canonical original) AND Criterion 4
    (every `-- @assumption ("text", …)` text is a substring of its sentence) — both must PASS:**
@@ -58,6 +74,8 @@ itself was mid-compile at the kill — which warm deps prevent.
    lake build Book2.Prop04.Main
    scripts/check_faithful.sh Book2.Prop04.Main
    ```
+
+   (The old monolithic `/faithful-map` skill still exists as a fallback but is deprecated.)
 
 **▶ 2. HUMAN GATE A — review + freeze the claims (and record the @assumption map).**
    Read each claim type: does it honestly say what that Euclid sentence says? Also eyeball each

@@ -19,6 +19,7 @@ theorem helper_2_8_step26_sq2_par (a b c d e f m n : Point)
     (h_m_mn : m.onLine MN) (h_n_mn : n.onLine MN)
     (h_e_ed : e.onLine ED) (h_d_ed : d.onLine ED)
     (h_ae_eq : |(a─e)| = |(a─d)|)
+    (h_ame : between a m e)
     (h_mn_ab : ¬(MN.intersectsLine AB)) (h_ef_ab : ¬(EF.intersectsLine AB))
     (h_ae_df : ¬(AE.intersectsLine DF)) (h_efmn : ¬(MN.intersectsLine EF))
     (h_dae : ∠ d:a:e = ∟) :
@@ -29,8 +30,8 @@ theorem helper_2_8_step26_sq2_par (a b c d e f m n : Point)
   have h_m_off_ef : ¬(m.onLine EF) := by
     euclid_finish
   have hne_mn_ef : MN ≠ EF := fun heq => h_m_off_ef (heq ▸ h_m_mn)
-  have h_me_ef : m.sameSide e EF := by
-    euclid_apply (Elements.sameSide_of_parallel_both m e AE EF)
+  have h_mn_ef : m.sameSide n EF := by
+    euclid_apply (Elements.sameSide_of_parallel_both m n MN EF)
     euclid_finish
   euclid_finish
 

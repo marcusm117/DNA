@@ -48,7 +48,9 @@ BLOCKED = {
 ALLOWED_SUMMARY = ("Bash here is reserved for: read-only git (status/diff/log/show/branch/blame/"
                    "ls-files), python3 scripts/check_*.py, scripts/check_faithful.sh, "
                    "python3 scripts/wire_main.py, python3 scripts/find.py, "
-                   "python3 scripts/bake_index.py, python3 scripts/scaffold_step.py, python3 -m pytest, "
+                   "python3 scripts/bake_index.py, python3 scripts/scaffold_step.py, "
+                   "python3 scripts/faithful_map_pipeline.py, "
+                   "python3 scripts/faithful_map_assemble.py, python3 -m pytest, "
                    "lake env/exe, and cd/pwd/mkdir. "
                    "For everything else use the Read / Grep / Glob tools (find.py is the sanctioned "
                    "smart-grep over the System-E declaration database).")
@@ -131,7 +133,9 @@ def main():
             arg = nxt.rsplit("/", 1)[-1]
             ok = (nxt.startswith("scripts/") or nxt.startswith("./scripts/")) and (
                 arg.startswith("check_") or arg in ("wire_main.py", "smt_probe.py",
-                                                    "find.py", "bake_index.py", "scaffold_step.py"))
+                                                    "find.py", "bake_index.py", "scaffold_step.py",
+                                                    "faithful_map_pipeline.py",
+                                                    "faithful_map_assemble.py"))
             # also allow running the parse-only test suite bare: `python3 -m pytest tests/…`
             if not ok and nxt == "-m" and nxt2 == "pytest":
                 ok = True
