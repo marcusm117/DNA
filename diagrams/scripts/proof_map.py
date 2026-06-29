@@ -518,6 +518,32 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
 .main-col[data-lod="compact"] .code-line[data-role="body"] { display: none; }
 .main-col[data-lod="minimal"] .code-body { display: none; }
 
+/* ── export controls ── */
+.export-group {
+  display: flex; gap: 8px; align-items: center;
+  border-left: 1px solid var(--border);
+  padding-left: 16px; margin-left: 4px;
+}
+.export-group label { font-size: 10px; color: var(--c-dimmed); white-space: nowrap; }
+.res-select {
+  background: #1a1d2e; border: 1px solid #353b56; border-radius: 4px;
+  color: #9aa0c0; font: 10px/1 var(--font); padding: 3px 6px; cursor: pointer;
+}
+.transp-label {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10px; color: var(--c-dimmed); cursor: pointer; white-space: nowrap;
+}
+.transp-label input[type=checkbox] { accent-color: var(--c-sent); cursor: pointer; }
+#export-btn {
+  background: #1e2a1e; border: 1px solid rgba(82,227,194,.35);
+  border-radius: 4px; color: var(--c-sent);
+  font: 10px/1 var(--font); padding: 4px 10px; cursor: pointer;
+  transition: background .1s, border-color .1s;
+  white-space: nowrap;
+}
+#export-btn:hover    { background: #253225; border-color: var(--c-sent); }
+#export-btn:disabled { opacity: .45; cursor: wait; }
+
 /* ── LOD global buttons ── */
 .lod-group { display: flex; gap: 3px; }
 .lod-btn {
@@ -553,8 +579,8 @@ const svg   = document.getElementById("svg-layer");
 const outer = document.querySelector(".outer");
 
 // ── selection state ──────────────────────────────────────────────────────────
-let selCard = null;    // selected .card or .main-col
-let selMode = null;    // "children" | "parents"  (direction of card-level selection)
+// selCards: Map<element, mode>  where mode = "children" | "parents"
+const selCards = new Map();
 let selLine = null;    // selected [data-connects] line (line-level selection)
 
 // Outgoing lines from a card → child cards
@@ -573,17 +599,23 @@ function getParentLines(card) {
 function getParentCards(card) {
   return getParentLines(card)
     .map(l => l.closest(".card, .main-col"))
-    .filter((c, i, a) => c && a.indexOf(c) === i);  // unique
+    .filter((c, i, a) => c && a.indexOf(c) === i);
+}
+
+function applyCardHighlights(card, mode, add) {
+  const fn = add ? "add" : "remove";
+  card.classList[fn]("selected");
+  if (mode === "children") {
+    getChildCards(card).forEach(c => c.classList[fn]("child-highlight"));
+  } else {
+    getParentCards(card).forEach(c => c.classList[fn]("parent-highlight"));
+    getParentLines(card).forEach(l => l.classList[fn]("sel-parent-line"));
+  }
 }
 
 function clearSelection() {
-  if (selCard) {
-    selCard.classList.remove("selected");
-    getChildCards(selCard).forEach(c => c.classList.remove("child-highlight"));
-    getParentCards(selCard).forEach(c => c.classList.remove("parent-highlight"));
-    getParentLines(selCard).forEach(l => l.classList.remove("sel-parent-line"));
-    selCard = null; selMode = null;
-  }
+  selCards.forEach((mode, card) => applyCardHighlights(card, mode, false));
+  selCards.clear();
   if (selLine) {
     selLine.classList.remove("sel-line");
     const target = document.getElementById("card-" + selLine.dataset.connects);
@@ -593,18 +625,36 @@ function clearSelection() {
   drawConnectors();
 }
 
-function selectCard(card, mode) {
-  // toggle off if same card+mode
-  if (selCard === card && selMode === mode) { clearSelection(); return; }
-  clearSelection();
-  selCard = card; selMode = mode;
-  card.classList.add("selected");
-  if (mode === "children") {
-    getChildCards(card).forEach(c => c.classList.add("child-highlight"));
+function selectCard(card, mode, additive) {
+  if (!additive) {
+    // normal click: clear all, then select just this one
+    // but if it's the only selected card with same mode, toggle off
+    if (selCards.size === 1 && selCards.get(card) === mode) {
+      clearSelection(); return;
+    }
+    clearSelection();
   } else {
-    getParentCards(card).forEach(c => c.classList.add("parent-highlight"));
-    getParentLines(card).forEach(l => l.classList.add("sel-parent-line"));
+    // shift-click: toggle this card
+    if (selCards.has(card) && selCards.get(card) === mode) {
+      applyCardHighlights(card, mode, false);
+      selCards.delete(card);
+      drawConnectors(); return;
+    }
+    // if already selected in other mode, remove old highlights first
+    if (selCards.has(card)) {
+      applyCardHighlights(card, selCards.get(card), false);
+      selCards.delete(card);
+    }
+    // also clear any line selection when starting multi-select
+    if (selLine) {
+      selLine.classList.remove("sel-line");
+      const t = document.getElementById("card-" + selLine.dataset.connects);
+      if (t) t.classList.remove("child-highlight");
+      selLine = null;
+    }
   }
+  selCards.set(card, mode);
+  applyCardHighlights(card, mode, true);
   drawConnectors();
 }
 
@@ -647,16 +697,17 @@ function drawConnectors() {
     if (hr.height === 0) return;
     const p2 = { x: hr.left - OR.left, y: (hr.top + hr.bottom) / 2 - OR.top };
 
-    // Active if: exact selected line, OR source card selected in children mode,
-    // OR this connector is an incoming edge to the selected card in parents mode.
+    // Active if: exact selected line, OR source card selected (children mode),
+    // OR this is an incoming edge to a card selected in parents mode.
     const isActiveLine = src === selLine;
-    const srcCard = src.closest(".card, .main-col");
-    const srcSelected = srcCard && srcCard === selCard && selMode === "children";
-    const isParentEdge = selCard && selMode === "parents"
-                         && card === selCard && srcCard !== selCard;
-    const isActive = isActiveLine || srcSelected || isParentEdge;
+    const srcCard      = src.closest(".card, .main-col");
+    const srcMode      = srcCard ? selCards.get(srcCard) : undefined;
+    const srcSelected  = srcMode === "children";
+    const tgtMode      = selCards.get(card);
+    const isParentEdge = tgtMode === "parents" && srcCard !== card;
+    const isActive     = isActiveLine || srcSelected || isParentEdge;
 
-    // Colour: parent edges purple, child/line edges use sent-teal or have-orange
+    // Colour: parent edges purple, child/line edges teal or orange
     const sent  = src.dataset.kind === "sentence";
     let baseC;
     if (isActive && isParentEdge) baseC = [180, 140, 255];
@@ -727,8 +778,7 @@ function initDragSelect(el) {
       el.style.zIndex = "";
       if (!dragging) {
         e.stopPropagation();
-        // use the zone recorded at mousedown; fall back to center (children)
-        selectCard(el, downMode || "children");
+        selectCard(el, downMode || "children", e.shiftKey);
       }
     }
 
@@ -813,6 +863,40 @@ function cycleCardLod(btn) {
   requestAnimationFrame(drawConnectors);
 }
 
+// ── export PNG ────────────────────────────────────────────────────────────────
+async function exportPNG() {
+  const btn      = document.getElementById("export-btn");
+  const scale    = parseInt(document.getElementById("res-select").value);
+  const transp   = document.getElementById("transp-check").checked;
+  const toolbar  = document.querySelector(".toolbar");
+
+  btn.textContent = "Rendering…"; btn.disabled = true;
+  toolbar.style.display = "none";
+
+  const origBg = document.body.style.background;
+  if (transp) document.body.style.background = "transparent";
+
+  try {
+    const canvas = await html2canvas(outer, {
+      scale,
+      backgroundColor: transp ? null : "#0d0f18",
+      useCORS: true,
+      logging: false,
+    });
+    canvas.toBlob(blob => {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "proof_map.png";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }, "image/png");
+  } finally {
+    toolbar.style.display = "";
+    document.body.style.background = origBg;
+    btn.textContent = "Export PNG"; btn.disabled = false;
+  }
+}
+
 // ── init ──────────────────────────────────────────────────────────────────────
 window.addEventListener("load", () => {
   // drag + card-level click
@@ -838,6 +922,19 @@ window.addEventListener("load", () => {
 });
 window.addEventListener("resize", drawConnectors);
 """
+
+def _load_html2canvas():
+    cache = os.path.join(os.path.dirname(os.path.abspath(__file__)), "html2canvas.min.js")
+    if not os.path.exists(cache):
+        import urllib.request
+        try:
+            urllib.request.urlretrieve(
+                "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+                cache)
+        except Exception:
+            return None
+    with open(cache, encoding="utf-8") as f:
+        return f.read()
 
 def build_html(prop_name, main_lines, roots):
     node_keys = collect_node_keys(roots)
@@ -870,12 +967,17 @@ def build_html(prop_name, main_lines, roots):
         dcols += '</div>\n'
     dcols += '</div>\n'
 
+    h2c = _load_html2canvas()
+    h2c_tag = f"<script>{h2c}</script>" if h2c else \
+        '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>'
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <title>Proof map — {h(prop_name)}</title>
 <style>{CSS}</style>
+{h2c_tag}
 </head>
 <body>
 <div class="toolbar">
@@ -905,11 +1007,24 @@ def build_html(prop_name, main_lines, roots):
     <button class="lod-btn"        data-lod="compact" onclick="setAllLod('compact')">Compact</button>
     <button class="lod-btn active" data-lod="minimal" onclick="setAllLod('minimal')">Minimal</button>
   </div>
+  <div class="export-group">
+    <label>Res</label>
+    <select id="res-select" class="res-select">
+      <option value="1">1&times;</option>
+      <option value="2" selected>2&times;</option>
+      <option value="3">3&times;</option>
+      <option value="4">4&times;</option>
+    </select>
+    <label class="transp-label">
+      <input type="checkbox" id="transp-check" checked> Transparent
+    </label>
+    <button id="export-btn" onclick="exportPNG()">Export PNG</button>
+  </div>
   <div class="legend">
     <div class="leg"><div class="leg-dot" style="background:#7eb6ff"></div>theorem</div>
     <div class="leg"><div class="leg-dot" style="background:#52e3c2"></div>euclid_sentence</div>
     <div class="leg"><div class="leg-dot" style="background:#f5a623"></div>have node (dashed)</div>
-    <div class="leg" style="color:#7a88bb">&#9658; = assumptions folded</div>
+    <div class="leg" style="color:#7a88bb">Shift+click = multi-select</div>
   </div>
 </div>
 <div class="page">
