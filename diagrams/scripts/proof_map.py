@@ -332,6 +332,7 @@ CSS = """
   --c-bg-sent: rgba(82,227,194,.075);
   --c-bg-have: rgba(245,166,35,.075);
   --c-bg-thm:  rgba(126,182,255,.055);
+  --title-sz:  11px;
   --conn-gap:  88px;
   --card-gap:  8px;
   --max-line-w: 9999px;
@@ -375,13 +376,15 @@ body {
 .leg-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
 
 /* ── page body — top padding clears the fixed toolbar ── */
-.page { padding: 20px 24px; padding-top: 56px; }
+.page { padding: 60px 48px 80px; padding-top: 72px; }
 
 /* ── outer (SVG anchor) ── */
 .outer {
   display: flex; gap: 0;
   align-items: flex-start;
   position: relative;
+  /* top / bottom / left margin around the graph */
+  padding: 40px 0 60px 40px;
 }
 #svg-layer {
   position: absolute; top: 0; left: 0;
@@ -415,14 +418,14 @@ body {
 .col-header {
   background: #181a27;
   border-bottom: 1px solid var(--border);
-  font-size: 10px; color: #8090b8;
+  font-size: var(--title-sz); color: #8090b8;
   font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
   white-space: nowrap;
   /* 3-zone grid: left-zone | center | right-zone */
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  min-height: 26px;
+  min-height: calc(var(--title-sz) * 2.4);
 }
 
 /* ── Main.lean panel ── */
@@ -489,7 +492,7 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
 .hyp-body { color: #666c90; }
 
 /* ── depth columns ── */
-.depth-cols { display: flex; gap: 0; align-items: flex-start; }
+.depth-cols { display: flex; gap: 0; align-items: flex-start; padding-right: 60px; }
 .depth-col {
   flex: 0 0 auto;
   width: max-content;
@@ -511,24 +514,24 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
 .card-header {
   background: #181a27;
   border-bottom: 1px solid var(--border);
-  font-size: 10px; color: #8090b8;
+  font-size: var(--title-sz); color: #8090b8;
   white-space: nowrap;
   /* 3-zone grid: left-zone | center | right-zone */
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  min-height: 26px;
+  min-height: calc(var(--title-sz) * 2.4);
 }
 /* center zone: name + LOD button, centered */
 .hdr-center {
   display: flex; gap: 5px; align-items: center; justify-content: center;
-  padding: 4px 6px;
+  padding: calc(var(--title-sz) * 0.35) 6px;
 }
-.cname   { font-weight: 700; font-size: 11px; }
+.cname   { font-weight: 700; font-size: var(--title-sz); }
 .cname.s { color: #6ef5d8; }   /* brighter teal for step files */
 .cname.h { color: #ffc04d; }   /* brighter orange for sub-step files */
 .depth-badge {
-  font-size: 9px; background: #1e2236; color: #6670a0;
+  font-size: calc(var(--title-sz) * 0.82); background: #1e2236; color: #6670a0;
   padding: 1px 5px; border-radius: 3px;
 }
 /* left and right click zones */
@@ -625,6 +628,19 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
 .main-col[data-lod="compact"] .code-line[data-role="body"] { display: none; }
 .main-col[data-lod="minimal"] .code-body { display: none; }
 
+/* suppress text selection while dragging */
+body.dragging { user-select: none; }
+
+/* ── rubber-band selection rect ── */
+#rband {
+  position: fixed;
+  border: 1px solid rgba(82,227,194,.7);
+  background: rgba(82,227,194,.07);
+  pointer-events: none;
+  display: none;
+  z-index: 100;
+}
+
 /* ── export controls ── */
 .export-group {
   display: flex; gap: 8px; align-items: center;
@@ -650,6 +666,20 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
 }
 #export-btn:hover    { background: #253225; border-color: var(--c-sent); }
 #export-btn:disabled { opacity: .45; cursor: wait; }
+.save-btn {
+  background: #1e2a1e; border: 1px solid rgba(82,227,194,.35);
+  border-radius: 4px; color: var(--c-sent);
+  font: 10px/1 var(--font); padding: 4px 10px; cursor: pointer;
+  white-space: nowrap; transition: background .1s;
+}
+.save-btn:hover { background: #253225; }
+.reset-btn {
+  background: #221a1a; border: 1px solid rgba(200,80,80,.30);
+  border-radius: 4px; color: #c87070;
+  font: 10px/1 var(--font); padding: 4px 10px; cursor: pointer;
+  white-space: nowrap; transition: background .1s;
+}
+.reset-btn:hover { background: #2e1a1a; }
 
 /* ── LOD global buttons ── */
 .lod-group { display: flex; gap: 3px; }
@@ -688,7 +718,8 @@ const outer = document.querySelector(".outer");
 // ── selection state ──────────────────────────────────────────────────────────
 // selCards: Map<element, mode>  where mode = "children" | "parents"
 const selCards = new Map();
-let selLine = null;    // selected [data-connects] line (line-level selection)
+const selLines = new Set();  // selected [data-connects] line elements
+let suppressNextClear = false;  // set after rubber-band to block the trailing click
 
 // Outgoing lines from a card → child cards
 function getLinesFrom(card) {
@@ -723,12 +754,12 @@ function applyCardHighlights(card, mode, add) {
 function clearSelection() {
   selCards.forEach((mode, card) => applyCardHighlights(card, mode, false));
   selCards.clear();
-  if (selLine) {
-    selLine.classList.remove("sel-line");
-    const target = document.getElementById("card-" + selLine.dataset.connects);
-    if (target) target.classList.remove("child-highlight");
-    selLine = null;
-  }
+  selLines.forEach(l => {
+    l.classList.remove("sel-line");
+    const t = document.getElementById("card-" + l.dataset.connects);
+    if (t) t.classList.remove("child-highlight");
+  });
+  selLines.clear();
   drawConnectors();
 }
 
@@ -752,23 +783,29 @@ function selectCard(card, mode, additive) {
       applyCardHighlights(card, selCards.get(card), false);
       selCards.delete(card);
     }
-    // also clear any line selection when starting multi-select
-    if (selLine) {
-      selLine.classList.remove("sel-line");
-      const t = document.getElementById("card-" + selLine.dataset.connects);
-      if (t) t.classList.remove("child-highlight");
-      selLine = null;
-    }
+    // line selections stay when additively selecting cards
   }
   selCards.set(card, mode);
   applyCardHighlights(card, mode, true);
   drawConnectors();
 }
 
-function selectLine(lineEl) {
-  if (selLine === lineEl) { clearSelection(); return; }
-  clearSelection();
-  selLine = lineEl;
+function selectLine(lineEl, additive) {
+  if (!additive) {
+    if (selLines.size === 1 && selLines.has(lineEl) && selCards.size === 0) {
+      clearSelection(); return;  // toggle off single
+    }
+    clearSelection();
+  }
+  if (additive && selLines.has(lineEl)) {
+    // toggle this line out
+    lineEl.classList.remove("sel-line");
+    const t = document.getElementById("card-" + lineEl.dataset.connects);
+    if (t) t.classList.remove("child-highlight");
+    selLines.delete(lineEl);
+    drawConnectors(); return;
+  }
+  selLines.add(lineEl);
   lineEl.classList.add("sel-line");
   const target = document.getElementById("card-" + lineEl.dataset.connects);
   if (target) target.classList.add("child-highlight");
@@ -776,9 +813,9 @@ function selectLine(lineEl) {
 }
 
 // ── connectors ───────────────────────────────────────────────────────────────
+
 function anchorRight(el) {
   const OR = outer.getBoundingClientRect();
-  // prefer the element itself if visible; fall back to its nearest visible ancestor card
   let probe = el;
   while (probe) {
     const r = probe.getBoundingClientRect();
@@ -799,14 +836,14 @@ function drawConnectors() {
     const p1 = anchorRight(src);
     if (!p1) return;
 
-    const hdr = card.querySelector(".card-header");
-    const hr  = hdr.getBoundingClientRect();
-    if (hr.height === 0) return;
+    const hdr = card.querySelector(".card-header, .col-header");
+    if (!hdr || hdr.getBoundingClientRect().height === 0) return;
+    const hr = hdr.getBoundingClientRect();
     const p2 = { x: hr.left - OR.left, y: (hr.top + hr.bottom) / 2 - OR.top };
 
     // Active if: exact selected line, OR source card selected (children mode),
     // OR this is an incoming edge to a card selected in parents mode.
-    const isActiveLine = src === selLine;
+    const isActiveLine = selLines.has(src);
     const srcCard      = src.closest(".card, .main-col");
     const srcMode      = srcCard ? selCards.get(srcCard) : undefined;
     const srcSelected  = srcMode === "children";
@@ -842,27 +879,26 @@ function drawConnectors() {
 }
 
 // ── drag + click on card header ───────────────────────────────────────────────
-const DRAG_THRESHOLD = 5;  // px — move less than this → treat as a click
+const DRAG_THRESHOLD = 5;
+
+function getTranslate(elem) {
+  const t = elem.style.transform;
+  const m = t && t.match(/translate\(\s*([-\d.]+)px,\s*([-\d.]+)px\)/);
+  return m ? [parseFloat(m[1]), parseFloat(m[2])] : [0, 0];
+}
 
 function initDragSelect(el) {
-  // el is .card or .main-col; headers have different class names
   const hdr = el.querySelector(".card-header, .col-header");
   if (!hdr) return;
 
-  let startX, startY, startTx, startTy, dragging = false;
-
-  function getTranslate(elem) {
-    const t = elem.style.transform;
-    const m = t && t.match(/translate\(\s*([-\d.]+)px,\s*([-\d.]+)px\)/);
-    return m ? [parseFloat(m[1]), parseFloat(m[2])] : [0, 0];
-  }
+  let startX, startY, dragging = false;
+  // snapshot of every selected card's translate at drag-start
+  let groupSnaps = null;
 
   hdr.addEventListener("mousedown", e => {
     if (e.target.closest("button")) return;
     startX = e.clientX; startY = e.clientY;
-    [startTx, startTy] = getTranslate(el);
     dragging = false;
-    // remember which zone was clicked at mousedown
     const zone = e.target.closest("[data-sel]");
     const downMode = zone ? zone.dataset.sel : null;
 
@@ -870,11 +906,23 @@ function initDragSelect(el) {
       const dx = e.clientX - startX, dy = e.clientY - startY;
       if (!dragging && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
         dragging = true;
-        el.style.position = "relative";
-        el.style.zIndex   = "50";
+        // if this card is selected, snapshot the whole group; else just this card
+        if (selCards.has(el)) {
+          groupSnaps = new Map();
+          selCards.forEach((_, card) => groupSnaps.set(card, getTranslate(card)));
+        } else {
+          groupSnaps = new Map([[el, getTranslate(el)]]);
+        }
+        document.body.classList.add("dragging");
+        groupSnaps.forEach((_, card) => {
+          card.style.position = "relative";
+          card.style.zIndex   = "50";
+        });
       }
       if (dragging) {
-        el.style.transform = `translate(${startTx + dx}px,${startTy + dy}px)`;
+        groupSnaps.forEach(([tx, ty], card) => {
+          card.style.transform = `translate(${tx + dx}px,${ty + dy}px)`;
+        });
         drawConnectors();
       }
     }
@@ -882,16 +930,82 @@ function initDragSelect(el) {
     function onUp(e) {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup",   onUp);
-      el.style.zIndex = "";
+      document.body.classList.remove("dragging");
+      if (groupSnaps) groupSnaps.forEach((_, card) => card.style.zIndex = "");
+      groupSnaps = null;
       if (!dragging) {
         e.stopPropagation();
-        selectCard(el, downMode || "children", e.shiftKey);
+        selectCard(el, downMode || "children", e.ctrlKey || e.metaKey);
       }
     }
 
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup",   onUp);
     e.preventDefault();
+  });
+}
+
+// ── rubber-band selection on empty canvas ─────────────────────────────────────
+function initRubberBand() {
+  const rband = document.getElementById("rband");
+  let rbX, rbY, active = false;
+
+  document.addEventListener("mousedown", e => {
+    // skip card/toolbar interactive elements
+    if (e.target.closest(".card-header, .col-header, .toolbar, button, input, select, label")) return;
+    if (e.button !== 0) return;
+    e.preventDefault();  // block text selection unconditionally
+    rbX = e.clientX; rbY = e.clientY;
+    active = false;
+    e.preventDefault();  // block text selection from the start
+
+    function onMove(e) {
+      const dx = e.clientX - rbX, dy = e.clientY - rbY;
+      if (!active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+        active = true;
+        rband.style.display = "block";
+        document.body.classList.add("dragging");
+      }
+      if (active) {
+        rband.style.left   = Math.min(e.clientX, rbX) + "px";
+        rband.style.top    = Math.min(e.clientY, rbY) + "px";
+        rband.style.width  = Math.abs(dx) + "px";
+        rband.style.height = Math.abs(dy) + "px";
+      }
+    }
+
+    function onUp(e) {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup",   onUp);
+      rband.style.display = "none";
+      document.body.classList.remove("dragging");
+      if (!active) return;
+      suppressNextClear = true;  // prevent the click handler from wiping the selection
+
+      // collect all cards whose headers overlap the rubber-band rect
+      const r1 = {
+        l: Math.min(e.clientX, rbX), r: Math.max(e.clientX, rbX),
+        t: Math.min(e.clientY, rbY), b: Math.max(e.clientY, rbY),
+      };
+      const additive = e.ctrlKey || e.metaKey;
+      if (!additive) clearSelection();
+
+      document.querySelectorAll(".card, .main-col").forEach(card => {
+        const hdr = card.querySelector(".card-header, .col-header");
+        if (!hdr) return;
+        const r2 = hdr.getBoundingClientRect();
+        const overlaps = r1.l < r2.right && r1.r > r2.left &&
+                         r1.t < r2.bottom && r1.b > r2.top;
+        if (overlaps && !selCards.has(card)) {
+          selCards.set(card, "children");
+          applyCardHighlights(card, "children", true);
+        }
+      });
+      drawConnectors();
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup",   onUp);
   });
 }
 
@@ -907,25 +1021,29 @@ function toggleHyp(btn) {
 }
 
 // ── sliders ───────────────────────────────────────────────────────────────────
+const tszSlider = document.getElementById("tsz-slider");
 const szSlider  = document.getElementById("sz-slider");
 const lhSlider  = document.getElementById("lh-slider");
 const gapSlider = document.getElementById("gap-slider");
 const mwSlider  = document.getElementById("mw-slider");
+const tszVal    = document.getElementById("tsz-val");
 const szVal     = document.getElementById("sz-val");
 const lhVal     = document.getElementById("lh-val");
 const gapVal    = document.getElementById("gap-val");
 const mwVal     = document.getElementById("mw-val");
 
 function applySliders() {
+  const tsz = parseFloat(tszSlider.value);
   const sz  = parseFloat(szSlider.value);
   const lh  = parseFloat(lhSlider.value);
   const gap = parseInt(gapSlider.value);
   const mw  = parseInt(mwSlider.value);
 
-  root.style.setProperty("--sz",       sz  + "px");
-  root.style.setProperty("--lh",       lh);
-  root.style.setProperty("--conn-gap", gap + "px");
-  root.style.setProperty("--card-gap", Math.round(gap * 0.12) + "px");
+  root.style.setProperty("--title-sz",  tsz + "px");
+  root.style.setProperty("--sz",        sz  + "px");
+  root.style.setProperty("--lh",        lh);
+  root.style.setProperty("--conn-gap",  gap + "px");
+  root.style.setProperty("--card-gap",  Math.round(gap * 0.12) + "px");
 
   if (mw >= 2000) {
     root.classList.remove("wrap-lines");
@@ -937,12 +1055,14 @@ function applySliders() {
     mwVal.textContent = mw + "px";
   }
 
+  tszVal.textContent = tsz + "px";
   szVal.textContent  = sz + "px";
   lhVal.textContent  = lh.toFixed(1) + "×";
   gapVal.textContent = gap + "px";
   requestAnimationFrame(drawConnectors);
 }
 
+tszSlider.addEventListener("input", applySliders);
 szSlider.addEventListener("input",  applySliders);
 lhSlider.addEventListener("input",  applySliders);
 gapSlider.addEventListener("input", applySliders);
@@ -972,13 +1092,32 @@ function cycleCardLod(btn) {
 
 // ── export PNG ────────────────────────────────────────────────────────────────
 async function exportPNG() {
-  const btn      = document.getElementById("export-btn");
-  const scale    = parseInt(document.getElementById("res-select").value);
-  const transp   = document.getElementById("transp-check").checked;
-  const toolbar  = document.querySelector(".toolbar");
+  const btn     = document.getElementById("export-btn");
+  const scale   = parseInt(document.getElementById("res-select").value);
+  const transp  = document.getElementById("transp-check").checked;
+  const toolbar = document.querySelector(".toolbar");
 
   btn.textContent = "Rendering…"; btn.disabled = true;
   toolbar.style.display = "none";
+
+  const savedScrollX = window.scrollX, savedScrollY = window.scrollY;
+  window.scrollTo(0, 0);
+
+  // Snapshot the current SVG paths — they're already correct for the current layout.
+  // Expanding outer doesn't move flex-start children, so these coords stay valid.
+  const svgPaths = svg.innerHTML;
+
+  // Expand outer so html2canvas captures the full content (not just viewport width).
+  const savedOuterW = outer.style.width;
+  const savedOuterH = outer.style.height;
+  const fullW = outer.scrollWidth;
+  const fullH = outer.scrollHeight;
+  outer.style.width  = fullW  + "px";
+  outer.style.height = fullH + "px";
+
+  // Stretch SVG viewport to cover full area (paths already reach there via overflow:visible).
+  svg.setAttribute("width",  fullW);
+  svg.setAttribute("height", fullH);
 
   const origBg = document.body.style.background;
   if (transp) document.body.style.background = "transparent";
@@ -990,48 +1129,165 @@ async function exportPNG() {
       useCORS: true,
       logging: false,
     });
+
+    // Build an SVG image from the snapshotted paths at full size.
+    const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" width="${fullW}" height="${fullH}">${svgPaths}</svg>`;
+    const svgBlob = new Blob([svgMarkup], {type: "image/svg+xml;charset=utf-8"});
+    const svgUrl  = URL.createObjectURL(svgBlob);
+    await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(svgUrl);
+        resolve();
+      };
+      img.onerror = reject;
+      img.src = svgUrl;
+    });
+
     canvas.toBlob(blob => {
+      if (!blob) { alert("Export failed: canvas was empty."); return; }
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = "proof_map.png";
       a.click();
       URL.revokeObjectURL(a.href);
     }, "image/png");
+  } catch (err) {
+    alert("Export failed: " + err.message);
   } finally {
+    outer.style.width  = savedOuterW;
+    outer.style.height = savedOuterH;
     toolbar.style.display = "";
     document.body.style.background = origBg;
+    window.scrollTo(savedScrollX, savedScrollY);
+    drawConnectors();
     btn.textContent = "Export PNG"; btn.disabled = false;
   }
 }
 
+// ── layout save / load / reset ────────────────────────────────────────────────
+const LAYOUT_KEY = "proof_map_layout_" + document.title.replace(/[^a-zA-Z0-9]/g, "_");
+
+function saveLayout() {
+  const state = { cards: {}, lod: {}, sliders: {} };
+  document.querySelectorAll(".card, .main-col").forEach(el => {
+    const id = el.id || "main-col";
+    state.cards[id] = getTranslate(el);
+    state.lod[id]   = el.getAttribute("data-lod") || "minimal";
+  });
+  state.sliders = {
+    tsz: parseFloat(tszSlider.value),
+    sz:  parseFloat(szSlider.value),
+    lh:  parseFloat(lhSlider.value),
+    gap: parseInt(gapSlider.value),
+    mw:  parseInt(mwSlider.value),
+  };
+  const json = JSON.stringify(state, null, 2);
+  localStorage.setItem(LAYOUT_KEY, json);
+  // Also download as a file so headless export can use it
+  const blob = new Blob([json], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "map_layout.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const btn = document.getElementById("save-btn");
+  const orig = btn.textContent;
+  btn.textContent = "Saved ✓";
+  setTimeout(() => btn.textContent = orig, 1200);
+}
+
+function loadLayout() {
+  let state = window.__LAYOUT__ || null;
+  if (!state) {
+    const raw = localStorage.getItem(LAYOUT_KEY);
+    if (!raw) return;
+    try { state = JSON.parse(raw); } catch { return; }
+  }
+
+  if (state.sliders) {
+    if (state.sliders.tsz != null) tszSlider.value = state.sliders.tsz;
+    if (state.sliders.sz  != null) szSlider.value  = state.sliders.sz;
+    if (state.sliders.lh  != null) lhSlider.value  = state.sliders.lh;
+    if (state.sliders.gap != null) gapSlider.value = state.sliders.gap;
+    if (state.sliders.mw  != null) mwSlider.value  = state.sliders.mw;
+    applySliders();
+  }
+
+  document.querySelectorAll(".card, .main-col").forEach(el => {
+    const id = el.id || "main-col";
+    if (state.cards && state.cards[id]) {
+      const [tx, ty] = state.cards[id];
+      if (tx !== 0 || ty !== 0) {
+        el.style.position  = "relative";
+        el.style.transform = `translate(${tx}px,${ty}px)`;
+      }
+    }
+    if (state.lod && state.lod[id]) {
+      el.setAttribute("data-lod", state.lod[id]);
+    }
+  });
+  drawConnectors();
+}
+
+function resetLayout() {
+  localStorage.removeItem(LAYOUT_KEY);
+  document.querySelectorAll(".card, .main-col").forEach(el => {
+    el.style.transform = "";
+    el.style.position  = "";
+    el.setAttribute("data-lod", el.classList.contains("main-col") ? "full" : "minimal");
+  });
+  tszSlider.value = 11; szSlider.value = 12; lhSlider.value = 1.65; gapSlider.value = 88; mwSlider.value = 2000;
+  applySliders();
+  drawConnectors();
+}
+
+// ── import layout from file ──────────────────────────────────────────────────
+function importLayout() {
+  document.getElementById("import-file").click();
+}
+document.getElementById("import-file").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      window.__LAYOUT__ = JSON.parse(reader.result);
+      loadLayout();
+    } catch (err) { alert("Invalid layout JSON: " + err.message); }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
 // ── init ──────────────────────────────────────────────────────────────────────
 window.addEventListener("load", () => {
-  // drag + card-level click
   document.querySelectorAll(".card, .main-col").forEach(initDragSelect);
 
-  // line-level click: any [data-connects] line inside any card or Main
   document.querySelectorAll("[data-connects]").forEach(lineEl => {
     lineEl.addEventListener("click", e => {
-      // don't interfere with hyp-btn clicks
       if (e.target.closest("button")) return;
       e.stopPropagation();
-      selectLine(lineEl);
+      selectLine(lineEl, e.ctrlKey || e.metaKey);
     });
   });
 
+  initRubberBand();
   applySliders();
+  loadLayout();      // restore saved positions/sliders/LOD if any
   drawConnectors();
 
-  // click on blank canvas clears selection
-  document.querySelector(".page").addEventListener("click", e => {
+  document.addEventListener("click", e => {
+    if (suppressNextClear) { suppressNextClear = false; return; }
     if (!e.target.closest(".card, .main-col")) clearSelection();
   });
 });
 window.addEventListener("resize", drawConnectors);
 """
 
-def _ensure_html2canvas():
-    """Ensure html2canvas is cached locally; return its path relative to scripts/."""
+def _load_html2canvas():
+    """Return html2canvas JS source, downloading and caching if needed."""
     cache = os.path.join(os.path.dirname(os.path.abspath(__file__)), "html2canvas.min.js")
     if not os.path.exists(cache):
         import urllib.request
@@ -1041,9 +1297,10 @@ def _ensure_html2canvas():
                 cache)
         except Exception:
             return None
-    return cache
+    with open(cache, encoding="utf-8") as f:
+        return f.read()
 
-def build_html(prop_name, main_lines, roots, out_path=""):
+def build_html(prop_name, main_lines, roots):
     node_keys = collect_node_keys(roots)
 
     cols = {}
@@ -1074,14 +1331,9 @@ def build_html(prop_name, main_lines, roots, out_path=""):
         dcols += '</div>\n'
     dcols += '</div>\n'
 
-    h2c_cache = _ensure_html2canvas()
-    if h2c_cache and out_path:
-        rel = os.path.relpath(h2c_cache, os.path.dirname(os.path.abspath(out_path)))
-        h2c_tag = f'<script src="{rel}"></script>'
-    elif h2c_cache:
-        h2c_tag = f'<script src="{h2c_cache}"></script>'
-    else:
-        h2c_tag = '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>'
+    h2c_js = _load_html2canvas()
+    h2c_tag = f"<script>{h2c_js}</script>" if h2c_js else \
+        '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>'
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -1094,6 +1346,11 @@ def build_html(prop_name, main_lines, roots, out_path=""):
 <body>
 <div class="toolbar">
   <h1>Proof map — {h(prop_name)}</h1>
+  <div class="ctrl">
+    <label for="tsz-slider">Title</label>
+    <input type="range" id="tsz-slider" min="9" max="32" step="0.5" value="11">
+    <span class="val" id="tsz-val">11px</span>
+  </div>
   <div class="ctrl">
     <label for="sz-slider">Font</label>
     <input type="range" id="sz-slider" min="9" max="20" step="0.5" value="12">
@@ -1131,6 +1388,10 @@ def build_html(prop_name, main_lines, roots, out_path=""):
       <input type="checkbox" id="transp-check" checked> Transparent
     </label>
     <button id="export-btn" onclick="exportPNG()">Export PNG</button>
+    <button id="save-btn" class="save-btn" onclick="saveLayout()">Save layout</button>
+    <button class="save-btn" onclick="importLayout()">Import layout</button>
+    <input type="file" id="import-file" accept=".json" style="display:none">
+    <button class="reset-btn" onclick="resetLayout()">Reset</button>
   </div>
   <div class="legend">
     <div class="leg"><div class="leg-dot" style="background:#7eb6ff"></div>theorem</div>
@@ -1139,6 +1400,7 @@ def build_html(prop_name, main_lines, roots, out_path=""):
     <div class="leg" style="color:#7a88bb">Shift+click = multi-select</div>
   </div>
 </div>
+<div id="rband"></div>
 <div class="page">
 <div class="outer">
   <svg id="svg-layer"></svg>
@@ -1154,6 +1416,41 @@ def build_html(prop_name, main_lines, roots, out_path=""):
 """
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
+
+def export_png(html_path, scale=2, transparent=False):
+    from playwright.sync_api import sync_playwright
+
+    png_path = os.path.splitext(html_path)[0] + ".png"
+    layout_path = os.path.join(os.path.dirname(html_path), "map_layout.json")
+
+    layout_json = None
+    if os.path.isfile(layout_path):
+        with open(layout_path) as f:
+            layout_json = f.read()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        # Inject layout before page loads
+        page = browser.new_page(device_scale_factor=scale)
+        if layout_json:
+            page.add_init_script(f"window.__LAYOUT__ = {layout_json};")
+        page.goto("file://" + os.path.abspath(html_path))
+        page.wait_for_load_state("networkidle")
+        page.evaluate("document.querySelector('.toolbar').style.display = 'none'")
+        page.evaluate("document.querySelector('.page').style.paddingTop = '20px'")
+        page.evaluate("drawConnectors()")
+        page.wait_for_timeout(100)
+        content_size = page.evaluate("""() => {
+            const o = document.querySelector('.outer');
+            return { width: o.scrollWidth + 100, height: o.scrollHeight + 100 };
+        }""")
+        page.set_viewport_size(content_size)
+        page.evaluate("drawConnectors()")
+        page.wait_for_timeout(50)
+        page.screenshot(path=png_path, full_page=True, omit_background=transparent)
+        browser.close()
+    src = "layout" if layout_json else "defaults"
+    print(f"wrote {png_path} ({scale}x, {src})")
 
 def export_pdf(html_path):
     pdf = os.path.splitext(html_path)[0] + ".pdf"
@@ -1174,6 +1471,9 @@ def main():
     ap.add_argument("--prop", required=True)
     ap.add_argument("-o","--out")
     ap.add_argument("--pdf", action="store_true")
+    ap.add_argument("--png", action="store_true", help="Export PNG via headless browser")
+    ap.add_argument("--scale", type=int, default=2, help="PNG resolution multiplier (default 2)")
+    ap.add_argument("--transparent", action="store_true", help="Transparent PNG background")
     args = ap.parse_args()
 
     propdir = args.prop
@@ -1193,9 +1493,10 @@ def main():
 
     out = args.out or os.path.join(propdir, "map.html")
     with open(out, "w", encoding="utf-8") as f:
-        f.write(build_html(prop_name, main_lines, roots, out_path=out))
+        f.write(build_html(prop_name, main_lines, roots))
     print(f"wrote {out}")
     if args.pdf: export_pdf(out)
+    if args.png: export_png(out, scale=args.scale, transparent=args.transparent)
 
 if __name__ == "__main__":
     main()

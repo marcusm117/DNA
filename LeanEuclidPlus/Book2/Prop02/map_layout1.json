@@ -1,0 +1,127 @@
+{
+  "cards": {
+    "main-col": [
+      0,
+      0
+    ],
+    "card-step1": [
+      11,
+      170
+    ],
+    "card-step2": [
+      11,
+      170
+    ],
+    "card-step3": [
+      23,
+      345
+    ],
+    "card-step4": [
+      21,
+      423
+    ],
+    "card-step5": [
+      21,
+      423
+    ],
+    "card-step6": [
+      21,
+      423
+    ],
+    "card-step7": [
+      26,
+      701
+    ],
+    "card-step3_dfe": [
+      51,
+      457
+    ],
+    "card-step5_sameside": [
+      56,
+      521
+    ],
+    "card-step5_adne": [
+      56,
+      521
+    ],
+    "card-step5_dene": [
+      56,
+      521
+    ],
+    "card-step5_cf": [
+      56,
+      521
+    ],
+    "card-step5_par": [
+      56,
+      521
+    ],
+    "card-step5_adf": [
+      56,
+      521
+    ],
+    "card-step5_area": [
+      56,
+      521
+    ],
+    "card-step6_cfbe": [
+      56,
+      521
+    ],
+    "card-step6_sameside": [
+      56,
+      521
+    ],
+    "card-step6_par": [
+      56,
+      521
+    ],
+    "card-step6_bef": [
+      56,
+      521
+    ],
+    "card-step6_area": [
+      56,
+      521
+    ],
+    "card-step5_hsq": [
+      46,
+      887
+    ],
+    "card-step5_doff": [
+      53,
+      928
+    ]
+  },
+  "lod": {
+    "main-col": "full",
+    "card-step1": "minimal",
+    "card-step2": "minimal",
+    "card-step3": "full",
+    "card-step4": "minimal",
+    "card-step5": "minimal",
+    "card-step6": "minimal",
+    "card-step7": "minimal",
+    "card-step3_dfe": "full",
+    "card-step5_sameside": "minimal",
+    "card-step5_adne": "minimal",
+    "card-step5_dene": "minimal",
+    "card-step5_cf": "minimal",
+    "card-step5_par": "minimal",
+    "card-step5_adf": "minimal",
+    "card-step5_area": "minimal",
+    "card-step6_cfbe": "minimal",
+    "card-step6_sameside": "minimal",
+    "card-step6_par": "minimal",
+    "card-step6_bef": "minimal",
+    "card-step6_area": "minimal",
+    "card-step5_hsq": "minimal",
+    "card-step5_doff": "minimal"
+  },
+  "sliders": {
+    "sz": 12,
+    "lh": 1.7,
+    "gap": 90,
+    "mw": 600
+  }
+}

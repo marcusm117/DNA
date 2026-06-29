@@ -1,0 +1,128 @@
+{
+  "cards": {
+    "main-col": [
+      -49,
+      481
+    ],
+    "card-step1": [
+      -15,
+      95
+    ],
+    "card-step2": [
+      -15,
+      95
+    ],
+    "card-step3": [
+      -3,
+      270
+    ],
+    "card-step4": [
+      -5,
+      348
+    ],
+    "card-step5": [
+      -5,
+      348
+    ],
+    "card-step6": [
+      -5,
+      348
+    ],
+    "card-step7": [
+      13,
+      606
+    ],
+    "card-step3_dfe": [
+      12,
+      85
+    ],
+    "card-step5_sameside": [
+      17,
+      149
+    ],
+    "card-step5_adne": [
+      17,
+      149
+    ],
+    "card-step5_dene": [
+      17,
+      149
+    ],
+    "card-step5_cf": [
+      17,
+      149
+    ],
+    "card-step5_par": [
+      17,
+      149
+    ],
+    "card-step5_adf": [
+      17,
+      149
+    ],
+    "card-step5_area": [
+      17,
+      149
+    ],
+    "card-step6_cfbe": [
+      17,
+      149
+    ],
+    "card-step6_sameside": [
+      17,
+      149
+    ],
+    "card-step6_par": [
+      17,
+      149
+    ],
+    "card-step6_bef": [
+      17,
+      149
+    ],
+    "card-step6_area": [
+      17,
+      149
+    ],
+    "card-step5_hsq": [
+      77,
+      501
+    ],
+    "card-step5_doff": [
+      84,
+      542
+    ]
+  },
+  "lod": {
+    "main-col": "minimal",
+    "card-step1": "minimal",
+    "card-step2": "minimal",
+    "card-step3": "minimal",
+    "card-step4": "minimal",
+    "card-step5": "minimal",
+    "card-step6": "minimal",
+    "card-step7": "minimal",
+    "card-step3_dfe": "minimal",
+    "card-step5_sameside": "minimal",
+    "card-step5_adne": "minimal",
+    "card-step5_dene": "minimal",
+    "card-step5_cf": "minimal",
+    "card-step5_par": "minimal",
+    "card-step5_adf": "minimal",
+    "card-step5_area": "minimal",
+    "card-step6_cfbe": "minimal",
+    "card-step6_sameside": "minimal",
+    "card-step6_par": "minimal",
+    "card-step6_bef": "minimal",
+    "card-step6_area": "minimal",
+    "card-step5_hsq": "minimal",
+    "card-step5_doff": "minimal"
+  },
+  "sliders": {
+    "tsz": 23.5,
+    "sz": 20,
+    "lh": 1.7,
+    "gap": 90,
+    "mw": 400
+  }
+}

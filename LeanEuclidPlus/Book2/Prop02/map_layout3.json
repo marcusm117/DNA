@@ -1,0 +1,128 @@
+{
+  "cards": {
+    "main-col": [
+      -58,
+      10
+    ],
+    "card-step1": [
+      -25,
+      518
+    ],
+    "card-step2": [
+      5,
+      850
+    ],
+    "card-step3": [
+      8,
+      870
+    ],
+    "card-step4": [
+      13,
+      886
+    ],
+    "card-step5": [
+      13,
+      886
+    ],
+    "card-step6": [
+      13,
+      886
+    ],
+    "card-step7": [
+      24,
+      1170
+    ],
+    "card-step3_dfe": [
+      89,
+      1213
+    ],
+    "card-step5_sameside": [
+      104,
+      1487
+    ],
+    "card-step5_adne": [
+      104,
+      1487
+    ],
+    "card-step5_dene": [
+      104,
+      1487
+    ],
+    "card-step5_cf": [
+      104,
+      1487
+    ],
+    "card-step5_par": [
+      104,
+      1487
+    ],
+    "card-step5_adf": [
+      104,
+      1487
+    ],
+    "card-step5_area": [
+      104,
+      1487
+    ],
+    "card-step6_cfbe": [
+      104,
+      1487
+    ],
+    "card-step6_sameside": [
+      104,
+      1487
+    ],
+    "card-step6_par": [
+      104,
+      1487
+    ],
+    "card-step6_bef": [
+      104,
+      1487
+    ],
+    "card-step6_area": [
+      104,
+      1487
+    ],
+    "card-step5_hsq": [
+      228,
+      2148
+    ],
+    "card-step5_doff": [
+      235,
+      2189
+    ]
+  },
+  "lod": {
+    "main-col": "full",
+    "card-step1": "minimal",
+    "card-step2": "minimal",
+    "card-step3": "full",
+    "card-step4": "minimal",
+    "card-step5": "minimal",
+    "card-step6": "minimal",
+    "card-step7": "minimal",
+    "card-step3_dfe": "full",
+    "card-step5_sameside": "minimal",
+    "card-step5_adne": "minimal",
+    "card-step5_dene": "minimal",
+    "card-step5_cf": "minimal",
+    "card-step5_par": "minimal",
+    "card-step5_adf": "minimal",
+    "card-step5_area": "minimal",
+    "card-step6_cfbe": "minimal",
+    "card-step6_sameside": "minimal",
+    "card-step6_par": "minimal",
+    "card-step6_bef": "minimal",
+    "card-step6_area": "minimal",
+    "card-step5_hsq": "minimal",
+    "card-step5_doff": "minimal"
+  },
+  "sliders": {
+    "tsz": 20.5,
+    "sz": 20,
+    "lh": 1.4,
+    "gap": 90,
+    "mw": 700
+  }
+}

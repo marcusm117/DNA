@@ -1,0 +1,128 @@
+{
+  "cards": {
+    "main-col": [
+      0,
+      0
+    ],
+    "card-step1": [
+      70,
+      388
+    ],
+    "card-step2": [
+      70,
+      388
+    ],
+    "card-step3": [
+      70,
+      388
+    ],
+    "card-step4": [
+      70,
+      388
+    ],
+    "card-step5": [
+      70,
+      388
+    ],
+    "card-step6": [
+      70,
+      388
+    ],
+    "card-step7": [
+      70,
+      388
+    ],
+    "card-step3_dfe": [
+      0,
+      0
+    ],
+    "card-step5_sameside": [
+      0,
+      0
+    ],
+    "card-step5_adne": [
+      0,
+      0
+    ],
+    "card-step5_dene": [
+      0,
+      0
+    ],
+    "card-step5_cf": [
+      0,
+      0
+    ],
+    "card-step5_par": [
+      0,
+      0
+    ],
+    "card-step5_adf": [
+      0,
+      0
+    ],
+    "card-step5_area": [
+      0,
+      0
+    ],
+    "card-step6_cfbe": [
+      0,
+      0
+    ],
+    "card-step6_sameside": [
+      0,
+      0
+    ],
+    "card-step6_par": [
+      0,
+      0
+    ],
+    "card-step6_bef": [
+      0,
+      0
+    ],
+    "card-step6_area": [
+      0,
+      0
+    ],
+    "card-step5_hsq": [
+      0,
+      0
+    ],
+    "card-step5_doff": [
+      0,
+      0
+    ]
+  },
+  "lod": {
+    "main-col": "full",
+    "card-step1": "minimal",
+    "card-step2": "minimal",
+    "card-step3": "minimal",
+    "card-step4": "minimal",
+    "card-step5": "minimal",
+    "card-step6": "minimal",
+    "card-step7": "minimal",
+    "card-step3_dfe": "minimal",
+    "card-step5_sameside": "minimal",
+    "card-step5_adne": "minimal",
+    "card-step5_dene": "minimal",
+    "card-step5_cf": "minimal",
+    "card-step5_par": "minimal",
+    "card-step5_adf": "minimal",
+    "card-step5_area": "minimal",
+    "card-step6_cfbe": "minimal",
+    "card-step6_sameside": "minimal",
+    "card-step6_par": "minimal",
+    "card-step6_bef": "minimal",
+    "card-step6_area": "minimal",
+    "card-step5_hsq": "minimal",
+    "card-step5_doff": "minimal"
+  },
+  "sliders": {
+    "tsz": 11,
+    "sz": 12,
+    "lh": 1.7,
+    "gap": 90,
+    "mw": 1250
+  }
+}
