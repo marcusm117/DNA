@@ -221,9 +221,13 @@ def render_card(card, node_keys=None):
     # data-lod starts at "minimal"; JS global buttons override all, per-card button cycles
     out  = f'<div class="card {kc}" id="card-{card.key}" data-lod="minimal">\n'
     out += (f'  <div class="card-header">'
+            f'<span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span>'
+            f'<span class="hdr-center">'
             f'<span class="cname {nc}">{h(card.key)}.lean</span>'
             f'<span class="depth-badge">{dlb}</span>'
             f'<button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button>'
+            f'</span>'
+            f'<span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span>'
             f'</div>\n')
     out += '  <div class="card-body">\n'
     out += render_code_lines(card.lines, id_prefix=f"c{card.depth}-", node_keys=node_keys)
@@ -306,12 +310,16 @@ body {
 
 /* ── column header ── */
 .col-header {
-  padding: 5px 12px;
   background: #181a27;
   border-bottom: 1px solid var(--border);
   font-size: 9px; color: var(--c-dimmed);
   letter-spacing: .08em; text-transform: uppercase;
   white-space: nowrap;
+  /* 3-zone grid: left-zone | center | right-zone */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 26px;
 }
 
 /* ── Main.lean panel ── */
@@ -394,22 +402,101 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
 .card.sent-card { border-color: rgba(82,227,194,.20); }
 .card.have-card { border-color: rgba(245,166,35,.16); }
 .card-header {
-  padding: 5px 10px; background: #181a27;
+  background: #181a27;
   border-bottom: 1px solid var(--border);
   font-size: 10px; color: var(--c-dimmed);
-  display: flex; gap: 6px; align-items: center; white-space: nowrap;
+  white-space: nowrap;
+  /* 3-zone grid: left-zone | center | right-zone */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 26px;
 }
-.cname       { font-weight: 600; }
-.cname.s     { color: var(--c-sent); }
-.cname.h     { color: var(--c-have); }
+/* center zone: name + LOD button, centered */
+.hdr-center {
+  display: flex; gap: 5px; align-items: center; justify-content: center;
+  padding: 4px 6px;
+}
+.cname   { font-weight: 600; }
+.cname.s { color: var(--c-sent); }
+.cname.h { color: var(--c-have); }
 .depth-badge {
-  margin-left: auto; font-size: 9px;
-  background: #1e2236; color: #444a68;
+  font-size: 9px; background: #1e2236; color: #444a68;
   padding: 1px 5px; border-radius: 3px;
 }
+/* left and right click zones */
+.hdr-left, .hdr-right {
+  display: flex; align-items: center;
+  padding: 4px 6px;
+  height: 100%;
+  user-select: none;
+  transition: background .12s, color .12s;
+}
+.hdr-left  { justify-content: flex-start; cursor: w-resize; }
+.hdr-right { justify-content: flex-end;   cursor: e-resize; }
+.hdr-left:hover  { background: rgba(180,140,255,.10); color: rgba(180,140,255,.80); }
+.hdr-right:hover { background: rgba(82,227,194,.08);  color: rgba(82,227,194,.70); }
+.hdr-arrow {
+  font-size: 9px; opacity: 0.35;
+  transition: opacity .12s, transform .12s;
+}
+.hdr-left:hover  .hdr-arrow { opacity: 0.85; transform: scale(1.2); }
+.hdr-right:hover .hdr-arrow { opacity: 0.85; transform: scale(1.2); }
+/* selected state tints */
+.selected .hdr-left  { color: rgba(180,140,255,.65); }
+.selected .hdr-right { color: rgba(82,227,194,.65); }
 /* card body: NO scroll, NO height cap — show everything */
 .card-body { padding: 5px 0; }
 .card-body .code-line { font-size: calc(var(--sz) * 0.95); }
+
+/* ── selection: card glow — colour depends on card type ── */
+.card.sent-card.selected, .main-col.selected {
+  box-shadow: 0 0 0 2px rgba(82,227,194,.90), 0 0 20px rgba(82,227,194,.22);
+  z-index: 20;
+}
+.card.have-card.selected {
+  box-shadow: 0 0 0 2px rgba(245,166,35,.90), 0 0 20px rgba(245,166,35,.22);
+  z-index: 20;
+}
+.card.sent-card.selected .card-header, .main-col.selected .col-header {
+  background: rgba(82,227,194,.10);
+}
+.card.have-card.selected .card-header {
+  background: rgba(245,166,35,.10);
+}
+
+/* ── child-highlight: target card of a selected connection ── */
+.card.sent-card.child-highlight {
+  box-shadow: 0 0 0 1.5px rgba(82,227,194,.55), 0 0 10px rgba(82,227,194,.12);
+}
+.card.have-card.child-highlight {
+  box-shadow: 0 0 0 1.5px rgba(245,166,35,.55), 0 0 10px rgba(245,166,35,.12);
+}
+/* ── parent-highlight: source card of an incoming connection ── */
+.card.parent-highlight, .main-col.parent-highlight {
+  box-shadow: 0 0 0 1.5px rgba(180,140,255,.60), 0 0 10px rgba(180,140,255,.14);
+}
+/* ── parent source lines (incoming edges to selected card) ── */
+.code-line.sel-parent-line {
+  background: rgba(180,140,255,.12) !important;
+  outline: 1px solid rgba(180,140,255,.40);
+  cursor: pointer;
+}
+/* left/right halves of header show appropriate cursor hints */
+.card-header { cursor: grab; }
+.col-header  { cursor: grab; }
+
+/* ── sel-line: a [data-connects] line that is currently selected ── */
+.code-line.sel-line {
+  background: rgba(255,230,80,.11) !important;
+  outline: 1px solid rgba(255,230,80,.38);
+  cursor: pointer;
+}
+/* all [data-connects] lines are clickable when hovered */
+.code-line[data-connects]:hover {
+  background: rgba(255,255,255,.04) !important;
+  cursor: pointer;
+}
 
 /* ── Per-card LOD via data-lod attribute ── */
 
@@ -446,7 +533,6 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
 }
 /* ── per-card cycle button ── */
 .node-lod-btn {
-  margin-left: auto;
   background: none; border: none;
   color: #3a4060; font: 9px/1 var(--font);
   cursor: pointer; padding: 1px 4px;
@@ -466,20 +552,81 @@ const root  = document.documentElement;
 const svg   = document.getElementById("svg-layer");
 const outer = document.querySelector(".outer");
 
-/* ── connectors ── */
-function visibleMidRight(el) {
-  // Walk up to find the nearest visible ancestor that has real height.
-  // A line hidden by display:none has h=0; use its card's header instead.
+// ── selection state ──────────────────────────────────────────────────────────
+let selCard = null;    // selected .card or .main-col
+let selMode = null;    // "children" | "parents"  (direction of card-level selection)
+let selLine = null;    // selected [data-connects] line (line-level selection)
+
+// Outgoing lines from a card → child cards
+function getLinesFrom(card) {
+  return Array.from(card.querySelectorAll("[data-connects]"));
+}
+function getChildCards(card) {
+  return getLinesFrom(card).map(l => document.getElementById("card-" + l.dataset.connects)).filter(Boolean);
+}
+
+// All [data-connects] lines anywhere on the page that point TO this card
+function getParentLines(card) {
+  const key = card.id.replace(/^card-/, "");
+  return key ? Array.from(document.querySelectorAll(`[data-connects="${key}"]`)) : [];
+}
+function getParentCards(card) {
+  return getParentLines(card)
+    .map(l => l.closest(".card, .main-col"))
+    .filter((c, i, a) => c && a.indexOf(c) === i);  // unique
+}
+
+function clearSelection() {
+  if (selCard) {
+    selCard.classList.remove("selected");
+    getChildCards(selCard).forEach(c => c.classList.remove("child-highlight"));
+    getParentCards(selCard).forEach(c => c.classList.remove("parent-highlight"));
+    getParentLines(selCard).forEach(l => l.classList.remove("sel-parent-line"));
+    selCard = null; selMode = null;
+  }
+  if (selLine) {
+    selLine.classList.remove("sel-line");
+    const target = document.getElementById("card-" + selLine.dataset.connects);
+    if (target) target.classList.remove("child-highlight");
+    selLine = null;
+  }
+  drawConnectors();
+}
+
+function selectCard(card, mode) {
+  // toggle off if same card+mode
+  if (selCard === card && selMode === mode) { clearSelection(); return; }
+  clearSelection();
+  selCard = card; selMode = mode;
+  card.classList.add("selected");
+  if (mode === "children") {
+    getChildCards(card).forEach(c => c.classList.add("child-highlight"));
+  } else {
+    getParentCards(card).forEach(c => c.classList.add("parent-highlight"));
+    getParentLines(card).forEach(l => l.classList.add("sel-parent-line"));
+  }
+  drawConnectors();
+}
+
+function selectLine(lineEl) {
+  if (selLine === lineEl) { clearSelection(); return; }
+  clearSelection();
+  selLine = lineEl;
+  lineEl.classList.add("sel-line");
+  const target = document.getElementById("card-" + lineEl.dataset.connects);
+  if (target) target.classList.add("child-highlight");
+  drawConnectors();
+}
+
+// ── connectors ───────────────────────────────────────────────────────────────
+function anchorRight(el) {
+  const OR = outer.getBoundingClientRect();
+  // prefer the element itself if visible; fall back to its nearest visible ancestor card
   let probe = el;
   while (probe) {
     const r = probe.getBoundingClientRect();
-    if (r.height > 0) {
-      const OR = outer.getBoundingClientRect();
-      return { x: r.right - OR.left, y: (r.top + r.bottom) / 2 - OR.top };
-    }
-    probe = probe.closest(".card-body, .card, .main-col")?.nextElementSibling
-            ? null
-            : probe.parentElement?.closest(".card, .main-col");
+    if (r.height > 0) return { x: r.right - OR.left, y: (r.top + r.bottom) / 2 - OR.top };
+    probe = probe.parentElement?.closest(".card, .main-col") ?? null;
   }
   return null;
 }
@@ -492,35 +639,42 @@ function drawConnectors() {
     const card = document.getElementById("card-" + src.dataset.connects);
     if (!card) return;
 
-    // Source anchor: the highlighted line if visible, else the card it lives in
-    const srcR = src.getBoundingClientRect();
-    let p1;
-    if (srcR.height > 0) {
-      p1 = { x: srcR.right - OR.left, y: (srcR.top + srcR.bottom) / 2 - OR.top };
-    } else {
-      // source line is hidden (LOD) — find its containing card and use that
-      const srcCard = src.closest(".card, .main-col");
-      if (!srcCard) return;
-      const scr = srcCard.getBoundingClientRect();
-      if (scr.height === 0) return;
-      p1 = { x: scr.right - OR.left, y: (scr.top + scr.bottom) / 2 - OR.top };
-    }
+    const p1 = anchorRight(src);
+    if (!p1) return;
 
-    // Target anchor: card header (always visible in all LOD modes)
     const hdr = card.querySelector(".card-header");
     const hr  = hdr.getBoundingClientRect();
     if (hr.height === 0) return;
-    const p2  = { x: hr.left - OR.left, y: (hr.top + hr.bottom) / 2 - OR.top };
+    const p2 = { x: hr.left - OR.left, y: (hr.top + hr.bottom) / 2 - OR.top };
+
+    // Active if: exact selected line, OR source card selected in children mode,
+    // OR this connector is an incoming edge to the selected card in parents mode.
+    const isActiveLine = src === selLine;
+    const srcCard = src.closest(".card, .main-col");
+    const srcSelected = srcCard && srcCard === selCard && selMode === "children";
+    const isParentEdge = selCard && selMode === "parents"
+                         && card === selCard && srcCard !== selCard;
+    const isActive = isActiveLine || srcSelected || isParentEdge;
+
+    // Colour: parent edges purple, child/line edges use sent-teal or have-orange
+    const sent  = src.dataset.kind === "sentence";
+    let baseC;
+    if (isActive && isParentEdge) baseC = [180, 140, 255];
+    else if (sent)                 baseC = [82,  227, 194];
+    else                           baseC = [245, 166,  35];
+    const alpha = isActive ? 0.95 : 0.32;
+    const color = `rgba(${baseC[0]},${baseC[1]},${baseC[2]},${alpha})`;
+    const width = isActive ? "2.4" : "1.4";
 
     const dx = Math.max(16, Math.abs(p2.x - p1.x) * 0.42);
     const d  = `M${p1.x},${p1.y} C${p1.x+dx},${p1.y} ${p2.x-dx},${p2.y} ${p2.x},${p2.y}`;
-    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("d", d);
-    const sent = src.dataset.kind === "sentence";
-    path.setAttribute("stroke", sent ? "rgba(82,227,194,.48)" : "rgba(245,166,35,.45)");
-    path.setAttribute("stroke-width", "1.6");
+    path.setAttribute("stroke", color);
+    path.setAttribute("stroke-width", width);
     path.setAttribute("fill", "none");
-    if (!sent) path.setAttribute("stroke-dasharray", "5 3");
+    if (!sent) path.setAttribute("stroke-dasharray", isActive ? "none" : "5 3");
+    if (isActive) path.setAttribute("filter", `drop-shadow(0 0 4px ${color})`);
     svg.appendChild(path);
   });
 
@@ -529,7 +683,62 @@ function drawConnectors() {
   svg.setAttribute("height", Math.ceil(tot.height) + 2);
 }
 
-/* ── assumption toggle ── */
+// ── drag + click on card header ───────────────────────────────────────────────
+const DRAG_THRESHOLD = 5;  // px — move less than this → treat as a click
+
+function initDragSelect(el) {
+  // el is .card or .main-col; headers have different class names
+  const hdr = el.querySelector(".card-header, .col-header");
+  if (!hdr) return;
+
+  let startX, startY, startTx, startTy, dragging = false;
+
+  function getTranslate(elem) {
+    const t = elem.style.transform;
+    const m = t && t.match(/translate\(\s*([-\d.]+)px,\s*([-\d.]+)px\)/);
+    return m ? [parseFloat(m[1]), parseFloat(m[2])] : [0, 0];
+  }
+
+  hdr.addEventListener("mousedown", e => {
+    if (e.target.closest("button")) return;
+    startX = e.clientX; startY = e.clientY;
+    [startTx, startTy] = getTranslate(el);
+    dragging = false;
+    // remember which zone was clicked at mousedown
+    const zone = e.target.closest("[data-sel]");
+    const downMode = zone ? zone.dataset.sel : null;
+
+    function onMove(e) {
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+      if (!dragging && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+        dragging = true;
+        el.style.position = "relative";
+        el.style.zIndex   = "50";
+      }
+      if (dragging) {
+        el.style.transform = `translate(${startTx + dx}px,${startTy + dy}px)`;
+        drawConnectors();
+      }
+    }
+
+    function onUp(e) {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup",   onUp);
+      el.style.zIndex = "";
+      if (!dragging) {
+        e.stopPropagation();
+        // use the zone recorded at mousedown; fall back to center (children)
+        selectCard(el, downMode || "children");
+      }
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup",   onUp);
+    e.preventDefault();
+  });
+}
+
+// ── assumption toggle ─────────────────────────────────────────────────────────
 function toggleHyp(btn) {
   const body = document.getElementById("hb" + btn.dataset.uid);
   const open = body.style.display !== "none";
@@ -540,7 +749,7 @@ function toggleHyp(btn) {
   requestAnimationFrame(drawConnectors);
 }
 
-/* ── sliders ── */
+// ── sliders ───────────────────────────────────────────────────────────────────
 const szSlider  = document.getElementById("sz-slider");
 const lhSlider  = document.getElementById("lh-slider");
 const gapSlider = document.getElementById("gap-slider");
@@ -562,7 +771,6 @@ function applySliders() {
   root.style.setProperty("--card-gap", Math.round(gap * 0.12) + "px");
 
   if (mw >= 2000) {
-    // unlimited: remove wrap mode
     root.classList.remove("wrap-lines");
     root.style.setProperty("--max-line-w", "9999px");
     mwVal.textContent = "∞";
@@ -583,16 +791,13 @@ lhSlider.addEventListener("input",  applySliders);
 gapSlider.addEventListener("input", applySliders);
 mwSlider.addEventListener("input",  applySliders);
 
-/* ── LOD ── */
+// ── LOD ───────────────────────────────────────────────────────────────────────
 const LOD_CYCLE = ["minimal", "compact", "full"];
 
 function setCardLod(el, level) {
   el.setAttribute("data-lod", level);
-  const btn = el.querySelector(".node-lod-btn");
-  if (btn) btn.title = "Current: " + level + " — click to cycle";
 }
 
-/* global buttons: apply level to every card + Main */
 function setAllLod(level) {
   document.querySelectorAll(".card, .main-col").forEach(c => setCardLod(c, level));
   document.querySelectorAll(".lod-btn").forEach(b =>
@@ -600,7 +805,6 @@ function setAllLod(level) {
   requestAnimationFrame(drawConnectors);
 }
 
-/* per-card cycle button: minimal → compact → full → minimal */
 function cycleCardLod(btn) {
   const card = btn.closest(".card, .main-col");
   const cur  = card.getAttribute("data-lod") || "minimal";
@@ -609,10 +813,28 @@ function cycleCardLod(btn) {
   requestAnimationFrame(drawConnectors);
 }
 
-/* initial draw */
+// ── init ──────────────────────────────────────────────────────────────────────
 window.addEventListener("load", () => {
+  // drag + card-level click
+  document.querySelectorAll(".card, .main-col").forEach(initDragSelect);
+
+  // line-level click: any [data-connects] line inside any card or Main
+  document.querySelectorAll("[data-connects]").forEach(lineEl => {
+    lineEl.addEventListener("click", e => {
+      // don't interfere with hyp-btn clicks
+      if (e.target.closest("button")) return;
+      e.stopPropagation();
+      selectLine(lineEl);
+    });
+  });
+
   applySliders();
   drawConnectors();
+
+  // click on blank canvas clears selection
+  document.querySelector(".page").addEventListener("click", e => {
+    if (!e.target.closest(".card, .main-col")) clearSelection();
+  });
 });
 window.addEventListener("resize", drawConnectors);
 """
@@ -627,8 +849,12 @@ def build_html(prop_name, main_lines, roots):
     for r in roots: gather(r)
 
     main_html  = '<div class="main-col" data-lod="full">\n'
-    main_html += ('<div class="col-header">Main.lean'
+    main_html += ('<div class="col-header">'
+                  '<span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span>'
+                  '<span class="hdr-center">Main.lean'
                   '<button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button>'
+                  '</span>'
+                  '<span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span>'
                   '</div>\n')
     main_html += '<div class="code-body">\n'
     main_html += render_code_lines(main_lines, node_keys=node_keys)
