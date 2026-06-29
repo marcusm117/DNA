@@ -171,6 +171,77 @@ def collect_node_keys(roots):
     for r in roots: gather(r)
     return keys
 
+# ── Lean syntax highlighter ───────────────────────────────────────────────────
+
+# ── Lean syntax highlighter (single regex pass, runs in C) ───────────────────
+
+_KW_CLASS = {
+    "theorem":"kw-def","lemma":"kw-def","def":"kw-def","abbrev":"kw-def",
+    "instance":"kw-def","namespace":"kw-def","end":"kw-def","open":"kw-def",
+    "import":"kw-def","section":"kw-def","structure":"kw-def","class":"kw-def",
+    "by":"kw-by",
+    "have":"kw-have","let":"kw-have",
+    "show":"kw-tac","exact":"kw-tac","apply":"kw-tac","rw":"kw-tac",
+    "simp":"kw-tac","ring":"kw-tac","linarith":"kw-tac","assumption":"kw-tac",
+    "intro":"kw-tac","intros":"kw-tac","cases":"kw-tac","induction":"kw-tac",
+    "constructor":"kw-tac","refine":"kw-tac","push_neg":"kw-tac",
+    "contrapose":"kw-tac","contradiction":"kw-tac",
+    "euclid_intros":"kw-euclid","euclid_finish":"kw-euclid",
+    "euclid_apply":"kw-euclid","euclid_assumption":"kw-euclid",
+    "euclid_sentence":"kw-sent","euclid_intro_sentence":"kw-sent",
+    "euclid_conclude_sentence":"kw-sent",
+    "fun":"kw-quant","match":"kw-quant","if":"kw-quant","then":"kw-quant","else":"kw-quant",
+    "true":"kw-bool","false":"kw-bool","True":"kw-bool","False":"kw-bool",
+    "sorry":"kw-sorry",
+}
+
+# One compiled regex: alternatives are tried left-to-right by the C engine.
+_HL_RE = re.compile(
+    r'("(?:[^"\\]|\\.)*")'           # group 1: string literal
+    r'|(\b(?:' + '|'.join(re.escape(k) for k in sorted(_KW_CLASS, key=len, reverse=True)) + r')\b)'
+                                      # group 2: keyword (longest first)
+    r'|([a-zA-Z_]\w*(?::[a-zA-Z_]\w*)+)'  # group 3: point-colon chain a:b:c (match before bare :)
+    r'|(:=|=>|[→←↔])'                # group 4: arrow/assign ops
+    r'|([∧∨¬∥⊥])'                    # group 5: logic ops
+    r'|([=≠≤≥])'                      # group 6: relation ops
+    r'|([∟△─∠∀∃])'                   # group 7: special math
+    r'|(:)'                           # group 8: colon
+    r'|([([{⟨])'                      # group 9: open bracket
+    r'|([\])}⟩])'                     # group 10: close bracket
+    r'|(\b\d[\d.]*\b)'                # group 11: number
+)
+
+_GRP_CLASS = {
+    1: "t-str",
+    2: None,       # keyword — dict lookup
+    3: "t-id",     # point-colon chain a:b:c — plain identifier
+    4: "op-assign", 5: "op-logic", 6: "op-rel", 7: "op-special",
+    8: "op-colon", 9: "t-brk-o", 10: "t-brk-c", 11: "t-num",
+}
+
+def lean_highlight(raw):
+    """Return HTML with Lean syntax highlighting — single regex pass."""
+    def repl(m):
+        for g, cls in _GRP_CLASS.items():
+            if m.group(g) is not None:
+                text = htmllib.escape(m.group(g))
+                if g == 2:
+                    cls = _KW_CLASS.get(m.group(g), "t-id")
+                return f'<span class="{cls}">{text}</span>'
+        return htmllib.escape(m.group(0))
+    # escape everything not matched, then apply regex substitution
+    # We do it in one pass: split on matches, escape gaps, wrap matches.
+    result = []
+    last = 0
+    for m in _HL_RE.finditer(raw):
+        if m.start() > last:
+            result.append(htmllib.escape(raw[last:m.start()]))
+        result.append(repl(m))
+        last = m.end()
+    if last < len(raw):
+        result.append(htmllib.escape(raw[last:]))
+    return "".join(result)
+
 # ── HTML rendering ────────────────────────────────────────────────────────────
 
 _uid = [0]
@@ -178,17 +249,21 @@ _uid = [0]
 def h(s): return htmllib.escape(str(s))
 
 def render_line_content(raw_line):
+    """Highlight then fold assumptions."""
     visible, hidden, count = fold_assumptions(raw_line)
+    # highlight both parts
+    vis_html = lean_highlight(visible)
     if count == 0:
-        return h(raw_line)
+        return lean_highlight(raw_line)
     _uid[0] += 1; uid = _uid[0]
     noun = "hyp" if count == 1 else "hyps"
+    hid_html = lean_highlight(hidden)
     return (
-        f"{h(visible)}"
+        f"{vis_html}"
         f'<button class="hyp-btn" data-uid="{uid}" data-n="{count}" data-noun="{noun}" '
         f'onclick="toggleHyp(this)" title="{count} assumption(s)">'
         f'[{count}&nbsp;{noun}&nbsp;&#9658;]</button>'
-        f'<span class="hyp-body" id="hb{uid}" style="display:none">{h(hidden)}</span>'
+        f'<span class="hyp-body" id="hb{uid}" style="display:none">{hid_html}</span>'
     )
 
 def render_code_lines(items, id_prefix="", node_keys=None):
@@ -197,21 +272,26 @@ def render_code_lines(items, id_prefix="", node_keys=None):
         k    = item["kind"]
         role = item.get("role", "body")
         if k == "collapsed":
-            out += f'<div class="code-line collapsed" data-role="sig"><span class="ln"></span>{h(item["line"])}</div>\n'
+            out += (f'<div class="code-line collapsed" data-role="sig">'
+                    f'<span class="ln"></span><span class="lc">{h(item["line"])}</span></div>\n')
+            continue
+        # emit blank lines so euclid_sentence blocks are separated
+        if not item["line"].strip():
+            out += (f'<div class="code-line plain" data-role="{role}">'
+                    f'<span class="ln"></span><span class="lc"> </span></div>\n')
             continue
         real_ln += 1
         key = item.get("key")
         content = render_line_content(item["line"])
-        ln_text = real_ln if item["line"].strip() else ""
         is_node = key and (node_keys is None or key in node_keys)
         if k in ("sentence", "have") and is_node:
             sid = f'{id_prefix}{key}'
             out += (f'<div class="code-line {k}" data-role="{role}" id="{sid}" '
                     f'data-connects="{key}" data-kind="{k}">'
-                    f'<span class="ln">{real_ln}</span>{content}</div>\n')
+                    f'<span class="ln">{real_ln}</span><span class="lc">{content}</span></div>\n')
         else:
             out += (f'<div class="code-line plain" data-role="{role}">'
-                    f'<span class="ln">{ln_text}</span>{content}</div>\n')
+                    f'<span class="ln">{real_ln}</span><span class="lc">{content}</span></div>\n')
     return out
 
 def render_card(card, node_keys=None):
@@ -308,12 +388,35 @@ body {
   pointer-events: none; overflow: visible; z-index: 10;
 }
 
+/* ── Lean syntax colours ── */
+.kw-def    { color: #c792ea; font-weight: 600; }  /* theorem/lemma/def/import */
+.kw-by     { color: #89ddff; font-weight: 600; }  /* by */
+.kw-have   { color: #f5a623; font-weight: 600; }  /* have/let */
+.kw-tac    { color: #82aaff; }                     /* exact/apply/rw/simp/linarith … */
+.kw-euclid { color: #21c7a8; font-weight: 600; }  /* euclid_apply/finish/intros */
+.kw-sent   { color: #52e3c2; font-weight: 600; }  /* euclid_sentence */
+.kw-quant  { color: #c792ea; }                     /* ∀/∃/fun/match */
+.kw-bool   { color: #f78c6c; }                     /* true/false */
+.kw-sorry  { color: #ff5370; font-weight: 700; background: rgba(255,83,112,.12);
+             padding: 0 2px; border-radius: 2px; }
+.op-assign { color: #89ddff; }   /* := */
+.op-arrow  { color: #89ddff; }   /* → ← ↔ => */
+.op-logic  { color: #c792ea; }   /* ∧ ∨ ¬ */
+.op-rel    { color: #89ddff; }   /* = ≠ ≤ ≥ */
+.op-colon  { color: #89ddff; }   /* : */
+.op-special{ color: #ffcb6b; }   /* ∟ △ ─ ∠ */
+.t-str     { color: #c3e88d; }   /* "string literals" */
+.t-num     { color: #f78c6c; }   /* numbers */
+.t-id      { color: var(--c-plain); }
+.t-brk-o   { color: #ffcb6b; }   /* ( [ { ⟨ */
+.t-brk-c   { color: #ffcb6b; }   /* ) ] } ⟩ */
+
 /* ── column header ── */
 .col-header {
   background: #181a27;
   border-bottom: 1px solid var(--border);
-  font-size: 9px; color: var(--c-dimmed);
-  letter-spacing: .08em; text-transform: uppercase;
+  font-size: 10px; color: #8090b8;
+  font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
   white-space: nowrap;
   /* 3-zone grid: left-zone | center | right-zone */
   display: grid;
@@ -340,26 +443,30 @@ body {
   display: flex;
   align-items: baseline;
   padding: 0 10px;
-  white-space: pre;          /* default: never wrap */
 }
-/* when wrap mode is active (class on <html>), lines wrap at --max-line-w */
-html.wrap-lines .code-line {
+/* .lc = line content: one flex child that owns all text + wrapping */
+.lc {
+  white-space: pre;          /* never wrap by default */
+  flex: 1;
+  min-width: 0;
+}
+/* wrap mode: only .lc wraps, never at span boundaries */
+html.wrap-lines .lc {
   white-space: pre-wrap;
-  max-width: var(--max-line-w);
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;   /* break long tokens, not at span edges */
   word-break: normal;
-  /* cards must also stop expanding horizontally */
-  overflow-x: hidden;
+  max-width: var(--max-line-w);
 }
 html.wrap-lines .main-col,
 html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); }
 
 .code-line.plain     { color: var(--c-plain); }
-.code-line.collapsed { color: var(--c-dimmed); font-style: italic;
-                       white-space: pre-wrap; }   /* always wraps */
-.code-line.theorem   { background: var(--c-bg-thm);  color: var(--c-thm);  font-weight: 600; }
-.code-line.sentence  { background: var(--c-bg-sent); color: var(--c-sent); }
-.code-line.have      { background: var(--c-bg-have); color: var(--c-have); }
+.code-line.collapsed { color: var(--c-dimmed); font-style: italic; }
+.code-line.collapsed .lc { white-space: pre-wrap; }
+/* theorem/sentence/have: background tint only — syntax spans control text color */
+.code-line.theorem  { background: var(--c-bg-thm); }
+.code-line.sentence { background: var(--c-bg-sent); }
+.code-line.have     { background: var(--c-bg-have); }
 .ln {
   flex-shrink: 0; width: 24px;
   color: var(--c-dimmed); font-size: 9px;
@@ -404,7 +511,7 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
 .card-header {
   background: #181a27;
   border-bottom: 1px solid var(--border);
-  font-size: 10px; color: var(--c-dimmed);
+  font-size: 10px; color: #8090b8;
   white-space: nowrap;
   /* 3-zone grid: left-zone | center | right-zone */
   display: grid;
@@ -417,11 +524,11 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
   display: flex; gap: 5px; align-items: center; justify-content: center;
   padding: 4px 6px;
 }
-.cname   { font-weight: 600; }
-.cname.s { color: var(--c-sent); }
-.cname.h { color: var(--c-have); }
+.cname   { font-weight: 700; font-size: 11px; }
+.cname.s { color: #6ef5d8; }   /* brighter teal for step files */
+.cname.h { color: #ffc04d; }   /* brighter orange for sub-step files */
 .depth-badge {
-  font-size: 9px; background: #1e2236; color: #444a68;
+  font-size: 9px; background: #1e2236; color: #6670a0;
   padding: 1px 5px; border-radius: 3px;
 }
 /* left and right click zones */
@@ -923,7 +1030,8 @@ window.addEventListener("load", () => {
 window.addEventListener("resize", drawConnectors);
 """
 
-def _load_html2canvas():
+def _ensure_html2canvas():
+    """Ensure html2canvas is cached locally; return its path relative to scripts/."""
     cache = os.path.join(os.path.dirname(os.path.abspath(__file__)), "html2canvas.min.js")
     if not os.path.exists(cache):
         import urllib.request
@@ -933,10 +1041,9 @@ def _load_html2canvas():
                 cache)
         except Exception:
             return None
-    with open(cache, encoding="utf-8") as f:
-        return f.read()
+    return cache
 
-def build_html(prop_name, main_lines, roots):
+def build_html(prop_name, main_lines, roots, out_path=""):
     node_keys = collect_node_keys(roots)
 
     cols = {}
@@ -967,9 +1074,14 @@ def build_html(prop_name, main_lines, roots):
         dcols += '</div>\n'
     dcols += '</div>\n'
 
-    h2c = _load_html2canvas()
-    h2c_tag = f"<script>{h2c}</script>" if h2c else \
-        '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>'
+    h2c_cache = _ensure_html2canvas()
+    if h2c_cache and out_path:
+        rel = os.path.relpath(h2c_cache, os.path.dirname(os.path.abspath(out_path)))
+        h2c_tag = f'<script src="{rel}"></script>'
+    elif h2c_cache:
+        h2c_tag = f'<script src="{h2c_cache}"></script>'
+    else:
+        h2c_tag = '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>'
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -1081,7 +1193,7 @@ def main():
 
     out = args.out or os.path.join(propdir, "map.html")
     with open(out, "w", encoding="utf-8") as f:
-        f.write(build_html(prop_name, main_lines, roots))
+        f.write(build_html(prop_name, main_lines, roots, out_path=out))
     print(f"wrote {out}")
     if args.pdf: export_pdf(out)
 
