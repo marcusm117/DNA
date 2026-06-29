@@ -6,3 +6,5 @@
 - 65.15$ finished to 25. do 65.15$ for 14 steps.
 
 glm: 20$ for steps most of 26, 27, 28, and 29.
+
+sO 85$ Total

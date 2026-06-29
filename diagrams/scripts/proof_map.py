@@ -275,7 +275,6 @@ def render_code_lines(items, id_prefix="", node_keys=None):
             out += (f'<div class="code-line collapsed" data-role="sig">'
                     f'<span class="ln"></span><span class="lc">{h(item["line"])}</span></div>\n')
             continue
-        # emit blank lines so euclid_sentence blocks are separated
         if not item["line"].strip():
             out += (f'<div class="code-line plain" data-role="{role}">'
                     f'<span class="ln"></span><span class="lc"> </span></div>\n')
@@ -284,10 +283,12 @@ def render_code_lines(items, id_prefix="", node_keys=None):
         key = item.get("key")
         content = render_line_content(item["line"])
         is_node = key and (node_keys is None or key in node_keys)
-        if k in ("sentence", "have") and is_node:
-            sid = f'{id_prefix}{key}'
-            out += (f'<div class="code-line {k}" data-role="{role}" id="{sid}" '
-                    f'data-connects="{key}" data-kind="{k}">'
+        if k in ("sentence", "have"):
+            sid = f'{id_prefix}{key}' if key else ""
+            connects = f'data-connects="{key}"' if is_node else ""
+            id_attr = f'id="{sid}"' if sid else ""
+            out += (f'<div class="code-line {k}" data-role="{role}" {id_attr} '
+                    f'{connects} data-kind="{k}">'
                     f'<span class="ln">{real_ln}</span><span class="lc">{content}</span></div>\n')
         else:
             out += (f'<div class="code-line plain" data-role="{role}">'
@@ -297,15 +298,12 @@ def render_code_lines(items, id_prefix="", node_keys=None):
 def render_card(card, node_keys=None):
     kc  = "sent-card" if card.kind == "sentence" else "have-card"
     nc  = "s"         if card.kind == "sentence" else "h"
-    dlb = ["","step","sub-step","sub-sub-step"][min(card.depth, 3)]
     # data-lod starts at "minimal"; JS global buttons override all, per-card button cycles
     out  = f'<div class="card {kc}" id="card-{card.key}" data-lod="minimal">\n'
     out += (f'  <div class="card-header">'
             f'<span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span>'
-            f'<span class="hdr-center">'
+            f'<span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level">'
             f'<span class="cname {nc}">{h(card.key)}.lean</span>'
-            f'<span class="depth-badge">{dlb}</span>'
-            f'<button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button>'
             f'</span>'
             f'<span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span>'
             f'</div>\n')
@@ -489,7 +487,7 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
   transition: background .1s, color .1s;
 }
 .hyp-btn:hover { background: #272d48; color: #aab8e8; }
-.hyp-body { color: #666c90; }
+.hyp-body { color: #9aa0c0; }
 
 /* ── depth columns ── */
 .depth-cols { display: flex; gap: 0; align-items: flex-start; padding-right: 60px; }
@@ -522,11 +520,14 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
   align-items: center;
   min-height: calc(var(--title-sz) * 2.4);
 }
-/* center zone: name + LOD button, centered */
+/* center zone: click to cycle LOD */
 .hdr-center {
   display: flex; gap: 5px; align-items: center; justify-content: center;
   padding: calc(var(--title-sz) * 0.35) 6px;
+  cursor: pointer;
+  flex: 1;
 }
+.hdr-center:hover { background: rgba(255,255,255,.04); }
 .cname   { font-weight: 700; font-size: var(--title-sz); }
 .cname.s { color: #6ef5d8; }   /* brighter teal for step files */
 .cname.h { color: #ffc04d; }   /* brighter orange for sub-step files */
@@ -599,10 +600,20 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
   outline: 1px solid rgba(255,230,80,.38);
   cursor: pointer;
 }
-/* all [data-connects] lines are clickable when hovered */
-.code-line[data-connects]:hover {
+/* have/sentence lines are clickable (left = who uses me, right = what I use) */
+.code-line.have:hover, .code-line.sentence:hover {
   background: rgba(255,255,255,.04) !important;
   cursor: pointer;
+}
+
+/* ── type-reference highlight (purple = "who uses me") ── */
+.code-line.type-ref-highlight {
+  background: rgba(180,140,255,.12) !important;
+  outline: 1px solid rgba(180,140,255,.50);
+}
+.code-line.type-ref-source {
+  background: rgba(82,227,194,.15) !important;
+  outline: 2px solid rgba(82,227,194,.80);
 }
 
 /* ── Per-card LOD via data-lod attribute ── */
@@ -673,19 +684,10 @@ body.dragging { user-select: none; }
   color: var(--c-sent);
 }
 /* ── per-card cycle button ── */
-.node-lod-btn {
-  background: none; border: none;
-  color: #3a4060; font: 9px/1 var(--font);
-  cursor: pointer; padding: 1px 4px;
-  border-radius: 3px;
-  transition: color .1s, background .1s;
-  flex-shrink: 0;
-}
-.node-lod-btn:hover { color: #9aa0c0; background: #1e2236; }
-/* colour the button to reflect current state */
-[data-lod="full"]    .node-lod-btn { color: #52e3c2; }
-[data-lod="compact"] .node-lod-btn { color: #f5a623; }
-[data-lod="minimal"] .node-lod-btn { color: #3a4060; }
+/* colour center zone text to reflect current LOD state */
+[data-lod="full"]    .hdr-center .cname { opacity: 1; }
+[data-lod="compact"] .hdr-center .cname { opacity: 0.7; }
+[data-lod="minimal"] .hdr-center .cname { opacity: 0.5; }
 """
 
 JS = r"""
@@ -879,6 +881,7 @@ function initDragSelect(el) {
     dragging = false;
     const zone = e.target.closest("[data-sel]");
     const downMode = zone ? zone.dataset.sel : null;
+    const onCenter = !!e.target.closest(".hdr-center");
 
     function onMove(e) {
       const dx = e.clientX - startX, dy = e.clientY - startY;
@@ -911,7 +914,7 @@ function initDragSelect(el) {
       document.body.classList.remove("dragging");
       if (groupSnaps) groupSnaps.forEach((_, card) => card.style.zIndex = "");
       groupSnaps = null;
-      if (!dragging) {
+      if (!dragging && !onCenter) {
         e.stopPropagation();
         selectCard(el, downMode || "children", e.ctrlKey || e.metaKey);
       }
@@ -1163,26 +1166,133 @@ document.getElementById("import-file").addEventListener("change", e => {
   e.target.value = "";
 });
 
+// ── type-reference highlighting ("who uses me" / left-click) ─────────────────
+let typeHighlights = [];
+let typeRefPaths = [];
+
+function clearTypeRefs() {
+  typeHighlights.forEach(el => {
+    el.classList.remove("type-ref-highlight");
+    el.classList.remove("type-ref-source");
+  });
+  typeHighlights = [];
+  typeRefPaths.forEach(p => p.remove());
+  typeRefPaths = [];
+}
+
+function normalize(s) { return s.replace(/\s+/g, " ").trim(); }
+
+function extractType(lineEl) {
+  const text = lineEl.textContent;
+  const m = text.match(/have\s+\w+\s*:\s*(.*?)\s*:=\s*by/s);
+  if (m) return normalize(m[1]);
+  const m2 = text.match(/\(\w+\s*:\s*(.*?)\)\s*:=\s*by/s);
+  if (m2) return normalize(m2[1]);
+  return null;
+}
+
+function extractName(lineEl) {
+  const text = lineEl.textContent;
+  const m = text.match(/have\s+(\w+)\s*:/);
+  if (m) return m[1];
+  const m2 = text.match(/\((\w+)\s*:/);
+  if (m2) return m2[1];
+  return null;
+}
+
+function drawRefPath(srcPt, tgtPt) {
+  const dx = Math.max(20, Math.abs(tgtPt.x - srcPt.x) * 0.4);
+  const dirSrc = tgtPt.x > srcPt.x ? 1 : -1;
+  const dirTgt = tgtPt.x > srcPt.x ? -1 : 1;
+  const d = `M${srcPt.x},${srcPt.y} C${srcPt.x + dx*dirSrc},${srcPt.y} ${tgtPt.x + dx*dirTgt},${tgtPt.y} ${tgtPt.x},${tgtPt.y}`;
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", d);
+  path.setAttribute("stroke", "rgba(180,140,255,0.90)");
+  path.setAttribute("stroke-width", "2.2");
+  path.setAttribute("fill", "none");
+  path.setAttribute("filter", "drop-shadow(0 0 4px rgba(180,140,255,0.5))");
+  svg.appendChild(path);
+  typeRefPaths.push(path);
+}
+
+function highlightTypeRefs(srcEl) {
+  const typeStr = extractType(srcEl);
+  const nameStr = extractName(srcEl);
+  if (!typeStr && !nameStr) return;
+  clearTypeRefs();
+  clearSelection();
+  srcEl.classList.add("type-ref-source");
+  typeHighlights.push(srcEl);
+
+  const OR = outer.getBoundingClientRect();
+  const srcRect = srcEl.getBoundingClientRect();
+  const srcPt = { x: (srcRect.left + srcRect.right) / 2 - OR.left, y: (srcRect.top + srcRect.bottom) / 2 - OR.top };
+
+  document.querySelectorAll(".code-line .lc").forEach(lc => {
+    const el = lc.parentElement;
+    if (el === srcEl) return;
+    // Skip hidden elements (LOD minimal hides bodies)
+    const elRect = el.getBoundingClientRect();
+    if (elRect.height === 0) return;
+    const text = lc.textContent;
+    let matched = false;
+    // Match by type: show TYPE;
+    if (typeStr) {
+      const showRe = /show\s+(.*?)\s*;/g;
+      let match;
+      while ((match = showRe.exec(text)) !== null) {
+        if (normalize(match[1]) === typeStr) { matched = true; break; }
+      }
+    }
+    // Match by name: the name appears as an identifier reference
+    if (!matched && nameStr) {
+      const nameRe = new RegExp("\\b" + nameStr + "\\b");
+      if (nameRe.test(text)) matched = true;
+    }
+    if (matched) {
+      el.classList.add("type-ref-highlight");
+      typeHighlights.push(el);
+      const tgtPt = { x: (elRect.left + elRect.right) / 2 - OR.left, y: (elRect.top + elRect.bottom) / 2 - OR.top };
+      drawRefPath(srcPt, tgtPt);
+    }
+  });
+}
+
+function handleLineClick(lineEl, e) {
+  if (e.target.closest("button")) return;
+  e.stopPropagation();
+  const rect = lineEl.getBoundingClientRect();
+  const half = (e.clientX - rect.left) / rect.width;
+  if (half < 0.5) {
+    highlightTypeRefs(lineEl);
+  } else {
+    clearTypeRefs();
+    if (lineEl.dataset.connects) {
+      selectLine(lineEl, e.ctrlKey || e.metaKey);
+    }
+  }
+}
+
 // ── init ──────────────────────────────────────────────────────────────────────
 window.addEventListener("load", () => {
   document.querySelectorAll(".card, .main-col").forEach(initDragSelect);
 
-  document.querySelectorAll("[data-connects]").forEach(lineEl => {
-    lineEl.addEventListener("click", e => {
-      if (e.target.closest("button")) return;
-      e.stopPropagation();
-      selectLine(lineEl, e.ctrlKey || e.metaKey);
-    });
+  // Left/right click on have/sentence lines
+  document.querySelectorAll(".code-line.have, .code-line.sentence").forEach(lineEl => {
+    lineEl.addEventListener("click", e => handleLineClick(lineEl, e));
   });
 
   initRubberBand();
   applySliders();
-  loadLayout();      // restore saved positions/sliders/LOD if any
+  loadLayout();
   drawConnectors();
 
   document.addEventListener("click", e => {
     if (suppressNextClear) { suppressNextClear = false; return; }
-    if (!e.target.closest(".card, .main-col")) clearSelection();
+    if (!e.target.closest(".card, .main-col")) {
+      clearSelection();
+      clearTypeRefs();
+    }
   });
 });
 window.addEventListener("resize", drawConnectors);
@@ -1201,9 +1311,7 @@ def build_html(prop_name, main_lines, roots):
     main_html  = '<div class="main-col" data-lod="full">\n'
     main_html += ('<div class="col-header">'
                   '<span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span>'
-                  '<span class="hdr-center">Main.lean'
-                  '<button class="node-lod-btn" onclick="cycleCardLod(this)" title="Toggle detail level">&#9654;</button>'
-                  '</span>'
+                  '<span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level">Main.lean</span>'
                   '<span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span>'
                   '</div>\n')
     main_html += '<div class="code-body">\n'
