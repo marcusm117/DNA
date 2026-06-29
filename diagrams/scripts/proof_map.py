@@ -530,10 +530,7 @@ html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); 
 .cname   { font-weight: 700; font-size: var(--title-sz); }
 .cname.s { color: #6ef5d8; }   /* brighter teal for step files */
 .cname.h { color: #ffc04d; }   /* brighter orange for sub-step files */
-.depth-badge {
-  font-size: calc(var(--title-sz) * 0.82); background: #1e2236; color: #6670a0;
-  padding: 1px 5px; border-radius: 3px;
-}
+.depth-badge { display: none; }
 /* left and right click zones */
 .hdr-left, .hdr-right {
   display: flex; align-items: center;
@@ -641,31 +638,12 @@ body.dragging { user-select: none; }
   z-index: 100;
 }
 
-/* ── export controls ── */
+/* ── layout controls ── */
 .export-group {
   display: flex; gap: 8px; align-items: center;
   border-left: 1px solid var(--border);
   padding-left: 16px; margin-left: 4px;
 }
-.export-group label { font-size: 10px; color: var(--c-dimmed); white-space: nowrap; }
-.res-select {
-  background: #1a1d2e; border: 1px solid #353b56; border-radius: 4px;
-  color: #9aa0c0; font: 10px/1 var(--font); padding: 3px 6px; cursor: pointer;
-}
-.transp-label {
-  display: flex; align-items: center; gap: 4px;
-  font-size: 10px; color: var(--c-dimmed); cursor: pointer; white-space: nowrap;
-}
-.transp-label input[type=checkbox] { accent-color: var(--c-sent); cursor: pointer; }
-#export-btn {
-  background: #1e2a1e; border: 1px solid rgba(82,227,194,.35);
-  border-radius: 4px; color: var(--c-sent);
-  font: 10px/1 var(--font); padding: 4px 10px; cursor: pointer;
-  transition: background .1s, border-color .1s;
-  white-space: nowrap;
-}
-#export-btn:hover    { background: #253225; border-color: var(--c-sent); }
-#export-btn:disabled { opacity: .45; cursor: wait; }
 .save-btn {
   background: #1e2a1e; border: 1px solid rgba(82,227,194,.35);
   border-radius: 4px; color: var(--c-sent);
@@ -1090,82 +1068,6 @@ function cycleCardLod(btn) {
   requestAnimationFrame(drawConnectors);
 }
 
-// ── export PNG ────────────────────────────────────────────────────────────────
-async function exportPNG() {
-  const btn     = document.getElementById("export-btn");
-  const scale   = parseInt(document.getElementById("res-select").value);
-  const transp  = document.getElementById("transp-check").checked;
-  const toolbar = document.querySelector(".toolbar");
-
-  btn.textContent = "Rendering…"; btn.disabled = true;
-  toolbar.style.display = "none";
-
-  const savedScrollX = window.scrollX, savedScrollY = window.scrollY;
-  window.scrollTo(0, 0);
-
-  // Snapshot the current SVG paths — they're already correct for the current layout.
-  // Expanding outer doesn't move flex-start children, so these coords stay valid.
-  const svgPaths = svg.innerHTML;
-
-  // Expand outer so html2canvas captures the full content (not just viewport width).
-  const savedOuterW = outer.style.width;
-  const savedOuterH = outer.style.height;
-  const fullW = outer.scrollWidth;
-  const fullH = outer.scrollHeight;
-  outer.style.width  = fullW  + "px";
-  outer.style.height = fullH + "px";
-
-  // Stretch SVG viewport to cover full area (paths already reach there via overflow:visible).
-  svg.setAttribute("width",  fullW);
-  svg.setAttribute("height", fullH);
-
-  const origBg = document.body.style.background;
-  if (transp) document.body.style.background = "transparent";
-
-  try {
-    const canvas = await html2canvas(outer, {
-      scale,
-      backgroundColor: transp ? null : "#0d0f18",
-      useCORS: true,
-      logging: false,
-    });
-
-    // Build an SVG image from the snapshotted paths at full size.
-    const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" width="${fullW}" height="${fullH}">${svgPaths}</svg>`;
-    const svgBlob = new Blob([svgMarkup], {type: "image/svg+xml;charset=utf-8"});
-    const svgUrl  = URL.createObjectURL(svgBlob);
-    await new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-        URL.revokeObjectURL(svgUrl);
-        resolve();
-      };
-      img.onerror = reject;
-      img.src = svgUrl;
-    });
-
-    canvas.toBlob(blob => {
-      if (!blob) { alert("Export failed: canvas was empty."); return; }
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "proof_map.png";
-      a.click();
-      URL.revokeObjectURL(a.href);
-    }, "image/png");
-  } catch (err) {
-    alert("Export failed: " + err.message);
-  } finally {
-    outer.style.width  = savedOuterW;
-    outer.style.height = savedOuterH;
-    toolbar.style.display = "";
-    document.body.style.background = origBg;
-    window.scrollTo(savedScrollX, savedScrollY);
-    drawConnectors();
-    btn.textContent = "Export PNG"; btn.disabled = false;
-  }
-}
-
 // ── layout save / load / reset ────────────────────────────────────────────────
 const LAYOUT_KEY = "proof_map_layout_" + document.title.replace(/[^a-zA-Z0-9]/g, "_");
 
@@ -1286,19 +1188,6 @@ window.addEventListener("load", () => {
 window.addEventListener("resize", drawConnectors);
 """
 
-def _load_html2canvas():
-    """Return html2canvas JS source, downloading and caching if needed."""
-    cache = os.path.join(os.path.dirname(os.path.abspath(__file__)), "html2canvas.min.js")
-    if not os.path.exists(cache):
-        import urllib.request
-        try:
-            urllib.request.urlretrieve(
-                "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
-                cache)
-        except Exception:
-            return None
-    with open(cache, encoding="utf-8") as f:
-        return f.read()
 
 def build_html(prop_name, main_lines, roots):
     node_keys = collect_node_keys(roots)
@@ -1331,17 +1220,12 @@ def build_html(prop_name, main_lines, roots):
         dcols += '</div>\n'
     dcols += '</div>\n'
 
-    h2c_js = _load_html2canvas()
-    h2c_tag = f"<script>{h2c_js}</script>" if h2c_js else \
-        '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>'
-
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <title>Proof map — {h(prop_name)}</title>
 <style>{CSS}</style>
-{h2c_tag}
 </head>
 <body>
 <div class="toolbar">
@@ -1377,17 +1261,6 @@ def build_html(prop_name, main_lines, roots):
     <button class="lod-btn active" data-lod="minimal" onclick="setAllLod('minimal')">Minimal</button>
   </div>
   <div class="export-group">
-    <label>Res</label>
-    <select id="res-select" class="res-select">
-      <option value="1">1&times;</option>
-      <option value="2" selected>2&times;</option>
-      <option value="3">3&times;</option>
-      <option value="4">4&times;</option>
-    </select>
-    <label class="transp-label">
-      <input type="checkbox" id="transp-check" checked> Transparent
-    </label>
-    <button id="export-btn" onclick="exportPNG()">Export PNG</button>
     <button id="save-btn" class="save-btn" onclick="saveLayout()">Save layout</button>
     <button class="save-btn" onclick="importLayout()">Import layout</button>
     <input type="file" id="import-file" accept=".json" style="display:none">
