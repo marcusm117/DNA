@@ -1,5 +1,5 @@
 """Unit tests for the @assumption / euclid_assumption feature (faithful_lib, check_steps, wired_body)."""
-import sys, os, textwrap
+import sys, os, shutil, textwrap
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
 import faithful_lib as L
@@ -340,3 +340,183 @@ def test_assumption_annot_regex_conjunctive_type():
     assert m is not None
     assert "∧" in m.group(2)
     assert m.group(3) is None
+
+
+# ── content_sha: @assumption-edits are invisible to the certification manifest ─
+# The hash the manifest uses (content_sha) strips `-- @assumption …` lines so a Phase-B reword/drop
+# of one (allowed, SOFT per the assumption-latitude policy — it feeds no build) does NOT flip a
+# certified node to stale. `@args`, sentence strings, and code MUST still register.
+
+_MAIN = '''\
+  -- @assumption ("AF equal to FG", |(a─f)| = |(f─g)|)
+  euclid_sentence "2.11.16" "And $FK$ is ... For $AF$ (is) equal to $FG$."
+    (step16 : Triangle.area △ f:g:k + Triangle.area △ f:c:k = |(c─f)| * |(f─a)|) := by sorry
+'''
+
+
+def _sha_of(tmp_path, text, name="Main.lean"):
+    p = tmp_path / name
+    p.write_text(text, encoding="utf-8")
+    return L.content_sha(str(p))
+
+
+def test_content_sha_ignores_assumption_reword(tmp_path):
+    """Rewording an @assumption (text AND lean type) does not change content_sha."""
+    reworded = _MAIN.replace('("AF equal to FG", |(a─f)| = |(f─g)|)',
+                             '("$AF$ equals $FG$", |(f─g)| = |(a─f)|)')
+    assert reworded != _MAIN                                   # the bytes really differ
+    assert _sha_of(tmp_path, reworded) == _sha_of(tmp_path, _MAIN)
+
+
+def test_content_sha_ignores_assumption_delete(tmp_path):
+    """DELETING the @assumption line normalizes identically to keeping it (whole line + newline
+    stripped) — the present↔absent symmetry that a naive blank-out would break."""
+    without = _MAIN.split("\n", 1)[1]                         # drop the leading @assumption line + its \n
+    assert "@assumption" not in without
+    assert _sha_of(tmp_path, without) == _sha_of(tmp_path, _MAIN)
+
+
+def test_content_sha_registers_args_edit(tmp_path):
+    """A `-- @args:` line IS load-bearing for the wire → it must still change the hash."""
+    with_args = _MAIN.replace('  euclid_sentence', '  -- @args: a b c\n  euclid_sentence')
+    bumped    = with_args.replace('-- @args: a b c', '-- @args: a c e')
+    assert _sha_of(tmp_path, bumped) != _sha_of(tmp_path, with_args)
+
+
+def test_content_sha_registers_claim_edit(tmp_path):
+    """A change to the claim type (real code) must still change the hash."""
+    edited = _MAIN.replace("|(c─f)| * |(f─a)|", "|(c─f)| * |(f─g)|")
+    assert _sha_of(tmp_path, edited) != _sha_of(tmp_path, _MAIN)
+
+
+def test_content_sha_not_byte_identical_to_file_sha(tmp_path):
+    """Sanity: content_sha differs from the raw-byte file_sha when @assumption lines are present
+    (so the manifest read/write sides must BOTH use content_sha — they do)."""
+    p = tmp_path / "Main.lean"
+    p.write_text(_MAIN, encoding="utf-8")
+    assert L.content_sha(str(p)) != L.file_sha(str(p))
+
+
+# ── content_sha: ALL full-line comments are invisible (not just @assumption) ──
+# The broadened strip keeps Main comment-edit-immune: editing/adding/deleting ANY full-line `--` comment
+# must not flip a certified node to stale. Only `-- @args:`, sentence strings, code, and (deliberately)
+# trailing comments still register.
+
+def test_content_sha_ignores_plain_full_line_comment(tmp_path):
+    """Adding OR rewording a plain explanatory full-line `--` comment does not change content_sha."""
+    with_note    = "  -- h is between a and b\n" + _MAIN
+    reworded     = "  -- h lies between a and b (reworded)\n" + _MAIN
+    assert with_note != _MAIN and reworded != with_note          # the bytes really differ
+    assert _sha_of(tmp_path, with_note) == _sha_of(tmp_path, _MAIN)
+    assert _sha_of(tmp_path, reworded)  == _sha_of(tmp_path, _MAIN)
+
+
+def test_content_sha_registers_trailing_comment(tmp_path):
+    """A TRAILING `--` comment is NOT stripped (full-line anchor) — it stays in the hash. This is the
+    deliberate limitation that the Main `own-line-only` gate exists to forbid."""
+    a = _MAIN + "  euclid_finish -- variant a\n"
+    b = _MAIN + "  euclid_finish -- variant b\n"
+    assert _sha_of(tmp_path, a) != _sha_of(tmp_path, b)
+
+
+# ── _trailing_comment_lineno ──────────────────────────────────────────────────
+
+def test_trailing_comment_lineno_flags_real_trailing():
+    assert L._trailing_comment_lineno("x := by sorry -- note") == [1]
+
+
+def test_trailing_comment_lineno_ignores_full_line_comment():
+    assert L._trailing_comment_lineno("  -- a whole-line note") == []
+    assert L._trailing_comment_lineno("-- @args: a c e") == []
+
+
+def test_trailing_comment_lineno_ignores_dashes_inside_sentence_string():
+    """The `--` inside a euclid_sentence string (e.g. `cut---equally`) is NOT a comment."""
+    line = '  euclid_sentence "If a straight line be cut---equally" "2.5.1" (s : T) := by sorry'
+    assert L._trailing_comment_lineno(line) == []
+
+
+def test_trailing_comment_lineno_flags_trailing_after_a_string():
+    """A real trailing comment AFTER a (closed) string is still flagged."""
+    line = '  euclid_sentence "cut---equally" "2.5.1" (s : T) := by sorry  -- real trailing'
+    assert L._trailing_comment_lineno(line) == [1]
+
+
+def test_trailing_comment_lineno_multiline_reports_each():
+    src = ('  euclid_intros\n'
+           '  euclid_finish -- bad\n'
+           '  -- fine full line\n'
+           '  exact h -- also bad\n')
+    assert L._trailing_comment_lineno(src) == [2, 4]
+
+
+# ── integrity_scan: Main.lean hygiene gates (no @args, comments own-line only) ─
+# Built under the REAL Book-tree (Book9/Prop2) because integrity_scan derives the book number from the
+# path relative to BOOK_ROOT and globs the prop folder. Torn down after. Other structural problems
+# (missing backing file / cap) may also be reported — we assert only on the two Main-gate substrings.
+
+_HYG_MAIN = ('import SystemE\n'
+             'namespace Elements.Book2\n'
+             'theorem proposition_2 : True := by\n'
+             '  euclid_sentence "9.2.1" "Some sentence." (step1 : True) := by sorry\n'
+             'end Elements.Book2\n')
+
+
+def _make_hyg_prop(main_src, extra=None):
+    """Write Book9/Prop2/Main.lean (+ optional {relname: src} backing files) under BOOK_ROOT."""
+    propdir = os.path.join(L.BOOK_ROOT, "Book9", "Prop2")
+    os.makedirs(propdir, exist_ok=True)
+    with open(os.path.join(propdir, "Main.lean"), "w", encoding="utf-8") as f:
+        f.write(main_src)
+    for name, src in (extra or {}).items():
+        with open(os.path.join(propdir, name), "w", encoding="utf-8") as f:
+            f.write(src)
+    return propdir
+
+
+def _rm_hyg_prop():
+    shutil.rmtree(os.path.join(L.BOOK_ROOT, "Book9"), ignore_errors=True)
+
+
+def test_integrity_scan_bans_args_in_main():
+    src = _HYG_MAIN.replace('  euclid_sentence "9.2.1"',
+                            '  -- @args: a c e\n  euclid_sentence "9.2.1"')
+    propdir = _make_hyg_prop(src)
+    try:
+        problems = L.integrity_scan(propdir)
+        assert any("BANNED in Main" in p for p in problems), problems
+    finally:
+        _rm_hyg_prop()
+
+
+def test_integrity_scan_flags_trailing_comment_in_main():
+    src = _HYG_MAIN.replace(':= by sorry', ':= by sorry  -- a trailing note')
+    propdir = _make_hyg_prop(src)
+    try:
+        problems = L.integrity_scan(propdir)
+        assert any("TRAILING" in p for p in problems), problems
+    finally:
+        _rm_hyg_prop()
+
+
+def test_integrity_scan_clean_main_no_hygiene_problems():
+    propdir = _make_hyg_prop(_HYG_MAIN)
+    try:
+        problems = L.integrity_scan(propdir)
+        assert not any("BANNED in Main" in p for p in problems), problems
+        assert not any("TRAILING" in p for p in problems), problems
+    finally:
+        _rm_hyg_prop()
+
+
+def test_integrity_scan_args_in_backing_file_not_flagged_as_main():
+    """`@args` in a BACKING file is legitimate (load-bearing on a sub-node) — the Main-only gate must
+    NOT flag it. (Other problems may be reported; just not the Main `@args` ban.)"""
+    step = ('-- @args: a c e\n'
+            'have sub1 : True := by sorry\n')
+    propdir = _make_hyg_prop(_HYG_MAIN, extra={"step1.lean": step})
+    try:
+        problems = L.integrity_scan(propdir)
+        assert not any("BANNED in Main" in p for p in problems), problems
+    finally:
+        _rm_hyg_prop()

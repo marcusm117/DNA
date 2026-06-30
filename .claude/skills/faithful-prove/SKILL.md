@@ -349,6 +349,21 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
     annotation. You still NEVER write the `euclid_apply` yourself — only the `-- @args:` data line; the
     script authors the call. (The annotation is the ONLY hand-written comment the pipeline reads; it
     survives wiring untouched.)
+  - **Keep `-- @args:` OUT of `Main.lean` — put it on sub-node `have`s in backing files only. ENFORCED:
+    `integrity_scan` flags an `@args` line in Main as a problem on `--status`/`--check`/`--all`.** `@args`
+    is load-bearing (the cert manifest's `content_sha` keeps it in the hash — it drives the wire), and
+    `Main.lean` is the shared container EVERY top-level step is wired in. So editing one step's `@args`
+    in Main bumps Main's hash and re-stales EVERY top-level step at once (board-wide), not just that one;
+    a sub-node's `@args` lives in its backing file, so its blast radius is one cone. AVOID needing it in
+    Main at all: name the backing helper's OBJECT binders to MATCH the sentence's call-site point names,
+    and the wire defaults to identity with no `@args` line.
+  - **Main comments must be on their OWN line (no trailing `code -- note`). ENFORCED: `integrity_scan`
+    flags a trailing comment in Main.** `content_sha` strips ALL full-line `--` comments (everything
+    except the `-- @args:` exception) before hashing, so a full-line comment edit in Main is FREE — it
+    changes no hash and re-stales nothing. A *trailing* comment is part of a code line, so it is NOT
+    stripped; editing it would re-stale the whole board. The own-line gate makes every Main comment
+    strippable, so comment churn in Main (explanatory `-- h between a b` notes, `@assumption` lines) is
+    always free.
 - **You never wire Main and never build an all-wired container.** Don't use `--all` as your driving
   loop or to find failures (it re-checks EVERY node — minutes wasted); drive with per-node
   `check_step <node>` and confirm a container/step with `check_step --subtree <node>` (scoped to that
@@ -491,6 +506,18 @@ Three commands, three scopes — know exactly what each certifies:
 (`check_step --drive` is `--subtree` looped automatically over every not-`done` Main node — same
 "stops at the first failure" contract, including stopping on a leaf that's still a bare `sorry`. Use it
 when RESUMING, not as a substitute for the decompose-and-prove loop below.)
+
+**STALENESS IS A HARD STOP — re-certify before doing anything later.** If `--status` shows ANY Main node
+as `stale` (⚠ — it was certified, but an input file changed), STOP and re-certify it BEFORE you create or
+edit any later step's file. The systematic way is just `check_step Book<N>/PropNN --drive`: it re-runs
+`--subtree` on the first not-`done` node (a stale node counts as not-done, so it's picked up
+automatically), skips the still-`done` ones, and stops at the first real failure — so you don't have to
+read the board and hand-pick which node to re-confirm. (`--subtree <that node>` is the surgical
+single-cone alternative if you want to re-confirm exactly one.) Either way, NOT the whole `--all`. This is
+not optional politeness: the `step_order_hook` enforces it — the frontier is the first NOT-`done` node
+(stale counts as not-done), so the hook will DENY a Write/Edit to any `stepN*.lean` past a stale node
+until you've re-certified it. A stale node means its proof may no longer hold; building on top of it is
+exactly the skip-ahead the pipeline forbids.
 
 The ladder (do them in this order):
 1. (anytime, free) `check_step Book<N>/PropNN --check` — instant no-build scan: naming law, every node

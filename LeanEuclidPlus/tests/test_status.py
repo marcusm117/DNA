@@ -14,10 +14,76 @@ class FakeNode:
         self.name = name
 
 
+class FakeOcc:
+    """Stand-in for a node OCCURRENCE — subtree_inputs/node_inputs only read `.file` (the container
+    file a node is wired in)."""
+    def __init__(self, file):
+        self.file = file
+
+
+# ── subtree_inputs scoping (shared-leaf backward-cascade fix) ───────────────────────────────────────
+def _patch_cone(monkeypatch, *, cone, backing, occs, main="Book2/Prop11/Main.lean"):
+    """Set up a synthetic prop cone. Paths are made absolute under BOOK_ROOT so realpath/relpath round-
+    trip back to the given BOOK_ROOT-relative strings."""
+    abspath = lambda rel: os.path.join(L.BOOK_ROOT, rel)
+    monkeypatch.setattr(L, "cone_names", lambda propdir, root: set(cone))
+    monkeypatch.setattr(L, "backing_file", lambda propdir, name: abspath(backing[name]) if backing.get(name) else None)
+    monkeypatch.setattr(L, "main_file", lambda propdir: abspath(main))
+    monkeypatch.setattr(L, "parse_occurrences",
+                        lambda propdir: {n: [FakeOcc(abspath(f)) for f in files] for n, files in occs.items()})
+
+
+def test_subtree_inputs_excludes_foreign_sibling_container(monkeypatch):
+    """step8's cone reuses a shared leaf step8_eb that is ALSO wired in step21.lean (a later Main step's
+    backing file). step8's snapshot must contain only the files step8's audit reads — its own backing
+    files + Main — NOT step21.lean, so editing step21 never re-stales step8."""
+    _patch_cone(
+        monkeypatch,
+        cone={"step8", "step8_eb"},
+        backing={"step8": "Book2/Prop11/step8.lean", "step8_eb": "Book2/Prop11/step8_eb.lean"},
+        occs={"step8": ["Book2/Prop11/Main.lean"],
+              "step8_eb": ["Book2/Prop11/step8.lean", "Book2/Prop11/step21.lean"]},  # shared in step21
+    )
+    inputs = L.subtree_inputs("Book2/Prop11", "step8")
+    assert inputs == ["Book2/Prop11/Main.lean", "Book2/Prop11/step8.lean", "Book2/Prop11/step8_eb.lean"]
+    assert "Book2/Prop11/step21.lean" not in inputs   # the foreign sibling container is dropped
+
+
+def test_subtree_inputs_keeps_shared_leaf_backing_file(monkeypatch):
+    """The shared leaf's OWN backing file stays in the snapshot — a real edit to the leaf must still
+    re-stale every cone that reuses it (only the cross-container contamination is dropped)."""
+    _patch_cone(
+        monkeypatch,
+        cone={"step21", "step8_eb"},
+        backing={"step21": "Book2/Prop11/step21.lean", "step8_eb": "Book2/Prop11/step8_eb.lean"},
+        occs={"step21": ["Book2/Prop11/Main.lean"],
+              "step8_eb": ["Book2/Prop11/step8.lean", "Book2/Prop11/step21.lean"]},
+    )
+    inputs = L.subtree_inputs("Book2/Prop11", "step21")
+    # step21's cone reads Main, step21.lean (its own backing/container) and the shared leaf's backing file.
+    assert "Book2/Prop11/step8_eb.lean" in inputs       # shared leaf P still tracked
+    assert "Book2/Prop11/step21.lean" in inputs          # step21's own container IS in its cone
+    assert "Book2/Prop11/step8.lean" not in inputs       # step8's container is foreign to step21's cone
+
+
+def test_node_inputs_still_keeps_every_container(monkeypatch):
+    """The per-node table (used by --whatchanged's blast radius) is UNCHANGED: a shared leaf still lists
+    every container it's wired in. Only subtree_inputs (the Main-status snapshot) is scoped."""
+    abspath = lambda rel: os.path.join(L.BOOK_ROOT, rel)
+    monkeypatch.setattr(L, "backing_file", lambda propdir, name: abspath("Book2/Prop11/step8_eb.lean"))
+    occs = {"step8_eb": [FakeOcc(abspath("Book2/Prop11/step8.lean")),
+                         FakeOcc(abspath("Book2/Prop11/step21.lean"))]}
+    inputs = L.node_inputs("Book2/Prop11", "step8_eb", occs)
+    assert "Book2/Prop11/step8.lean" in inputs
+    assert "Book2/Prop11/step21.lean" in inputs           # both containers kept (blast radius)
+
+
 # ── changed_files ─────────────────────────────────────────────────────────────────────────────────
 def test_changed_files_classifies_modified_deleted_unchanged(monkeypatch):
+    # changed_files hashes via content_sha (the manifest read side — must match the write side, which
+    # also stamps content_sha; see content_sha's docstring re @assumption-edit invisibility).
     shas = {"a.lean": "sha_a", "b.lean": "DIFFERENT", "c.lean": None}
-    monkeypatch.setattr(L, "file_sha", lambda path: shas[os.path.basename(path)])
+    monkeypatch.setattr(L, "content_sha", lambda path: shas[os.path.basename(path)])
     manifest = {"files": {"a.lean": "sha_a", "b.lean": "sha_b", "c.lean": "sha_c"}}
     assert L.changed_files(manifest) == {"b.lean": "modified", "c.lean": "deleted"}
 
@@ -57,22 +123,27 @@ def _patch_status_deps(monkeypatch, *, main_names, manifest, cones, backing=None
 
 
 def test_status_rows_done_stale_and_todo_with_uncertified_subnode(monkeypatch):
+    # Done-ness derives from manifest["subtrees"] (whole-cone certificates), NOT the per-node
+    # "certified" table — each rec is {"nodes": [...], "files": {relpath: sha}}. Freshness is the
+    # changed_snapshot(rec["files"]) diff. step1 certified+fresh → done; step2 certified but its file
+    # changed → stale (which breaks the in-order prefix); step3 has no subtree cert AND is behind the
+    # broken prefix → todo, blocked on step2.
     manifest = {
-        "certified": {
-            "step1": {"kind": "leaf", "inputs": ["Book2/PropXX/step1.lean"]},
-            "step2": {"kind": "leaf", "inputs": ["Book2/PropXX/step2.lean"]},
+        "subtrees": {
+            "step1": {"nodes": ["step1"], "files": {"Book2/PropXX/step1.lean": "h1"}},
+            "step2": {"nodes": ["step2"], "files": {"Book2/PropXX/step2.lean": "h2"}},
         },
-        "files": {"Book2/PropXX/step1.lean": "h1", "Book2/PropXX/step2.lean": "h2"},
     }
-    monkeypatch.setattr(L, "changed_files", lambda m: {"Book2/PropXX/step2.lean": "modified"})
+    monkeypatch.setattr(L, "changed_snapshot",
+                        lambda files: {f: "modified" for f in files if "step2" in f})
     _patch_status_deps(monkeypatch, main_names=["step1", "step2", "step3"], manifest=manifest,
                         cones={"step1": {"step1"}, "step2": {"step2"}, "step3": {"step3", "step3_sub"}})
     rows, checks = L.status_rows("Book2/PropXX")
-    assert rows[0] == ("step1", "done", "cone certified, inputs fresh")
+    assert rows[0] == ("step1", "done", "Main subtree certified, inputs fresh")
     assert rows[1][0] == "step2" and rows[1][1] == "stale"
     assert "Book2/PropXX/step2.lean" in rows[1][2]
     assert rows[2][0] == "step3" and rows[2][1] == "todo"
-    assert "step3" in rows[2][2] and "step3_sub" in rows[2][2]
+    assert "step2" in rows[2][2]          # blocked behind the stale earlier node
     assert checks == {"deps": True, "integrity": True, "orphans": []}
 
 
@@ -84,13 +155,14 @@ def test_status_rows_no_backing_file_yet(monkeypatch):
 
 
 def test_status_rows_surfaces_whole_prop_check_failures(monkeypatch):
-    monkeypatch.setattr(L, "changed_files", lambda m: {})
+    # step1 subtree-certified with an empty file set (changed_snapshot({}) is trivially fresh) → done,
+    # so the row is green and the three whole-prop checks are what's under test.
     _patch_status_deps(monkeypatch, main_names=["step1"],
-                        manifest={"certified": {"step1": {"kind": "leaf", "inputs": []}}, "files": {}},
+                        manifest={"subtrees": {"step1": {"nodes": ["step1"], "files": {}}}},
                         cones={"step1": {"step1"}}, deps_ok=False, integrity_ok=False,
                         orphans=["old_step3b"])
     rows, checks = L.status_rows("Book2/PropXX")
-    assert rows == [("step1", "done", "cone certified, inputs fresh")]
+    assert rows == [("step1", "done", "Main subtree certified, inputs fresh")]
     assert checks == {"deps": False, "integrity": False, "orphans": ["old_step3b"]}
 
 

@@ -12,7 +12,6 @@ private theorem golden_arith (A M Q F AH BH : ℝ)
   subst hQ hA hAH
   linear_combination (-2 * M) * hBH - hpy
 
-set_option systemE.solverTime 30 in
 theorem helper_2_11_step8_golden
     (a b e f h : Point)
     (step8_bisect : |(a─b)| = |(a─e)| + |(a─e)|)

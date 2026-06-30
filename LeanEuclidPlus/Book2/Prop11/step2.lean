@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-set_option systemE.solverTime 30 in
 theorem helper_2_11_step2
     (a e c : Point)
     (hbet : between a e c) (hlen : |(a─e)| = |(e─c)|) :

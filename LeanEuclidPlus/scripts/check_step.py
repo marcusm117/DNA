@@ -559,7 +559,7 @@ def _restamp_node(propdir, name, kind):
         inputs = L.node_inputs(propdir, name, occs)
         certified[name] = {"kind": kind, "inputs": inputs}
         for f in inputs:
-            sha = L.file_sha(os.path.join(L.BOOK_ROOT, f))
+            sha = L.content_sha(os.path.join(L.BOOK_ROOT, f))
             if sha is not None:
                 files[f] = sha
         manifest["files"], manifest["certified"] = files, certified
@@ -593,7 +593,7 @@ def _audit_with_manifest(propdir, order, success_msg, source, subtree_roots=()):
         inputs = L.node_inputs(propdir, name, occs)
         certified[name] = {"kind": kind, "inputs": inputs}
         for f in inputs:                              # re-hash each input at this audit's time
-            sha = L.file_sha(os.path.join(L.BOOK_ROOT, f))
+            sha = L.content_sha(os.path.join(L.BOOK_ROOT, f))
             if sha is not None:
                 files[f] = sha
 

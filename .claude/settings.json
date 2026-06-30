@@ -83,6 +83,26 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /h/56/taddmao/code/autoform/DNA/.claude/hooks/step_order_hook.py",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /h/56/taddmao/code/autoform/DNA/.claude/hooks/step_order_hook.py",
+            "timeout": 10
+          }
+        ]
       }
     ]
   }

@@ -7,7 +7,6 @@ namespace Elements.Book2
 
 open Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_2_11_step8_pyth
     (a b c e : Point) (AB AC : Line)
     (haAB : a.onLine AB) (hbAB : b.onLine AB) (hab : a ≠ b)

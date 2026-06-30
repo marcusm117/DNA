@@ -95,6 +95,29 @@ def blank_comments(src: str) -> str:
     return "".join(out)
 
 
+def _trailing_comment_lineno(src):
+    """Line numbers (1-based) in `src` that carry a TRAILING `--` comment — a `--` that is outside a
+    double-quoted string AND has non-whitespace code before it on the line. Full-line comments (the line
+    starts with `--`, after optional indent) are NOT flagged, and a `--` inside a `euclid_sentence "…"`
+    string is NOT flagged (e.g. the `cut---equally` text). Single-line strings only (Lean sentence
+    strings never span lines). Used by integrity_scan to enforce "Main comments on their own line", so
+    every Main comment is full-line ⟹ stripped by content_sha ⟹ comment edits never re-stale the board."""
+    bad = []
+    for i, line in enumerate(src.split("\n"), 1):
+        if line.lstrip().startswith("--"):
+            continue                                       # full-line comment — allowed
+        in_str = False
+        for j in range(len(line) - 1):
+            c = line[j]
+            if c == '"' and (j == 0 or line[j - 1] != "\\"):
+                in_str = not in_str
+            elif not in_str and line[j:j + 2] == "--":
+                if line[:j].strip():                       # real code before the `--` → trailing comment
+                    bad.append(i)
+                break
+    return bad
+
+
 def natural_key(s):
     """Sort key so `step2` < `step10` (numeric runs compared as ints, not lexicographically)."""
     return [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", s)]
@@ -1508,6 +1531,27 @@ def integrity_scan(propdir, names=None):
     # every file in the dev state should carry the EXACT 30s cap, and import NO pipeline file
     for path in files_to_scan:
         src = open(path, encoding="utf-8").read()
+        rel = os.path.relpath(path, BOOK_ROOT)
+        # MAIN HYGIENE (the prop's top-level `propdir/Main.lean` only — NOT a `template/Main.lean` or any
+        # other same-named file deeper in the tree) — keep Main comment-edit-immune so an edit never re-stales
+        # the whole board. Main is the shared container every top-level step depends on (node_inputs), and
+        # content_sha strips full-line `--` comments — so two rules make comment edits in Main FREE:
+        #   (1) no `-- @args:` in Main (it's the one comment content_sha keeps, load-bearing for the wire),
+        #   (2) comments on their OWN line (no trailing `code -- note`, which content_sha would NOT strip).
+        if os.path.realpath(path) == os.path.realpath(os.path.join(propdir, "Main.lean")):
+            for m in ARGS_ANNOT.finditer(src):
+                ln = src.count("\n", 0, m.start()) + 1
+                problems.append(f"{rel}:{ln} has a `-- @args:` line in Main.lean — `@args` is BANNED in "
+                                f"Main: it's load-bearing (kept in the cert hash), so editing it re-stales "
+                                f"EVERY top-level step at once (Main is the shared container). Instead, "
+                                f"name the backing helper's object binders to MATCH this sentence's "
+                                f"call-site points so no `@args` map is needed; put `@args` only on a "
+                                f"sub-node `have` inside a backing file (blast radius = one cone).")
+            for ln in _trailing_comment_lineno(src):
+                problems.append(f"{rel}:{ln} has a TRAILING `--` comment in Main.lean — Main comments must "
+                                f"be on their OWN line. Full-line comments are stripped from the cert hash "
+                                f"(so editing them is free); a trailing comment is NOT, so it would re-stale "
+                                f"every top-level step. Move the comment to the line above.")
         if not CAP_RE_EXACT.search(src):
             if CAP_RE.search(src):
                 problems.append(f"{os.path.relpath(path, BOOK_ROOT)} has a `solverTime` cap that is NOT "
@@ -1654,6 +1698,33 @@ def file_sha(path):
     return h.hexdigest()
 
 
+# A full-line `--` comment (whole line + its newline), EXCEPT a `-- @args:` line. Anchored to line
+# start, so it can NEVER hit a `--` inside a `euclid_sentence "…"` string literal (those lines start
+# with `euclid_sentence`, not `--`) — no string tokenizing needed. The `@args:` negative lookahead
+# preserves the one load-bearing comment (it drives the wire). Subsumes the old @assumption-only strip
+# (`-- @assumption …` lines are full-line comments that aren't `@args:`, so they're stripped too).
+_COMMENT_LINE = re.compile(r'(?m)^[ \t]*--(?![ \t]*@args:).*$\n?')
+
+
+def content_sha(path):
+    """sha256 hex of a file with its full-line `--` comments REMOVED (keeping `-- @args:`) — the hash
+    the certification manifest uses (write AND read sides). Lean comments are semantically inert: they
+    feed no build, so editing/adding/deleting one must NOT flip a certified node to stale. Stripping
+    the WHOLE line incl. newline makes present↔absent↔reworded all normalize identically. This matters
+    most for `Main.lean`, the shared container every top-level step depends on (node_inputs) — a comment
+    edit there used to re-stale the whole board. KEPT in the hash (must still register): `-- @args:`
+    (load-bearing for the wire — integrity_scan bans it from Main, so it only lives on backing-file
+    sub-nodes), sentence strings, code, and `/- … -/` BLOCK comments (a deliberate conservative choice
+    — anchored line-stripping doesn't touch them, so editing a block comment still re-stales; keep
+    notes in `--` line comments). Returns None if the file doesn't exist. NOT for byte-exact uses —
+    bake_index/smt_probe keep file_sha."""
+    if path is None or not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as f:
+        norm = _COMMENT_LINE.sub("", f.read())
+    return hashlib.sha256(norm.encode("utf-8")).hexdigest()
+
+
 def cert_path(propdir):
     """The manifest JSON path for this prop: `.lake/faithful-certified/<key>.json` (same <key> as
     prop_lock). `.lake/` is git-ignored, so the sidecar never shows up in git or in integrity_scan."""
@@ -1681,14 +1752,41 @@ def node_inputs(propdir, name, occs):
 
 
 def subtree_inputs(propdir, root, occs=None):
-    """The complete input-file set for a whole-cone certificate rooted at `root`.
-    Unlike the per-node `files` table, this snapshot is used by Main status and must
-    not be refreshed by a later plain `check_step <node>`; otherwise a local node
-    recheck could mask that the Main subtree was not re-audited."""
+    """The input-file set for a whole-cone certificate rooted at `root` — SCOPED to the files this
+    cone's audit actually reads: each cone node's backing file, plus the container each cone node is
+    wired in WHEN that container is itself in the cone (a sub-node is wired in its parent's backing file;
+    `root` is wired in Main). A FOREIGN sibling container that merely REUSES a shared cone leaf — e.g. a
+    later Main step whose backing file wires the same `have step8_eb : … := by sorry` helper — is NOT
+    read by this cone's audit, so it is EXCLUDED. Otherwise editing that sibling would spuriously re-stale
+    this cone (the shared-leaf backward cascade: touching step21 re-staling step8). The sibling's own use
+    of the shared leaf stays covered by ITS subtree cert (the sibling's backing file IS in its own cone).
+    The shared leaf's P (its backing file) is in every reusing cone's snapshot, so a real edit to the leaf
+    still re-stales them all — only the cross-container container-hash contamination is dropped.
+
+    Unlike the per-node `node_inputs` table (which keeps every container, for `--whatchanged`'s blast
+    radius), this snapshot is used by Main status and must not be refreshed by a later plain
+    `check_step <node>`; otherwise a local node recheck could mask that the Main subtree was not
+    re-audited."""
     occs = occs or parse_occurrences(propdir)
+    cone = cone_names(propdir, root)
+    # The containers this cone's audit legitimately reads: every cone member's backing file (sub-nodes are
+    # wired in a parent's backing file) plus Main (where `root` is wired). Any occ.file outside this set is
+    # a foreign sibling container reusing a shared leaf — excluded from the snapshot.
+    cone_files = set()
+    for name in cone:
+        bf = backing_file(propdir, name)
+        if bf is not None:
+            cone_files.add(os.path.relpath(os.path.realpath(bf), BOOK_ROOT))
+    cone_files.add(os.path.relpath(os.path.realpath(main_file(propdir)), BOOK_ROOT))
     files = set()
-    for name in cone_names(propdir, root):
-        files.update(node_inputs(propdir, name, occs))
+    for name in cone:
+        bf = backing_file(propdir, name)
+        if bf is not None:
+            files.add(os.path.relpath(os.path.realpath(bf), BOOK_ROOT))
+        for nd in occs.get(name, []):
+            rel = os.path.relpath(os.path.realpath(nd.file), BOOK_ROOT)
+            if rel in cone_files:                       # in-cone container (or Main) — read by this audit
+                files.add(rel)
     return sorted(files)
 
 
@@ -1697,7 +1795,7 @@ def subtree_certificate(propdir, root, occs=None):
     inputs = subtree_inputs(propdir, root, occs)
     hashes = {}
     for f in inputs:
-        sha = file_sha(os.path.join(BOOK_ROOT, f))
+        sha = content_sha(os.path.join(BOOK_ROOT, f))
         if sha is not None:
             hashes[f] = sha
     return {
@@ -1710,7 +1808,7 @@ def changed_snapshot(files):
     """Diff a saved {relpath: sha} snapshot against disk now."""
     changed = {}
     for f, sha in sorted((files or {}).items()):
-        now = file_sha(os.path.join(BOOK_ROOT, f))
+        now = content_sha(os.path.join(BOOK_ROOT, f))
         if now is None:
             changed[f] = "deleted"
         elif now != sha:
@@ -1748,7 +1846,7 @@ def changed_files(manifest):
     `--status`/STATUS.md both need — factored here so they can never diverge."""
     changed = {}
     for f, sha in sorted(manifest.get("files", {}).items()):
-        now = file_sha(os.path.join(BOOK_ROOT, f))
+        now = content_sha(os.path.join(BOOK_ROOT, f))
         if now is None:
             changed[f] = "deleted"
         elif now != sha:
