@@ -75,7 +75,7 @@ theorem proposition_11 : ∀ (a b : Point) (AB : Line),
   euclid_apply (intersection_lines GH CD) as k
   euclid_sentence "2.11.7"
     "and let $GH$ be drawn through to (point) $K$."
-    (step7 : k.onLine GH ∧ k.onLine CD) := by euclid_apply (helper_2_11_step7 k GH CD (by euclid_assumption "" (show k.onLine GH; assumption)) (by euclid_assumption "" (show k.onLine CD; assumption)))
+    (step7 : k.onLine GH) := by euclid_apply (helper_2_11_step7 k GH CD (by euclid_assumption "" (show k.onLine GH; assumption)) (by euclid_assumption "" (show k.onLine CD; assumption)))
 
   euclid_sentence "2.11.8"
     "I say that $AB$ has been cut at $H$ such as to make the rectangle contained by $AB$ and $BH$ equal to the square on $AH$."

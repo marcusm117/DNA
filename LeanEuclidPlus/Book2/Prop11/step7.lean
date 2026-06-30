@@ -7,7 +7,7 @@ namespace Elements.Book2
 theorem helper_2_11_step7
     (k : Point) (GH CD : Line)
     (hkGH : k.onLine GH) (hkCD : k.onLine CD) :
-    k.onLine GH ∧ k.onLine CD := by
-  exact ⟨hkGH, hkCD⟩
+    k.onLine GH := by
+  exact hkGH
 
 end Elements.Book2
