@@ -23,6 +23,6 @@ theorem helper_2_5_step13_dhdb_tri (b d e h : Point) (AB BE DG : Line)
   have hABDG : AB ≠ DG := fun heq => hhoffAB (heq ▸ hhDG)
   unfold formTriangle
   repeat' apply And.intro
-  all_goals first | assumption | euclid_finish
+  all_goals first | assumption
 
 end Elements.Book2
