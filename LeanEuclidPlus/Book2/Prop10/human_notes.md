@@ -9,4 +9,4 @@ glm 1 to 16 done.
 So faithful map total costed 26.56$. mapping should be a lot cheaper. I think something like 1-5$ is reasonable 
 - faithful prove costed 41+24=65$. for 40 steps this seems reasonable. it's about 1.6$ per step.
 
-Total cost is 90$.
+Total cost is 90$. However now that we know mapping is cheaper (<1$), the actual cost is more so 41+24+1=66$.
