@@ -911,7 +911,7 @@ def mode_status(propdir):
         main_nodes = L.main_nodes_in_order(propdir)
         if not main_nodes:
             print("  Main has no nodes yet (no `(stepN : …)` / top-level `have` stubs) — map the "
-                  "sentences first (faithful-map Phase A).")
+                  "sentences first (Phase A: faithful-split → faithful-translate → faithful_map_assemble.py).")
             return 0
         names = [nd.name for nd in main_nodes]
         print("  Drive Main's nodes in order (each --subtree certifies that node's whole cone):")

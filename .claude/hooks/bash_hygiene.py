@@ -49,7 +49,6 @@ ALLOWED_SUMMARY = ("Bash here is reserved for: read-only git (status/diff/log/sh
                    "ls-files), python3 scripts/check_*.py, scripts/check_faithful.sh, "
                    "python3 scripts/wire_main.py, python3 scripts/find.py, "
                    "python3 scripts/bake_index.py, python3 scripts/scaffold_step.py, "
-                   "python3 scripts/faithful_map_pipeline.py, "
                    "python3 scripts/faithful_map_assemble.py, python3 -m pytest, "
                    "lake env/exe, and cd/pwd/mkdir. "
                    "For everything else use the Read / Grep / Glob tools (find.py is the sanctioned "
@@ -134,7 +133,6 @@ def main():
             ok = (nxt.startswith("scripts/") or nxt.startswith("./scripts/")) and (
                 arg.startswith("check_") or arg in ("wire_main.py", "smt_probe.py",
                                                     "find.py", "bake_index.py", "scaffold_step.py",
-                                                    "faithful_map_pipeline.py",
                                                     "faithful_map_assemble.py"))
             # also allow running the parse-only test suite bare: `python3 -m pytest tests/…`
             if not ok and nxt == "-m" and nxt2 == "pytest":
@@ -184,6 +182,29 @@ def main():
 
         if base == "check_faithful.sh":
             continue
+
+        if base == "rm":
+            # Scoped delete: agents MAY remove files inside a prop folder (Book<N>/Prop<NN>/…) — their
+            # own workspace, with git as the safety net (they can't git, the human commits). Anything
+            # else — flat originals (Book/PropNN.lean), SystemE, scripts, whole trees, an absolute path,
+            # or a `..` escape — is HARD-DENIED regardless of the ask/deny knob.
+            targets = [t for t in toks[i + 1:] if not t.startswith("-")]
+            prop_re = re.compile(r"(^|/)Book\d+/Prop\d+(/|$)")
+            safe = bool(targets) and all(
+                prop_re.search(t) and ".." not in t.split("/") and not t.startswith("/")
+                for t in targets)
+            if safe:
+                continue
+            print(json.dumps({"hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason":
+                    "`rm` here may ONLY target files inside a prop folder (Book<N>/Prop<NN>/…) — the "
+                    "agent's own workspace, with git as the safety net. Deleting a flat original, "
+                    "SystemE, scripts, a whole tree, or anything via an absolute path or `..` is "
+                    "blocked. " + ALLOWED_SUMMARY,
+            }}))
+            sys.exit(0)
 
         # Anything else entirely unrecognized — not a denylisted inspection binary, not python, not
         # one of the path helpers, not a read-only git/lake/pipeline-script invocation.

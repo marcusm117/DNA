@@ -12,7 +12,8 @@ description: >
 
 > **This repo is FAITHFUL-PROOF only.** This skill is the PROVING-METHODOLOGY reference invoked WITHIN
 > `faithful-prove`'s **P (Provable)** step — the decision procedure for actually closing a goal. The
-> pipeline is A → gate → B → gate → C: **`faithful-map`** (A — translate sentences to claim types) →
+> pipeline is A → gate → B → gate → C: **Phase A** (`faithful-split` → `faithful-translate` →
+> `faithful_map_assemble.py` — translate sentences to claim types) →
 > **`faithful-prove`** (B — prove each step with the recursive SF/SP/P atom via `check_step.py`, which
 > delegates the proving to THIS skill) → Phase C (mechanical: the human runs `scripts/wire_main.py` +
 > faithfulness checks — not a skill).

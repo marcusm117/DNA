@@ -3,6 +3,10 @@ LeanEuclidPlus/book2.json
 experiments/
 LeanEuclidPlus/scripts/step_signatures.json
 
+# Faithful-pipeline agent transcripts (run_faithful.py). The `cost/` JSON ledger IS committed;
+# the full streamed agent traces under `runs/` are large/noisy and stay local-only.
+LeanEuclidPlus/Book*/Prop*/runs/
+
 
 # Lake build files
 .lake/

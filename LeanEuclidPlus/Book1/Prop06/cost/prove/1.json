@@ -1,0 +1,10 @@
+{
+  "cumulative_usd": 0.0,
+  "seq": 1,
+  "session_id": null,
+  "status": {
+    "checks": {},
+    "nodes": []
+  },
+  "this_session_usd": 0.0
+}

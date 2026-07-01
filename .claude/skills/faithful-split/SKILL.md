@@ -1,7 +1,8 @@
 ---
 name: faithful-split
 description: >
-  Stage 1 of the faithful-map pipeline: split a Euclid proof's English text into atomic assertions
+  Stage 1 of the Phase-A sentence-map pipeline (faithful-split → faithful-translate →
+  faithful_map_assemble.py): split a Euclid proof's English text into atomic assertions
   and mark roles/justifications. TEXT-ONLY — no Lean, no diagram, no codebase reading. Outputs JSON
   to `Book<N>/PropNN/split.json`. Invoked with a prop path, e.g. `/faithful-split Book2/Prop11`.
 ---

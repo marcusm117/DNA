@@ -28,8 +28,8 @@ to import (the facts are figure-specific; you re-prove each against your figure)
 authoritative olean-mode `check_faithful.sh` + `check_steps.py` + `check_signatures.py`. Use them as
 references for **STRUCTURE ONLY**: what a finished `Main` looks like, the helper naming law, the
 `@args` line, leaf-vs-container shape, decomposition granularity. **NEVER copy a claim TYPE or a
-decomposition across props** — claims are per-sentence translations (faithful-map Rule 0: the sentence
-is the claim), so a shape that fit Prop02's sentence is unfaithful on a prop whose sentence says
+decomposition across props** — claims are per-sentence translations (the sentence is the claim —
+`faithful-translate`'s core rule), so a shape that fit Prop02's sentence is unfaithful on a prop whose sentence says
 something else. Format: copy freely. Content: translate THIS prop's sentences from scratch. Every
 other Book-2 prop is at a varying/in-progress state — not a reference.)
 
@@ -39,12 +39,19 @@ other Book-2 prop is at a varying/in-progress state — not a reference.)
 [LeanEuclidPlus/FAITHFUL.md](LeanEuclidPlus/FAITHFUL.md) — read this first if you're driving the process.
 
 To make a proof FAITHFUL (annotate it with `euclid_sentence`s so it follows Euclid's sentence
-structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate → B → gate → C** (two
-skills + one mechanical step):
-1. **`faithful-map`** ([.claude/skills/faithful-map/SKILL.md](.claude/skills/faithful-map/SKILL.md)) —
-   Phase A: TRANSLATE each sentence into a Lean claim type in `PropNN/Main.lean`. Bodies are **all
-   `:= by sorry`; NO step files; NO `euclid_apply (helper…)` wiring** (the all-sorry Main elaborates
-   cheap/SMT-free). STOPS for **human review** + `check_steps.py --save`.
+structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate → B → gate → C**
+(Phase A = three stages · Phase B = `faithful-prove` · Phase C = mechanical):
+1. **Phase A — the sentence map, in three stages** (translation only; no proving):
+   a. **`faithful-split`** ([.claude/skills/faithful-split/SKILL.md](.claude/skills/faithful-split/SKILL.md)) —
+      split the English proof text into atomic assertions → `PropNN/split.json` (TEXT-ONLY).
+   b. **`faithful-translate`** ([.claude/skills/faithful-translate/SKILL.md](.claude/skills/faithful-translate/SKILL.md)) —
+      translate each assertion into a Lean claim type → `PropNN/translate.json` (diagram + vocab + signature only).
+   c. **`python3 scripts/faithful_map_assemble.py PropNN`** — deterministic (no LLM): assembles
+      `PropNN/Main.lean` from `translate.json` (signature + `euclid_intros` + object-producing
+      constructions + one `euclid_sentence … := by sorry` per sentence). Bodies are **all `:= by sorry`;
+      NO step files; NO `euclid_apply (helper…)` wiring** (the all-sorry Main elaborates cheap/SMT-free).
+   Then confirm with `check_step.py PropNN --provable` (Main elaborates) + `check_faithful.py` (text
+   tiling + construction deps). STOPS for **human review** + `check_steps.py --save`.
 2. **`faithful-prove`** ([.claude/skills/faithful-prove/SKILL.md](.claude/skills/faithful-prove/SKILL.md)) —
    Phase B: prove each step with the **recursive SF/SP/P atom** (delegates to `prove-euclid`). The agent
    creates/proves `stepN.lean` (recursing into `have`+backing files until every build ≤30s) and
@@ -118,8 +125,10 @@ Every other Book-2 prop is at a varying/in-progress state — follow the skills'
   - **`python3 scripts/check_step.py …` / `check_steps.py` / `check_faithful.py` / `check_signatures.py`
     / `scripts/check_faithful.sh` / `python3 scripts/wire_main.py …` / `python3 scripts/scaffold_step.py …`**
     — the build/verify pipeline and backing-file scaffolder. Run BARE, no pipe to `grep`/`head` (the hook
-    denies the pipe; just read what the script prints). `scaffold_step.py` creates a skeleton `stepN.lean`
-    backing file with correct naming law and claim type pre-filled (Phase B uses this to avoid boilerplate).
+    denies the pipe; just read what the script prints). `scaffold_step.py <file-or-propdir> <node>`
+    creates a skeleton backing file with correct naming law + 30s cap + claim type pre-filled — for
+    BOTH Main `euclid_sentence` steps and `have` sub-nodes (Phase B uses this to avoid boilerplate;
+    new node ⟹ scaffold first).
   - **read-only git**: `status`/`diff`/`log`/`show`/`branch`/`blame`/`ls-files` (git mutations are
     denied by policy — the human owns git, it's the safety net).
   - **path/shell helpers**: `cd LeanEuclidPlus` (the one allowed cd — see the bare-command rule above),

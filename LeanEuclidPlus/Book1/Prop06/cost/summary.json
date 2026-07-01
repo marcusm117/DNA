@@ -1,0 +1,12 @@
+{
+  "phases": {
+    "prove": 0.0,
+    "split": 0.0,
+    "translate": 0.0
+  },
+  "prop": "Book1/Prop06",
+  "prove_checkpoints": [
+    "cost/prove/1.json"
+  ],
+  "total_usd": 0.0
+}

@@ -2,8 +2,8 @@
 
 > **⚠ HISTORICAL / SUPERSEDED for the faithfulness workflow.** This doc describes the original
 > hand-built setup (how Book 2's texts/diagrams/statements were created). For **making proofs
-> faithful**, use [`../FAITHFUL.md`](../FAITHFUL.md) (the human operator guide) + the `faithful-map`
-> and `faithful-prove` skills — NOT the annotation approach sketched here. The dataset-extraction
+> faithful**, use [`../FAITHFUL.md`](../FAITHFUL.md) (the human operator guide) + the `faithful-split`
+> / `faithful-translate` / `faithful-prove` skills — NOT the annotation approach sketched here. The dataset-extraction
 > parts below are still accurate; the per-prop annotation guidance is outdated.
 
 How to extend the LeanEuclid benchmark to Book 2 of Euclid's *Elements*, mirroring how
@@ -86,7 +86,8 @@ Notes specific to Book 2:
 > checker. For making a proof faithful — the `euclid_sentence` annotations, the A→gate→B→gate→C
 > pipeline, and the authoritative `check_faithful.sh Book2.PropNN.Main` (book-aware, two-arm deps:
 > Main construction `… as …` OR the citing sentence's helper cone) — follow
-> **[`../FAITHFUL.md`](../FAITHFUL.md)** plus the `faithful-map` / `faithful-prove` skills. The spec
+> **[`../FAITHFUL.md`](../FAITHFUL.md)** plus the `faithful-split` / `faithful-translate` /
+> `faithful-prove` skills. The spec
 > itself is [faithful.txt](faithful.txt). Everything below (dataset extraction, statement-only texts,
 > the importer) is still accurate.
 

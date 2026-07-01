@@ -1,7 +1,8 @@
 ---
 name: faithful-translate
 description: >
-  Stage 2 of the faithful-map pipeline: translate each atomic assertion from split.json into a Lean
+  Stage 2 of the Phase-A sentence-map pipeline (faithful-split → faithful-translate →
+  faithful_map_assemble.py): translate each atomic assertion from split.json into a Lean
   claim type, using ONLY the diagram + the vocabulary sheet below + the prop signature. NO codebase
   reading beyond the prop signature. Outputs `Book<N>/PropNN/translate.json`. Invoked with a prop
   path, e.g. `/faithful-translate Book2/Prop11`.
@@ -206,7 +207,30 @@ For intro/conclusion entries, carry them through with no claim:
      + the `construction.calls` array (the sequence of Lean calls that produce the objects)
    - If deduction: write the `lean_claim` + translate any justifications to `assumptions`
 5. Write to `Book<N>/PropNN/translate.json`.
-6. Report a summary table and STOP for human review.
+6. Run the GATE-A self-review below, fix anything it flags, THEN report a summary table and STOP for
+   human review.
+
+---
+
+## GATE-A SELF-REVIEW (run before you STOP — these are the exact issues humans keep catching)
+
+Pass over your own `translate.json` and confirm each box. This is the reviewer wisdom salvaged from
+the old monolithic Phase-A skill; it is load-bearing for faithfulness:
+
+  □ No `null`/`True`/vacuous claim on any non-structural entry — no definitional tautology
+    (`|(a─b)| = |(b─a)|`, `x = x`) that holds regardless of the geometry. Every deduction/construction
+    asserts something; state THAT. (Only intro/conclusion carry `lean_claim: null`.)
+  □ Every `assumptions` entry: (a) its `substring` is a verbatim substring of the entry text; (b) its
+    `lean_type` is a genuine INPUT the step CONSUMES — NOT a conjunct of the step's own claim. If
+    unsure, DROP it — the INPUTS-ONLY rule is load-bearing.
+  □ No construction-byproduct incidences in any `lean_claim` — only what the sentence asserts, not the
+    extra `.onLine`/intersection facts a construction happens to deposit.
+  □ Every figure-area claim uses the figure's REAL corners (from the diagram); no region double-counted
+    or omitted.
+  □ No claim expanded into facts the text didn't state — one entry → its one atomic idea; never invent.
+  □ Each `text` is carried through verbatim from `split.json` (unchanged, not reworded).
+  □ You did NOT open any `SystemE/Theory/Inferences/**` (or any file outside the allowed set) — writing
+    a claim from axioms is proving, not translating.
 
 ---
 

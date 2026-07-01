@@ -5,14 +5,16 @@ description: >
   step, IN ISOLATION, using the recursive SF/SP/P atom and the `check_step.py` script. Main's sentence
   bodies stay `:= by sorry` the whole time; the SCRIPT does all wiring/trace_state transiently — you
   only ever write proof bodies and add `have`+backing-file decompositions. Use AFTER the sentence map
-  is written and human-approved (`faithful-map` / Phase A). When `check_step.py <propdir> --all` exits
+  is written and human-approved (Phase A: `faithful-split` → `faithful-translate` →
+  `faithful_map_assemble.py`). When `check_step.py <propdir> --all` exits
   0, STOP — Phase C (the human running `wire_main.py`) is mechanical, not a skill. Delegates the actual
   proving to `prove-euclid`. Invoked with a path, e.g. `/faithful-prove Book2/Prop04/Main.lean`.
 ---
 
 # Phase B — prove each step with the recursive SF/SP/P atom (the scripts own all wiring)
 
-By now (via `faithful-map` / Phase A, human-approved) `Book<N>/PropNN/Main.lean` is the proposition
+By now (via Phase A — `faithful-split` → `faithful-translate` → `faithful_map_assemble.py`,
+human-approved) `Book<N>/PropNN/Main.lean` is the proposition
 signature + `euclid_intros` + the object-producing constructions + one
 `euclid_sentence "loc" "txt" (stepN : <claim>) := by sorry` per Euclid sentence + the intro/conclude
 bookends + the trailing `exact`/`rw` chain. **Every logical body is `:= by sorry`. There are no step
@@ -185,9 +187,14 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
       there. For a `have`/container, SF genuinely tests sufficiency + that the trailing tactics close.)
 
   (c) CREATE the backing file F.lean (naming law):
-        **RECOMMENDED: run `python3 scripts/scaffold_step.py Book<N>/PropNN F`** — this creates the
-        skeleton file with correct imports, namespace, theorem name (`helper_<book>_<prop>_<name>`),
-        and claim type pre-filled from Main. You then edit it to add object/hypothesis binders.
+        **RECOMMENDED: run `python3 scripts/scaffold_step.py <file> F`** — where `<file>` is the file
+        that DECLARES F (`Main.lean` for a sentence step, or the parent `stepK.lean` for a `have`
+        sub-node). (You may also pass just `Book<N>/PropNN` to auto-locate F anywhere in the tree.)
+        This creates the skeleton with correct imports, namespace, 30s cap, theorem name
+        (`helper_<book>_<prop>_<name>`), and claim type pre-filled from wherever F is declared —
+        works for BOTH `euclid_sentence` steps and `have` sub-nodes. You then edit it to add
+        object/hypothesis binders. **New node ⟹ scaffold FIRST; only fill binders + body — never
+        hand-type the imports/cap/header.**
         **`@assumption` hyps — if the node has `-- @assumption` annotations in Main, scaffold also
         pre-populates the backing file with those hypothesis types as `(hassump1 : T1) …` binders.**
         These types are **Phase A's best-guess** reasoning map — written from the sentence TEXT, before

@@ -75,7 +75,8 @@ itself was mid-compile at the kill — which warm deps prevent.
    scripts/check_faithful.sh Book2.Prop04.Main
    ```
 
-   (The old monolithic `/faithful-map` skill still exists as a fallback but is deprecated.)
+   (The old monolithic `/faithful-map` skill has been removed — the 3-stage pipeline above is the
+   only Phase A.)
 
 **▶ 2. HUMAN GATE A — review + freeze the claims (and record the @assumption map).**
    Read each claim type: does it honestly say what that Euclid sentence says? Also eyeball each
@@ -170,8 +171,46 @@ parent — so it has no SF/SP, only a build. Therefore: build Main with `check_s
 (NO node); never pass `Main` as a node (SF/SP/bare with `Main` or with no node FAIL with a message
 pointing here). `propdir_of` requires `Main.lean` to exist, so a prop with no Main is rejected up front.
 
-## Running many in parallel
-One agent per prop folder; approve each at gate A independently. Book 1 (`Book/`, flat) is untouched.
+## Running many at scale — the headless driver (`run_faithful.py`)
+For a batch (10s of props) drive Claude headless instead of hand-launching sessions.
+`scripts/run_faithful.py` spawns `claude -p` per prop, saves the full agent trace, and logs per-phase
+cost. **Run it from `LeanEuclidPlus/` in YOUR terminal — NOT inside an agent session** (a nested
+`claude` spawn is hard-denied there). Two unattended segments bracket the human gate:
+
+1. **map** — split → translate → assemble → provable, across the whole batch:
+   ```
+   python3 scripts/run_faithful.py map Book1/Prop18 Book1/Prop19 … --concurrency 30
+   ```
+   Each prop stops at GATE-A. Then YOU review every map and freeze it (the human-only gate):
+   ```
+   python3 scripts/check_steps.py --save Book1/PropNN/Main.lean      # per approved prop
+   ```
+2. **prove** — the resumable prove loop, across the whole batch:
+   ```
+   python3 scripts/run_faithful.py prove Book1/Prop18 Book1/Prop19 … --concurrency 30
+   ```
+   Per prop it loops `claude` sessions (`--resume` within one invocation; a fresh invocation continues
+   from the on-disk step files + manifest) until `check_step <propdir> --all` exits 0, writing one
+   checkpoint per session. Then run Phase C (`phase_c.sh`) per certified prop.
+
+**Cost + trace** land under each `PropNN/`:
+- `runs/<phase>-<seq>-<sid>.jsonl` — full streamed agent trace (**git-ignored**).
+- `cost/split.json` · `cost/translate.json` · `cost/prove/<seq>.json` (status snapshot + cumulative $) ·
+  `cost/summary.json` (per-phase + overall). **Committed.** Checkpoint delta = `cumulative_usd` now − prev.
+
+`--dry-run` prints the plan and spawns nothing. `--model M` overrides the model; `--max-resumes K` caps
+prove resumes. Concurrency 30 is fine (funded); builds serialize on the `.lake` flock (thinking
+parallelizes, building doesn't) — if prove wall-time drags, give each prop its own git worktree.
+**The human gates are irreducible** (faithfulness is human-judged; `--save` is human-only; Phase C is
+mechanical-human) — a batch is unattended WITHIN each segment, gated between. **Calibrate on ONE prop
+first** to get a real per-prop $ before scaling to 10, then 30.
+
+## Book 1 at scale
+Book-1 faithful work lands in the folderized `Book1/PropNN/` tree (parallel to the flat, untouched
+`Book/PropNN.lean` originals); `Book1/Prop06` is the vetted pilot. Phase C for a Book-1 prop adds
+`import Book1.PropNN.Main` to `Book1.lean` (mirror of `Book2.lean`) — stage it alongside. Dev-state
+per-prop builds need NO aggregator/lakefile change (a new `Book1/PropNN/` builds under the existing
+`Book1/` source path, as Prop06 does).
 
 ## If a gate fails — what it means / where to fix
 - **Gate A** never "fails" — it's your judgement. If a claim is wrong, fix it in `Main.lean` and

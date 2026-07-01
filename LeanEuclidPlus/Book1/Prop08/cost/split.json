@@ -1,0 +1,24 @@
+{
+  "cost_usd": 0.8308015,
+  "model": "claude-opus-4-8",
+  "phase": "split",
+  "session_id": "2cec29e4-cfe3-4b41-86e1-7356816b827e",
+  "usage": {
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 97172
+    },
+    "cache_creation_input_tokens": 97172,
+    "cache_read_input_tokens": 47413,
+    "inference_geo": "global",
+    "input_tokens": 2289,
+    "iterations": [],
+    "output_tokens": 7533,
+    "server_tool_use": {
+      "web_fetch_requests": 0,
+      "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+  }
+}

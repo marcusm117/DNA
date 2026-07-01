@@ -1,7 +1,8 @@
 # `scripts/` — the faithful-pipeline tooling
 
 The pipeline for making a Euclid proof *faithful* is **A → B → C** (see `../FAITHFUL.md` and the
-`faithful-map` / `faithful-prove` skills). These scripts implement phases B and C plus the audits.
+`faithful-split` / `faithful-translate` / `faithful-prove` skills). Phase A also uses the deterministic
+`faithful_map_assemble.py` assembler. These scripts implement phases A (assemble), B and C plus the audits.
 
 > **Run every script BARE from the repo's `LeanEuclidPlus/` dir** (e.g. `python3 scripts/check_step.py
 > Book2/Prop04 5`). No `cd`, no pipes — see the project CLAUDE.md tool-hygiene rules.
@@ -32,6 +33,8 @@ faithful_lib.py   ← shared CORE (no CLI): SF/SP/P atom, flock+wall-capped buil
 | `smt_probe.py` | research / diagnostics | Builds the "should-close-but-times-out" SMT failure catalog (two-sided evidence per node). Not part of the A→B→C gate. |
 | `bake_index.py` | research / tooling | PURE-PARSE fact database of EVERY declaration (axiom/def/abbrev/opaque/prop/helper/step) → `.lake/index.jsonl`. No Lean, no builds. Incremental: re-parses only changed `.lean` files. `--rebuild` for a full re-parse. You rarely run it directly — `find.py` re-bakes on every query. |
 | `find.py` | research / tooling | **The sanctioned smart-grep** over `bake_index`'s DB — query declarations by `--concludes`/`--consumes`/`--mentions` (symbol×role×polarity; SYM accepts source forms like `Triangle.area`/`∟`/`Point.onLine` and ERRORS on an unknown symbol), `--book`/`--prop` (numeric location), `--cites`/`--depends-of`, `--name` glob, `--grep` (regex over **signature + docstring** — search the math), all combinable. Output is one line per match, `--show {full,conclusion,hyps}` picks which region to print (independent of the filter), `--full` disables width-truncation. Hides the 500+ noisy step files by default — `--kind step` to browse, `--steps` to widen another query. Use this instead of grepping the theory files. |
+| `scaffold_step.py` | **A/B** (agent) | `<file-or-propdir> <node>` → write the skeleton backing file `<node>.lean` (imports + 30s cap + `helper_<book>_<prop>_<node>` header + claim pre-filled) for a Main `euclid_sentence` step OR a `have` sub-node. Kills the per-node boilerplate; the agent fills only binders + body. Refuses to overwrite. |
+| `run_faithful.py` | **driver** (human; spawns `claude`) | Headless batch orchestrator: `map`/`prove <props…>` runs `claude -p` per prop with a concurrency pool, tees the full trace to `PropNN/runs/`, and logs per-phase cost to `PropNN/cost/`. Stops at the human GATE-A between `map` and `prove`. `--dry-run` prints the plan. **Run OUTSIDE an agent session** (nested `claude` spawn is hard-denied there); imports `faithful_lib` for the manifest-derived status snapshot. |
 
 ## Shell wrappers
 
