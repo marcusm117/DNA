@@ -1177,9 +1177,28 @@ def set_theorem_body_sorry(src):
     return src[:assign] + ":= by sorry\n\n" + src[body_end:]
 
 
+def _first_tactic_indent(text):
+    """Leading-space indent of the first non-blank line in `text` (caller blanks comments first), or None
+    if there is none. Distinguishes a FLAT top-level combine tail (at the theorem's 2-space base indent)
+    from a NESTED one (a wlog / by_cases bullet's closer, deeper-indented). It reads the TAIL's own first
+    tactic, so a multi-line node head's continuation indent never confuses the classification."""
+    for line in text.splitlines():
+        if line.strip():
+            return len(line) - len(line.lstrip(" "))
+    return None
+
+
 def set_node_isolated_sp(src, node, nodes, propdir, book):
     """Return `src` transformed for an ISOLATED SP build of `node` in its container:
-      - the COMBINE TAIL (everything after the last node's body) → `sorry`, so the combine NEVER runs;
+      - the COMBINE TAIL (everything after the last node's body) → `sorry`, so the combine NEVER runs —
+        but ONLY when that tail is FLAT (at the theorem's top-level 2-space indent), the case the stub was
+        built for. A NESTED tail (the last node lives inside a wlog / by_cases bullet, so its closer is
+        deeper-indented) is LEFT INTACT: stubbing it at the hardcoded 2-space indent would delete that
+        bullet's own closer and drop a `sorry` at the wrong scope (→ "unsolved goals" + "no goals").
+        Leaving it is safe — a nested Main tail is always trivial witness glue (`exact …` /
+        `euclid_conclude_sentence`) that builds from the sorry-typed sibling nodes, so it costs nothing and
+        cannot false-fail SP; the only thing skipped is isolating SP from a HEAVY SMT combine, which a
+        witness tail never is.
       - `node` → WIRED (its `(by assumption)` call + helper import);
       - ALL OTHER nodes: untouched (they are already dev `:= by sorry`, contributing only their claim
         TYPES as context — that IS the parent's supply).
@@ -1190,8 +1209,12 @@ def set_node_isolated_sp(src, node, nodes, propdir, book):
     # tail edit first (it is at the highest offset — after every node body)
     if tail is not None:
         ts, te = tail
-        # only truncate if the tail is AFTER this node (it always is: tail_start = last node's body_end)
-        out = out[:ts] + "\n  sorry\n" + out[te:]
+        # Stub ONLY a flat top-level tail (first tail tactic at the ≤2-space base). A deeper indent ⟹ the
+        # last node sits inside a nested block ⟹ leave the real tail intact (see docstring); the hardcoded
+        # 2-space `sorry` stub would corrupt that block.
+        tail_indent = _first_tactic_indent(blank_comments(src[ts:te]))
+        if tail_indent is not None and tail_indent <= 2:
+            out = out[:ts] + "\n  sorry\n" + out[te:]
     # then wire THIS node (its body_start/body_end are < ts, so unaffected by the tail edit)
     out = set_node_state(out, node, "wired", propdir, book)
     return out

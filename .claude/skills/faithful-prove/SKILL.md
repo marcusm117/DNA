@@ -36,11 +36,13 @@ all of that.
   > no parent). So you NEVER pass `Main` as a node argument. The ONLY no-node command is
   > `check_step <propdir> --provable` = "build Main, tolerate sorry" (the Phase-A skeleton check; Main
   > having no parent gets only the build, not SF/SP). `--sufficient`/`--suppliable` with no node, or
-  > with `Main`, FAIL with a message saying exactly this. To check a SENTENCE inside Main, pass that
-  > sentence's node (`step5`), whose container is Main.
+  > with `Main`, FAIL with a message saying exactly this. To check a SENTENCE (or a shared `have`, below)
+  > inside Main, pass its node name (`step5`), whose container is Main. ("`Main` is not a node" means the
+  > FILE/root; a `have` or sentence INSIDE it is a node.)
 - **Goal node** = a named `:= by sorry` body. Two forms, identical at the proof level:
   - **Main only:** `euclid_sentence "loc" "txt" (stepN : C) := by sorry`  (from Phase A — don't add these).
-  - **anywhere:** `have <name> : C := by sorry`  (you add these when decomposing).
+  - **anywhere, INCLUDING Main:** `have <name> : C := by sorry`  (you add these when decomposing; in Main
+    only for a shared figure-fact — see below). A `have`-node is handled the same wherever it lives.
 - **Backing file** = the helper that proves a node. **NAMING LAW (the script enforces it, abort-loud):**
   > node name  ≡  `<name>.lean` basename  ≡  `theorem helper_<book>_<prop>_<name>`.
   > `have step27_bigsq : … := by sorry` ↔ `step27_bigsq.lean` ↔ `theorem helper_2_4_step27_bigsq` (book 2,
@@ -364,6 +366,12 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
     stripped; editing it would re-stale the whole board. The own-line gate makes every Main comment
     strippable, so comment churn in Main (explanatory `-- h between a b` notes, `@assumption` lines) is
     always free.
+- **A figure-fact used by ≥2 Main sentences → hoist it to a plain `have shared : <claim> := by sorry` IN
+  Main** (proved once, backed by `shared.lean`), so each consuming step discharges it by `assumption`
+  instead of re-deriving (the Prop08 SP-isolation fix). It's a normal node — script wires it. Use Main's
+  own point names so NO `@args` is needed (Main forbids `@args`). It's not a sentence, so it's invisible
+  to faithfulness/claim-freeze (no re-`--save`). Add it BEFORE certifying the consumers (a Main edit
+  re-stales certified steps).
 - **You never wire Main and never build an all-wired container.** Don't use `--all` as your driving
   loop or to find failures (it re-checks EVERY node — minutes wasted); drive with per-node
   `check_step <node>` and confirm a container/step with `check_step --subtree <node>` (scoped to that
