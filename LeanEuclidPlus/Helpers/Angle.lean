@@ -41,4 +41,21 @@ theorem corresponding_angle (b c d e h : Point) (L1 L2 T : Line)
   -- symmetries (∠ d:h:b = ∠ b:h:d, ∠ h:e:c = ∠ c:e:h) close the chain
   euclid_finish
 
+/- Angle split by an interior ray — the curried `sum_angles_onlyif` axiom. Vertex `a`, ray `a→b` on
+   `L`, ray `a→c` on `M`, and an interior direction `d` off both `L` and `M` with `b`,`c` each on the
+   `d`-side of the OTHER ray's line; then the whole angle `∠ b:a:c` splits as `∠ b:a:d + ∠ d:a:c`.
+
+   The recurring Book-1 angle-arithmetic shape (~13 sites across Prop05/07/14/20/24…): the FLAT proofs
+   call the axiom bare and let `euclid_apply` discharge the `sameSide` preconditions via SMT — this
+   wrapper takes them as ATOMIC hyps so a faithful-pipeline caller discharges by `assumption` with ZERO
+   SMT (the OffLine/SameSide/Pasch pattern). Its converse `sum_angles_if` (angle-sum ⟹ the two sameSide
+   facts, Prop18) is the natural sibling — PROMOTE it here when a caller needs that direction. -/
+theorem angle_split (a b c d : Point) (L M : Line)
+    (haL : a.onLine L) (haM : a.onLine M) (hbL : b.onLine L) (hcM : c.onLine M)
+    (hab : a ≠ b) (hac : a ≠ c) (hdL : ¬(d.onLine L)) (hdM : ¬(d.onLine M))
+    (hLM : L ≠ M) (hbd : b.sameSide d M) (hcd : c.sameSide d L) :
+    ∠ b:a:c = ∠ b:a:d + ∠ d:a:c := by
+  euclid_apply (sum_angles_onlyif a b c d L M)
+  euclid_finish
+
 end Elements

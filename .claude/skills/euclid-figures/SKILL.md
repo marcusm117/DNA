@@ -17,7 +17,7 @@ This is **half library, half recipe book — and the split matters.**
 - For the **off-line (Family 1)**, **line-distinctness (Family 2)**, **sameSide (Family 3)**,
   **area-recast (Family 6)**, **right-angle-from-co-interior (Family 7)**, **parallel-transitivity
   (Family 7)**, and **corresponding-angles (Family 7)** shapes, there is
-  now an **importable lemma** in `LeanEuclidPlus/Helpers/{OffLine,SameSide,Area,RightAngle,Parallel,Angle}.lean`.
+  now an **importable lemma** in `LeanEuclidPlus/Helpers/{OffLine,SameSide,Area,RightAngle,Parallel,Angle,Pasch}.lean`.
   These shapes turned out NOT to be irreducibly figure-specific: each needs only 3–5 LOCAL atomic
   incidence facts (`p.onLine L`, `¬(p.onLine L)`, `p≠q`, `¬(L.intersectsLine M)`, …) — exactly what the
   parent already supplies — so a generic lemma takes those atoms as hypotheses and does NOT thread the
@@ -25,11 +25,15 @@ This is **half library, half recipe book — and the split matters.**
   FALLBACK for a shape no sibling covers. **One `euclid_apply` of a `Helpers/` lemma replaces a
   whole hand-built leaf — and is applied INLINE in the container with NO backing file** (see the
   `faithful-prove` LIBRARY EXCEPTION); this is how a step that was ~10 backing files collapses to ~1–3.
-- For the **betweenness/pasch (Family 4)**, **figure-assembly (Family 5)**, and the remaining
-  **proposition props (Family 7: corresponding-angles, isosceles)** shapes, the facts ARE genuinely
-  figure-specific (they thread which point is between which, which assembly, which transversal), so those
-  families STAY recipes — the chains below are what you write against your own points, and those leaves
-  legitimately stay as backing files. There is no library lemma to import for them.
+- For **figure-assembly (Family 5)** and the remaining **proposition props (Family 7:
+  corresponding-angles, isosceles)** shapes, the facts ARE genuinely figure-specific (they thread which
+  assembly, which transversal), so those families STAY recipes — the chains below are what you write
+  against your own points, and those leaves legitimately stay as backing files.
+- **betweenness/pasch (Family 4) is a HYBRID:** deriving the preconditions (which points are
+  opposite/between which, the off-line facts) is figure-specific and stays a recipe — but the final bare
+  `pasch_N` application is now wrapped in `Helpers/Pasch.lean` (`sameSide_of_between` for pasch_2,
+  `not_sameSide_of_between` for pasch_3, `between_of_not_sameSide` for pasch_4). Use the wrapper for that
+  last line; write the precondition chain against your own points as before.
 
 **Extensibility law:** when you hand-build a NEW recurring off-line/sameSide/right-angle/area variant
 (a flipped orientation, a different witness position), do NOT leave it as a one-off leaf — **PROMOTE it
@@ -161,7 +165,9 @@ precondition of `intersection_lines L M as g`.
 >   `¬(L.intersectsLine M)` ⟹ `p.sameSide q M`. (Like the off-line no-witness form, `L≠M` is ESSENTIAL —
 >   `L=M` is otherwise a countermodel.) The simplest rectangle shape once `L≠M` is in hand.
 >
-> For the segment-endpoint (`pasch_2`) shape below there is no lemma — it's figure-specific; keep it a leaf.
+> For the segment-endpoint (`pasch_2`) shape below, the final call is now `Helpers/Pasch.lean`'s
+> `sameSide_of_between` (and `not_sameSide_of_between` for the `pasch_3` opposite-sides shape) — use it for
+> that line; deriving its `between`/off-line preconditions is still figure-specific.
 
 - **Two points on a line `M ∦ L`, same side of `L`** (the workhorse): prove `¬p.onLine L` and
   `¬q.onLine L` (Family 1), then `by_contra hns`; `euclid_apply (intersection_lines_opposing p q L M)`;
@@ -183,8 +189,11 @@ precondition of `intersection_lines L M as g`.
 ## FAMILY 4 — betweenness of feet / crossing points  (`between p q r`)
 The "a transversal foot / intersection point lands between two others" shape. **This is the
 `between b g d`/`between b k e` shape the Prop04 agent stalled on — it is NOT hard with this chain.**
-> NO library lemma — these are genuinely figure-specific (they thread which point is between which) and
-> legitimately STAY backing files. Write the chain against your own points.
+> HYBRID — deriving the preconditions (which points are opposite/between which) is figure-specific, so
+> write that chain against your own points. But the final `pasch_N` application is now wrapped in
+> `Helpers/Pasch.lean`: `not_sameSide_of_between a b c L` (pasch_3), `between_of_not_sameSide a b c L M`
+> (pasch_4), `sameSide_of_between` (pasch_2) — end the chain with the wrapper instead of a bare `pasch_N`.
+> The recipes below show the axiom-level chain (still the right shape for the precondition derivation).
 - **Crossing point of two lines lies between two points** (`q = L ∩ GH`, want `between p q r` with
   `p,r` on `GH`): show `p,r` on OPPOSITE sides of `L`, then `euclid_apply (pasch_4 p q r L GH)`;
   `euclid_finish`. Get the opposite-sides fact from a point `x` on `L` that is `between p' r'` on a base
