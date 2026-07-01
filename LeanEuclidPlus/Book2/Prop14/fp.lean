@@ -1,11 +1,10 @@
 import SystemE
-set_option linter.unusedVariables false
-set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
 -- Package the rectangle BD's parallelogram structure once (atoms come straight from
 -- proposition_42's conclusion). Reused by the area steps 1, 2, 3, 18 via the `have fp` in Main.
+set_option systemE.solverTime 30 in
 theorem helper_2_14_fp
     (e d b₀ c₀ : Point) (ED B₀C₀ BE DC : Line)
     (h_eED : e.onLine ED) (h_dED : d.onLine ED)

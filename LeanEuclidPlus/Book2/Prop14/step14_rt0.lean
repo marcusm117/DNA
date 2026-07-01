@@ -1,7 +1,5 @@
 import SystemE
 import Helpers.RightAngle
-set_option linter.unusedVariables false
-set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
@@ -11,6 +9,7 @@ open Elements
 -- by transversal BE, the co-interior angle ∠d:e:b₀ is right (right_angle_cointerior, applied inline
 -- as a term so no SMT search); H is on ED beyond e (between h e d), so its supplement ∠b₀:e:h is
 -- right too (perpendicular_onlyif). d.sameSide c₀ BE is supplied (DC ∥ BE — derived in step14_ss).
+set_option systemE.solverTime 30 in
 theorem helper_2_14_step14_rt0 (e d b₀ c₀ h f : Point) (ED B₀C₀ BE : Line)
     (h_eED : e.onLine ED) (h_dED : d.onLine ED)
     (h_b0BC : b₀.onLine B₀C₀) (h_c0BC : c₀.onLine B₀C₀)

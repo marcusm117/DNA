@@ -1,12 +1,11 @@
 import SystemE
-set_option linter.unusedVariables false
-set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
 -- step 3 (BE = ED case): the rectangle area equals |b₀─e|² (BD is a square on BE).
 -- Same shape as step 2 (takes the standalone `step1` for the right angle); symmetry facts fed
 -- explicitly so euclid_finish proves area = |b₀─e|² directly rather than wandering to △a:b:c.
+set_option systemE.solverTime 30 in
 theorem helper_2_14_step3
     (a b c q e d b₀ c₀ : Point) (ED B₀C₀ BE DC : Line)
     (fp : formParallelogram e d b₀ c₀ ED B₀C₀ BE DC)

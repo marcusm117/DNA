@@ -1,7 +1,5 @@
 import SystemE
 import Book.Prop47
-set_option linter.unusedVariables false
-set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
@@ -11,6 +9,7 @@ open Elements
 --   • E = G (BE = ED): degenerate, the identity is segment symmetry (no triangle);
 --   • E ≠ G: ∠g:e:h = ∟ (transfer from ∠b₀:e:h = ∟ since G on BE, H off BE), then Pythagoras
 --     (proposition_47) on the right triangle E:H:G.
+set_option systemE.solverTime 30 in
 theorem helper_2_14_step14_pyth (e b₀ g h f : Point) (BE GH ED : Line)
     (h_eBE : e.onLine BE) (h_b0BE : b₀.onLine BE) (h_fBE : f.onLine BE)
     (h_gGH : g.onLine GH) (h_hGH : h.onLine GH)

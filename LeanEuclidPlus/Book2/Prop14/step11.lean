@@ -1,7 +1,5 @@
 import SystemE
 import Book2.Prop05.Main
-set_option linter.unusedVariables false
-set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
@@ -10,6 +8,7 @@ namespace Elements.Book2
 -- The construction is unconditional (E may be on either side of the midpoint G), so we case-split
 -- on the order of E,G; the II.5 equation is symmetric under b₀↔f (the equal-cut symmetry), so both
 -- orderings — and the degenerate E=G — give the same equation.
+set_option systemE.solverTime 30 in
 theorem helper_2_14_step11 (b₀ e f g : Point) (BE : Line)
     (h_b0 : b₀.onLine BE) (h_e : e.onLine BE) (h_f : f.onLine BE)
     (h_bef : between b₀ e f) (h_bgf : between b₀ g f) (h_mid : |(b₀─g)| = |(g─f)|) :

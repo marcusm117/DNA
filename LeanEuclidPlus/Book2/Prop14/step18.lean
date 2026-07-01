@@ -1,12 +1,11 @@
 import SystemE
-set_option linter.unusedVariables false
-set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
 -- step 18: BD is the rectangle contained by BE and EF. By rectangle_area the parallelogram's area
 -- (the two triangles) equals |e─d|·|e─b₀|; and EF = ED (step6), so it equals |b₀─e|·|e─f|.
 -- (formParallelogram e d b₀ c₀ ED B₀C₀ BE DC supplied via its atoms.)
+set_option systemE.solverTime 30 in
 theorem helper_2_14_step18 (e d b₀ c₀ f : Point) (ED B₀C₀ BE DC : Line)
     (h_eED : e.onLine ED) (h_dED : d.onLine ED)
     (h_b0BC : b₀.onLine B₀C₀) (h_c0BC : c₀.onLine B₀C₀)
