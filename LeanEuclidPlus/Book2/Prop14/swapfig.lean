@@ -9,7 +9,6 @@ namespace Elements.Book2
 -- the right angle moves to D (parallel-angle chain), the parallelogram is the same corners reordered,
 -- areas are permutations, and the length facts are `segment_symmetric` images of heq/step4/hgt. Proven in
 -- isolation (small context) so the right-angle derivation that drowned in Main's full context is cheap.
-set_option systemE.solverTime 30 in
 theorem helper_2_14_swapfig
     (a b c q p e d b₀ c₀ : Point) (ED B₀C₀ BE DC : Line)
     (h_pab : ∠ p:a:b = ∟)
