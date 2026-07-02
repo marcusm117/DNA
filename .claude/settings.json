@@ -19,6 +19,9 @@
       "Edit(LeanEuclidPlus/Book1/**)",
       "Write(LeanEuclidPlus/Book1/**)",
 
+      "Edit(.claude/skills/faithful-patterns/**)",
+      "Write(.claude/skills/faithful-patterns/**)",
+
 
       "Bash(realpath:*)",
       "Bash(dirname:*)",
@@ -26,6 +29,17 @@
       "Bash(pwd)",
       "Bash(cd:*)",
       "Bash(echo:*)",
+
+      "Bash(grep:*)",
+      "Bash(egrep:*)",
+      "Bash(fgrep:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
 
       "Bash(git status:*)",
       "Bash(git diff:*)",

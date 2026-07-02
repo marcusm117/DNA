@@ -29,7 +29,7 @@ authoritative olean-mode `check_faithful.sh` + `check_steps.py` + `check_signatu
 references for **STRUCTURE ONLY**: what a finished `Main` looks like, the helper naming law, the
 `@args` line, leaf-vs-container shape, decomposition granularity. **NEVER copy a claim TYPE or a
 decomposition across props** — claims are per-sentence translations (the sentence is the claim —
-`faithful-translate`'s core rule), so a shape that fit Prop02's sentence is unfaithful on a prop whose sentence says
+`faithful-map`'s core rule), so a shape that fit Prop02's sentence is unfaithful on a prop whose sentence says
 something else. Format: copy freely. Content: translate THIS prop's sentences from scratch. Every
 other Book-2 prop is at a varying/in-progress state — not a reference.)
 
@@ -40,18 +40,27 @@ other Book-2 prop is at a varying/in-progress state — not a reference.)
 
 To make a proof FAITHFUL (annotate it with `euclid_sentence`s so it follows Euclid's sentence
 structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate → B → gate → C**
-(Phase A = three stages · Phase B = `faithful-prove` · Phase C = mechanical):
-1. **Phase A — the sentence map, in three stages** (translation only; no proving):
+(Phase A = INTERACTIVE split → map · Phase B = `faithful-prove` · Phase C = mechanical):
+1. **Phase A — the sentence map** (translation only, no proving). Run these two skills INTERACTIVELY, by
+   hand, reviewing between them — NOT headless (headless mapping stalled; interactive one-at-a-time is the
+   proven approach):
    a. **`faithful-split`** ([.claude/skills/faithful-split/SKILL.md](.claude/skills/faithful-split/SKILL.md)) —
-      split the English proof text into atomic assertions → `PropNN/split.json` (TEXT-ONLY).
-   b. **`faithful-translate`** ([.claude/skills/faithful-translate/SKILL.md](.claude/skills/faithful-translate/SKILL.md)) —
-      translate each assertion into a Lean claim type → `PropNN/translate.json` (diagram + vocab + signature only).
-   c. **`python3 scripts/faithful_map_assemble.py PropNN`** — deterministic (no LLM): assembles
-      `PropNN/Main.lean` from `translate.json` (signature + `euclid_intros` + object-producing
-      constructions + one `euclid_sentence … := by sorry` per sentence). Bodies are **all `:= by sorry`;
-      NO step files; NO `euclid_apply (helper…)` wiring** (the all-sorry Main elaborates cheap/SMT-free).
-   Then confirm with `check_step.py PropNN --provable` (Main elaborates) + `check_faithful.py` (text
-   tiling + construction deps). STOPS for **human review** + `check_steps.py --save`.
+      split the English proof text into atomic assertions → `PropNN/split.json` (TEXT-ONLY), then confirm
+      it tiles the canonical text byte-for-byte: `python3 scripts/check_faithful.py --split PropNN`.
+   b. **`faithful-map`** ([.claude/skills/faithful-map/SKILL.md](.claude/skills/faithful-map/SKILL.md)) —
+      the ONE interactive mapper (absorbs the old translate + review). It first stamps a placeholder
+      `Main.lean` from `split.json` (`python3 scripts/faithful_map_assemble.py PropNN --placeholders` →
+      `(stepN : True)` + `@assumption TODO`, TEXT pulled from split.json so tiling is correct by
+      construction), then FILLS each claim ONE sentence at a time (building `check_step --provable` +
+      `check_faithful` as it goes), adds any structural FRAME (reductio/`by_cases`/`wlog`) or construction
+      beyond the vocab (superposition → reads `Book/`+`find.py`/`SystemE`), and self-reviews.
+      **Every sentence gets a REAL claim — NEVER `True`** at the end, and NEVER a restated given (that's an
+      `@assumption`). Bodies stay `:= by sorry`.
+   Confirm with `check_step.py PropNN --provable` (Main elaborates) + `check_faithful.py PropNN/Main.lean`
+   (text tiling + construction deps + **hard-FAIL on any `True` claim**). STOPS for **human review** +
+   `python3 scripts/check_steps.py --save PropNN/Main.lean`.
+   (Retired: the old headless `faithful-translate` / `faithful-review` / `scaffold_translate.py` 3-agent
+   split — `faithful-map` does it all interactively. `run_faithful.py` now only drives `split` + `prove`.)
 2. **`faithful-prove`** ([.claude/skills/faithful-prove/SKILL.md](.claude/skills/faithful-prove/SKILL.md)) —
    Phase B: prove each step with the **recursive SF/SP/P atom** (delegates to `prove-euclid`). The agent
    creates/proves `stepN.lean` (recursing into `have`+backing files until every build ≤30s) and
@@ -106,15 +115,15 @@ Every other Book-2 prop is at a varying/in-progress state — follow the skills'
   read-only command that's already allowed. Same for `cd … && python3 scripts/…`. So: just
   `git log …` / `git show …` / `python3 scripts/check_step.py …`, never wrapped. (`scripts/check_*` and
   `wire_main` also run bare — no pipes, no `timeout` wrapper; read what they print.)
-- **BASH IS A POSITIVE ALLOWLIST — this is the EXHAUSTIVE set of bash you run here. If your command
-  isn't on this list, it's the wrong tool; use Read / Grep / Glob instead.** A PreToolUse hook
-  (`.claude/hooks/bash_hygiene.py`) ENFORCES this: it hard-denies the off-list inspection commands
-  (`cat`/`head`/`tail`/`sed`/`awk`/`find`/`grep`/`rg`/`ls`/`wc`/`jq`/`python3 -c`, including inside a
-  pipe) with a message naming the tool to use — so don't reach for them, even a clever sibling.
-  THE ALLOWLIST:
-  - **read a file → the Read tool** (a slice `sed -n '76,100p' f` is just `Read(f, offset 76, limit 25)`);
-    **find files → the Glob tool**; **search contents → the Grep tool** (`grep -n foo Book/*.lean` is `Grep`).
-    These are faster, clickable, and never prompt — there is NO bash reason to read/search a file here.
+- **⚠ The `Grep` and `Glob` TOOLS do NOT exist in this harness — do NOT try to call them.** Read-only
+  bash inspection IS allowed here. A PreToolUse hook (`.claude/hooks/bash_hygiene.py`) governs bash:
+  read-only inspection (`grep`/`rg`/`egrep`/`fgrep`/`find`/`cat`/`head`/`tail`/`ls`/`wc`) runs freely;
+  only in-place transformers (`sed`/`awk`/`jq`) and ad-hoc code (`python3 -c`, heredocs) are blocked
+  (use Read/Edit instead). So:
+  - **read a KNOWN file → the Read tool** (a slice `sed -n '76,100p' f` is `Read(f, offset 76, limit 25)`);
+    it's clickable and never prompts — prefer it for a path you already know.
+  - **find files → bash `find` or `git ls-files`** · **search contents → bash `grep`/`rg`**. (There is no
+    Grep/Glob tool to fall back on — use bash or Read.)
   - **find a LEMMA/AXIOM/PROP by what it concludes/consumes/mentions → `python3 scripts/find.py …`**
     (the sanctioned smart-grep over the declaration database — "what gets me `¬intersectsLine`?"
     `--concludes "¬intersectsLine"`; "what consumes a parallelogram?" `--consumes formParallelogram`;

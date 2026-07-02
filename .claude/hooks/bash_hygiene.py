@@ -27,22 +27,20 @@ decision (ask/deny) and exit 0, or nothing for allow; otherwise print nothing an
 block the pipeline by erroring)."""
 import sys, json, re, shlex, os
 
-# binary basename -> what to do instead (shown to the model on deny)
+# binary basename -> what to do instead (shown to the model on deny). The Grep/Glob TOOLS do NOT exist
+# in this harness, so the old "use the Grep/Glob tool" redirects were dead ends — read-only inspection
+# binaries are now ALLOWED (see READONLY_OK). Only genuine in-place transformers stay blocked.
 BLOCKED = {
-    "cat":   "Read the file with the Read tool.",
-    "head":  "Read the file with the Read tool (use the offset/limit args for a slice).",
-    "tail":  "Read the file with the Read tool (use the offset/limit args for a slice).",
-    "sed":   "Read with the Read tool, or change a file with the Edit tool — not sed.",
-    "awk":   "Read with the Read tool / search with the Grep tool — not awk.",
+    "sed":   "Read with the Read tool, or change a file with the Edit tool — not sed (sed -i mutates).",
+    "awk":   "Read with the Read tool, or search with grep — not awk (awk can transform in place).",
     "jq":    "Read the JSON file with the Read tool (or, for the pipeline, run scripts/check_*.py).",
-    "wc":    "Read the file with the Read tool; raw line counts aren't part of the proving loop.",
-    "find":  "Find files with the Glob tool.",
-    "grep":  "Search with the Grep tool.",
-    "egrep": "Search with the Grep tool.",
-    "fgrep": "Search with the Grep tool.",
-    "rg":    "Search with the Grep tool.",
-    "ls":    "List/inspect with the Glob tool (e.g. 'DIR/*').",
 }
+
+# Read-only inspection binaries — ALLOWED to run bare. The dedicated Grep/Glob tools are NOT available
+# in this deployment, so these ARE how the agent searches/reads via bash; settings.json also allows them
+# so they never prompt. CAVEAT (accepted): shell redirection (`grep x > out`) or `find … -delete/-exec`
+# can still mutate — treated as read-only here; git is the human's safety net for those edge cases.
+READONLY_OK = {"cat", "head", "tail", "wc", "find", "grep", "egrep", "fgrep", "rg", "ls"}
 
 # The positive allowlist, echoed in every deny message so the agent learns the boundary once.
 ALLOWED_SUMMARY = ("Bash here is reserved for: read-only git (status/diff/log/show/branch/blame/"
@@ -50,9 +48,11 @@ ALLOWED_SUMMARY = ("Bash here is reserved for: read-only git (status/diff/log/sh
                    "python3 scripts/wire_main.py, python3 scripts/find.py, "
                    "python3 scripts/bake_index.py, python3 scripts/scaffold_step.py, "
                    "python3 scripts/faithful_map_assemble.py, python3 -m pytest, "
-                   "lake env/exe, and cd/pwd/mkdir. "
-                   "For everything else use the Read / Grep / Glob tools (find.py is the sanctioned "
-                   "smart-grep over the System-E declaration database).")
+                   "lake env/exe, cd/pwd/mkdir, and read-only inspection "
+                   "(grep/rg/find/cat/head/tail/ls/wc). "
+                   "Read files with the Read tool; find.py is the sanctioned smart-grep over the "
+                   "System-E declaration database. (The Grep/Glob TOOLS are not available in this "
+                   "harness — use bash grep/find or the Read tool.)")
 
 _CONF = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hygiene.conf")
 
@@ -88,6 +88,32 @@ GIT_READONLY = {"status", "diff", "log", "show", "branch", "ls-files", "blame"}
 # bases that are fine with any arguments (mirrors settings.json's :* allow entries).
 BARE_OK = {"realpath", "dirname", "basename", "mkdir", "echo", "pwd", "cd"}
 
+def _segments(cmd):
+    """Split a command line into sub-command token-lists at top-level shell operators (| || && ; &),
+    RESPECTING quotes — so a `|` inside `grep -E 'a|b'` (or an alternation regex `(png|txt)`) is NOT
+    treated as a separator. The old naive `re.split(r'\\|', cmd)` shredded such greps into fake commands
+    ('txt)', 'Prop14', …) and wrongly blocked them now that grep/find are allowed. Falls back to one
+    naive segment on a lex error (e.g. unbalanced quotes) — safe (won't mis-split)."""
+    try:
+        lex = shlex.shlex(cmd, posix=True, punctuation_chars="|&;")
+        lex.whitespace_split = True
+        lex.commenters = ""
+        toks = list(lex)
+    except ValueError:
+        return [cmd.split()]
+    segs, cur = [], []
+    for t in toks:
+        if t and all(c in "|&;" for c in t):        # a run of unquoted shell separators (| || && ; …)
+            if cur:
+                segs.append(cur)
+            cur = []
+        else:
+            cur.append(t)
+    if cur:
+        segs.append(cur)
+    return segs
+
+
 def main():
     try:
         data = json.load(sys.stdin)
@@ -101,14 +127,9 @@ def main():
     # that doesn't match a known-good shape is gated (ask/deny per hygiene.conf), not just the named
     # inspection binaries. This is what catches `git grep` (a git SUBcommand, not a leading `grep`),
     # `git fetch`, `npm install`, etc. — anything CLAUDE.md's allowlist doesn't name.
-    for seg in re.split(r"&&|\|\||\||;|\n", cmd):
-        seg = seg.strip()
-        if not seg:
+    for toks in _segments(cmd):
+        if not toks:
             continue
-        try:
-            toks = shlex.split(seg)
-        except ValueError:
-            toks = seg.split()
         # skip leading ENV=val assignments and a leading 'command'/'builtin' wrapper
         i = 0
         while i < len(toks) and (re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", toks[i])
@@ -120,7 +141,11 @@ def main():
         nxt = toks[i + 1] if i + 1 < len(toks) else ""
         nxt2 = toks[i + 2] if i + 2 < len(toks) else ""
 
-        # Known-bad inspection binaries get a specific "use this tool instead" message.
+        # Read-only inspection binaries run bare (Grep/Glob tools don't exist here — this is search).
+        if base in READONLY_OK:
+            continue
+
+        # Genuine in-place transformers still get a specific "use this tool instead" message.
         if base in BLOCKED:
             gate(f"`{base}` is blocked for reading/inspection. {BLOCKED[base]} {ALLOWED_SUMMARY}")
 

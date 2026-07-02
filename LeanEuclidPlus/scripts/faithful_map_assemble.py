@@ -5,8 +5,14 @@ Stage 3 of the faithful-map pipeline: deterministic assembly of Main.lean from t
 Usage:
   python3 scripts/faithful_map_assemble.py Book2/Prop11
 
-Reads: Book2/Prop11/translate.json + existing Main.lean (for theorem signature)
+Reads: Book2/Prop11/split.json   (authoritative sentence TEXT — the --split-verified source of truth)
+     + Book2/Prop11/translate.json (claims / constructions / assumptions)
+     + existing Main.lean          (for theorem signature)
 Writes: Book2/Prop11/Main.lean (overwrites the proof body, preserves signature)
+
+TEXT flows deterministically: split.json (gated by `check_faithful.py --split`) → Main, verbatim.
+translate.json's `text` field is NOT used (the translate LLM may have re-typed it) — only its claims.
+So Main tiles the canonical text by construction; no downstream stage ever hand-fixes whitespace.
 """
 
 import argparse
@@ -100,9 +106,21 @@ def format_construction_calls(construction: dict) -> list[str]:
     return lines
 
 
-def assemble_main(translate_json: list, main_path: Path, book: int, prop: int) -> str:
-    """Assemble the complete Main.lean from translate.json."""
+def assemble_main(translate_json: list, split_text: dict, main_path: Path, book: int, prop: int) -> str:
+    """Assemble the complete Main.lean.
+
+    TEXT (sentence strings) comes from `split_text` — the `--split`-VERIFIED split.json, the single
+    source of truth for the verbatim text (incl. whitespace). We do NOT use translate.json's `text`
+    (the translate LLM re-typed it and could have corrupted whitespace). CLAIMS/constructions/
+    assumptions come from translate.json. This makes Main tile the canonical text by construction, so
+    no downstream stage ever hand-fixes whitespace."""
     main_text = main_path.read_text()
+
+    def text_for(idx):
+        if idx not in split_text:
+            sys.exit(f"ERROR: split.json has no entry index {idx} — split.json/translate.json are out "
+                     f"of sync. Re-run /faithful-split then /faithful-translate.")
+        return split_text[idx]
 
     # Extract existing signature (everything up to and including `:= by`)
     # We need to preserve the theorem signature byte-for-byte
@@ -180,7 +198,7 @@ def assemble_main(translate_json: list, main_path: Path, book: int, prop: int) -
     # Emit intro sentence
     loc = f"{book}.{prop}.0"
     body_lines.append(f'  euclid_intro_sentence "{loc}"')
-    body_lines.append(f'    "{intro_entry["text"]}"')
+    body_lines.append(f'    "{text_for(intro_entry.get("index", 0))}"')
     body_lines.append("")
 
     # Emit each step
@@ -200,10 +218,10 @@ def assemble_main(translate_json: list, main_path: Path, book: int, prop: int) -
         for assumption in entry.get("assumptions", []):
             body_lines.append(format_assumption_annotation(assumption))
 
-        # The euclid_sentence itself
+        # The euclid_sentence itself (TEXT from split.json, CLAIM from translate.json)
         claim = entry["lean_claim"]
         body_lines.append(f'  euclid_sentence "{loc}"')
-        body_lines.append(f'    "{entry["text"]}"')
+        body_lines.append(f'    "{text_for(entry.get("index", step_idx))}"')
         body_lines.append(f'    ({step_name} : {claim}) := by sorry')
         body_lines.append("")
 
@@ -222,7 +240,7 @@ def assemble_main(translate_json: list, main_path: Path, book: int, prop: int) -
     conclusion_idx = conclusion_entry["index"]
     loc = f"{book}.{prop}.{conclusion_idx}"
     body_lines.append(f'  euclid_conclude_sentence "{loc}"')
-    body_lines.append(f'    "{conclusion_entry["text"]}"')
+    body_lines.append(f'    "{text_for(conclusion_idx)}"')
     body_lines.append("")
 
     # Assemble the full file
@@ -231,9 +249,34 @@ def assemble_main(translate_json: list, main_path: Path, book: int, prop: int) -
     return '\n'.join(result_lines)
 
 
+def placeholder_entries(split_json: list) -> list:
+    """Synthesize translate-style entries from split.json with `True` placeholder claims + `TODO`
+    @assumptions — so --placeholders assembles a FILL-IN Main scaffold for /faithful-map. Text still
+    comes from split.json (assemble_main uses split_text), so tiling is correct by construction.
+    INDEX is the array POSITION (auto — the split agent never writes it)."""
+    out = []
+    for idx, e in enumerate(split_json):
+        role = e["role"]
+        if role in ("intro", "conclusion"):
+            out.append({"index": idx, "role": role, "lean_claim": None})
+            continue
+        entry = {"index": idx, "role": role, "step_name": f"step{idx}", "lean_claim": "True",
+                 "assumptions": [{"substring": j["substring"], "lean_type": "TODO"}
+                                 for j in e.get("justifications", [])
+                                 if isinstance(j, dict) and j.get("substring")]}
+        if role == "construction":
+            entry["construction"] = {"calls": []}      # /faithful-map adds the euclid_apply calls
+        out.append(entry)
+    return out
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Stage 3: Assemble Main.lean from translate.json")
+    parser = argparse.ArgumentParser(description="Assemble Main.lean (from translate.json, or from "
+                                                 "split.json with --placeholders)")
     parser.add_argument("propdir", help="Proposition directory, e.g. Book2/Prop11")
+    parser.add_argument("--placeholders", action="store_true",
+                        help="assemble from split.json ALONE with `(stepN : True)` + `@assumption TODO` "
+                             "placeholders (the fill-in scaffold for /faithful-map); no translate.json")
     parser.add_argument("--dry-run", action="store_true", help="Print output without writing")
 
     args = parser.parse_args()
@@ -249,16 +292,30 @@ def main():
     prop_num = int(prop_name.replace("Prop", ""))
 
     base = REPO_ROOT / book_dir / prop_name
+    split_path = base / "split.json"
     translate_path = base / "translate.json"
     main_path = base / "Main.lean"
 
-    if not translate_path.exists():
-        sys.exit(f"ERROR: {translate_path} not found. Run /faithful-translate first.")
+    if not split_path.exists():
+        sys.exit(f"ERROR: {split_path} not found. Run /faithful-split first (and pass "
+                 f"`check_faithful.py --split {args.propdir}`).")
     if not main_path.exists():
         sys.exit(f"ERROR: {main_path} not found.")
 
-    translate_json = json.loads(translate_path.read_text())
-    result = assemble_main(translate_json, main_path, book_num, prop_num)
+    split_json = json.loads(split_path.read_text())
+    # TEXT source of truth: split.json, keyed by ARRAY POSITION (index is auto — not agent-written;
+    # the --split gate guarantees it tiles in this order).
+    split_text = {i: e["text"] for i, e in enumerate(split_json) if isinstance(e, dict)}
+
+    if args.placeholders:
+        # Fill-in scaffold for /faithful-map: True claims + TODO @assumptions, from split.json alone.
+        translate_json = placeholder_entries(split_json)
+    else:
+        if not translate_path.exists():
+            sys.exit(f"ERROR: {translate_path} not found. Run /faithful-translate first "
+                     f"(or use --placeholders to stamp a fill-in scaffold for /faithful-map).")
+        translate_json = json.loads(translate_path.read_text())
+    result = assemble_main(translate_json, split_text, main_path, book_num, prop_num)
 
     if args.dry_run:
         print(result)

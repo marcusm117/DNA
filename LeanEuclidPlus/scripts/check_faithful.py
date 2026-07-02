@@ -145,6 +145,19 @@ def criterion1_exact(items, canon_rel, canon_path):
                            f"  ...{ctx} <HERE>",
                            f"  canonical: {cw[j]!r}",
                            f"  your text: {mw[j]!r}"]
+    if len(cw) == len(mw):
+        # Same words in the same order, but the raw strings differ → a WHITESPACE mismatch: the source
+        # has a multi-space run the single-space join didn't reproduce. Pinpoint it (still byte-exact to
+        # PASS — this only makes the FAIL actionable so split/review can fix the boundary). See
+        # faithful-split RULE 2: keep the extra space(s) inside a slice (trailing left / leading right).
+        k = next((i for i in range(min(len(canon), len(concat))) if canon[i] != concat[i]),
+                 min(len(canon), len(concat)))
+        return False, ["whitespace mismatch — all words match, only spacing differs "
+                       f"(first differs at char {k})",
+                       f"  canonical: {canon[max(0, k-25):k+25]!r}",
+                       f"  your text: {concat[max(0, k-25):k+25]!r}",
+                       "  → the source has a multi-space run here; keep the extra space(s) INSIDE a "
+                       "slice (trailing the left / leading the right) so the 1-space join reproduces it."]
     if len(mw) < len(cw):
         return False, [f"canonical text continues past your last sentence — "
                        f"missing (e.g.) {' '.join(cw[len(mw):len(mw)+8])!r} ..."]
@@ -211,6 +224,28 @@ PAT = re.compile(
     r'euclid_(sentence|intro_sentence|conclude_sentence)\s*'
     r'"((?:[^"\\]|\\.)*)"\s*"((?:[^"\\]|\\.)*)"')
 
+def sentence_claim(src: str, start_pos: int):
+    """Given `src` (comment-stripped) and a position at/after an `euclid_sentence`'s text string,
+    return the claim type inside the following `(ident : CLAIM) :=`, whitespace-normalized, or None.
+    Balances parens so nested `()` in the claim are handled. ONLY meaningful for `euclid_sentence`
+    (intro/conclude sentences carry no `(name : claim)` binder)."""
+    i = src.find("(", start_pos)
+    if i < 0:
+        return None
+    depth, j = 0, i
+    while j < len(src):
+        if src[j] == "(":
+            depth += 1
+        elif src[j] == ")":
+            depth -= 1
+            if depth == 0:
+                break
+        j += 1
+    else:
+        return None
+    m = re.match(r'\s*\w+\s*:\s*(.*)$', src[i + 1:j], re.DOTALL)   # "ident : CLAIM"
+    return " ".join(m.group(1).split()) if m else None
+
 def check_source(path: str) -> int:
     raw = open(path, encoding="utf-8").read()
     src = strip_comments(raw)
@@ -218,7 +253,8 @@ def check_source(path: str) -> int:
     for m in PAT.finditer(src):
         ln = src.count("\n", 0, m.start()) + 1
         anns.append({'loc': m.group(2), 'text': m.group(3).replace('\\"', '"'),
-                     'start': m.start(), 'ref': f"{path}:{ln}"})
+                     'kind': m.group(1), 'start': m.start(), 'end': m.end(),
+                     'ref': f"{path}:{ln}"})
     print(f"=== {os.path.basename(path)} — MODE: source/regex (no build) ===")
     print("    quick offline sanity check (text is EXACT; dependency match is number-only, not book-aware)")
     if not anns:
@@ -309,6 +345,21 @@ def check_source(path: str) -> int:
     elif fl.ASSUMPTION_ANNOT.search(raw):
         rc |= report("@assumption text is a normalized substring of its owning sentence",
                      True, [f"{sum(1 for _ in fl.ASSUMPTION_ANNOT.finditer(raw))} annotation(s) checked"])
+
+    # NO VACUOUS `True` CLAIM (hard gate): every `euclid_sentence` must assert real content. A `True`
+    # claim says Euclid's sentence is empty — almost never true and the classic all-`True` naive-map
+    # failure. (`euclid_intro_sentence`/`euclid_conclude_sentence` carry no claim binder — skip them.)
+    true_claims = []
+    for a in anns:
+        if a['kind'] != 'sentence':
+            continue
+        if sentence_claim(src, a['end']) == "True":
+            true_claims.append(
+                f"euclid_sentence {a['loc']} ({a['ref']}) has claim `True` — every sentence must "
+                f"assert real content (a `True` claim says Euclid's sentence is empty); re-map it.")
+    rc |= report("no euclid_sentence has a vacuous `True` claim",
+                 not true_claims, true_claims or [f"{sum(1 for a in anns if a['kind'] == 'sentence')} "
+                                                  "sentence claim(s) are non-trivial"])
 
     # Reminder: the third faithfulness criterion (each step's TYPE honestly captures its sentence)
     # is HUMAN-checked — no machine verifies it.
@@ -433,9 +484,45 @@ def check_olean(json_path: str) -> int:
 
 # ─────────────────────────────────────────────────────────────────────────────
 
+def check_split(propdir: str) -> int:
+    """--split mode (Phase-A stage-1 gate): verify Book<N>/PropNN/split.json TILES the canonical text
+    byte-for-byte BEFORE translate/assemble is paid for. Reuses criterion1_exact, so a whitespace-only
+    miss gets the same actionable "char N" diagnostic. TEXT-ONLY: reads split.json + the canonical .txt.
+    Run this right after faithful-split and fix the slices until it PASSES."""
+    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))       # LeanEuclidPlus/
+    pd = propdir if os.path.isabs(propdir) else os.path.join(base, propdir)
+    sp = os.path.join(pd, "split.json")
+    print(f"=== --split — {propdir.rstrip('/')}/split.json vs canonical ===")
+    m = re.search(r'Book(\d+)[/\\]+Prop0*(\d+)', propdir)
+    if not m:
+        print(f"  [FAIL] cannot parse Book<N>/Prop<NN> from: {propdir}")
+        return 1
+    book, prop = m.group(1), m.group(2)
+    if not os.path.exists(sp):
+        print(f"  [FAIL] split.json not found: {os.path.relpath(sp, base)}")
+        return 1
+    try:
+        data = json.load(open(sp, encoding="utf-8"))
+    except ValueError as e:
+        print(f"  [FAIL] split.json is not valid JSON: {e}")
+        return 1
+    if not isinstance(data, list) or not data:
+        print("  [FAIL] split.json must be a non-empty JSON array")
+        return 1
+    # INDEX = array position (auto — the split agent never writes it); the array is already in order.
+    items = [{'loc': f"{book}.{prop}.{i}", 'text': e.get('text', ''),
+              'ref': f"split.json[{i}]"} for i, e in enumerate(data)]
+    canon_rel, canon_path = canon_path_for(book, prop)
+    ok, lines = criterion1_exact(items, canon_rel, canon_path)
+    rc = report("split.json tiles the canonical text byte-for-byte (whitespace included)", ok, lines)
+    print(f"  => {'PASS' if rc == 0 else 'FAILED'} (--split mode)")
+    return rc
+
 def main(argv) -> int:
     if len(argv) == 2 and argv[0] == "--olean":
         return check_olean(argv[1])
+    if len(argv) == 2 and argv[0] == "--split":
+        return check_split(argv[1])
     if len(argv) == 1 and not argv[0].startswith("--"):
         return check_source(argv[0])
     print(__doc__)

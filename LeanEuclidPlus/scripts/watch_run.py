@@ -87,7 +87,7 @@ def print_cost(propdir):
         print(_c(DIM, "  (no cost/ yet)"))
         return
     print(_c(BOLD, "COST"))
-    for phase in ("split", "translate"):
+    for phase in ("split", "translate", "reconcile"):
         p = os.path.join(cost_dir, f"{phase}.json")
         if os.path.exists(p):
             r = json.load(open(p))

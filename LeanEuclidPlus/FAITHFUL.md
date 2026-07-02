@@ -41,42 +41,51 @@ itself was mid-compile at the kill — which warm deps prevent.
 
 ## PER PROP (e.g. Prop04) — three phases, two human gates (▶)
 
-**1. Phase A — translate (3-stage pipeline):**
+**1. Phase A — the sentence map (split → map), INTERACTIVE:**
 
-   Phase A is now split into three isolated stages to prevent token waste. Run them in order:
+   Run these two skills BY HAND, reviewing between them. Headless mapping stalled; interactive,
+   one-sentence-at-a-time is the proven approach.
 
    **Stage 1 — Split (text-only):**  `/faithful-split Book2/Prop04`
-   Agent reads ONLY `Book2/data/texts_proofs/4.txt`. Splits the English into atomic assertions,
-   marks roles (intro/construction/deduction/conclusion), and identifies justification substrings.
-   Outputs `Book2/Prop04/split.json`. **Human reviews the splits before proceeding.**
-
-   **Stage 2 — Translate (diagram + vocab):**  `/faithful-translate Book2/Prop04`
-   Agent reads `split.json` + the diagram + the prop's theorem signature + cited construction prop
-   signatures. Translates each assertion into a Lean claim type using the vocabulary embedded in
-   the skill. Outputs `Book2/Prop04/translate.json`. **Human reviews the claims before proceeding.**
-
-   **Stage 3 — Assemble (deterministic script, no LLM):**
+   Agent reads ONLY `Book2/data/texts_proofs/4.txt` (Book 1: `Book/texts_proofs/N.txt`). Splits the
+   English into atomic assertions, marks roles (intro/construction/deduction/conclusion), and identifies
+   justification substrings. Outputs `Book2/Prop04/split.json`, and runs the byte-exact tiling gate
+   (which you can re-run):
    ```
-   python3 scripts/faithful_map_assemble.py Book2/Prop04
+   python3 scripts/check_faithful.py --split Book2/Prop04
    ```
-   Reads `translate.json` + existing Main.lean signature. Writes the complete `Main.lean` with
-   `euclid_sentence` blocks, constructions, `@assumption` annotations, and `:= by sorry` bodies.
-   **Every body is `:= by sorry`; no step files yet.** Elaborates cheap (all-sorry, SMT-free).
+   **Human reviews the split before proceeding.**
+
+   **Stage 2 — Map (interactive):**  `/faithful-map Book2/Prop04`
+   The ONE interactive mapper (absorbs the old translate + review). It:
+   1. stamps a placeholder Main from `split.json` (deterministic, no LLM):
+      ```
+      python3 scripts/faithful_map_assemble.py Book2/Prop04 --placeholders
+      ```
+      → one `euclid_sentence "loc" "text" (stepN : True) := by sorry` per sentence + `-- @assumption
+      ("substring", TODO)` lines. TEXT is copied from `split.json`, so tiling is correct by construction
+      (you NEVER edit sentence text).
+   2. FILLS each `True` → a real claim and each `TODO` → a real type, ONE sentence at a time, building
+      `check_step --provable` + `check_faithful` as it goes. Adds any structural FRAME (reductio /
+      `by_cases` / `wlog`) or a construction beyond the vocab (superposition → reads `Book/PropNN.lean` +
+      `find.py`/`SystemE`). **Every sentence gets a REAL claim, NEVER `True` at the end, and NEVER a
+      restated given (that is an `@assumption`).** Bodies stay `:= by sorry`.
 
    **Sanity-check Criterion 1 (concatenated sentence texts == the canonical original) AND Criterion 4
-   (every `-- @assumption ("text", …)` text is a substring of its sentence) — both must PASS:**
-   - regex (quick, no build) — checks criterion 1 AND criterion 4:
+   (every `-- @assumption ("text", …)` text is a substring of its sentence) — both must PASS; the regex
+   check ALSO hard-FAILS on any `euclid_sentence` whose claim is exactly `True`:**
+   - regex (quick, no build):
    ```
-   python3 scripts/check_faithful.py "Book2/Prop04/Main.lean"
+   python3 scripts/check_faithful.py "Book1/Prop04/Main.lean"
    ```
    - olean (authoritative, book-aware):
    ```
    lake build Book2.Prop04.Main
-   scripts/check_faithful.sh Book2.Prop04.Main
+   scripts/check_faithful.sh Book1.Prop04.Main
    ```
 
-   (The old monolithic `/faithful-map` skill has been removed — the 3-stage pipeline above is the
-   only Phase A.)
+   (RETIRED: the old headless `faithful-translate` / `faithful-review` / `scaffold_translate.py` 3-agent
+   split — `faithful-map` does Phase A interactively now.)
 
 **▶ 2. HUMAN GATE A — review + freeze the claims (and record the @assumption map).**
    Read each claim type: does it honestly say what that Euclid sentence says? Also eyeball each
@@ -84,7 +93,7 @@ itself was mid-compile at the kill — which warm deps prevent.
    human-checked — no machine fully verifies faithfulness; use `Book2/data/diagrams/4.png` to resolve
    labels.) When happy:
    ```
-   python3 scripts/check_steps.py --save Book2/Prop04/Main.lean
+   python3 scripts/check_steps.py --save Book1/Prop04/Main.lean
    ```
    This freezes the claim TYPES **hard** and records the `@assumption` types. NOTE: the `@assumption`
    types are only Phase-A's best-guess reasoning map — Phase B may legitimately **drop/retype** a cited
@@ -175,13 +184,15 @@ pointing here). `propdir_of` requires `Main.lean` to exist, so a prop with no Ma
 For a batch (10s of props) drive Claude headless instead of hand-launching sessions.
 `scripts/run_faithful.py` spawns `claude -p` per prop, saves the full agent trace, and logs per-phase
 cost. **Run it from `LeanEuclidPlus/` in YOUR terminal — NOT inside an agent session** (a nested
-`claude` spawn is hard-denied there). Two unattended segments bracket the human gate:
+`claude` spawn is hard-denied there). The driver has TWO headless segments — `split` and `prove`;
+Phase-A **mapping is interactive** (by hand) and sits between them, at the human gate:
 
-1. **map** — split → translate → assemble → provable, across the whole batch:
+1. **split** — batch the Phase-A text splits across the batch:
    ```
-   python3 scripts/run_faithful.py map Book1/Prop18 Book1/Prop19 … --concurrency 30
+   python3 scripts/run_faithful.py split Book1/Prop18 Book1/Prop19 … --concurrency 30
    ```
-   Each prop stops at GATE-A. Then YOU review every map and freeze it (the human-only gate):
+   Each writes `split.json` (gated by `--split`). Then **MAP each prop INTERACTIVELY, by hand** —
+   `/faithful-map Book1/PropNN` (mapping is no longer headless) — review it, and freeze the human-only gate:
    ```
    python3 scripts/check_steps.py --save Book1/PropNN/Main.lean      # per approved prop
    ```
@@ -195,8 +206,9 @@ cost. **Run it from `LeanEuclidPlus/` in YOUR terminal — NOT inside an agent s
 
 **Cost + trace** land under each `PropNN/`:
 - `runs/<phase>-<seq>-<sid>.jsonl` — full streamed agent trace (**git-ignored**).
-- `cost/split.json` · `cost/translate.json` · `cost/prove/<seq>.json` (status snapshot + cumulative $) ·
-  `cost/summary.json` (per-phase + overall). **Committed.** Checkpoint delta = `cumulative_usd` now − prev.
+- `cost/split.json` · `cost/prove/<seq>.json` (status snapshot + cumulative $) ·
+  `cost/summary.json` (per-phase + overall).
+  **Committed.** Checkpoint delta = `cumulative_usd` now − prev.
 
 `--dry-run` prints the plan and spawns nothing. `--model M` overrides the model; `--max-resumes K` caps
 prove resumes. Concurrency 30 is fine (funded); builds serialize on the `.lake` flock (thinking
