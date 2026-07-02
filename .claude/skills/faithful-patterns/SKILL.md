@@ -52,6 +52,19 @@ helper (see Prop06's `sym`) or by repeating the branch structure. Each case's se
 **Handling:** the sentence asserts a LENGTH (radius) equality `|(a─b)| = |(a─c)|` — state that, not a
 circle predicate. Circle membership sentences ("B lies on the circle") use `b.onCircle α` / `a.isCentre α`.
 
+## PATTERN: superposition / "applied to" / "coincide"  (Props I.4, I.8)
+**Exemplar:** `Book1/Prop08/Main.lean`.
+**Frame:** `euclid_apply (superposition …) as (c', g, …)` births the image points (read `Book/Prop08.lean`
++ `find.py --name superposition`). Make the map EXPLICIT as a function so claims name images, not raw
+vertices — `classical` then
+`let img : Point → Point := fun p => if p = b then e else if p = c then c' else if p = a then g else p`
+(`b↦e` is the placement — definitional, E is a given point; `c'`,`g` are fresh image points).
+**Rendering:** "X coincides with Y" → an image-point equality (`img c = f`, `img a = d`), NEVER the given
+length. "side XY coincides with UV" = BOTH endpoints, EITHER way round (a segment is unordered):
+`(img x = u ∧ img y = v) ∨ (img x = v ∧ img y = u)`; negate/conjoin PER SIDE, with `∧` between the two
+sides ("respectively"). "same ends" = the constructed & given lines share the base endpoint
+(`e.onLine EG ∧ e.onLine DE`). Keep the impossible correspondence (redundant) with a one-line note.
+
 ---
 
 ## APPENDING A NEW PATTERN (agents: do this when you hit one not above)

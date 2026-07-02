@@ -57,6 +57,21 @@ Batching all claims in one pass is what produces the claim + dependency mistakes
 - **No construction byproducts.** Facts a construction already deposits (incidences like `k.onLine BE`)
   don't belong in a claim unless the SENTENCE asserts them.
 
+**RULE 3 — FAITHFULNESS IS THE ONLY PRIORITY; DO NOT OPTIMIZE.** (These are the mistakes that waste hours.)
+- **Never collapse a claim** to a logically-equivalent shorter/cleaner/more-provable form. State literally
+  what the sentence says, even if redundant or verbose; redundant-but-true conjuncts STAY (one-line note).
+  Do NOT simplify for elegance or to make proving easier — that is Phase B's problem, not yours.
+- **Assertion vs assumption.** The claim IS the sentence's assertion; a consumed premise is an
+  `@assumption`, never a conjunct of the claim, and the assertion is never hidden inside an `@assumption`.
+  The `assumption`/`assertion` `spans` in `split.json` already draw this line — follow them.
+- **Negation placement (De Morgan).** For "X and Y do NOT / cannot … (respectively)", the `∧` stays
+  BETWEEN the parts and each `¬` sits on its OWN part — NEVER wrap a single `¬` around the whole
+  conjunction (that silently flips `∧`→`∨` and changes the meaning).
+- **Re-derive, don't patch.** Rewrite each claim from the sentence; never leave the comment saying one
+  thing and the claim saying another.
+- **Comments are ONE line.** If a claim seems to need a bulleted/multi-line comment, that is the signal to
+  SPLIT the sentence into atomic ones (re-split) — not to write a long comment.
+
 ## READING POLICY (you may read anything — but prefer the translation)
 You are NOT restricted: you MAY read the diagram, `SystemE/**`, `Book/PropNN.lean` originals, done Book-2
 props, and use `python3 scripts/find.py …`. **But default to the VOCABULARY below + a direct reading of

@@ -260,10 +260,19 @@ def placeholder_entries(split_json: list) -> list:
         if role in ("intro", "conclusion"):
             out.append({"index": idx, "role": role, "lean_claim": None})
             continue
+        # @assumption seeds: prefer the opt-in `spans` (assumption-label slices); else fall back to the
+        # legacy `justifications` (byte-identical output for split.json without spans).
+        spans = e.get("spans")
+        if spans:
+            assumptions = [{"substring": sp["text"], "lean_type": "TODO"}
+                           for sp in spans
+                           if isinstance(sp, dict) and sp.get("label") == "assumption" and sp.get("text")]
+        else:
+            assumptions = [{"substring": j["substring"], "lean_type": "TODO"}
+                           for j in e.get("justifications", [])
+                           if isinstance(j, dict) and j.get("substring")]
         entry = {"index": idx, "role": role, "step_name": f"step{idx}", "lean_claim": "True",
-                 "assumptions": [{"substring": j["substring"], "lean_type": "TODO"}
-                                 for j in e.get("justifications", [])
-                                 if isinstance(j, dict) and j.get("substring")]}
+                 "assumptions": assumptions}
         if role == "construction":
             entry["construction"] = {"calls": []}      # /faithful-map adds the euclid_apply calls
         out.append(entry)

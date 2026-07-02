@@ -487,7 +487,9 @@ def check_olean(json_path: str) -> int:
 def check_split(propdir: str) -> int:
     """--split mode (Phase-A stage-1 gate): verify Book<N>/PropNN/split.json TILES the canonical text
     byte-for-byte BEFORE translate/assemble is paid for. Reuses criterion1_exact, so a whitespace-only
-    miss gets the same actionable "char N" diagnostic. TEXT-ONLY: reads split.json + the canonical .txt.
+    miss gets the same actionable "char N" diagnostic. Reads split.json + the canonical .txt; and, on
+    deduction entries carrying the OPT-IN "spans" field, checks the assertion/assumption/glue spans
+    reconstruct the sentence char-for-char (and warns on a compound assertion span).
     Run this right after faithful-split and fix the slices until it PASSES."""
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))       # LeanEuclidPlus/
     pd = propdir if os.path.isabs(propdir) else os.path.join(base, propdir)
@@ -515,6 +517,36 @@ def check_split(propdir: str) -> int:
     canon_rel, canon_path = canon_path_for(book, prop)
     ok, lines = criterion1_exact(items, canon_rel, canon_path)
     rc = report("split.json tiles the canonical text byte-for-byte (whitespace included)", ok, lines)
+
+    # OPT-IN assertion/assumption discipline: only entries carrying a "spans" field are checked, so
+    # legacy split.json (no spans) is completely unaffected. Each span is {"label": assertion|assumption|
+    # glue, "text": <verbatim slice>}. (a) HARD: the spans must reconstruct the sentence CHARACTER-FOR-
+    # CHARACTER (empty join — no separator — every weird/double/trailing space included). (b) WARN: an
+    # `assertion` span with a comma or " and " is likely a compound claim to split (the AI decides).
+    concat_fails, warn_lines = [], []
+    for i, e in enumerate(data):
+        if not isinstance(e, dict) or not e.get("spans"):
+            continue
+        spans, ref, txt = e["spans"], f"split.json[{i}]", e.get("text", "")
+        joined = "".join(sp.get("text", "") for sp in spans if isinstance(sp, dict))
+        if joined != txt:
+            k = next((c for c in range(min(len(joined), len(txt))) if joined[c] != txt[c]),
+                     min(len(joined), len(txt)))
+            concat_fails += [f"{ref}: spans do not reconstruct the sentence (first differ at char {k})",
+                             f"    text : {txt[max(0, k - 20):k + 20]!r}",
+                             f"    spans: {joined[max(0, k - 20):k + 20]!r}"]
+        for sp in spans:
+            if isinstance(sp, dict) and sp.get("label") == "assertion":
+                a = sp.get("text", "")
+                if "," in a or " and " in norm(a):
+                    warn_lines.append(f"{ref} assertion span may be COMPOUND (has ',' or ' and '): {norm(a)!r}")
+    rc |= report("deduction spans reconstruct their sentence char-for-char (opt-in)",
+                 not concat_fails,
+                 concat_fails or ["no `spans` fields present, or all reconstruct exactly"])
+    for w in warn_lines:
+        print(f"  [warn] {w}")
+        print( "         → likely two claims; split into atomic entries (AI makes the final call)")
+
     print(f"  => {'PASS' if rc == 0 else 'FAILED'} (--split mode)")
     return rc
 

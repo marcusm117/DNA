@@ -60,6 +60,16 @@ an entry boundary. Two sentences never become one entry.
 gives the REASON for a claim stays in the same entry as that claim. It's the justification, not a
 new assertion.
 
+**RULE 6 — SEPARATE ASSERTION FROM ASSUMPTION; SPLIT COMPOUND ASSERTIONS (deductions).** Partition each
+deduction's text into ordered `spans`, each labelled `assertion` (the ONE new fact — becomes the Lean
+claim), `assumption` (a consumed prior fact — "because of X" / "since Y" — becomes an `@assumption`), or
+`glue` (connectives, punctuation). Joined with NOTHING (empty string) the spans must reproduce the entry
+text CHARACTER-FOR-CHARACTER — every weird/double/trailing space included (auto-checked by `--split`).
+**If an `assertion` span bundles independent clauses (a comma or "and" — "…equal to…, at a different
+point, on the same side"), SPLIT it into separate atomic entries** — UNLESS the clauses are interleaved
+and cannot be sliced contiguously ("AB and AC … ED and DF"), in which case keep one entry. `--split`
+WARNs on a compound assertion span; you make the final call.
+
 ---
 
 ## Roles
@@ -73,14 +83,12 @@ new assertion.
   - `construction_cite`: if `[Prop.~B.N]` appears, record `"B.N"` (e.g., `"1.46"`)
   - `objects_introduced`: the Euclid labels of new geometric objects (`["$CE$"]`, `["$ADEB$"]`)
 
-- **deduction** — An assertion about a relationship or property. This is the bulk of the proof.
-  Identify:
-  - `assertion`: plain English paraphrase of what is being claimed (1 sentence)
-  - `justifications`: any "since X", "for X", "X being equal to Y" substrings that cite a PRIOR
-    fact as the REASON for this assertion. Each must be a VERBATIM CONTIGUOUS SUBSTRING of the
-    entry's text. Only mark substrings that name a prior fact the step CONSUMES — not the
-    assertion itself.
-  - `proof_cite`: if `[Prop.~B.N]` appears, record `"B.N"`
+- **deduction** — an assertion about a relationship or property (the bulk of the proof). Provide:
+  - `spans`: the ordered `assertion`/`assumption`/`glue` partition of the sentence (RULE 6) — the
+    primary structure. The `assumption` spans are the consumed prior facts ("because of X", "since Y").
+  - `assertion`: a 1-line plain-English paraphrase of the new fact (human-readable summary).
+  - `proof_cite`: if `[Prop.~B.N]` appears, record `"B.N"`.
+  (The legacy `justifications` field is superseded by the `assumption` spans — omit it once you write `spans`.)
 
 - **conclusion** — ALWAYS the last entry. The "Thus, if... then... (Which is) the very thing it
   was required to show." restatement.
@@ -119,13 +127,20 @@ For constructions, add `construction_cite` + `objects_introduced`:
 { "role": "construction", "text": "...", "construction_cite": "1.46", "objects_introduced": ["$CDEB$"] }
 ```
 
-For deductions, add `assertion` + `justifications` (+ `proof_cite` if a `[Prop.~B.N]` is cited):
+For deductions, add `spans` (RULE 6) + a 1-line `assertion` paraphrase (+ `proof_cite` if `[Prop.~B.N]`):
 ```json
-{ "role": "deduction", "text": "...",
+{ "role": "deduction",
+  "text": "Therefore, since $AC$ is equal to $CE$, the angle $EAC$ is equal to the angle $AEC$.",
   "assertion": "angle EAC equals angle AEC",
-  "justifications": [ {"substring": "$AC$ is equal to $CE$", "kind": "prior_fact"} ],
+  "spans": [
+    { "label": "glue",       "text": "Therefore, since " },
+    { "label": "assumption", "text": "$AC$ is equal to $CE$" },
+    { "label": "glue",       "text": ", the " },
+    { "label": "assertion",  "text": "angle $EAC$ is equal to the angle $AEC$" },
+    { "label": "glue",       "text": "." } ],
   "proof_cite": "1.5" }
 ```
+The span texts joined with NOTHING must equal `text` character-for-character (`--split` checks this).
 
 Omit fields not relevant to a role. Use `null` for `construction_cite`/`proof_cite` when none is cited.
 
