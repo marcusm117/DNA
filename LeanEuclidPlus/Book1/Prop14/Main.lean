@@ -1,10 +1,17 @@
 import SystemE
+import Book1.Prop14.step1
+import Book1.Prop14.step2
+import Book1.Prop14.step3
+import Book1.Prop14.step4
+import Book1.Prop14.step5
+import Book1.Prop14.step6
+import Book1.Prop14.step7
+import Book1.Prop14.step10
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem proposition_14 : ∀ (a b c d : Point) (AB BC BD : Line),
   distinctPointsOnLine a b AB ∧ distinctPointsOnLine b c BC ∧ distinctPointsOnLine b d BD ∧ (c.opposingSides d AB) ∧
   (∠ a:b:c + ∠ a:b:d) = ∟ + ∟ →
@@ -18,32 +25,32 @@ theorem proposition_14 : ∀ (a b c d : Point) (AB BC BD : Line),
     euclid_apply (extend_point BC c b) as e
     euclid_sentence "1.14.1"
       "For if $BD$ is not straight-on to $BC$ then let $BE$ be straight-on to $CB$. "
-      (step1 : between c b e) := by sorry
+      (step1 : between c b e) := by euclid_apply (helper_1_14_step1 c b e (by euclid_assumption "" (show between c b e; assumption)))
 
     -- @assumption ("since the straight-line $AB$ stands on the straight-line $CBE$", between c b e)
     euclid_sentence "1.14.2"
       "Therefore, since the straight-line $AB$ stands on the straight-line $CBE$, the (sum of the) angles $ABC$ and $ABE$ is thus equal to two right-angles [Prop.~1.13]."
-      (step2 : ∠ a:b:c + ∠ a:b:e = ∟ + ∟) := by sorry
+      (step2 : ∠ a:b:c + ∠ a:b:e = ∟ + ∟) := by euclid_apply (helper_1_14_step2 a b c e AB BC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show e.onLine BC; assumption)) (by euclid_assumption "" (show ¬c.onLine AB; assumption)) (by euclid_assumption "since the straight-line $AB$ stands on the straight-line $CBE$" (show between c b e; assumption)))
 
     euclid_sentence "1.14.3"
       "But (the sum of) $ABC$ and $ABD$ is also equal to two right-angles."
-      (step3 : ∠ a:b:c + ∠ a:b:d = ∟ + ∟) := by sorry
+      (step3 : ∠ a:b:c + ∠ a:b:d = ∟ + ∟) := by euclid_apply (helper_1_14_step3 a b c d (by euclid_assumption "" (show ∠ a:b:c + ∠ a:b:d = ∟ + ∟; assumption)))
 
     euclid_sentence "1.14.4"
       "Thus,  (the sum of angles) $CBA$ and $ABE$ is equal to (the sum of angles) $CBA$ and $ABD$ [C.N.~1]."
-      (step4 : ∠ c:b:a + ∠ a:b:e = ∠ c:b:a + ∠ a:b:d) := by sorry
+      (step4 : ∠ c:b:a + ∠ a:b:e = ∠ c:b:a + ∠ a:b:d) := by euclid_apply (helper_1_14_step4 a b c d e (by euclid_assumption "" (show ∠ a:b:c + ∠ a:b:e = ∟ + ∟; assumption)) (by euclid_assumption "" (show ∠ a:b:c + ∠ a:b:d = ∟ + ∟; assumption)))
 
     euclid_sentence "1.14.5"
       "Let (angle) $CBA$ have been subtracted from both."
-      (step5 : ∠ a:b:e = ∠ a:b:d) := by sorry
+      (step5 : ∠ a:b:e = ∠ a:b:d) := by euclid_apply (helper_1_14_step5 a b c d e (by euclid_assumption "" (show ∠ c:b:a + ∠ a:b:e = ∠ c:b:a + ∠ a:b:d; assumption)))
 
     euclid_sentence "1.14.6"
       "Thus, the remainder $ABE$ is equal to the remainder $ABD$ [C.N.~3], the lesser to the greater."
-      (step6 : ∠ a:b:e = ∠ a:b:d) := by sorry
+      (step6 : ∠ a:b:e = ∠ a:b:d) := by euclid_apply (helper_1_14_step6 a b d e (by euclid_assumption "" (show ∠ a:b:e = ∠ a:b:d; assumption)))
 
     euclid_sentence "1.14.7"
       "The very thing is impossible."
-      (step7 : False) := by sorry
+      (step7 : False) := by euclid_apply (helper_1_14_step7 a b c d e AB BC BD (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show b ≠ c; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show b ≠ d; assumption)) (by euclid_assumption "" (show ¬c.onLine AB; assumption)) (by euclid_assumption "" (show ¬d.onLine AB; assumption)) (by euclid_assumption "" (show ¬c.sameSide d AB; assumption)) (by euclid_assumption "" (show BC ≠ BD; assumption)) (by euclid_assumption "" (show e.onLine BC; assumption)) (by euclid_assumption "" (show between c b e; assumption)) (by euclid_assumption "" (show ∠ a:b:c + ∠ a:b:e = ∟ + ∟; assumption)) (by euclid_assumption "" (show ∠ a:b:e = ∠ a:b:d; assumption)))
 
     exact step7
 
@@ -53,7 +60,7 @@ theorem proposition_14 : ∀ (a b c d : Point) (AB BC BD : Line),
     "Similarly, we can show that neither (is) any other (straight-line)   than $BD$."
   euclid_sentence "1.14.10"
     "Thus, $CB$ is straight-on with respect to $BD$. "
-    (step10 : BC = BD) := by sorry
+    (step10 : BC = BD) := by euclid_apply (helper_1_14_step10 BC BD (by euclid_assumption "" (show ¬ BC ≠ BD; assumption)))
 
   exact step10
   euclid_conclude_sentence "1.14.11"

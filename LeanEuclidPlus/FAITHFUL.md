@@ -122,13 +122,13 @@ itself was mid-compile at the kill — which warm deps prevent.
 **5. Phase C — wire + verify (mechanical; YOU run it, not a skill):**
    **One command does all four (stops at the first failure):**
    ```
-   scripts/phase_c.sh Book2/Prop04                  # = the four steps below, in order
+   scripts/phase_c.sh Book1/Prop04                  # = the four steps below, in order
    ```
    (or run them by hand — note the THREE different argument shapes, the slash-vs-dot footgun:)
    ```
-   python3 scripts/wire_main.py Book2/PropNN        # commits the wiring, strips 30s caps, builds once
-   scripts/check_faithful.sh Book2.PropNN.Main            # text (crit.1) + deps (crit.3), book-aware
-   python3 scripts/check_steps.py Book2/PropNN/Main.lean   # claims unchanged since gate A
+   python3 scripts/wire_main.py Book1/PropNN        # commits the wiring, strips 30s caps, builds once
+   scripts/check_faithful.sh Book1.PropNN.Main            # text (crit.1) + deps (crit.3), book-aware
+   python3 scripts/check_steps.py Book1/PropNN/Main.lean   # claims unchanged since gate A
    python3 scripts/check_signatures.py              # no proposition statement was altered
    ```
    **▶ Gate C:** `wire_main` build green + zero sorry + all three checks PASS ⟹ Prop04 is faithful.
