@@ -4,22 +4,22 @@
 > Machine truth: `.lake/faithful-certified/Book1_Prop06.json`. This is the committed human mirror.
 > Snapshot as of audit: `--all`.
 > For LIVE state run:  `python3 scripts/check_step.py Book1/Prop06 --status`
-> Legend: ✓ done (cone certified + inputs unchanged) · ⚠ stale (an input changed) · ○ todo
+> Legend: ✓ done (Main subtree certified + inputs unchanged) · ⚠ stale (an input changed) · ○ todo
 
 | #  | Main node | status | detail |
 |----|-----------|--------|--------|
-| 1  | step1 | ✓ | cone certified, inputs fresh |
-| 2  | step2 | ✓ | cone certified, inputs fresh |
-| 3  | step3 | ✓ | cone certified, inputs fresh |
-| 4  | step4 | ✓ | cone certified, inputs fresh |
-| 5  | step5 | ✓ | cone certified, inputs fresh |
-| 6  | step6 | ✓ | cone certified, inputs fresh |
-| 7  | step7 | ✓ | cone certified, inputs fresh |
-| 8  | step8 | ✓ | cone certified, inputs fresh |
-| 9  | step9 | ✓ | cone certified, inputs fresh |
-| 10  | sym | ✓ | cone certified, inputs fresh |
-| 11  | step10 | ✓ | cone certified, inputs fresh |
-| 12  | step11 | ✓ | cone certified, inputs fresh |
+| 1  | step1 | ✓ | Main subtree certified, inputs fresh |
+| 2  | swapfig | ✓ | Main subtree certified, inputs fresh |
+| 3  | step2 | ✓ | Main subtree certified, inputs fresh |
+| 4  | step3 | ✓ | Main subtree certified, inputs fresh |
+| 5  | step4 | ✓ | Main subtree certified, inputs fresh |
+| 6  | step5 | ✓ | Main subtree certified, inputs fresh |
+| 7  | step6 | ✓ | Main subtree certified, inputs fresh |
+| 8  | step7 | ✓ | Main subtree certified, inputs fresh |
+| 9  | step8 | ✓ | Main subtree certified, inputs fresh |
+| 10  | step9 | ✓ | Main subtree certified, inputs fresh |
+| 11  | step10 | ✓ | Main subtree certified, inputs fresh |
+| 12  | step11 | ✓ | Main subtree certified, inputs fresh |
 
 whole-prop checks: criterion-3 deps ✓ · integrity ✓ · no orphans ✓
 
