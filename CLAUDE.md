@@ -64,18 +64,23 @@ structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate �
    split — `faithful-map` does it all interactively. The headless driver `run_faithful.py` now batches
    ONLY the two automatable phases — `assumptions` + `prove`; split/map/`--save`/Phase-C are manual.
    Monitor a batch with `scripts/monitor_tui.py`.)
-2. **Assumption Phase — mechanical, the HUMAN runs a script (between the Phase-A save and Phase B):**
-   `python3 scripts/assumptions.py <propdir>`. For every `-- @assumption ("text", type)` it materializes
-   a `have stepK_assumptionN : type := by sorry` (every assumption gets a have, no exceptions), fires
-   `euclid_finish` at a 3s cap, and persists: closes → `:= by euclid_finish` + `-- @assumption_valid`
-   (a free, node-invisible fact the Phase-B agent skips); else → `:= by sorry` + `-- @assumption_gap`
-   (a real node Phase B proves like any other). Writes the valid/gap tags to
-   `scripts/assumption_tags.json` (agent-write-denied, like the signature baselines) and prints a gap
-   report. Runs in **two fail-closed steps**: STEP A materializes the sorry haves + build-checks Main;
-   FAIL (usually a `wlog … generalizing` frame — the have shifts `Hsym`'s arity) ⟹ leave the haves, stop
-   (human manually adds the redundant arg to the `exact Hsym …` reduction — NEVER delete the have — then
-   `--tag-only`). STEP B classifies + tags, auto after a clean STEP A. `--dry-run` reverts everything
-   (diagnostic). `check_steps --save` is NOT re-run. Refuses a wired/post-Phase-B Main. Downstream `--all`
+2. **Assumption Phase — mechanical, the HUMAN runs a no-LLM SWEEP (between the Phase-A save and Phase B):**
+   `python3 scripts/assumptions.py <propdir>` (batch it in a plain loop over all props). For every
+   `-- @assumption ("text", type)` it materializes a `have stepK_assumptionN : type := by sorry` (every
+   assumption gets a have, no exceptions), then classifies each by a **LADDER** (cheapest-first), PERSISTING
+   the first tactic that closes it: 1 `rfl` · 2 `assumption` · 3 `simp (config := {zetaDelta := true})` ·
+   4 `linarith` · 5 `nlinarith` · 6 `euclid_finish`@30s · none → gap. valid → `:= by <tactic>` +
+   `-- @assumption_valid` (a free, node-invisible fact Phase B skips) with its `level`/`closed_by` recorded
+   (a graded triviality measure); gap → `:= by sorry` + `-- @assumption_gap` (a real node Phase B proves —
+   NOT a failure). The `simp` rung closes the superposition `img`/`lineImg` map coincidences that crash bare
+   `euclid_finish`. Writes the valid/gap tags (+ level) to `scripts/assumption_tags.json` (agent-write-
+   denied). Fail-closed: STEP A materializes + build-checks Main; FAIL (usually a `wlog … generalizing`
+   frame — the have shifts `Hsym`'s arity) ⟹ leave the haves, exit 1 (fix the frame: add the redundant arg
+   to `exact Hsym …` — NEVER delete the have — then `--tag-only`). After classifying it re-builds the
+   COMBINED Main; FAIL ⟹ exit 1, tags not written, left for review. **The `/faithful-assumptions` skill is
+   REPAIR-ONLY** — invoked by a human/LLM on just the exit-1 (or `sat`) props the sweep flags, never to run
+   the phase fresh. A plain re-run on a materialized prop auto-skips STEP A (never duplicates). `--dry-run`
+   reverts everything. `check_steps --save` is NOT re-run. Refuses a wired/post-Phase-B Main. Downstream `--all`
    (and `check_faithful` at gate C) HARD-enforce: every @assumption is a helper-sig binder (#1 FORCE) with
    its materialized have (#3 PARITY), and unchanged type (#2a, vs step_signatures) + valid/gap tag (#2b,
    vs assumption_tags.json).
