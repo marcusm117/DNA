@@ -1,0 +1,46 @@
+{
+  "cumulative_usd": 0.0,
+  "model": null,
+  "seq": 1,
+  "session_id": null,
+  "status": {
+    "checks": {
+      "deps": true,
+      "integrity": false,
+      "orphans": []
+    },
+    "nodes": [
+      {
+        "detail": "no backing file yet",
+        "name": "step1",
+        "state": "todo"
+      },
+      {
+        "detail": "blocked until earlier Main node `step1` is subtree-certified",
+        "name": "step2",
+        "state": "todo"
+      },
+      {
+        "detail": "blocked until earlier Main node `step1` is subtree-certified",
+        "name": "step3",
+        "state": "todo"
+      },
+      {
+        "detail": "blocked until earlier Main node `step1` is subtree-certified",
+        "name": "step4",
+        "state": "todo"
+      },
+      {
+        "detail": "blocked until earlier Main node `step1` is subtree-certified",
+        "name": "step5",
+        "state": "todo"
+      },
+      {
+        "detail": "blocked until earlier Main node `step1` is subtree-certified",
+        "name": "step6",
+        "state": "todo"
+      }
+    ]
+  },
+  "this_session_usd": null
+}

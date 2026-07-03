@@ -183,8 +183,21 @@ def EuclidApply (rule : Term) (idents : Array Ident)  : TacticM Unit := do
     if P.hasLooseBVars then  --  τ is an ∀
       evalTactic $ ← `(tactic| obtain ($(mkIdent hnm)) := $rule)
     else  -- τ is an implication, rather than ∀
-      let Γ ← init (← getMainGoal) hole rule idents
-      EuclidSolve |>.run Γ
+      -- CLOSE-DIRECTLY FIRST: a fully-applied implication-typed rule may BE the current goal — a
+      -- faithful `euclid_sentence` claim that is itself a conditional `P → R`. `exact` closes it with
+      -- zero SMT. On failure (the usual case: the goal is the CONSEQUENT, so this arrow-typed rule
+      -- does not match it) `exact` throws without assigning the goal, and we fall through to
+      -- EuclidSolve unchanged. Mirrors the non-arrow close-directly branch below.
+      let direct ← try
+        evalTactic $ ← `(tactic| first | exact $rule)
+        pure true
+      catch _ =>
+        pure false
+      if direct then
+        pure ()
+      else
+        let Γ ← init (← getMainGoal) hole rule idents
+        EuclidSolve |>.run Γ
   -- If there is no implication in the rule, i.e. no antecedent/hole to be filled, then just do the construction.
   | e =>
     match e.getAppFnArgs with

@@ -465,10 +465,9 @@ def run(propdir, dry_run=False, tag_only=False):
 def main():
     ap = argparse.ArgumentParser(
         description="The Assumption Phase: materialize a `have` per @assumption, then classify each by a "
-                    "ladder (1 rfl, 2 assumption, 3 simp[zetaDelta], 4 linarith, 5 nlinarith, "
-                    "6 euclid_finish@30s); persist the first tactic that closes it (tag @assumption_valid "
-                    "+ record level/closed_by) or @assumption_gap if none. Re-builds the combined Main "
-                    "and STOPS if it fails.")
+                    "ladder (1 rfl, 2 assumption, 3 linarith, 4 nlinarith, 5 euclid_finish@30s); persist "
+                    "the first tactic that closes it (tag @assumption_valid + record level/closed_by) or "
+                    "@assumption_gap if none. Re-builds the combined Main and STOPS if it fails.")
     ap.add_argument("propdir", help="Proposition directory, e.g. Book1/Prop01")
     ap.add_argument("--dry-run", action="store_true",
                     help="Classify + REPORT only; revert every edit, write nothing (pure diagnostic).")
