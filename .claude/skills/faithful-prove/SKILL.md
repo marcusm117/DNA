@@ -197,29 +197,26 @@ Can I close this goal directly (real euclid_apply chain, no new node) and build 
         hand-type the imports/cap/header.**
         **`@assumption` hyps — if the node has `-- @assumption` annotations in Main, scaffold also
         pre-populates the backing file with those hypothesis types as `(hassump1 : T1) …` binders.**
-        These types are **Phase A's best-guess** reasoning map — written from the sentence TEXT, before
-        Phase A knew the true call-site context. You MAY freely:
-          - rename them (e.g. `hassump1` → `h_angle_b_half`)
-          - reorder binders (objects first, geometric context, then reasoning — standard layout)
-          - add more object and geometric context binders
-        **You MAY ALSO correct a `@assumption` against the real context — the latitude Phase A lacks:**
-          - **DROP** a pre-populated `@assumption` binder (AND delete its matching `-- @assumption` line
-            in Main, so the two stay in sync) when the real context shows the cited fact is **derived
-            inside this step's cone, or simply not consumed at this site**. This is the INPUTS-ONLY
-            correction Phase A couldn't make. Faithfulness is **not** lost: criterion 1 still reproduces
-            the full sentence text — `@assumption` is only the finer input→fact map, and a reason that
-            the step *derives* rather than *consumes* doesn't belong in it.
-          - **RETYPE** a binder (orientation / atom form) to the literal atom the context has, and update
-            the `-- @assumption` line's type to match so the citation still maps in the wired output.
-        **Editing the `-- @assumption` COMMENT lines in Main is allowed** (they are annotations, not
-        wiring — Main's proof bodies stay `:= by sorry`; the script still does all wiring). Keep the
-        backing-file binder and the Main `-- @assumption` line consistent (drop/retype both together).
-        **Do NOT:** drop a binder merely to dodge a hard SP when the fact genuinely IS available at the
-        site (that just re-derives it in-cone with extra SMT — keep it threaded); and **NEVER** touch
-        the claim TYPE (frozen, human-gated). `check_step --all` reports `@assumption` drift vs the
-        gate-A baseline as a **non-blocking WARNING** (claim-type drift stays a hard fail in
-        `check_steps.py`). **Note each drop/retype + the reason** so the human can re-run
-        `check_steps.py --save` to refreeze at gate C.
+        The Assumption Phase has ALREADY run: assumptions are now first-class, EXPLICIT, PROVEN
+        obligations (each is materialized as a `have stepK_assumptionN` in Main), NOT a revisable guess.
+        You MAY still:
+          - rename the binders (e.g. `hassump1` → `h_angle_b_half`)
+          - reorder them (objects first, geometric context, then reasoning — standard layout)
+          - add MORE object / geometric-context binders
+        **You may NOT drop or retype an `@assumption` (this is the reversed latitude).** Every
+        `@assumption` MUST remain a hypothesis binder of its sentence's helper — `check_step --all`
+        HARD-FAILS otherwise: #1 FORCE (the type is still a helper-sig binder), #2a (type unchanged vs
+        `step_signatures.json`), #3 PARITY (the have exists). If a fact is truly derived in-cone / not
+        consumed, that's a Phase-A map error — flag it for a human, don't silently drop it.
+        **The materialized assumption haves themselves** (`stepK_assumptionN`, sitting just above their
+        sentence in Main):
+          - **`-- @assumption_valid`** → body is inline `:= by euclid_finish` — ALREADY DONE, a
+            node-invisible fact. Do NOT build a backing file for it; leave it.
+          - **`-- @assumption_gap`** → body is `:= by sorry` — a REAL node (Euclid asserted a premise he
+            didn't justify). PROVE it like any leaf: `scaffold_step.py <propdir> stepK_assumptionN`, then
+            SF→SP→P. Same species as a `step8_eb`-style sub-node.
+        **NEVER** touch the claim TYPE (frozen, human-gated) or the valid/gap tags (`check_step --all` +
+        `check_faithful` at gate C hard-fail on tag drift vs `scripts/assumption_tags.json`).
         (The skeleton approach eliminates boilerplate errors and saves ~150 tokens per file.)
         If you prefer manual creation, the structure is:
         ```

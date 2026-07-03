@@ -1,0 +1,16 @@
+{
+  "Book1/Prop01": {
+    "step4_assumption1": {
+      "tag": "valid",
+      "text": "the point $A$ is the center of the circle $CDB$",
+      "type": "a.isCentre BCD",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "tag": "valid",
+      "text": "the point $B$ is the center of the circle $CAE$",
+      "type": "b.isCentre ACE",
+      "verdict": "closes"
+    }
+  }
+}

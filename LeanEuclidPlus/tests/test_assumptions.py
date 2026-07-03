@@ -3,6 +3,7 @@ import sys, os, shutil, textwrap
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
 import faithful_lib as L
+import assumptions as A                    # the ASSUMPTION PHASE script
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
@@ -518,5 +519,170 @@ def test_integrity_scan_args_in_backing_file_not_flagged_as_main():
     try:
         problems = L.integrity_scan(propdir)
         assert not any("BANNED in Main" in p for p in problems), problems
+    finally:
+        _rm_hyg_prop()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ASSUMPTION PHASE (scripts/assumptions.py + faithful_lib helpers)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── classify_target (pure; distinct from classify_smell — tolerates other-node sorries) ──
+
+def test_classify_target_closes():
+    # build ok + only sorry WARNINGS (other nodes) ⟹ the target's euclid_finish discharged
+    assert A.classify_target(True, "warning: declaration uses 'sorry'") == "closes"
+
+def test_classify_target_hard():
+    assert A.classify_target(False, "error: ... Could not prove the goal ...") == "hard"
+
+def test_classify_target_sat():
+    assert A.classify_target(False, "Prover returned SAT") == "sat"
+
+def test_classify_target_wall():
+    assert A.classify_target(False, "build of X exceeded 45s wall clock — TOO BIG") == "wall"
+
+def test_classify_target_crash():
+    out = "libleanshared.so(l_Lean_Elab_Tactic_evalTactic+0x1)\nerror: Lean exited with code 1"
+    assert A.classify_target(False, out) == "crash"
+
+def test_classify_target_error():
+    assert A.classify_target(False, "error: unexpected token") == "error"
+
+
+# ── _frame_hint (STEP A fail-closed guidance) ──
+
+def test_frame_hint_points_at_wlog_when_generalizing_present():
+    hint = A._frame_hint("  wlog h : P generalizing b c with Hsym\n")
+    assert "wlog" in hint and "Hsym" in hint and "do NOT delete" in hint
+
+def test_frame_hint_generic_when_no_generalizing():
+    hint = A._frame_hint("  euclid_intros\n")
+    assert "do NOT delete" in hint and "generalizing" not in hint
+
+
+# ── materialize / sentence_blocks (pure string transform) ──
+
+def test_materialize_inserts_have_above_assumption_block():
+    src = ('  euclid_intros\n'
+           '  -- @assumption ("AB eq DE", |(a─b)| = |(d─e)|)\n'
+           '  euclid_sentence "1.4.1" "..." (step1 : ptImg b = e) := by sorry\n')
+    out = A.materialize(src)
+    assert "  have step1_assumption1 : |(a─b)| = |(d─e)| := by sorry" in out
+    # the @assumption block stays contiguous ABOVE the sentence, so _assumptions_above still works
+    m = L.SENTENCE_HEAD.search(out)
+    assert L._assumptions_above(out, m.start()) == [("AB eq DE", "|(a─b)| = |(d─e)|", None)]
+
+
+def test_materialize_matches_nested_indent():
+    """A sentence inside a 4-space reductio block gets its have at 4-space indent (else it breaks
+    Lean's block structure)."""
+    src = ('  have habsurd : X := by\n'
+           '    intro hne\n'
+           '    -- @assumption ("AB neq AC", |(a─b)| ≠ |(a─c)|)\n'
+           '    euclid_sentence "1.6.1" "..." (step1 : Y) := by sorry\n')
+    out = A.materialize(src)
+    assert "    have step1_assumption1 : |(a─b)| ≠ |(a─c)| := by sorry" in out
+
+
+def test_materialize_every_assumption_gets_a_have():
+    """Two @assumptions on one sentence → two haves (no exceptions)."""
+    src = ('  -- @assumption ("t1", T1)\n'
+           '  -- @assumption ("t2", T2)\n'
+           '  euclid_sentence "1.1.1" "..." (step1 : X) := by sorry\n')
+    out = A.materialize(src)
+    assert "have step1_assumption1 : T1 := by sorry" in out
+    assert "have step1_assumption2 : T2 := by sorry" in out
+
+
+def test_apply_verdicts_valid_and_gap_bodies():
+    """STEP B (apply_verdicts) sets each materialized have's body + tag IN PLACE."""
+    src = A.materialize('  -- @assumption ("t", T1)\n'
+                        '  euclid_sentence "1.1.1" "..." (step1 : X) := by sorry\n')
+    valid = A.apply_verdicts(src, {"step1_assumption1": "closes"})
+    assert "-- @assumption_valid" in valid
+    assert "have step1_assumption1 : T1 := by euclid_finish" in valid
+    gap = A.apply_verdicts(src, {"step1_assumption1": "hard"})
+    assert "-- @assumption_gap" in gap
+    assert "have step1_assumption1 : T1 := by sorry" in gap
+
+
+def test_apply_verdicts_idempotent_tag():
+    """Running apply_verdicts twice doesn't stack tag comments (idempotent replace)."""
+    src = A.materialize('  -- @assumption ("t", T1)\n'
+                        '  euclid_sentence "1.1.1" "..." (step1 : X) := by sorry\n')
+    once = A.apply_verdicts(src, {"step1_assumption1": "closes"})
+    twice = A.apply_verdicts(once, {"step1_assumption1": "closes"})
+    assert twice.count("-- @assumption_valid") == 1
+    assert twice == once
+
+
+# ── assumption_current_tags / count_inline_assumption_haves (body-state derivation) ──
+
+def test_assumption_current_tags(tmp_path):
+    main = tmp_path / "Main.lean"
+    main.write_text('  have step1_assumption1 : T := by euclid_finish\n'
+                    '  have step2_assumption1 : T := by sorry\n'
+                    '  have step3_assumption1 : T := by euclid_apply (helper_1_1_step3_assumption1 a)\n',
+                    encoding="utf-8")
+    assert L.assumption_current_tags(str(main)) == {
+        "step1_assumption1": "valid",     # inline euclid_finish
+        "step2_assumption1": "gap",       # sorry
+        "step3_assumption1": "gap",       # wired backing call (stable through Phase C)
+    }
+    assert L.count_inline_assumption_haves(str(main)) == 1
+
+
+# ── assumption_structure_problems: #3 PARITY + #1 FORCE (Book9/Prop2 fixture) ──
+
+_ASSUMP_MAIN_NO_HAVE = ('import SystemE\n'
+                        'namespace Elements.Book2\n'
+                        'theorem proposition_2 : True := by\n'
+                        '  -- @assumption ("AC eq CE", |(a─c)| = |(c─e)|)\n'
+                        '  euclid_sentence "9.2.1" "S." (step1 : True) := by sorry\n'
+                        'end Elements.Book2\n')
+
+# helper_<book>_<prop>_step1 — book=9 (from the Book9 PATH), prop=2 (Prop2). Takes the assumption type.
+_ASSUMP_STEP1_WITH_BINDER = ('import SystemE\n'
+                             'namespace Elements.Book2\n'
+                             'theorem helper_9_2_step1 (a c e : Point) (h : |(a─c)| = |(c─e)|) : True '
+                             ':= trivial\n'
+                             'end Elements.Book2\n')
+
+_ASSUMP_STEP1_NO_BINDER = ('import SystemE\n'
+                           'namespace Elements.Book2\n'
+                           'theorem helper_9_2_step1 (a c e : Point) : True := trivial\n'
+                           'end Elements.Book2\n')
+
+
+def test_assumption_parity_flags_missing_have():
+    """#3 PARITY: a sentence with an @assumption but no materialized have is flagged."""
+    propdir = _make_hyg_prop(_ASSUMP_MAIN_NO_HAVE, extra={"step1.lean": _ASSUMP_STEP1_WITH_BINDER})
+    try:
+        problems = L.assumption_structure_problems(propdir)
+        assert any("step1_assumption1` is missing" in p for p in problems), problems
+    finally:
+        _rm_hyg_prop()
+
+
+def test_assumption_parity_ok_with_have():
+    """With the have materialized (real materialize layout — have ABOVE the @assumption block, so
+    _assumptions_above still finds it), PARITY passes and FORCE passes (binder present)."""
+    main = A.apply_verdicts(A.materialize(_ASSUMP_MAIN_NO_HAVE), {"step1_assumption1": "closes"})
+    propdir = _make_hyg_prop(main, extra={"step1.lean": _ASSUMP_STEP1_WITH_BINDER})
+    try:
+        problems = L.assumption_structure_problems(propdir)
+        assert problems == [], problems
+    finally:
+        _rm_hyg_prop()
+
+
+def test_assumption_force_flags_missing_binder():
+    """#1 FORCE: the assumption type must be a hyp binder of the sentence's helper — no exceptions."""
+    main = A.apply_verdicts(A.materialize(_ASSUMP_MAIN_NO_HAVE), {"step1_assumption1": "closes"})
+    propdir = _make_hyg_prop(main, extra={"step1.lean": _ASSUMP_STEP1_NO_BINDER})
+    try:
+        problems = L.assumption_structure_problems(propdir)
+        assert any("not a hypothesis binder" in p for p in problems), problems
     finally:
         _rm_hyg_prop()

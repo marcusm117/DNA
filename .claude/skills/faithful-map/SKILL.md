@@ -242,8 +242,13 @@ rejects this at map time; see [[book1-prop09-faithful-map]].)
 ## `@assumption` (INPUTS-ONLY)
 Each `-- @assumption ("substring", TODO)` line the scaffold seeded marks a prior fact this sentence
 CONSUMES (from split's justifications). Replace `TODO` with the Lean type of that fact — the EXACT
-normalized form of the hypothesis binder it becomes (e.g. `|(a─c)| = |(c─e)|`). Use
-`use_override step2.1` after the type if it's a conjunct projection `assumption` can't crack.
+normalized form of the hypothesis binder it becomes (e.g. `|(a─c)| = |(c─e)|`).
+**These types are now LOAD-BEARING, not a revisable guess.** After your map is reviewed + saved, the
+**Assumption Phase** (`scripts/assumptions.py`, the human runs it) materializes EACH `@assumption` into a
+`have stepK_assumptionN`, proves the trivial ones (`euclid_finish`, tagged `@assumption_valid`) and marks
+the rest `@assumption_gap` for Phase B — and downstream checks HARD-FAIL if an assumption is dropped or
+retyped. So get the type right and don't tag an assertion as an assumption. (`use_override` is retired —
+`euclid_finish` splits conjuncts and crosses orientation flips on its own; just write the type.)
 **INPUTS-ONLY:** an `@assumption` is a fact the step consumes — NOT a conjunct of the step's own claim. If
 a seeded substring is actually the assertion (not a consumed input), delete that `@assumption` line. When
 in doubt, drop it.

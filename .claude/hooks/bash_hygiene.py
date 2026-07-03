@@ -158,7 +158,8 @@ def main():
             ok = (nxt.startswith("scripts/") or nxt.startswith("./scripts/")) and (
                 arg.startswith("check_") or arg in ("wire_main.py", "smt_probe.py",
                                                     "find.py", "bake_index.py", "scaffold_step.py",
-                                                    "faithful_map_assemble.py"))
+                                                     "faithful_map_assemble.py", "assumptions.py"))
+
             # also allow running the parse-only test suite bare: `python3 -m pytest tests/…`
             if not ok and nxt == "-m" and nxt2 == "pytest":
                 ok = True

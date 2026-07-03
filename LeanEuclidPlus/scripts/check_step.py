@@ -101,6 +101,15 @@ _BASELINE = os.path.join(L.BOOK_ROOT, "scripts", "step_signatures.json")
 
 
 # ── shared build-with-swap primitives (always revert) ───────────────────────────────────────────────
+def _wall(propdir, path, base=L.WALL):
+    """The build wall for `path`. A full Main build carries N inline (valid) assumption `euclid_finish`
+    haves that run sequentially (each ≤3s), so it needs `WALL + 3*N` (faithful_lib.main_wall) — a fixed
+    wall would SIGKILL a legitimate Main build mid-way. Any non-Main file uses `base`."""
+    if os.path.realpath(path) == os.path.realpath(L.main_file(propdir)):
+        return L.main_wall(propdir)
+    return base
+
+
 def _build_with_node_state(propdir, node, state, wall=L.WALL):
     """Put `node` into `state` (managing BOTH body and helper import), build the container, REVERT,
     return (ok, output). Atomic: the file is restored even on exception/SIGINT. When wiring, WARM the
@@ -114,7 +123,7 @@ def _build_with_node_state(propdir, node, state, wall=L.WALL):
     with L.restore_files([node.file]):
         src = open(node.file, encoding="utf-8").read()
         open(node.file, "w", encoding="utf-8").write(L.set_node_state(src, node, state, propdir, book))
-        return L.lake_build(L.target_of(node.file), wall=wall)
+        return L.lake_build(L.target_of(node.file), wall=_wall(propdir, node.file, wall))
     # restore_files has restored node.file here
 
 
@@ -182,7 +191,7 @@ def _build_isolated_sp(propdir, node, wall=L.WALL):
         nodes = L.parse_nodes_in_file(node.file, book)
         open(node.file, "w", encoding="utf-8").write(
             L.set_node_isolated_sp(csrc, node, nodes, propdir, book))
-        return L.lake_build(L.target_of(node.file), wall=wall)
+        return L.lake_build(L.target_of(node.file), wall=_wall(propdir, node.file, wall))
     # restore_files has restored node.file AND the backing file here
 
 
@@ -246,7 +255,7 @@ def check_sufficient(propdir, node):
     in the container — NOT the backing file's signature; the backing file need not even exist yet.
     Returns (ok, output). The container is built in its current on-disk state, so this is just a build
     (reverts nothing — nothing was changed)."""
-    return L.lake_build(L.target_of(node.file), wall=L.WALL)
+    return L.lake_build(L.target_of(node.file), wall=_wall(propdir, node.file))
 
 
 def _sorry_locations(output):
@@ -615,20 +624,18 @@ def _audit_with_manifest(propdir, order, success_msg, source, subtree_roots=()):
 
 
 def _run_assumption_persistence(propdir):
-    """Source-only, instant. For every entry in step_signatures.json that belongs to this prop AND has
-    'assumptions', check whether each saved assumption type is still a binder type in the backing file.
-    Drift is a NON-BLOCKING WARNING (returns nothing): @assumption types are Phase-A's best-guess
-    reasoning map, recorded from the sentence TEXT before the true call-site context is known. Phase B
-    is permitted to DROP a cited input that turns out to be derived in-cone / not consumed, or RETYPE
-    one to the literal context atom (see the faithful-prove skill). Faithfulness is unaffected —
-    criterion 1 still reproduces the full sentence text, and the load-bearing claim TYPE stays frozen
-    and is enforced HARD by check_steps.py. Called in mode_all after _run_dependency."""
+    """#2a TYPE DRIFT — source-only, instant, HARD FAIL. Returns True iff OK. For every entry in
+    step_signatures.json belonging to this prop with 'assumptions', check each saved assumption type is
+    still a hypothesis binder of its sentence's helper. Under the assumption phase, assumptions are
+    first-class, explicit, PROVEN obligations — not a revisable Phase-A guess — so the agent may NOT
+    drop or retype one after `check_steps --save`. (Reverses the old non-blocking latitude policy.)
+    Called in mode_all; a False return aborts --all."""
     if not os.path.exists(_BASELINE):
-        return                              # no baseline yet — nothing to check (additive feature)
+        return True                         # no baseline yet — nothing to check (additive feature)
     try:
         base = json.load(open(_BASELINE, encoding="utf-8"))
     except (ValueError, OSError):
-        return                              # unreadable baseline — skip
+        return True                         # unreadable baseline — skip
     book = L.book_num(propdir)
     prop_prefix = os.path.relpath(propdir, L.BOOK_ROOT)   # e.g. "Book2/Prop09"
     drifts = []
@@ -653,15 +660,52 @@ def _run_assumption_persistence(propdir):
             if saved_type not in norm_binder_types:
                 drifts.append((name, a["type"], a.get("text", "")))
     if drifts:
-        print(f"WARNING (assumption drift, non-blocking): {len(drifts)} @assumption type(s) frozen at "
-              f"Phase A are no longer backing-file binders in {prop_prefix}:")
+        print(f"FAIL (assumption TYPE drift): {len(drifts)} @assumption type(s) frozen at Phase A are no "
+              f"longer hypothesis binders of their sentence's helper in {prop_prefix}:")
         for name, atype, text in drifts:
             label = f'  ("{text}")' if text else ""
             print(f'  {name}.lean no longer takes "{atype}"{label}')
-        print("  ALLOWED: Phase B may drop a cited input that is derived in-cone / not consumed, or "
-              "retype it to the context atom (faithful-prove skill). Faithfulness is preserved by "
-              "criterion 1 (full sentence text) + the frozen claim type. If intended, re-run "
-              "`check_steps.py --save` to refreeze.")
+        print("  Assumptions are first-class PROVEN obligations now — every one must stay supplied to "
+              "its sentence's claim. Restore the binder, or (if the map genuinely changed and was "
+              "re-approved) have a human re-run `check_steps.py --save`.")
+        return False
+    return True
+
+
+_TAGS_FILE = os.path.join(L.BOOK_ROOT, "scripts", "assumption_tags.json")
+
+
+def _run_tag_drift(propdir):
+    """#2b TAG DRIFT — source-only, instant, HARD FAIL. Returns True iff OK. Compare each assumption's
+    CURRENT valid/gap (from its have body: `euclid_finish`→valid, else→gap; stable through Phase-C
+    wiring) against the frozen scripts/assumption_tags.json the assumption phase wrote. The agent may not
+    silently flip a classification (turn a gap into an inline euclid_finish, or vice versa)."""
+    if not os.path.exists(_TAGS_FILE):
+        return True                                    # no tags yet — additive feature
+    try:
+        data = json.load(open(_TAGS_FILE, encoding="utf-8"))
+    except (ValueError, OSError):
+        return True
+    saved = data.get(os.path.relpath(propdir, L.BOOK_ROOT))
+    if not saved:
+        return True                                    # this prop not yet run through the phase
+    current = L.assumption_current_tags(L.main_file(propdir))
+    problems = []
+    for name, rec in sorted(saved.items()):
+        want, have = rec.get("tag"), current.get(name)
+        if have is None:
+            problems.append(f"  {name}: recorded '{want}' but its have is gone now")
+        elif have != want:
+            problems.append(f"  {name}: recorded '{want}' but is now '{have}'")
+    if problems:
+        print(f"FAIL (assumption TAG drift) in {os.path.relpath(propdir, L.BOOK_ROOT)} — valid/gap "
+              f"changed from scripts/assumption_tags.json:")
+        for p in problems:
+            print(p)
+        print("  The assumption phase owns these tags; the agent must not flip a valid↔gap. If the map "
+              "genuinely changed, a human re-runs `assumptions.py`.")
+        return False
+    return True
 
 
 def mode_all(propdir):
@@ -683,11 +727,13 @@ def mode_all(propdir):
     # violation can't slip through the agent's final gate (the step3-cited-Prop.1.31 class).
     if not _run_dependency(propdir):
         return 1
-    # assumption drift (source-only, instant) — surface, as a NON-BLOCKING warning, any @assumption type
-    # frozen at Phase A that is no longer a backing-file binder. Phase B is allowed to drop/retype a
-    # cited input the real context shows isn't consumed (faithful-prove skill); the load-bearing claim
-    # TYPE stays frozen + hard-enforced by check_steps.py, and criterion 1 keeps the sentence text.
-    _run_assumption_persistence(propdir)
+    # assumption enforcements (source-only, instant, HARD): #2a TYPE drift (each @assumption still a
+    # helper binder vs the frozen step_signatures baseline) and #2b TAG drift (each valid/gap matches the
+    # assumption_tags.json the phase wrote). #1 FORCE + #3 PARITY already ran inside integrity_scan above.
+    if not _run_assumption_persistence(propdir):
+        return 1
+    if not _run_tag_drift(propdir):
+        return 1
     order = L.audit_order(propdir)                    # whole prop, bottom-up
     n_names = len(order)
     n_occ = sum(len(occs) for _, occs in order)
@@ -786,7 +832,7 @@ def mode_build_main(propdir):
             print("  - " + p)
         return 1
     print(f"[check_step --provable] building {os.path.relpath(mf, L.BOOK_ROOT)} (no parent; tolerating sorry)…")
-    ok, out = L.lake_build(L.target_of(mf), wall=L.WALL)
+    ok, out = L.lake_build(L.target_of(mf), wall=L.main_wall(propdir))
     if not ok:
         print("FAIL: Main did not elaborate (or hit the 30s cap).\n")
         print(_fail_output(out))

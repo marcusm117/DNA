@@ -95,12 +95,25 @@ itself was mid-compile at the kill — which warm deps prevent.
    ```
    python3 scripts/check_steps.py --save Book1/Prop04/Main.lean
    ```
-   This freezes the claim TYPES **hard** and records the `@assumption` types. NOTE: the `@assumption`
-   types are only Phase-A's best-guess reasoning map — Phase B may legitimately **drop/retype** a cited
-   input the real call-site context shows isn't consumed, so `check_step --all` (and gate-C
-   `check_steps.py`) report `@assumption` drift as a **non-blocking WARNING**, while claim-type drift
-   stays a hard fail. If a Phase-B `@assumption` change is intended, just re-run `check_steps.py --save`
-   to refreeze the map.
+   This freezes the claim TYPES **hard** and records the `@assumption` types. Under the Assumption
+   Phase (next), assumptions are first-class PROVEN obligations — frozen HARD like claims: Phase B may
+   NOT drop or retype one (`check_step --all` + gate-C `check_steps.py` hard-fail on `@assumption` drift).
+
+**▶ then the Assumption Phase (mechanical; YOU run it, between gate A and Phase B):**
+   ```
+   python3 scripts/assumptions.py Book1/Prop04            # --dry-run first to preview the split
+   ```
+   For every `-- @assumption` it materializes a `have stepK_assumptionN : type := by sorry`, fires
+   `euclid_finish` at a 3s cap, and persists: **closes** → `:= by euclid_finish` + `-- @assumption_valid`
+   (free — the Phase-B agent skips it); **doesn't close** → `:= by sorry` + `-- @assumption_gap` (a real
+   node Phase B proves). Reads the gap report — those are exactly where Euclid skipped a step. Writes the
+   valid/gap tags to `scripts/assumption_tags.json` (you own it; agent-write-denied). Do NOT re-run
+   `check_steps --save`. (`--dry-run` reverts everything — a pure diagnostic.)
+   It runs in **two fail-closed steps**: STEP A materializes the sorry haves + build-checks Main; if that
+   build FAILS (almost always a `wlog … generalizing` frame — the have shifts `Hsym`'s arity), it leaves
+   the haves in place and stops. Fix the frame by hand — **manually add the extra (redundant) argument to
+   the `exact Hsym …` reduction; never delete the have** — then run `assumptions.py <prop> --tag-only` to
+   finish (classify + tag). On a clean prop STEP A→STEP B run automatically.
 
 **3. Phase B — prove (skill):**  `/faithful-prove Book2/Prop04/Main.lean`
    The agent creates each `stepN.lean` and proves it, decomposing recursively (adding `have`+backing
@@ -141,7 +154,8 @@ itself was mid-compile at the kill — which warm deps prevent.
 | script | purpose | who |
 |---|---|---|
 | `check_signatures.py` `[--save]` | guard proposition **statements** (must never change) | human, once + gate C |
-| `check_steps.py [--save] <Main>` | guard approved **claim types** (frozen-hard after gate A) + record the `@assumption` map (drift is a non-blocking WARNING — Phase B may drop/retype an input) | human, gate A + gate C |
+| `check_steps.py [--save] <Main>` | guard approved **claim types** AND `@assumption` types (both frozen-HARD after gate A — assumption drift is now a hard fail, no drop/retype) | human, gate A + gate C |
+| `assumptions.py <propdir> [--dry-run] [--tag-only]` | **Assumption Phase**, two fail-closed steps: STEP A materializes a sorry have per `@assumption` + build-checks (fail → leave haves, fix the frame by hand, then `--tag-only`); STEP B classifies at 3s (`euclid_finish`), tags valid/gap, writes `scripts/assumption_tags.json` + gap report | human (real run); agent (`--dry-run` only) |
 | `check_step.py <propdir> <node>` | certify ONLY that one node (SF→SP→P, stops at first fail) — does NOT check its sub-nodes | agent (Phase B) |
 | `check_step.py <propdir> --subtree <node>` | certify a node's WHOLE CONE (it + every sub-node it transitively contains), bottom-up, scoped — doesn't touch other steps; confirms a container/step is done | agent (Phase B) |
 | `check_step.py <propdir> --sufficient/--suppliable/--provable <node>` | run just one of SF/SP/P (diagnostics; `--provable` reports remaining-sorry file:lines) | agent (Phase B) |
@@ -150,7 +164,7 @@ itself was mid-compile at the kill — which warm deps prevent.
 | `check_step.py <propdir> --smell <node>` | SM pre-decompose sanity check: fire the bare claim at `euclid_finish` (short solver cap) — "closes" ⟹ don't decompose / "not closed" ⟹ decompose / "SAT" ⟹ claim is false. Deliberate; the no-flag path does NOT run it | agent (Phase B) |
 | `check_step.py <propdir> --check` | instant, no-build integrity scan (naming law, caps, no stray imports, no stray sorry, + criterion-3 deps) | agent (Phase B) |
 | `check_step.py <propdir> --dependency` (`--deps`) | instant, no-build criterion-3 check, BOTH arms: every cited `[Prop.~B.N]` satisfied by a Main construction (`… as …`) OR its sentence's helper cone. Number-only; isolate fast before `--all` (which also runs it). The book-aware authority is the human's gate-C olean check — don't game it | agent (**Phase B** — needs helpers) |
-| `check_step.py <propdir> --all` | WHOLE-prop bottom-up audit (SP every node + P every LEAF + no-stray-sorry + criterion-3 deps); the FINAL gate, run ONCE; exit 0 ⟹ Phase C guaranteed. Also surfaces `@assumption` drift as a non-blocking WARNING (does not affect exit code) | agent (end of B) + human (gate B) |
+| `check_step.py <propdir> --all` | WHOLE-prop bottom-up audit (SP every node + P every LEAF + no-stray-sorry + criterion-3 deps); the FINAL gate, run ONCE; exit 0 ⟹ Phase C guaranteed. Also HARD-enforces the assumption invariants: #1 FORCE (every `@assumption` is a helper-sig binder), #3 PARITY (every one has its have), #2a/#2b (type + valid/gap tag unchanged) | agent (end of B) + human (gate B) |
 | `check_step.py <propdir> --whatchanged` (`--changed`) | instant, READ-ONLY (no build, no lock): after editing a file, report the MINIMAL set of certified nodes to re-check + WHY + the exact commands. Reads the certification manifest (written by `--all`/`--subtree`/each per-node PASS) and diffs input-file hashes. Use it instead of re-running `--all` after a fix | agent + human |
 | `check_step.py <propdir> --status` (`--checklist`) | instant, READ-ONLY (no build, no lock, never writes): the durable RESUME BOARD — Main's own nodes (source order), each rolled up over its cone against the manifest into done/stale/todo, plus the 3 whole-prop checks (deps/integrity/orphans) + the exact NEXT `--subtree` commands. All-✓ + 3/3 ⟹ `--all` is GUARANTEED to pass. The committed mirror `PropNN/STATUS.md` is regenerated by `--all`/`--subtree`/per-node PASS (the same writers as the manifest) | agent + human |
 | `check_step.py <propdir> --drive` | auto-loop `--subtree` over every Main node `--status` would report not-`done` (todo or stale), in source order, stopping at the first failure — covers cold-start (empty manifest) and warm-resume (skips already-`done` nodes) the same way, so you don't hand-drive `--status`'s printed command list yourself | agent (Phase B) |

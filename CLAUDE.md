@@ -39,8 +39,9 @@ other Book-2 prop is at a varying/in-progress state — not a reference.)
 [LeanEuclidPlus/FAITHFUL.md](LeanEuclidPlus/FAITHFUL.md) — read this first if you're driving the process.
 
 To make a proof FAITHFUL (annotate it with `euclid_sentence`s so it follows Euclid's sentence
-structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate → B → gate → C**
-(Phase A = INTERACTIVE split → map · Phase B = `faithful-prove` · Phase C = mechanical):
+structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate → Assumption → B → gate → C**
+(Phase A = INTERACTIVE split → map · Assumption = `scripts/assumptions.py` · Phase B = `faithful-prove`
+· Phase C = mechanical):
 1. **Phase A — the sentence map** (translation only, no proving). Run these two skills INTERACTIVELY, by
    hand, reviewing between them — NOT headless (headless mapping stalled; interactive one-at-a-time is the
    proven approach):
@@ -61,7 +62,22 @@ structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate �
    `python3 scripts/check_steps.py --save PropNN/Main.lean`.
    (Retired: the old headless `faithful-translate` / `faithful-review` / `scaffold_translate.py` 3-agent
    split — `faithful-map` does it all interactively. `run_faithful.py` now only drives `split` + `prove`.)
-2. **`faithful-prove`** ([.claude/skills/faithful-prove/SKILL.md](.claude/skills/faithful-prove/SKILL.md)) —
+2. **Assumption Phase — mechanical, the HUMAN runs a script (between the Phase-A save and Phase B):**
+   `python3 scripts/assumptions.py <propdir>`. For every `-- @assumption ("text", type)` it materializes
+   a `have stepK_assumptionN : type := by sorry` (every assumption gets a have, no exceptions), fires
+   `euclid_finish` at a 3s cap, and persists: closes → `:= by euclid_finish` + `-- @assumption_valid`
+   (a free, node-invisible fact the Phase-B agent skips); else → `:= by sorry` + `-- @assumption_gap`
+   (a real node Phase B proves like any other). Writes the valid/gap tags to
+   `scripts/assumption_tags.json` (agent-write-denied, like the signature baselines) and prints a gap
+   report. Runs in **two fail-closed steps**: STEP A materializes the sorry haves + build-checks Main;
+   FAIL (usually a `wlog … generalizing` frame — the have shifts `Hsym`'s arity) ⟹ leave the haves, stop
+   (human manually adds the redundant arg to the `exact Hsym …` reduction — NEVER delete the have — then
+   `--tag-only`). STEP B classifies + tags, auto after a clean STEP A. `--dry-run` reverts everything
+   (diagnostic). `check_steps --save` is NOT re-run. Refuses a wired/post-Phase-B Main. Downstream `--all`
+   (and `check_faithful` at gate C) HARD-enforce: every @assumption is a helper-sig binder (#1 FORCE) with
+   its materialized have (#3 PARITY), and unchanged type (#2a, vs step_signatures) + valid/gap tag (#2b,
+   vs assumption_tags.json).
+3. **`faithful-prove`** ([.claude/skills/faithful-prove/SKILL.md](.claude/skills/faithful-prove/SKILL.md)) —
    Phase B: prove each step with the **recursive SF/SP/P atom** (delegates to `prove-euclid`). The agent
    creates/proves `stepN.lean` (recursing into `have`+backing files until every build ≤30s) and
    verifies each node with `scripts/check_step.py <propdir> <node>` (runs SF→SP→P, stops at first fail;
@@ -76,7 +92,7 @@ structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate �
    reverts.** Dev-state files import NO pipeline (helper/step) files — only `SystemE` + cited
    propositions; the script adds/removes a helper import alongside its wiring (so per-node checks pull
    in only that node's olean — fast + isolated). Ends when `scripts/check_step.py <propdir> --all` exits 0.
-3. **Phase C — mechanical, NOT a skill (the human runs it):**
+4. **Phase C — mechanical, NOT a skill (the human runs it):**
    `python3 scripts/wire_main.py <propdir>` (commits the wiring, strips the 30s caps → 300s default,
    builds Main once — guaranteed green if `--all` passed) then `scripts/check_faithful.sh Book2` +
    `check_steps.py` + `check_signatures.py`. `wire_main.py --unwire` reverses it back to Phase B.
@@ -132,12 +148,16 @@ Every other Book-2 prop is at a varying/in-progress state — follow the skills'
     or guessing signatures. It auto-rebakes; `python3 scripts/bake_index.py --rebuild` forces a full
     re-parse. The parse-only test suite is `python3 -m pytest tests/`.
   - **`python3 scripts/check_step.py …` / `check_steps.py` / `check_faithful.py` / `check_signatures.py`
-    / `scripts/check_faithful.sh` / `python3 scripts/wire_main.py …` / `python3 scripts/scaffold_step.py …`**
-    — the build/verify pipeline and backing-file scaffolder. Run BARE, no pipe to `grep`/`head` (the hook
-    denies the pipe; just read what the script prints). `scaffold_step.py <file-or-propdir> <node>`
-    creates a skeleton backing file with correct naming law + 30s cap + claim type pre-filled — for
-    BOTH Main `euclid_sentence` steps and `have` sub-nodes (Phase B uses this to avoid boilerplate;
-    new node ⟹ scaffold first).
+    / `scripts/check_faithful.sh` / `python3 scripts/wire_main.py …` / `python3 scripts/scaffold_step.py …`
+    / `python3 scripts/assumptions.py <propdir> [--tag-only|--dry-run]`** — the build/verify pipeline,
+    backing-file scaffolder, and Assumption Phase. Run BARE, no pipe to `grep`/`head` (the hook denies the
+    pipe; just read what the script prints). `scaffold_step.py <file-or-propdir> <node>` creates a
+    skeleton backing file with correct naming law + 30s cap + claim type pre-filled — for BOTH Main
+    `euclid_sentence` steps and `have` sub-nodes (Phase B uses this to avoid boilerplate; new node ⟹
+    scaffold first). `assumptions.py` is the Assumption Phase, run by the agent via the
+    `/faithful-assumptions` skill (all modes — the tags it writes are mechanical + build-verified, so no
+    human `--save`-style gate is needed; `scripts/assumption_tags.json` stays agent-Write/Edit-denied so
+    only the script writes it).
   - **read-only git**: `status`/`diff`/`log`/`show`/`branch`/`blame`/`ls-files` (git mutations are
     denied by policy — the human owns git, it's the safety net).
   - **path/shell helpers**: `cd LeanEuclidPlus` (the one allowed cd — see the bare-command rule above),

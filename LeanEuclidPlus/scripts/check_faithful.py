@@ -246,6 +246,41 @@ def sentence_claim(src: str, start_pos: int):
     m = re.match(r'\s*\w+\s*:\s*(.*)$', src[i + 1:j], re.DOTALL)   # "ident : CLAIM"
     return " ".join(m.group(1).split()) if m else None
 
+_ASSUMPTION_TAGS = os.path.join(fl.BOOK_ROOT, "scripts", "assumption_tags.json")
+
+
+def _assumption_tag_problems(main_path: str):
+    """#2b (human Phase-C gate). Compare each assumption's CURRENT valid/gap (from its have body:
+    inline `euclid_finish` → valid; else → gap) against the frozen scripts/assumption_tags.json the
+    assumption phase wrote, AND confirm the structural pairing: a gap has a backing file (it must be
+    proven), a valid is inline (no backing file). Empty ⟹ OK (also when no tags recorded yet)."""
+    if not os.path.exists(_ASSUMPTION_TAGS):
+        return []
+    try:
+        data = json.load(open(_ASSUMPTION_TAGS, encoding="utf-8"))
+    except (ValueError, OSError):
+        return []
+    propdir = os.path.dirname(os.path.realpath(main_path))
+    saved = data.get(os.path.relpath(propdir, fl.BOOK_ROOT))
+    if not saved:
+        return []
+    current = fl.assumption_current_tags(main_path)
+    problems = []
+    for name, rec in sorted(saved.items()):
+        want, have = rec.get("tag"), current.get(name)
+        if have is None:
+            problems.append(f"{name}: recorded '{want}' but its have is gone")
+        elif have != want:
+            problems.append(f"{name}: recorded '{want}' but is now '{have}'")
+        else:
+            bf = fl.backing_file(propdir, name)
+            if want == "gap" and bf is None:
+                problems.append(f"{name}: tagged 'gap' but has no backing file (a gap must be proven)")
+            if want == "valid" and bf is not None:
+                problems.append(f"{name}: tagged 'valid' (inline) but a backing file exists")
+    return problems
+
+
 def check_source(path: str) -> int:
     raw = open(path, encoding="utf-8").read()
     src = strip_comments(raw)
@@ -367,6 +402,13 @@ def check_source(path: str) -> int:
     place_problems = fl.intro_conclude_placement_problems(anns)
     rc |= report("euclid_intro/conclude_sentence bracket the proof (leading / trailing only)",
                  not place_problems, place_problems or ["placement OK"])
+
+    # ASSUMPTION TAG GATE (#2b, human Phase-C): each assumption's valid/gap (from its have body) must
+    # match scripts/assumption_tags.json (written by the assumption phase); a gap must be backed, a valid
+    # stays inline. No-op until the prop has been run through the phase.
+    tag_problems = _assumption_tag_problems(path)
+    rc |= report("assumption valid/gap tags unchanged (+ gaps backed, valids inline)",
+                 not tag_problems, tag_problems or ["tags match assumption_tags.json (or none recorded)"])
 
     # Reminder: the third faithfulness criterion (each step's TYPE honestly captures its sentence)
     # is HUMAN-checked — no machine verifies it.

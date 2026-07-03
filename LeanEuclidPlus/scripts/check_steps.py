@@ -181,22 +181,21 @@ def diff(prop_arg: str = None):
         print(f"REMOVED  {k}  (approved in {base[k]['file']}:{base[k]['line']})")
     for k in sorted(added):
         print(f"ADDED    {k}  ({cur[k]['file']}:{cur[k]['line']}) — not in approved baseline")
-    # @assumption drift is a NON-BLOCKING warning: Phase B is allowed to drop/retype a cited input the
-    # real call-site context shows isn't consumed (faithful-prove). Only the claim TYPE is frozen-hard.
+    # @assumption drift is now a HARD FAIL (#2a): under the assumption phase, assumptions are first-class
+    # PROVEN obligations — every one must stay supplied to its sentence's claim, so the agent may NOT
+    # drop or retype one after approval. (Reverses the old non-blocking latitude.)
     for k, atype, text in sorted(assump_changed):
-        print(f"WARNING (assumption drift)  {k}: frozen annotation type \"{atype}\" (\"{text}\") no "
-              f"longer in source — allowed if Phase B dropped/retyped it; re-run `--save` to refreeze")
+        print(f"DRIFT (assumption)  {k}: frozen annotation type \"{atype}\" (\"{text}\") no longer "
+              f"appears in source — restore it, or (if the map genuinely changed and was re-approved) "
+              f"re-run `--save`.")
 
-    if changed or removed or added:
-        print(f"\nFAIL: {len(changed)} changed, {len(removed)} removed, {len(added)} added"
-              ". Claim types are frozen after Phase-A approval — "
-              "if a change is intended, get it re-approved and re-run `--save`.")
+    if changed or removed or added or assump_changed:
+        print(f"\nFAIL: {len(changed)} changed, {len(removed)} removed, {len(added)} added, "
+              f"{len(assump_changed)} assumption drift. Claim types AND assumptions are frozen after "
+              f"Phase-A approval — if a change is intended, get it re-approved and re-run `--save`.")
         return 1
-    msg = (f"OK: all {len(keys)} approved step claim(s) unchanged"
-           + (f" in {os.path.relpath(resolve(prop_arg), BOOK_ROOT)}" if prop_arg else ""))
-    if assump_changed:
-        msg += f"  ({len(assump_changed)} @assumption drift warning(s) above — non-blocking)"
-    print(msg)
+    print(f"OK: all {len(keys)} approved step claim(s) + assumptions unchanged"
+          + (f" in {os.path.relpath(resolve(prop_arg), BOOK_ROOT)}" if prop_arg else ""))
     return 0
 
 

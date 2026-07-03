@@ -1559,6 +1559,85 @@ class restore_files:
         return False
 
 
+# ── assumption phase: materialized-have structure (#1 FORCE + #3 PARITY) + tag/count helpers ─────────
+# A materialized assumption have is named `<sentenceName>_assumptionN`. VALID ones carry the inline
+# `:= by euclid_finish` body (skipped by parse_nodes_in_file); GAP ones are `:= by sorry` nodes with a
+# backing file. So we scan the source directly here, independent of the node model.
+_ASSUMPTION_HAVE_RE = re.compile(r'\bhave\s+(\w+_assumption\d+)\s*:')
+
+
+def assumption_current_tags(main_path):
+    """{have_name: "valid"|"gap"} for every materialized assumption have in Main, derived from its BODY —
+    inline `:= by euclid_finish` ⟹ valid; anything else (`sorry` in dev, or a wired backing call) ⟹ gap.
+    The body state is the authoritative classification (real code in content_sha); the `-- @assumption_*`
+    comment is just documentation."""
+    clean = blank_comments(open(main_path, encoding="utf-8").read())
+    out = {}
+    for m in _ASSUMPTION_HAVE_RE.finditer(clean):
+        try:
+            _t, sep = type_until_assign(clean, m.end())
+        except FaithfulError:
+            continue
+        out[m.group(1)] = "valid" if re.match(r':=\s*by\s+euclid_finish\b', clean[sep:sep + 40]) else "gap"
+    return out
+
+
+def count_inline_assumption_haves(main_path):
+    """Number of VALID (inline `:= by euclid_finish`) assumption haves in Main — the passers whose SMT
+    runs on every Main build. Used to scale the build wall (`WALL + 3*N`)."""
+    return sum(1 for v in assumption_current_tags(main_path).values() if v == "valid")
+
+
+def main_wall(propdir):
+    """Build wall for a full Main build after the assumption phase: base WALL plus 3s per inline
+    (valid) assumption have, since those N `euclid_finish` calls run sequentially each ≤3s (else a fixed
+    wall would SIGKILL a legitimate Main build mid-way). See the assumption-phase plan."""
+    return WALL + 3 * count_inline_assumption_haves(main_file(propdir))
+
+
+def assumption_structure_problems(propdir, names=None):
+    """#1 FORCE + #3 PARITY, source-only (no build). For each `euclid_sentence` in Main carrying K
+    `@assumption` annotations (scoped to `names` when given):
+      PARITY (#3): all K `<sentence>_assumptionN` haves are materialized (the phase ran, covered every
+                   premise). Counts BOTH valid (`euclid_finish`) and gap (`sorry`) haves via source scan.
+      FORCE  (#1): each annotation TYPE is a hypothesis binder of the sentence's helper (once its backing
+                   file exists) — every assumption MUST be supplied to the sentence's claim, no exceptions.
+    Returns a list of problem strings (empty ⟹ sound)."""
+    book = book_num(propdir)
+    mf = main_file(propdir)
+    src = open(mf, encoding="utf-8").read()
+    present = {m.group(1) for m in _ASSUMPTION_HAVE_RE.finditer(blank_comments(src))}
+    problems = []
+    for m in SENTENCE_HEAD.finditer(src):
+        sname = m.group(2)
+        if names is not None and sname not in names:
+            continue
+        assumptions = _assumptions_above(src, m.start())
+        if not assumptions:
+            continue
+        for i in range(1, len(assumptions) + 1):                    # #3 PARITY
+            hn = f"{sname}_assumption{i}"
+            if hn not in present:
+                problems.append(f"sentence {sname} has {len(assumptions)} @assumption(s) but the "
+                                f"materialized have `{hn}` is missing — run the assumption phase "
+                                f"(scripts/assumptions.py {os.path.relpath(propdir, BOOK_ROOT)}) before "
+                                f"proving. Every assumption gets a have (no exceptions).")
+        bf = backing_file(propdir, sname)                           # #1 FORCE
+        if bf is not None:
+            try:
+                _objs, hyp_types = parse_helper_objs(bf, book, sname)
+            except FaithfulError:
+                continue                                            # naming-law error reported elsewhere
+            binder_norm = {_norm(t) for t in hyp_types}
+            for _text, typ, _ov in assumptions:
+                if _norm(typ) not in binder_norm:
+                    problems.append(
+                        f"sentence {sname}: @assumption `{typ}` is not a hypothesis binder of its helper "
+                        f"{helper_name(book, prop_num(propdir), sname)} — every assumption MUST be "
+                        f"supplied to the sentence's claim (no exceptions). Add it to the helper signature.")
+    return problems
+
+
 # ── shared structural pre-check (used by --check and as the abort-loud preamble of build ops) ────────
 def integrity_scan(propdir, names=None):
     """Source-only, NO builds. Verify the naming law and dev-state invariants. Returns a list of
@@ -1662,6 +1741,9 @@ def integrity_scan(propdir, names=None):
         # catch a stray sorry (a build with a sorry warning still "succeeds"), so the guarantee depends
         # on this source scan. (Shared with the Phase-A `--provable` Main build via stray_sorry_problems.)
         problems.extend(stray_sorry_problems(path, book))
+    # #1 FORCE (every @assumption is a hyp binder of its sentence's helper) + #3 PARITY (every
+    # @assumption has its materialized have) — the assumption phase's structural invariants.
+    problems.extend(assumption_structure_problems(propdir, names))
     return problems
 
 
