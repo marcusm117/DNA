@@ -1,0 +1,1 @@
+- book 1 prop 2 does not have the assumption tag nor do any of teh book 2 ones. (all other book 1 has that).

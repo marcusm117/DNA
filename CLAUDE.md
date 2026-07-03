@@ -61,7 +61,9 @@ structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate �
    (text tiling + construction deps + **hard-FAIL on any `True` claim**). STOPS for **human review** +
    `python3 scripts/check_steps.py --save PropNN/Main.lean`.
    (Retired: the old headless `faithful-translate` / `faithful-review` / `scaffold_translate.py` 3-agent
-   split — `faithful-map` does it all interactively. `run_faithful.py` now only drives `split` + `prove`.)
+   split — `faithful-map` does it all interactively. The headless driver `run_faithful.py` now batches
+   ONLY the two automatable phases — `assumptions` + `prove`; split/map/`--save`/Phase-C are manual.
+   Monitor a batch with `scripts/monitor_tui.py`.)
 2. **Assumption Phase — mechanical, the HUMAN runs a script (between the Phase-A save and Phase B):**
    `python3 scripts/assumptions.py <propdir>`. For every `-- @assumption ("text", type)` it materializes
    a `have stepK_assumptionN : type := by sorry` (every assumption gets a have, no exceptions), fires

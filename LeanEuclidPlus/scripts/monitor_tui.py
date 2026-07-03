@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Interactive live monitor for run_faithful batches.
+"""Interactive live monitor for run_faithful batches (assumptions / prove).
 
 One screen: a GLOBAL table of every prop being worked (phase · nodes done/total · cost · status),
 and — for the focused prop — its newest trace tailing live. Auto-refreshes; switch focus anytime.
@@ -7,19 +7,28 @@ It **auto-discovers** what's running from the run_faithful registry (`.lake/fait
 so you don't re-type prop names. **Read-only and decoupled** — quitting or switching NEVER affects a
 running batch.
 
+No-lag by design: the expensive per-prop status computation runs in a BACKGROUND thread (round-robin
+over the props into a cache); the curses render only ever reads the cache, so it stays instant even
+with 30+ props. The focused prop's trace tail is read live but bounded (128 KB), so it's cheap too.
+
 Usage:
   python3 scripts/monitor_tui.py                       # auto-discover active run_faithful batches
   python3 scripts/monitor_tui.py Book1/Prop08 Book1/Prop14   # monitor these explicitly
   python3 scripts/monitor_tui.py --once                # print one frame and exit (non-interactive/testable)
+  python3 scripts/monitor_tui.py --dump Book1/Prop08   # full trace of one prop, for scrollback
+  python3 scripts/monitor_tui.py --selftest [N]        # benchmark refresh+render over N real props (no lag proof)
 
-Keys:  [0-9] focus that prop · ↑/↓ move focus · g toggle global-only · q quit
+Keys:  [0-9]+Enter jump to that prop · ↑/↓ move focus · g toggle global-only · q quit
 """
 import argparse
 import glob
 import json
 import os
+import re
 import shutil
 import sys
+import threading
+import time
 
 sys.path.insert(0, os.path.dirname(__file__))
 import faithful_lib as L
@@ -73,31 +82,60 @@ def _load(p):
         return None
 
 
+def _short(pd):
+    """Display label: the trailing `BookN/PropNN` if present (works for real props under BOOK_ROOT AND
+    for out-of-tree/mock props), else the plain relpath."""
+    parts = pd.rstrip(os.sep).split(os.sep)
+    if len(parts) >= 2 and re.fullmatch(r"Book\d+", parts[-2]):
+        return parts[-2] + "/" + parts[-1]
+    return os.path.relpath(pd, L.BOOK_ROOT)
+
+
+def _latest_checkpoint(cdir):
+    """The highest-seq cost/prove/<seq>.json record, or None."""
+    pv = glob.glob(os.path.join(cdir, "prove", "*.json"))
+    if not pv:
+        return None
+    latest = max(pv, key=lambda p: int(os.path.basename(p)[:-5]) if os.path.basename(p)[:-5].isdigit() else 0)
+    return _load(latest)
+
+
 def summarize(pd):
-    """Coarse per-prop state read straight off disk (phase, nodes done/total, cost, flag)."""
-    name = os.path.relpath(pd, L.BOOK_ROOT)
+    """Coarse per-prop state read straight off disk (phase, nodes done/total, cost, flag).
+
+    Deliberately CHEAP: progress is `#Main nodes with a subtree certificate / #Main nodes`, read from
+    the manifest (one JSON) + a single Main.lean parse — NOT the full `status_rows` (which re-hashes
+    every backing file and re-scans deps/integrity/orphans, up to tens of seconds on a big prop). A
+    monitor wants fresh, not authoritative — the authoritative gate is `check_step --all` / `--status`.
+    When there's no manifest yet (a just-started prop, or a mock batch), it falls back to the latest
+    prove checkpoint's status snapshot. Staleness/whole-prop checks are intentionally omitted here."""
+    name = _short(pd)
     cdir = os.path.join(pd, "cost")
     cost = 0.0
-    for ph in ("split", "translate", "reconcile"):
-        r = _load(os.path.join(cdir, ph + ".json"))
-        cost += (r.get("cost_usd") or 0) if r else 0
-    pv = glob.glob(os.path.join(cdir, "prove", "*.json"))
-    if pv:
-        r = _load(max(pv, key=lambda p: int(os.path.basename(p)[:-5]) if os.path.basename(p)[:-5].isdigit() else 0))
-        cost += (r.get("cumulative_usd") or 0) if r else 0
+    r = _load(os.path.join(cdir, "assumptions.json"))
+    cost += (r.get("cost_usd") or 0) if r else 0
+    ckpt = _latest_checkpoint(cdir)
+    if ckpt:
+        cost += ckpt.get("cumulative_usd") or 0
     done = tot = 0
+    mains = None
     try:
-        rows, _ = L.status_rows(pd)
-        tot = len(rows)
-        done = sum(1 for _, st, _ in rows if st == "done")
+        mains = L.main_nodes_in_order(pd)
+        tot = len(mains)
     except Exception:
-        pass
-    has_prove = os.path.isdir(os.path.join(cdir, "prove"))
-    phase = ("prove" if has_prove else
-             "mapped" if os.path.exists(os.path.join(pd, "translate.json")) else
-             "split" if os.path.exists(os.path.join(pd, "split.json")) else "—")
+        mains = None
+    subtrees = L.read_manifest(pd).get("subtrees", {})
+    if mains is not None and subtrees:
+        done = sum(1 for nd in mains if nd.name in subtrees)
+    elif ckpt:                                   # no manifest → the checkpoint snapshot is the truth
+        nodes = (ckpt.get("status") or {}).get("nodes") or []
+        done = sum(1 for n in nodes if n.get("state") == "done")
+        tot = tot or len(nodes)
+    phase = ("prove" if os.path.isdir(os.path.join(cdir, "prove")) else
+             "assump" if os.path.exists(os.path.join(cdir, "assumptions.json")) else
+             "mapped" if os.path.exists(os.path.join(pd, "Main.lean")) else "—")
     flag = ("BLOCKED" if os.path.exists(os.path.join(pd, "NEEDS_HUMAN.md")) else
-            "DONE" if (tot and done == tot) else "")
+            "DONE?" if (tot and done == tot) else "")
     return name, phase, done, tot, cost, flag
 
 
@@ -170,18 +208,67 @@ def trace_lines(pd, tail_bytes: "int | None" = 131072):
     return tr, lines
 
 
-def _prop_row(i, props, focus):
+# ── background status cache (the anti-lag core) ──────────────────────────────────────────────────
+class StatusCache:
+    """Refreshes each prop's `summarize()` round-robin in a daemon thread. The render loop only ever
+    reads the cache (instant), so a big batch never lags the UI. A prop not yet computed reads as None
+    (rendered as '…') until its first pass lands."""
+
+    def __init__(self, get_props, per_prop_pause=0.02, cycle_pause=0.5):
+        self.get_props = get_props
+        self.per_prop_pause = per_prop_pause      # tiny yield between props (keeps one CPU from pegging)
+        self.cycle_pause = cycle_pause            # rest at the end of a full sweep
+        self._cache = {}
+        self._lock = threading.Lock()
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._loop, daemon=True)
+
+    def start(self):
+        self._thread.start()
+        return self
+
+    def stop(self):
+        self._stop.set()
+
+    def get(self, pd):
+        with self._lock:
+            return self._cache.get(pd)
+
+    def _loop(self):
+        while not self._stop.is_set():
+            props = self.get_props()
+            if not props:
+                self._stop.wait(1.0)
+                continue
+            for pd, _ in props:
+                if self._stop.is_set():
+                    break
+                try:
+                    s = summarize(pd)
+                except Exception:
+                    s = (os.path.relpath(pd, L.BOOK_ROOT), "?", 0, 0, 0.0, "")
+                with self._lock:
+                    self._cache[pd] = s
+                self._stop.wait(self.per_prop_pause)
+            self._stop.wait(self.cycle_pause)
+
+
+def _prop_row(i, props, focus, getter):
     pd, live = props[i]
-    name, phase, done, tot, cost, flag = summarize(pd)
+    s = getter(pd)
     mark = ">" if i == focus else " "
+    if s is None:
+        return "%s %2d  %-20s  %s" % (mark, i, os.path.relpath(pd, L.BOOK_ROOT)[:20], "…")
+    name, phase, done, tot, cost, flag = s
     return "%s %2d  %-20s  %-7s  %3d/%-3d  $%-8.4f %s%s" % (
         mark, i, name[:20], phase, done, tot, cost, flag, ("  ●live" if live else ""))
 
 
-def render_lines(props, focus, global_only, height, width):
+def render_lines(props, focus, global_only, height, width, getter):
     """Full frame as lines, WINDOWED so a big batch never buries the trace: the prop table shows a
     slice AROUND `focus` (with ▲/▼ 'N more' markers), and the focused prop's trace tail fills the rest.
-    In global-only mode the table takes the whole height (still windowed/scrollable via focus)."""
+    `getter(pd)` returns a cached summary tuple or None. In global-only mode the table takes the whole
+    height (still windowed/scrollable via focus)."""
     out = ["run_faithful monitor   ·   type #+Enter to jump   ↑/↓ move   g global   q quit",
            "  #  prop                  phase    nodes    cost       status"]
     if not props:
@@ -195,7 +282,7 @@ def render_lines(props, focus, global_only, height, width):
     if start > 0:
         out.append("   ▲ %d more above" % start)
     for i in range(start, min(start + cap, len(props))):
-        out.append(_prop_row(i, props, focus))
+        out.append(_prop_row(i, props, focus, getter))
     below = len(props) - (start + cap)
     if below > 0:
         out.append("   ▼ %d more below" % below)
@@ -209,12 +296,12 @@ def render_lines(props, focus, global_only, height, width):
     return [ln[:width - 1] for ln in out]
 
 
-def build_once(props, focus, global_only):
+def build_once(props, focus, global_only, getter):
     size = shutil.get_terminal_size((100, 40))
-    return "\n".join(render_lines(props, focus, global_only, size.lines, size.columns))
+    return "\n".join(render_lines(props, focus, global_only, size.lines, size.columns, getter))
 
 
-def loop(scr, get_props, interval):
+def loop(scr, get_props, cache, interval):
     import curses
     curses.curs_set(0)
     focus, global_only, numbuf = 0, False, ""
@@ -224,7 +311,7 @@ def loop(scr, get_props, interval):
             focus = max(0, len(props) - 1)
         scr.erase()
         H, Wd = scr.getmaxyx()
-        for r, ln in enumerate(render_lines(props, focus, global_only, H, Wd)):
+        for r, ln in enumerate(render_lines(props, focus, global_only, H, Wd, cache.get)):
             if r >= H:
                 break
             try:
@@ -263,14 +350,91 @@ def loop(scr, get_props, interval):
             numbuf = ""
 
 
+def _all_real_props():
+    """Every Book*/Prop* dir that has a Main.lean — for --selftest."""
+    out = []
+    for book in sorted(glob.glob(os.path.join(L.BOOK_ROOT, "Book*"))):
+        for pd in sorted(glob.glob(os.path.join(book, "Prop*"))):
+            if os.path.isfile(os.path.join(pd, "Main.lean")):
+                out.append(pd)
+    return out
+
+
+def selftest(n):
+    """Benchmark the anti-lag design over N real props: time a full status sweep (the background
+    thread's work) and — the number that matters — the CACHED render latency the UI actually sees."""
+    props_dirs = _all_real_props()
+    if n:
+        props_dirs = props_dirs[:n]
+    if not props_dirs:
+        print("selftest: no props with Main.lean found")
+        return 1
+    props = [(pd, True) for pd in props_dirs]
+    print(f"selftest over {len(props)} real props")
+
+    # 1) full status sweep (what the background thread does once per cycle)
+    t0 = time.perf_counter()
+    cache = {}
+    per = []
+    for pd, _ in props:
+        s0 = time.perf_counter()
+        cache[pd] = summarize(pd)
+        per.append((time.perf_counter() - s0) * 1000)
+    sweep_ms = (time.perf_counter() - t0) * 1000
+    per.sort()
+    print(f"  status sweep (all props): {sweep_ms:8.1f} ms total  ·  "
+          f"per-prop avg {sweep_ms/len(props):5.1f} · max {per[-1]:5.1f} ms")
+
+    # 2) CACHED render latency — this is what the curses loop pays every frame. Must be tiny.
+    size = shutil.get_terminal_size((120, 45))
+    worst = 0.0
+    for focus in range(0, len(props), max(1, len(props) // 20)):
+        r0 = time.perf_counter()
+        render_lines(props, focus, False, size.lines, size.columns, cache.get)
+        worst = max(worst, (time.perf_counter() - r0) * 1000)
+    print(f"  cached render latency (worst of sampled focuses): {worst:6.2f} ms")
+
+    # 3) large-trace tail: render latency should not grow with trace size (bounded tail read)
+    big = os.path.join("/tmp", "faithful_selftest_big.jsonl")
+    ev = json.dumps({"type": "assistant", "message": {"content": [
+        {"type": "thinking", "thinking": "x " * 200},
+        {"type": "tool_use", "name": "Bash", "input": {"command": "echo " + "y" * 200}}]}}) + "\n"
+    with open(big, "w") as f:
+        for _ in range(20000):                        # ~ multi-MB trace
+            f.write(ev)
+    mb = os.path.getsize(big) / 1e6
+    # exercise the exact bounded-tail logic trace_lines uses (128 KB window), timed:
+    t0 = time.perf_counter()
+    with open(big, "rb") as f:
+        f.seek(0, 2)
+        size_b = f.tell()
+        f.seek(max(0, size_b - 131072))
+        f.readline()
+        data = f.read()
+    n_lines = len(data.decode("utf-8", "replace").splitlines())
+    tail_ms = (time.perf_counter() - t0) * 1000
+    print(f"  large-trace tail read ({mb:.1f} MB file → {n_lines} tail lines): {tail_ms:6.2f} ms")
+    os.remove(big)
+
+    ok = worst < 50.0
+    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} — cached render {'<' if ok else '≥'} 50 ms "
+          f"(the UI never blocks on status; sweeps happen off-thread).")
+    return 0 if ok else 1
+
+
 def main():
     ap = argparse.ArgumentParser(description="Interactive live monitor for run_faithful batches.")
     ap.add_argument("props", nargs="*", help="prop dirs to monitor (default: auto-discover from registry)")
     ap.add_argument("--once", action="store_true", help="print one frame and exit (non-interactive)")
     ap.add_argument("--dump", action="store_true",
                     help="print the FULL trace of the first prop (all events) to stdout — pipe to less")
-    ap.add_argument("--interval", type=float, default=1.5, help="refresh seconds (default 1.5)")
+    ap.add_argument("--selftest", nargs="?", const=0, type=int, metavar="N",
+                    help="benchmark refresh+render over N real props (default: all) and exit")
+    ap.add_argument("--interval", type=float, default=1.0, help="refresh seconds (default 1.0)")
     args = ap.parse_args()
+
+    if args.selftest is not None:
+        sys.exit(selftest(args.selftest))
 
     def get_props():
         return discover(args.props)
@@ -287,10 +451,18 @@ def main():
         return
 
     if args.once or not sys.stdin.isatty():
-        print(build_once(get_props(), 0, False))
+        # synchronous single frame (no background thread needed)
+        props = get_props()
+        cache = {pd: summarize(pd) for pd, _ in props}
+        print(build_once(props, 0, False, cache.get))
         return
-    import curses
-    curses.wrapper(lambda scr: loop(scr, get_props, args.interval))
+
+    cache = StatusCache(get_props).start()
+    try:
+        import curses
+        curses.wrapper(lambda scr: loop(scr, get_props, cache, args.interval))
+    finally:
+        cache.stop()
 
 
 if __name__ == "__main__":

@@ -195,32 +195,35 @@ parent — so it has no SF/SP, only a build. Therefore: build Main with `check_s
 pointing here). `propdir_of` requires `Main.lean` to exist, so a prop with no Main is rejected up front.
 
 ## Running many at scale — the headless driver (`run_faithful.py`)
-For a batch (10s of props) drive Claude headless instead of hand-launching sessions.
-`scripts/run_faithful.py` spawns `claude -p` per prop, saves the full agent trace, and logs per-phase
-cost. **Run it from `LeanEuclidPlus/` in YOUR terminal — NOT inside an agent session** (a nested
-`claude` spawn is hard-denied there). The driver has TWO headless segments — `split` and `prove`;
-Phase-A **mapping is interactive** (by hand) and sits between them, at the human gate:
+Only TWO phases are automatable across a batch, and the driver does exactly those two — **`assumptions`**
+and **`prove`**. Everything else is MANUAL/interactive: `/faithful-split`, `/faithful-map`, the human
+GATE-A review + `check_steps.py --save`, and Phase C (`wire_main.py`). `scripts/run_faithful.py` spawns
+`claude -p` per prop, saves the full agent trace, and logs cost. **Run it from `LeanEuclidPlus/` in YOUR
+terminal — NOT inside an agent session** (a nested `claude` spawn is hard-denied there).
 
-1. **split** — batch the Phase-A text splits across the batch:
+The per-prop order is: (manual) split → map → `--save` → **`assumptions`** → **`prove`** → (manual) Phase C.
+
+1. **assumptions** — batch the Assumption Phase (after each prop's map is `--save`'d):
    ```
-   python3 scripts/run_faithful.py split Book1/Prop18 Book1/Prop19 … --concurrency 30
+   python3 scripts/run_faithful.py assumptions Book1/Prop18 Book1/Prop19 … --concurrency 30
    ```
-   Each writes `split.json` (gated by `--split`). Then **MAP each prop INTERACTIVELY, by hand** —
-   `/faithful-map Book1/PropNN` (mapping is no longer headless) — review it, and freeze the human-only gate:
-   ```
-   python3 scripts/check_steps.py --save Book1/PropNN/Main.lean      # per approved prop
-   ```
+   Each spawns `/faithful-assumptions` (runs `assumptions.py`; the agent fixes any `wlog` frame break
+   itself), then a `check_step --provable` build-check confirms Main still elaborates.
 2. **prove** — the resumable prove loop, across the whole batch:
    ```
    python3 scripts/run_faithful.py prove Book1/Prop18 Book1/Prop19 … --concurrency 30
    ```
-   Per prop it loops `claude` sessions (`--resume` within one invocation; a fresh invocation continues
-   from the on-disk step files + manifest) until `check_step <propdir> --all` exits 0, writing one
-   checkpoint per session. Then run Phase C (`phase_c.sh`) per certified prop.
+   Per prop it loops FRESH `claude` sessions (each continues from the on-disk step files + manifest, not
+   a `--resume`) until `check_step <propdir> --all` exits 0, writing one checkpoint per session. A Book-1
+   prop gets its original `Book/PropNN.lean` offered as a math reference. Then run Phase C (`phase_c.sh`)
+   per certified prop.
+
+**Monitor live** from another terminal: `python3 scripts/monitor_tui.py` (auto-discovers the running
+batch; no-lag even at 30+ props — status is computed off-thread, the render only reads a cache).
 
 **Cost + trace** land under each `PropNN/`:
 - `runs/<phase>-<seq>-<sid>.jsonl` — full streamed agent trace (**git-ignored**).
-- `cost/split.json` · `cost/prove/<seq>.json` (status snapshot + cumulative $) ·
+- `cost/assumptions.json` · `cost/prove/<seq>.json` (status snapshot + cumulative $) ·
   `cost/summary.json` (per-phase + overall).
   **Committed.** Checkpoint delta = `cumulative_usd` now − prev.
 
