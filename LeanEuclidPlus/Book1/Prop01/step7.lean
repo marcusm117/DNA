@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_1_step7 (a b c : Point)
     (h1 : |(c─a)| = |(a─b)|) (h2 : |(b─c)| = |(b─a)|) :
     |(c─a)| = |(a─b)| ∧ |(c─b)| = |(a─b)| := by

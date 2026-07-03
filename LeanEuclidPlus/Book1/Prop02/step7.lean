@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_2_step7 (d l g : Point) (GKL : Circle)
     (hdl : d.isCentre GKL) (hll : l.onCircle GKL) (hgl : g.onCircle GKL) :
     |(d─l)| = |(d─g)| := by
