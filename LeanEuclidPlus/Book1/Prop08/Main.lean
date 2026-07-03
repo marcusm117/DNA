@@ -28,11 +28,15 @@ theorem proposition_8 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
     if L = AC then GF else
     L
 
+  -- @assumption_valid
+  have step1_assumption1 : |(b─c)| = |(e─f)| := by assumption
   -- @assumption ("$BC$ being equal to $EF$", |(b─c)| = |(e─f)|)
   euclid_sentence "1.8.1"
     "For if triangle $ABC$ is applied to triangle $DEF$, the point $B$ being placed on point $E$, and the straight-line $BC$ on $EF$, then point $C$ will also coincide with $F$, on account of $BC$ being equal to $EF$."
     (step1 : ptImg c = f) := by sorry
 
+  -- @assumption_valid
+  have step2_assumption1 : lineImg BC = EF := by simp (config := { zetaDelta := true })
   -- @assumption ("$BC$ coinciding with $EF$", lineImg BC = EF)
   euclid_sentence "1.8.2"
     "So  (because of) $BC$ coinciding with $EF$,  (the sides) $BA$ and $CA$ will also coincide with  $ED$ and $DF$ (respectively). "
@@ -40,6 +44,8 @@ theorem proposition_8 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
 
   have habsurd : ¬ (lineImg AB ≠ DE ∧ lineImg AC ≠ DF) := by
     intro hne
+    -- @assumption_valid
+    have step3_assumption1 : lineImg BC = EF := by assumption
     -- @assumption ("base $BC$ coincides with base $EF$", lineImg BC = EF)
     euclid_sentence "1.8.3"
       "For if base $BC$ coincides with base $EF$, but the sides $AB$ and $AC$  do not coincide with $ED$ and $DF$ (respectively), but miss like $EG$ and $GF$ (in the above figure), "

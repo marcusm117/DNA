@@ -2,24 +2,46 @@
 """The ASSUMPTION PHASE — runs BETWEEN Phase A (sentence map) and Phase B (prove).
 
 For every `-- @assumption ("text", type)` a sentence consumes, this MATERIALIZES an explicit
-`have stepK_assumptionN : <type> := by sorry` node, then fires `euclid_finish` at a tight solver cap
-at each one, in isolation, to classify it:
+`have stepK_assumptionN : <type> := by sorry` node (STEP A), then classifies each by trying a LADDER of
+tactics in order (STEP B), CHEAPEST/most-trivial first, and PERSISTING the FIRST one that closes it:
 
-  * CLOSES  → the premise was genuinely trivial (conjunct projection, `a=b`↔`b=a`, transitivity …).
-              Persist it inline as `:= by euclid_finish` + a `-- @assumption_valid` tag. It becomes a
-              finished, node-invisible fact (parse_nodes_in_file skips `euclid_finish`-bodied haves) —
-              free work the Phase-B agent never has to prove.
-  * NOT     → Euclid asserted a premise he never justified — a REASONING GAP. Persist it as `:= by
-    CLOSED    sorry` + `-- @assumption_gap`; Phase B proves it via the normal recursive atom (it is the
-              same species as a `step8_eb`-style decomposition sub-node).
+  LEVEL  TACTIC              means the premise is …
+    1    rfl                 a definitional identity (e.g. `|(a─f)| = |(a─f)|` — "AF is common")
+    2    assumption          literally a hypothesis already in context (a restated given)
+    3    simp (zetaDelta)    closable by unfolding local `let`s + simp — the superposition-map
+                             coincidences (`lineImg AB = DE`), which crash bare euclid_finish
+    4    linarith            linear arithmetic over lengths (Common Notions: equals ± equals …)
+    5    nlinarith           nonlinear arithmetic (products / areas)
+    6    euclid_finish       needs the full geometric SMT offload (z3), at a 30s solver cap
+   gap   (none closed)       a genuine REASONING GAP — Euclid asserted it with no mechanical justification
 
-The valid/gap classification is recorded in `scripts/assumption_tags.json` (this script's own baseline;
-agent-write-denied, mirroring step_signatures.json). `check_steps --save` is NOT touched or re-run.
+  * CLOSED at level K → persist that tactic inline as `:= by <tactic>` + a `-- @assumption_valid` tag.
+    It becomes a finished, node-invisible fact (Phase B never re-proves it). The rung K is a GRADED
+    triviality measure: higher = less trivial. rfl/assumption/linarith/nlinarith run NO external solver
+    (deterministic; immune to the SMT-portfolio flake AND the `simp_all` maxRecDepth loop). A `linarith`/
+    `nlinarith` winner also gets `import Mathlib.Tactic.Linarith` added to Main permanently.
+  * GAP (nothing closed it) → persist `:= by sorry` + `-- @assumption_gap`; Phase B proves it via the
+    normal recursive atom (same species as a `step8_eb`-style decomposition sub-node).
+
+The `tag` (valid|gap — what the enforcers read), plus `closed_by` (the winning tactic), `level` (the rung,
+1–5, or null on gap), and `verdict` are recorded per have in `scripts/assumption_tags.json` (this script's
+own baseline; agent-write-denied, mirroring step_signatures.json). `check_steps --save` is NOT re-run.
+After persisting, the COMBINED Main is re-built once (each ladder probe only verified ONE have in
+isolation); if that fails the run STOPS, tags are NOT written, and the Main is left for review.
 
 USAGE  (run from LeanEuclidPlus/):
-  python3 scripts/assumptions.py <propdir>              materialize + classify + PERSIST + write tags
-  python3 scripts/assumptions.py <propdir> --dry-run    materialize + classify + REPORT only (reverts
-                                                          every edit; writes nothing) — the diagnostic
+  python3 scripts/assumptions.py <propdir>              FRESH prop: materialize (STEP A) + build-check +
+                                                          classify (STEP B) + persist + write tags. If the
+                                                          prop is ALREADY materialized, STEP A is skipped
+                                                          automatically (re-classify in place; never
+                                                          re-materializes/duplicates) — same as --tag-only.
+  python3 scripts/assumptions.py <propdir> --tag-only   STEP B ONLY on already-materialized haves: re-run
+                                                          the ladder + re-tag, skipping STEP A. Use after a
+                                                          manual frame fix (a `wlog`/`Hsym` break), or to
+                                                          re-classify with an updated ladder. Errors if no
+                                                          haves are materialized yet.
+  python3 scripts/assumptions.py <propdir> --dry-run    materialize + classify + REPORT only (reverts every
+                                                          edit; writes nothing) — the diagnostic.
 
 LAYOUT (load-bearing): `_assumptions_above` stops scanning at the first non-`@assumption`/`@args`/blank
 line, so the `-- @assumption (…)` comment block MUST stay contiguous directly above the sentence. We
@@ -35,11 +57,29 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import faithful_lib as L
 
-# The solver cap that DEFINES "trivial": a genuinely trivial fact closes in <1s of solver time; 3s is
-# headroom. Higher would let real gaps close and vanish from the catalog (see the plan's "Why 3s").
-CLASSIFY_SOLVER = 3
-# A GENEROUS wall so the SOLVER's verdict lands (closes / SAT / unknown) rather than a SIGKILL — the
-# build is one Main elaboration (fast, all-sorry) + one ≤3s euclid_finish. Same rationale as smell.
+# The classification LADDER: cheap terminal closers first (most trivial), euclid_finish last (full
+# geometric SMT offload). The FIRST rung that closes an assumption is PERSISTED as its body, and its
+# 1-based rung number is recorded (a graded triviality measure — post-processable from the tags). The
+# non-euclid_finish rungs run NO external solver: deterministic, and immune to BOTH the SMT-portfolio
+# launch flake AND the `simp_all` maxRecDepth loop that made trivia (e.g. `|af|=|af|`) fall through to a
+# slow/failing euclid_finish. Only the euclid_finish rung offloads to z3.
+#   The `simp (zetaDelta)` rung is GOAL-ONLY (not simp_all, so no cyclic-rewrite loop) and delta-unfolds
+#   LOCAL `let`s — it closes the superposition-map coincidences (`let lineImg := fun L => if L = AB then
+#   DE …`; `lineImg AB = DE` unfolds → `DE = DE`). Those crash bare `euclid_finish` (its SMT translator
+#   dies on the `let`/`ite`/lambda shape), so this rung turns those crash-gaps into valid. Context-
+#   dependent map claims (e.g. `ptImg b = e` where `b'=e` is an earlier fact) still need the context and
+#   stay gaps for Phase B — correctly.
+# Each rung: (tactic, solver_cap | None, required_import | None).
+LADDER = [
+    ("rfl",                                    None, None),
+    ("assumption",                             None, None),
+    ("simp (config := { zetaDelta := true })", None, None),
+    ("linarith",                               None, "Mathlib.Tactic.Linarith"),
+    ("nlinarith",                              None, "Mathlib.Tactic.Linarith"),
+    ("euclid_finish",                          30,   None),
+]
+# A GENEROUS wall for the cheap (no-solver) rungs — one Main elaboration + a fast tactic. The
+# euclid_finish rung uses its solver_cap + headroom so the SOLVER's verdict lands rather than a SIGKILL.
 CLASSIFY_WALL = 30
 
 TAGS_FILE = os.path.join(L.BOOK_ROOT, "scripts", "assumption_tags.json")
@@ -141,26 +181,55 @@ def materialize(src):
 
 
 _HAVE_HEAD_RE = re.compile(r'(?m)^([ \t]*)have (\w+_assumption\d+)\b')
-_BODY_RE = re.compile(r':=[ \t]*by[ \t]+(?:sorry|euclid_finish)\b')
 
 
-def apply_verdicts(src, verdicts):
+def _set_have_body(src, name, tactic):
+    """Return `src` with `have <name>`'s single-line body replaced by `:= by <tactic>` (assumption haves
+    are always single-line `have … := by …`)."""
+    for m in _HAVE_HEAD_RE.finditer(src):
+        if m.group(2) != name:
+            continue
+        _typ, sep = L.type_until_assign(src, m.end())
+        eol = src.find("\n", sep)
+        eol = len(src) if eol == -1 else eol
+        return src[:sep] + f":= by {tactic}" + src[eol:]
+    raise L.FaithfulError(f"assumption have '{name}' not found for body-set")
+
+
+def _add_import(src, module):
+    """Insert `import <module>` after the last top-of-file import line, if absent (idempotent). Keeps it
+    before any `set_option`/`namespace`, so it stays a legal import position."""
+    if re.search(r'(?m)^import ' + re.escape(module) + r'\s*$', src):
+        return src
+    imports = list(re.finditer(r'(?m)^import .*$', src))
+    if not imports:
+        return f"import {module}\n" + src
+    pos = imports[-1].end()
+    return src[:pos] + f"\nimport {module}" + src[pos:]
+
+
+def apply_verdicts(src, results):
     """STEP B persist — IN PLACE on the current source (preserves any manual frame edit, e.g. a `wlog`
-    `Hsym` fix; unlike regenerating from a have-less original). For each materialized
-    `have stepK_assumptionN`, set its body (closes → `euclid_finish`, else → `sorry`) and put its
-    `-- @assumption_valid`/`-- @assumption_gap` tag directly above it (idempotent). Bottom-to-top so
-    offsets stay valid; each edit is at/after its have head, so earlier haves are unaffected."""
+    `Hsym` fix). For each materialized `have stepK_assumptionN`, set its body to the WINNING ladder tactic
+    (valid) or `:= by sorry` (gap), and put its `-- @assumption_valid`/`-- @assumption_gap` tag directly
+    above it (idempotent). Any import a winning tactic needs (e.g. `Mathlib.Tactic.Linarith`) is added to
+    Main permanently at the end. Bottom-to-top so offsets stay valid; each body edit is at/after its have
+    head, so earlier haves are unaffected."""
+    needed_imports = set()
     for m in reversed(list(_HAVE_HEAD_RE.finditer(src))):
         indent, hn = m.group(1), m.group(2)
-        valid = verdicts.get(hn) == "closes"
+        rec = results.get(hn) or {}
+        valid = rec.get("status") == "valid"
+        body = (rec.get("tactic") or "euclid_finish") if valid else "sorry"
+        if valid and rec.get("import"):
+            needed_imports.add(rec["import"])
         try:
             _typ, sep = L.type_until_assign(src, m.end())
         except L.FaithfulError:
             continue
-        bm = _BODY_RE.match(src, sep)
-        if not bm:
-            continue                                   # not a canonical materialized body — leave it
-        src = src[:sep] + (":= by euclid_finish" if valid else ":= by sorry") + src[bm.end():]
+        eol = src.find("\n", sep)
+        eol = len(src) if eol == -1 else eol
+        src = src[:sep] + f":= by {body}" + src[eol:]
         # place the tag comment directly above the have line (idempotent — replace any existing tag)
         line_start = src.rfind("\n", 0, m.start()) + 1
         prev_start = (src.rfind("\n", 0, line_start - 1) + 1) if line_start > 0 else 0
@@ -170,36 +239,54 @@ def apply_verdicts(src, verdicts):
             src = src[:prev_start] + tag + src[line_start:]
         else:
             src = src[:line_start] + tag + src[line_start:]
+    for imp in sorted(needed_imports):
+        src = _add_import(src, imp)
     return src
 
 
 def classify_all(propdir, book):
-    """For each materialized (sorry) have in Main, transiently set it to `euclid_finish` under the 3s
-    cap, build Main, classify, revert (atomic via restore_files — one target euclid_finish per build, so
-    any prove-error is unambiguously the target's). Returns {have_name: verdict}. Main must already hold
-    the all-sorry materialized haves on disk."""
+    """For each materialized assumption have, probe the LADDER in order: transiently set its body to each
+    rung's tactic (adding that rung's import + solver cap if any), build Main, and stop at the FIRST rung
+    that closes. All edits are reverted per-rung via restore_files. Selects haves by NAME (not the node
+    model), so a have already carrying a closer body from a prior run is RE-probed (not skipped).
+
+    Returns ({have_name: record}, {have_name: output_tail}) where record =
+    {status: 'valid'|'gap', tactic, level, import, verdict}: tactic/level/import identify the winning rung
+    (None on gap); verdict is the last rung's raw verdict (informs the report flag on gaps)."""
     mf = L.main_file(propdir)
-    haves = [nd for nd in L.parse_nodes_in_file(mf, book)
-             if nd.kind == "have" and nd.name.split("_assumption")[-1].isdigit()
-             and "_assumption" in nd.name]
-    verdicts, outputs = {}, {}
-    for nd in haves:
-        with L.restore_files([mf]):
-            src = open(mf, encoding="utf-8").read()
-            smelled = L.set_node_state(src, nd, "smell", propdir, book)   # := by euclid_finish
-            smelled = L.set_solver_cap(smelled, CLASSIFY_SOLVER)
-            open(mf, "w", encoding="utf-8").write(smelled)
-            ok, out = L.lake_build(L.target_of(mf), wall=CLASSIFY_WALL)
-        v = classify_target(ok, out)
-        verdicts[nd.name] = v
-        if v != "closes":                                                 # keep the tail for the report
-            outputs[nd.name] = "\n".join((out or "").rstrip().splitlines()[-12:])
-    return verdicts, outputs
+    names = [m.group(2) for m in _HAVE_HEAD_RE.finditer(open(mf, encoding="utf-8").read())]
+    results, outputs = {}, {}
+    for name in names:
+        rec = {"status": "gap", "tactic": None, "level": None, "import": None, "verdict": "error"}
+        last_out = ""
+        for level, (tac, cap, imp) in enumerate(LADDER, 1):
+            with L.restore_files([mf]):
+                src = _set_have_body(open(mf, encoding="utf-8").read(), name, tac)
+                if imp:
+                    src = _add_import(src, imp)
+                if cap is not None:
+                    src = L.set_solver_cap(src, cap)
+                open(mf, "w", encoding="utf-8").write(src)
+                wall = CLASSIFY_WALL if cap is None else cap + 15
+                ok, out = L.lake_build(L.target_of(mf), wall=wall)
+            v = classify_target(ok, out)
+            if v == "closes":
+                rec = {"status": "valid", "tactic": tac, "level": level, "import": imp, "verdict": "closes"}
+                break
+            last_out, rec["verdict"] = (out or ""), v
+            if v == "sat":       # false premise (only euclid_finish yields SAT) — a MAP BUG; stop probing
+                break
+        results[name] = rec
+        if rec["status"] != "valid":
+            outputs[name] = "\n".join(last_out.rstrip().splitlines()[-12:])
+    return results, outputs
 
 
-def write_tags(propdir, verdicts, original_src):
+def write_tags(propdir, results, original_src):
     """Merge this prop's per-assumption tags into scripts/assumption_tags.json (keeping other props).
-    Record {tag: valid|gap, verdict: <raw>, text, type} per have, keyed prop-rel → have name."""
+    Record {tag: valid|gap, closed_by: <tactic>|null, level: <rung>|null, verdict: <raw>, text, type} per
+    have. `tag` is what the enforcers read (unchanged: valid/gap); `closed_by`/`level` are the graded
+    triviality measure (post-processable — level 1=rfl … 5=euclid_finish; null on gap)."""
     rel = os.path.relpath(propdir, L.BOOK_ROOT)
     data = {}
     if os.path.exists(TAGS_FILE):
@@ -211,8 +298,10 @@ def write_tags(propdir, verdicts, original_src):
     for name, _bs, _indent, assumptions in sentence_blocks(original_src):
         for i, (text, typ, _override) in enumerate(assumptions, 1):
             hn = have_name(name, i)
-            v = verdicts.get(hn, "error")
-            entry[hn] = {"tag": "valid" if v == "closes" else "gap", "verdict": v,
+            rec = results.get(hn) or {"status": "gap", "tactic": None, "level": None, "verdict": "error"}
+            entry[hn] = {"tag": "valid" if rec["status"] == "valid" else "gap",
+                         "closed_by": rec.get("tactic"), "level": rec.get("level"),
+                         "verdict": rec.get("verdict", "error"),
                          "text": text, "type": L._norm(typ)}
     data[rel] = entry
     tmp = TAGS_FILE + ".tmp"
@@ -222,33 +311,37 @@ def write_tags(propdir, verdicts, original_src):
     os.replace(tmp, TAGS_FILE)
 
 
-def report(propdir, verdicts, outputs, original_src, dry_run):
+def report(propdir, results, outputs, original_src, dry_run):
     rel = os.path.relpath(propdir, L.BOOK_ROOT)
     rows = []
     for name, _bs, _indent, assumptions in sentence_blocks(original_src):
         for i, (text, _typ, _override) in enumerate(assumptions, 1):
             hn = have_name(name, i)
-            rows.append((hn, verdicts.get(hn, "error"), text))
+            rows.append((hn, results.get(hn) or {"status": "gap", "verdict": "error"}, text))
     n = len(rows)
-    valid = [r for r in rows if r[1] == "closes"]
-    gaps = [r for r in rows if r[1] != "closes"]
+    valid = [(hn, rec, t) for hn, rec, t in rows if rec.get("status") == "valid"]
+    gaps = [(hn, rec, t) for hn, rec, t in rows if rec.get("status") != "valid"]
     mode = "DRY-RUN (no writes)" if dry_run else "PERSISTED"
     print(f"[assumptions] {rel} — {mode}")
-    print(f"  {n} assumption(s): {len(valid)} valid (auto-closed), {len(gaps)} gap(s).")
+    print(f"  {n} assumption(s): {len(valid)} valid (closed), {len(gaps)} gap(s).")
+    if valid:
+        print("  VALID (cheapest ladder rung that closed it — higher level = less trivial):")
+        for hn, rec, text in valid:
+            print(f"    - {hn}  [L{rec.get('level')} {rec.get('tactic')}]: {text}")
     if gaps:
-        print(f"  GAPS (Euclid asserted without justification — Phase B must prove):")
-        for hn, v, text in gaps:
+        print("  GAPS (no ladder rung closed it — Phase B must prove):")
+        for hn, rec, text in gaps:
+            v = rec.get("verdict")
             flag = {"sat": " [SAT — premise FALSE, likely a MAP BUG]",
                     "crash": " [euclid_finish CRASHED — tooling limit on this goal shape; Phase B proves "
                              "it directly, not a deep Euclid gap]",
                     "error": " [Lean error — check the type / map]",
+                    "hard": " [euclid_finish could not close at 30s]",
                     "wall": " [inconclusive at cap]"}.get(v, "")
             print(f"    - {hn} ({v}){flag}: {text}")
             if dry_run and outputs.get(hn):
                 for ln in outputs[hn].splitlines():
                     print(f"        | {ln}")
-    if valid:
-        print(f"  valid: {', '.join(hn for hn, _, _ in valid)}")
 
 
 def _frame_hint(materialized_src):
@@ -263,16 +356,31 @@ def _frame_hint(materialized_src):
 
 
 def _step_b(propdir, book, original, dry_run):
-    """STEP B — classify the already-materialized haves, then persist IN PLACE + tag (or revert if
-    dry_run). Requires an intact frame (STEP A build passed, or the human fixed it)."""
+    """STEP B — classify the already-materialized haves (ladder), then persist IN PLACE + tag (or revert if
+    dry_run). Requires an intact frame (STEP A build passed, or the human fixed it).
+
+    After persisting, a FINAL build of the COMBINED Main is run: each ladder probe verified ONE have with
+    the others still in their pre-classify bodies, so the all-winners-at-once state is otherwise unverified.
+    If that build fails, STOP loudly — tags are NOT written (baseline stays uncorrupted) and the persisted
+    Main is left for review (a human/`/faithful-assumptions` fix), exactly like STEP A's fail-closed."""
+    rel = os.path.relpath(propdir, L.BOOK_ROOT)
     mf = L.main_file(propdir)
     verdicts, outputs = classify_all(propdir, book)
     disk = open(mf, encoding="utf-8").read()                 # materialized haves (+ any manual frame fix)
     if dry_run:
         open(mf, "w", encoding="utf-8").write(original)      # revert — pure diagnostic
-    else:
-        open(mf, "w", encoding="utf-8").write(apply_verdicts(disk, verdicts))
-        write_tags(propdir, verdicts, disk)
+        report(propdir, verdicts, outputs, disk, dry_run)
+        return 0
+    open(mf, "w", encoding="utf-8").write(apply_verdicts(disk, verdicts))
+    ok, out = L.lake_build(L.target_of(mf), wall=L.main_wall(propdir))
+    if not ok:
+        print(f"[assumptions] {rel} — ⚠ STOP: the PERSISTED Main did NOT compile after classification "
+              f"(the combined winning-tactic bodies + imports). Tags NOT written; the persisted Main is "
+              f"LEFT IN PLACE for review. Fix it, then re-run with `--tag-only`.")
+        for ln in "\n".join((out or "").rstrip().splitlines()[-12:]).splitlines():
+            print(f"    | {ln}")
+        return 1
+    write_tags(propdir, verdicts, disk)
     report(propdir, verdicts, outputs, disk, dry_run)
     return 0
 
@@ -304,15 +412,21 @@ def run(propdir, dry_run=False, tag_only=False):
         print(f"[assumptions] {rel} — no @assumption annotations; nothing to do.")
         return 0
 
-    # --tag-only: STEP B only — the haves are already materialized (+ frame fixed by hand).
-    if tag_only:
-        present = {m.group(2) for m in _HAVE_HEAD_RE.finditer(original)}
-        if not present:
+    # STEP B ONLY (skip STEP A materialize) when EITHER the user passed --tag-only OR the prop is ALREADY
+    # materialized. Re-running materialize on an existing have set would INSERT a second copy of every have
+    # (silent duplication/corruption), so an already-materialized full run is auto-routed here with a
+    # NOTICE (never silent). STEP A below is reached only for a FRESH (unmaterialized) prop.
+    present = {m.group(2) for m in _HAVE_HEAD_RE.finditer(original)}
+    if tag_only or present:
+        if tag_only and not present:
             print(f"ERROR: --tag-only but no `stepK_assumptionN` haves in {rel}. Run `assumptions.py "
-                  f"{rel}` first (STEP A materializes + build-checks).")
+                  f"{rel}` (no flag) first — STEP A materializes + build-checks.")
             return 2
+        if present and not tag_only:
+            print(f"[assumptions] {rel} — {len(present)} assumption have(s) already materialized; skipping "
+                  f"STEP A (re-classifying IN PLACE — will NOT re-materialize/duplicate; same as --tag-only).")
         try:
-            return _step_b(propdir, book, original, dry_run=False)
+            return _step_b(propdir, book, original, dry_run=(False if tag_only else dry_run))
         except BaseException:
             open(mf, "w", encoding="utf-8").write(original)
             raise
@@ -349,14 +463,20 @@ def run(propdir, dry_run=False, tag_only=False):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="The Assumption Phase: materialize a have per @assumption, "
-                                             "build-check, then classify + tag valid/gap.")
+    ap = argparse.ArgumentParser(
+        description="The Assumption Phase: materialize a `have` per @assumption, then classify each by a "
+                    "ladder (1 rfl, 2 assumption, 3 simp[zetaDelta], 4 linarith, 5 nlinarith, "
+                    "6 euclid_finish@30s); persist the first tactic that closes it (tag @assumption_valid "
+                    "+ record level/closed_by) or @assumption_gap if none. Re-builds the combined Main "
+                    "and STOPS if it fails.")
     ap.add_argument("propdir", help="Proposition directory, e.g. Book1/Prop01")
     ap.add_argument("--dry-run", action="store_true",
-                    help="STEP A + STEP B but revert every edit, write nothing (pure diagnostic)")
+                    help="Classify + REPORT only; revert every edit, write nothing (pure diagnostic).")
     ap.add_argument("--tag-only", action="store_true",
-                    help="STEP B only: classify + tag already-materialized haves (after a manual frame "
-                         "fix). Skips materialize + build-check.")
+                    help="STEP B ONLY: re-run the ladder + re-tag already-materialized haves, skipping "
+                         "STEP A (materialize). Use after a manual frame fix (wlog/Hsym) or to re-classify "
+                         "with an updated ladder. Errors if no haves are materialized. NOTE: a plain run on "
+                         "an already-materialized prop does this automatically (never re-materializes).")
     args = ap.parse_args()
     try:
         propdir = L.propdir_of(args.propdir)

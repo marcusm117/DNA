@@ -31,14 +31,14 @@ theorem proposition_1 : ∀ (a b : Point) (AB : Line),
     (step3 : distinctPointsOnLine c a CA ∧ distinctPointsOnLine c b CB) := by sorry
 
   -- @assumption_valid
-  have step4_assumption1 : a.isCentre BCD := by euclid_finish
+  have step4_assumption1 : a.isCentre BCD := by assumption
   -- @assumption ("the point $A$ is the center of the circle $CDB$", a.isCentre BCD)
   euclid_sentence "1.1.4"
     "since the point $A$ is the center of the circle $CDB$, $AC$ is equal to $AB$ [Def.~1.15]."
     (step4 : |(a─c)| = |(a─b)|) := by sorry
 
   -- @assumption_valid
-  have step5_assumption1 : b.isCentre ACE := by euclid_finish
+  have step5_assumption1 : b.isCentre ACE := by assumption
   -- @assumption ("the point $B$ is the center of the circle $CAE$", b.isCentre ACE)
   euclid_sentence "1.1.5"
     "Again,since the point $B$ is the center of the circle $CAE$, $BC$ is equal to $BA$ [Def.~1.15]."

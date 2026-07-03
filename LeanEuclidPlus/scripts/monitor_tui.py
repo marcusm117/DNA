@@ -112,11 +112,16 @@ def summarize(pd):
     name = _short(pd)
     cdir = os.path.join(pd, "cost")
     cost = 0.0
+    estimated = False
     r = _load(os.path.join(cdir, "assumptions.json"))
     cost += (r.get("cost_usd") or 0) if r else 0
     ckpt = _latest_checkpoint(cdir)
     if ckpt:
         cost += ckpt.get("cumulative_usd") or 0
+    live = _load(os.path.join(cdir, "live.json"))     # in-flight session's running estimate (~2s fresh)
+    if live and live.get("est_usd") is not None:
+        cost += live.get("est_usd") or 0
+        estimated = True
     done = tot = 0
     mains = None
     try:
@@ -136,7 +141,7 @@ def summarize(pd):
              "mapped" if os.path.exists(os.path.join(pd, "Main.lean")) else "—")
     flag = ("BLOCKED" if os.path.exists(os.path.join(pd, "NEEDS_HUMAN.md")) else
             "DONE?" if (tot and done == tot) else "")
-    return name, phase, done, tot, cost, flag
+    return name, phase, done, tot, cost, flag, estimated
 
 
 def _tool_arg(inp):
@@ -259,9 +264,10 @@ def _prop_row(i, props, focus, getter):
     mark = ">" if i == focus else " "
     if s is None:
         return "%s %2d  %-20s  %s" % (mark, i, os.path.relpath(pd, L.BOOK_ROOT)[:20], "…")
-    name, phase, done, tot, cost, flag = s
-    return "%s %2d  %-20s  %-7s  %3d/%-3d  $%-8.4f %s%s" % (
-        mark, i, name[:20], phase, done, tot, cost, flag, ("  ●live" if live else ""))
+    name, phase, done, tot, cost, flag, estimated = s
+    money = ("~$%-7.4f" % cost) if estimated else (" $%-7.4f" % cost)   # ~ = live estimate, not final
+    return "%s %2d  %-20s  %-7s  %3d/%-3d %s %s%s" % (
+        mark, i, name[:20], phase, done, tot, money, flag, ("  ●live" if live else ""))
 
 
 def render_lines(props, focus, global_only, height, width, getter):

@@ -1,6 +1,7 @@
 import SystemE
 import Book.Prop03
 import Book.Prop04
+import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -66,6 +67,10 @@ theorem proposition_5 : ∀ (a b c d e : Point) (AB BC AC : Line),
     "and $AFC$ to $AGB$."
     (step10 : ∠ a:f:c = ∠ a:g:b) := by sorry
 
+  -- @assumption_valid
+  have step11_assumption1 : |(a─f)| = |(a─g)| := by linarith
+  -- @assumption_valid
+  have step11_assumption2 : |(a─b)| = |(a─c)| := by assumption
   -- @assumption ("the whole of $AF$ is equal to the whole of $AG$", |(a─f)| = |(a─g)|)
   -- @assumption ("$AB$ is equal to $AC$", |(a─b)| = |(a─c)|)
   euclid_sentence "1.5.11"
@@ -107,6 +112,10 @@ theorem proposition_5 : ∀ (a b c d e : Point) (AB BC AC : Line),
     "and $BCF$ to $CBG$."
     (step19 : ∠ b:c:f = ∠ c:b:g) := by sorry
 
+  -- @assumption_valid
+  have step20_assumption1 : ∠ a:b:g = ∠ a:c:f := by linarith
+  -- @assumption_valid
+  have step20_assumption2 : ∠ c:b:g = ∠ b:c:f := by linarith
   -- @assumption ("the whole angle $ABG$ was shown (to be) equal to the whole angle $ACF$", ∠ a:b:g = ∠ a:c:f)
   -- @assumption ("$CBG$ is equal to $BCF$", ∠ c:b:g = ∠ b:c:f)
   euclid_sentence "1.5.20"

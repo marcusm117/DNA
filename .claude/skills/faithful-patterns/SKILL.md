@@ -79,6 +79,15 @@ hyp, closing to `False`. REQUIRED reviewer comment: `-- the assertion here canno
 system E`. "same ends" = constructed & given lines share the base endpoint (`e.onLine EG ∧ e.onLine DE`).
 NB `Book/Prop08.lean`'s original proof does NOT use this lines structure (it uses `c'=f` + `by_cases d=g` +
 I.7) — faithfulness follows Euclid's SENTENCES ("the sides coincide" = lines), not the original proof.
+**Proving these (Phase B) — `img`/`lineImg` goals CRASH bare `euclid_finish`.** The `let`+`ite`-over-Line
+maps aren't `rfl` (Line equality is classical, so `if AB = AB` never computes) and the SMT translator dies
+NATIVELY on the `let`/`ite`/lambda shape (classify verdict `crash`). Close them by UNFOLDING, not
+`euclid_finish`: `simp (config := { zetaDelta := true })` (goal-only — delta-unfolds the local `let`, then
+reduces `if AB=AB → DE`). Defining-equation coincidences (`lineImg AB = DE`, `ptImg a = d`) close by that
+`simp` alone — the assumption ladder does exactly this at level 3. Context-dependent ones (`ptImg b = e`,
+needing the earlier fact `b'=e` and `a≠b`) need the context: `⟨by simp (config:={zetaDelta:=true}), step_be,
+step_cf⟩`, or split + `assumption` on the earlier coincidence steps (NOT `simp_all` — it can loop). See the
+`euclid-superposition-img-simp-zetadelta` memory.
 
 ---
 

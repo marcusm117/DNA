@@ -43,11 +43,15 @@ theorem proposition_2 : ∀ (a b c : Point) (BC : Line),
     (step5 : d.isCentre GKL ∧ g.onCircle GKL) := by sorry
 
   euclid_apply (intersection_circle_line_extending_points GKL DA a d) as l
+  -- @assumption_valid
+  have step6_assumption1 : b.isCentre CGH := by assumption
   -- @assumption ("the point $B$ is the center of (the circle) $CGH$", b.isCentre CGH)
   euclid_sentence "1.2.6"
     "Therefore, since the point $B$ is the center of (the circle) $CGH$, $BC$ is equal to  $BG$ [Def.~1.15]."
     (step6 : |(b─c)| = |(b─g)|) := by sorry
 
+  -- @assumption_valid
+  have step7_assumption1 : d.isCentre GKL := by assumption
   -- @assumption ("the point $D$ is the center of the circle $GKL$", d.isCentre GKL)
   euclid_sentence "1.2.7"
     "Again, since the point $D$ is the center of the circle $GKL$, $DL$ is equal to $DG$ [Def.~1.15]."

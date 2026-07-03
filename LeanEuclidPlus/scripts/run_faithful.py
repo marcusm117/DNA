@@ -32,6 +32,7 @@ import argparse
 import json
 import os
 import subprocess
+import signal
 import sys
 import threading
 import time
@@ -63,9 +64,29 @@ def _registry_clear():
         pass
 
 
+# $ per token: (input, output, cache_write, cache_read). Used ONLY for the live-during-a-session
+# estimate written to cost/live.json; the SAVED cost is always the CLI's exact `total_cost_usd`.
+# Public Anthropic list prices; on a gateway (ANTHROPIC_BASE_URL) the live estimate may differ — it's a
+# progress indicator, superseded by the exact number when the session ends.
+MODEL_PRICES = {
+    "opus":   (15 / 1e6, 75 / 1e6, 18.75 / 1e6, 1.5 / 1e6),
+    "sonnet": (3 / 1e6, 15 / 1e6, 3.75 / 1e6, 0.3 / 1e6),
+    "haiku":  (1 / 1e6, 5 / 1e6, 1.25 / 1e6, 0.1 / 1e6),
+}
+
+
+def _price(model, tok):
+    """Estimate $ for accumulated token counts; None if the model isn't in the table."""
+    m = (model or "").lower()
+    for key, (pin, pout, pcw, pcr) in MODEL_PRICES.items():
+        if key in m:
+            return tok["in"] * pin + tok["out"] * pout + tok["cw"] * pcw + tok["cr"] * pcr
+    return None
+
+
 # ── low-level: run one headless claude session, tee the trace, extract cost ───────────────────────
 def _extract_cost(obj, acc):
-    """Fold a stream-json event into the running (session_id, cost_usd, usage, model) accumulator."""
+    """Fold a stream-json event into the running (session_id, cost_usd, usage, model, tok) accumulator."""
     if not isinstance(obj, dict):
         return
     if obj.get("session_id"):
@@ -80,6 +101,44 @@ def _extract_cost(obj, acc):
     m = obj.get("model") or (obj.get("message") or {}).get("model")
     if m:
         acc["model"] = m
+    # accumulate PER-TURN token usage (assistant events only — the result event's usage would double it)
+    if obj.get("type") == "assistant":
+        u = (obj.get("message") or {}).get("usage")
+        if isinstance(u, dict):
+            tok = acc.setdefault("tok", {"in": 0, "out": 0, "cw": 0, "cr": 0})
+            tok["in"] += u.get("input_tokens") or 0
+            tok["out"] += u.get("output_tokens") or 0
+            tok["cw"] += u.get("cache_creation_input_tokens") or 0
+            tok["cr"] += u.get("cache_read_input_tokens") or 0
+
+
+def _live_path(transcript_path):
+    """<propdir>/cost/live.json — the running-cost estimate for the session writing this transcript."""
+    return os.path.join(os.path.dirname(os.path.dirname(transcript_path)), "cost", "live.json")
+
+
+def _write_live(transcript_path, acc):
+    """Best-effort: write the running token/$ estimate for the in-flight session (read by monitor_tui).
+    Never let a live-write error disturb the session."""
+    tok = acc.get("tok") or {"in": 0, "out": 0, "cw": 0, "cr": 0}
+    try:
+        p = _live_path(transcript_path)
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        tmp = p + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump({"est_usd": _price(acc.get("model"), tok), "tokens": tok,
+                       "model": acc.get("model"), "updated": time.time()}, f)
+        os.replace(tmp, p)
+    except OSError:
+        pass
+
+
+def _clear_live(propdir):
+    """Remove cost/live.json once the session's EXACT cost has been persisted (no double counting)."""
+    try:
+        os.remove(os.path.join(propdir, "cost", "live.json"))
+    except OSError:
+        pass
 
 
 def claude_session(prompt, transcript_path, *, model=None, timeout=DEFAULT_TIMEOUT, dry_run=False):
@@ -98,20 +157,49 @@ def claude_session(prompt, transcript_path, *, model=None, timeout=DEFAULT_TIMEO
         return {"session_id": None, "cost_usd": 0.0, "usage": {}, "ok": True, "error": None}
 
     os.makedirs(os.path.dirname(transcript_path), exist_ok=True)
-    acc = {"session_id": None, "cost_usd": None, "usage": {}, "model": None}
+    acc = {"session_id": None, "cost_usd": None, "usage": {}, "model": None,
+           "tok": {"in": 0, "out": 0, "cw": 0, "cr": 0}}
     try:
         with open(transcript_path, "w", encoding="utf-8") as trace:
+            # start_new_session=True → the child leads its own process group, so we can reap the WHOLE
+            # tree (child + any grandchildren) with one killpg. This matters because a crashed `claude`
+            # can leave a grandchild holding the stdout pipe open → EOF never arrives → the read loop
+            # below would block this worker forever (the hang seen at high concurrency).
             proc = subprocess.Popen(cmd, cwd=REPO_ROOT, stdout=subprocess.PIPE,
-                                    stderr=subprocess.STDOUT, text=True, bufsize=1)
-            # Watchdog: kill the session if it exceeds `timeout` even while blocked reading stdout
-            # (a stdout-hang would otherwise wedge this pool worker forever at high concurrency).
+                                    stderr=subprocess.STDOUT, text=True, bufsize=1,
+                                    start_new_session=True)
+
+            def _killtree():
+                try:
+                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                except (ProcessLookupError, PermissionError):
+                    try:
+                        proc.kill()
+                    except ProcessLookupError:
+                        pass
+
+            # Hard watchdog: kill the whole tree if the session exceeds `timeout`.
             timed_out = {"hit": False}
 
-            def _kill():
+            def _hard_kill():
                 timed_out["hit"] = True
-                proc.kill()
-            wd = threading.Timer(timeout, _kill)
+                _killtree()
+            wd = threading.Timer(timeout, _hard_kill)
             wd.start()
+
+            # Anti-hang reaper: once the direct child has EXITED, give the pipe a short grace to drain;
+            # if EOF still hasn't arrived (a grandchild is holding it open), kill the group to force it.
+            reading_done = threading.Event()
+
+            def _reaper():
+                while not reading_done.wait(0.5):
+                    if proc.poll() is not None:            # child gone; wait briefly for a clean EOF
+                        if not reading_done.wait(3.0):
+                            _killtree()                    # force EOF on the read loop
+                        return
+            rp = threading.Thread(target=_reaper, daemon=True)
+            rp.start()
+            last_live = 0.0
             try:
                 assert proc.stdout is not None                  # guaranteed by stdout=PIPE
                 for line in proc.stdout:
@@ -123,14 +211,29 @@ def claude_session(prompt, transcript_path, *, model=None, timeout=DEFAULT_TIMEO
                             _extract_cost(json.loads(s), acc)
                         except ValueError:
                             pass
+                    now = time.time()                            # emit a live cost/token estimate ~every 2s
+                    if now - last_live > 2.0:
+                        _write_live(transcript_path, acc)
+                        last_live = now
                 rc = proc.wait()
             finally:
+                reading_done.set()
                 wd.cancel()
             if timed_out["hit"]:
                 return {**acc, "ok": False, "error": f"timeout after {timeout}s"}
     except FileNotFoundError:
         return {**acc, "ok": False, "error": "`claude` CLI not found on PATH"}
-    return {**acc, "ok": rc == 0, "error": None if rc == 0 else f"claude exited {rc}"}
+    except MemoryError:
+        return {**acc, "ok": False, "error": "MemoryError launching `claude` — the machine hit its "
+                "memory-commit limit (vm.overcommit_memory=2 refuses the fork even with free RAM). "
+                "LOWER --concurrency (try 1–2)."}
+    if rc == 0:
+        return {**acc, "ok": True, "error": None}
+    if rc < 0:                                            # killed by a signal (rc == -signum)
+        hint = (" — likely the OS killing it under memory pressure / strict overcommit; LOWER "
+                "--concurrency (try 1–2)") if -rc in (11, 5, 9, 6) else ""
+        return {**acc, "ok": False, "error": f"claude killed by signal {-rc}{hint}"}
+    return {**acc, "ok": False, "error": f"claude exited {rc}"}
 
 
 def _shquote(s):
@@ -271,6 +374,7 @@ def run_assumptions(prop, *, model=None, dry_run=False):
                     {"phase": "assumptions", "session_id": res.get("session_id"),
                      "model": res.get("model"), "cost_usd": res.get("cost_usd"),
                      "usage": res.get("usage")})
+        _clear_live(propdir)                          # exact cost saved → drop the live estimate
     log.append(f"  session: {'ok' if res['ok'] else 'FAIL — ' + str(res['error'])}"
                f"  ${res.get('cost_usd') or 0:.4f}")
 
@@ -351,6 +455,7 @@ def run_prove(prop, *, model=None, max_resumes=6, dry_run=False):
                         {"seq": seq, "session_id": sid, "model": res.get("model"),
                          "this_session_usd": res.get("cost_usd"),
                          "cumulative_usd": cumulative, "status": snap})
+            _clear_live(propdir)          # this session's exact cost is in the checkpoint now
         log.append(f"  session {seq}: {'ok' if res['ok'] else 'FAIL ' + str(res['error'])}"
                    f"  ${res.get('cost_usd') or 0:.4f}  (cum ${cumulative:.4f})"
                    f"  all_done={all_done}")

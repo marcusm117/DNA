@@ -1,6 +1,7 @@
 import SystemE
 import Book.Prop01
 import Book.Prop03
+import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -45,9 +46,13 @@ theorem proposition_9 : ∀ (a b c : Point) (AB AC : Line),
     "I say that the angle $BAC$ has been cut in half by the straight-line $AF$. "
     (step6 : ∠ b:a:f = ∠ c:a:f) := by sorry
 
-  -- @assumption ("$AD$ is equal to  $AE$", |(a─d)| = |(a─e)|)
-  -- @assumption ("$AF$ is common", distinctPointsOnLine a f AF)
   -- pairing DA,AF = EA,AF respectively; the |(a─f)|=|(a─f)| conjunct is the common side AF.
+  -- @assumption_valid
+  have step7_assumption1 : |(a─d)| = |(a─e)| := by linarith
+  -- @assumption_valid
+  have step7_assumption2 : |(a─f)| = |(a─f)| := by rfl
+  -- @assumption ("$AD$ is equal to  $AE$", |(a─d)| = |(a─e)|)
+  -- @assumption ("$AF$ is common", |(a─f)| = |(a─f)|)
   euclid_sentence "1.9.7"
     "For since $AD$ is equal to  $AE$, and $AF$ is common, the two (straight-lines) $DA$, $AF$ are equal to the two (straight-lines) $EA$, $AF$, respectively."
     (step7 : |(d─a)| = |(e─a)| ∧ |(a─f)| = |(a─f)|) := by sorry

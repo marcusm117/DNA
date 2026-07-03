@@ -26,6 +26,8 @@ theorem proposition_3 : ∀ (a b c₀ c₁ : Point) (AB C : Line),
     "And let the circle $DEF$ have been drawn with center $A$ and radius $AD$ [Post.~3]. "
     (step2 : a.isCentre DEF ∧ d.onCircle DEF) := by sorry
 
+  -- @assumption_valid
+  have step3_assumption1 : a.isCentre DEF := by assumption
   -- @assumption ("point $A$ is the center of  circle $DEF$", a.isCentre DEF)
   euclid_sentence "1.3.3"
     "And since  point $A$ is the center of  circle $DEF$, $AE$ is equal to $AD$ [Def.~1.15]."

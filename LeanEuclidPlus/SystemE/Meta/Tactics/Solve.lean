@@ -114,6 +114,12 @@ def preprocess : TacticM Unit := do
       let hname := decl.userName
       evalTactic $ ← `(tactic| try unfold Triangle.congruent at $(mkIdent hname):ident)
       evalTactic $ ← `(tactic| try simp at $(mkIdent hname):ident)
+  -- Destruct every context conjunction (the SAME step `euclid_apply` runs, Solve.lean's `elimAllConjunctions`
+  -- call below): `whnf` sees through reducible abbrevs, so a raw `distinctPointsOnLine`/`opposingSides`
+  -- hypothesis (e.g. a faithful `euclid_sentence` claim `have`, which no `euclid_apply` ever destructed)
+  -- is split into the primitive `onLine`/`≠` conjuncts the SMT translator can handle — instead of hitting
+  -- `translateExpr`'s catch-all and aborting the whole solve with "Unexpected application …".
+  elimAllConjunctions
 
 def EuclidFinish (isApply : Bool) : TacticM Unit := do
   if !isApply then preprocess

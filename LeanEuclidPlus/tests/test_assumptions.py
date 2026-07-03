@@ -599,20 +599,36 @@ def test_apply_verdicts_valid_and_gap_bodies():
     """STEP B (apply_verdicts) sets each materialized have's body + tag IN PLACE."""
     src = A.materialize('  -- @assumption ("t", T1)\n'
                         '  euclid_sentence "1.1.1" "..." (step1 : X) := by sorry\n')
-    valid = A.apply_verdicts(src, {"step1_assumption1": "closes"})
+    valid = A.apply_verdicts(src, {"step1_assumption1": {"status": "valid"}})
     assert "-- @assumption_valid" in valid
     assert "have step1_assumption1 : T1 := by euclid_finish" in valid
-    gap = A.apply_verdicts(src, {"step1_assumption1": "hard"})
+    gap = A.apply_verdicts(src, {"step1_assumption1": {"status": "gap"}})
     assert "-- @assumption_gap" in gap
     assert "have step1_assumption1 : T1 := by sorry" in gap
+
+
+def test_apply_verdicts_ladder_body_and_import():
+    """A valid record persists its WINNING tactic as the body; a tactic needing an import gets that import
+    added to Main; cheap rungs add nothing."""
+    src = A.materialize('import SystemE\n'
+                        '  -- @assumption ("t", T1)\n'
+                        '  euclid_sentence "1.1.1" "..." (step1 : X) := by sorry\n')
+    rfl_body = A.apply_verdicts(src, {"step1_assumption1": {"status": "valid", "tactic": "rfl"}})
+    assert "have step1_assumption1 : T1 := by rfl" in rfl_body
+    assert "import Mathlib.Tactic.Linarith" not in rfl_body
+    lin_body = A.apply_verdicts(src, {"step1_assumption1":
+                                      {"status": "valid", "tactic": "linarith",
+                                       "import": "Mathlib.Tactic.Linarith"}})
+    assert "have step1_assumption1 : T1 := by linarith" in lin_body
+    assert "import Mathlib.Tactic.Linarith" in lin_body
 
 
 def test_apply_verdicts_idempotent_tag():
     """Running apply_verdicts twice doesn't stack tag comments (idempotent replace)."""
     src = A.materialize('  -- @assumption ("t", T1)\n'
                         '  euclid_sentence "1.1.1" "..." (step1 : X) := by sorry\n')
-    once = A.apply_verdicts(src, {"step1_assumption1": "closes"})
-    twice = A.apply_verdicts(once, {"step1_assumption1": "closes"})
+    once = A.apply_verdicts(src, {"step1_assumption1": {"status": "valid"}})
+    twice = A.apply_verdicts(once, {"step1_assumption1": {"status": "valid"}})
     assert twice.count("-- @assumption_valid") == 1
     assert twice == once
 
@@ -623,14 +639,20 @@ def test_assumption_current_tags(tmp_path):
     main = tmp_path / "Main.lean"
     main.write_text('  have step1_assumption1 : T := by euclid_finish\n'
                     '  have step2_assumption1 : T := by sorry\n'
-                    '  have step3_assumption1 : T := by euclid_apply (helper_1_1_step3_assumption1 a)\n',
+                    '  have step3_assumption1 : T := by euclid_apply (helper_1_1_step3_assumption1 a)\n'
+                    '  have step4_assumption1 : T := by rfl\n'
+                    '  have step5_assumption1 : T := by linarith\n'
+                    '  have step6_assumption1 : T := by simp (config := { zetaDelta := true })\n',
                     encoding="utf-8")
     assert L.assumption_current_tags(str(main)) == {
         "step1_assumption1": "valid",     # inline euclid_finish
         "step2_assumption1": "gap",       # sorry
         "step3_assumption1": "gap",       # wired backing call (stable through Phase C)
+        "step4_assumption1": "valid",     # inline rfl (ladder closer)
+        "step5_assumption1": "valid",     # inline linarith (ladder closer)
+        "step6_assumption1": "valid",     # inline simp (ladder closer; `simp\\b` ≠ `simp_all`)
     }
-    assert L.count_inline_assumption_haves(str(main)) == 1
+    assert L.count_inline_assumption_haves(str(main)) == 4
 
 
 # ── assumption_structure_problems: #3 PARITY + #1 FORCE (Book9/Prop2 fixture) ──
@@ -668,7 +690,7 @@ def test_assumption_parity_flags_missing_have():
 def test_assumption_parity_ok_with_have():
     """With the have materialized (real materialize layout — have ABOVE the @assumption block, so
     _assumptions_above still finds it), PARITY passes and FORCE passes (binder present)."""
-    main = A.apply_verdicts(A.materialize(_ASSUMP_MAIN_NO_HAVE), {"step1_assumption1": "closes"})
+    main = A.apply_verdicts(A.materialize(_ASSUMP_MAIN_NO_HAVE), {"step1_assumption1": {"status": "valid"}})
     propdir = _make_hyg_prop(main, extra={"step1.lean": _ASSUMP_STEP1_WITH_BINDER})
     try:
         problems = L.assumption_structure_problems(propdir)
@@ -679,7 +701,7 @@ def test_assumption_parity_ok_with_have():
 
 def test_assumption_force_flags_missing_binder():
     """#1 FORCE: the assumption type must be a hyp binder of the sentence's helper — no exceptions."""
-    main = A.apply_verdicts(A.materialize(_ASSUMP_MAIN_NO_HAVE), {"step1_assumption1": "closes"})
+    main = A.apply_verdicts(A.materialize(_ASSUMP_MAIN_NO_HAVE), {"step1_assumption1": {"status": "valid"}})
     propdir = _make_hyg_prop(main, extra={"step1.lean": _ASSUMP_STEP1_NO_BINDER})
     try:
         problems = L.assumption_structure_problems(propdir)

@@ -26,6 +26,8 @@ theorem proposition_7 : ∀ (a b c d : Point) (AB AC CB AD DB : Line),
     "And let $CD$ have been joined [Post.~1]. "
     (step3 : c.onLine CD ∧ d.onLine CD) := by sorry
 
+  -- @assumption_valid
+  have step4_assumption1 : |(a─c)| = |(a─d)| := by assumption
   -- @assumption ("$AC$ is equal to $AD$", |(a─c)| = |(a─d)|)
   euclid_sentence "1.7.4"
     "Therefore, since $AC$ is equal to $AD$,  the angle $ACD$ is also equal to angle $ADC$ [Prop.~1.5]."
@@ -39,6 +41,8 @@ theorem proposition_7 : ∀ (a b c d : Point) (AB AC CB AD DB : Line),
     "Thus, $CDB$ is much greater than $DCB$ [C.N.~5]."
     (step6 : ∠ c:d:b > ∠ d:c:b) := by sorry
 
+  -- @assumption_valid
+  have step7_assumption1 : |(c─b)| = |(d─b)| := by assumption
   -- @assumption ("$CB$ is equal to $DB$", |(c─b)| = |(d─b)|)
   euclid_sentence "1.7.7"
     "Again, since  $CB$ is equal to $DB$, the angle $CDB$ is also equal to angle $DCB$ [Prop.~1.5]."

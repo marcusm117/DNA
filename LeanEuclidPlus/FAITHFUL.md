@@ -99,21 +99,42 @@ itself was mid-compile at the kill — which warm deps prevent.
    Phase (next), assumptions are first-class PROVEN obligations — frozen HARD like claims: Phase B may
    NOT drop or retype one (`check_step --all` + gate-C `check_steps.py` hard-fail on `@assumption` drift).
 
-**▶ then the Assumption Phase (mechanical; YOU run it, between gate A and Phase B):**
+**▶ then the Assumption Phase (mechanical; YOU run it — NO LLM — between gate A and Phase B):**
    ```
-   python3 scripts/assumptions.py Book1/Prop04            # --dry-run first to preview the split
+   python3 scripts/assumptions.py Book1/Prop04            # --dry-run first to preview
    ```
-   For every `-- @assumption` it materializes a `have stepK_assumptionN : type := by sorry`, fires
-   `euclid_finish` at a 3s cap, and persists: **closes** → `:= by euclid_finish` + `-- @assumption_valid`
-   (free — the Phase-B agent skips it); **doesn't close** → `:= by sorry` + `-- @assumption_gap` (a real
-   node Phase B proves). Reads the gap report — those are exactly where Euclid skipped a step. Writes the
-   valid/gap tags to `scripts/assumption_tags.json` (you own it; agent-write-denied). Do NOT re-run
-   `check_steps --save`. (`--dry-run` reverts everything — a pure diagnostic.)
-   It runs in **two fail-closed steps**: STEP A materializes the sorry haves + build-checks Main; if that
-   build FAILS (almost always a `wlog … generalizing` frame — the have shifts `Hsym`'s arity), it leaves
-   the haves in place and stops. Fix the frame by hand — **manually add the extra (redundant) argument to
-   the `exact Hsym …` reduction; never delete the have** — then run `assumptions.py <prop> --tag-only` to
-   finish (classify + tag). On a clean prop STEP A→STEP B run automatically.
+   For every `-- @assumption` it materializes a `have stepK_assumptionN : type := by sorry`, then
+   classifies each by a **LADDER** (cheapest/most-trivial first), PERSISTING the FIRST tactic that closes it:
+
+     1 `rfl` · 2 `assumption` · 3 `simp (config := {zetaDelta := true})` · 4 `linarith` · 5 `nlinarith` ·
+     6 `euclid_finish` (30s solver cap — the only rung that runs z3) · none → **gap**.
+
+   **valid** (a rung closed it) → `:= by <tactic>` + `-- @assumption_valid` (free — the Phase-B agent skips
+   it). The winning rung (`level` 1–6) + `closed_by` are recorded in `scripts/assumption_tags.json` as a
+   GRADED triviality measure (post-processable; `tag` stays valid/gap so nothing downstream changes).
+   **gap** (nothing closed it) → `:= by sorry` + `-- @assumption_gap` — a real node Phase B proves; the
+   `verdict` field says why (`hard` = a candidate real reasoning gap; `crash`/`error` = a tooling limit on
+   the goal shape, NOT a deep gap; `sat` = the premise is FALSE → a MAP BUG to fix). You own
+   `assumption_tags.json` (agent-write-denied). Do NOT re-run `check_steps --save`. (`--dry-run` reverts
+   everything.)
+   The non-`euclid_finish` rungs run no solver → deterministic, immune to the SMT flake and the `simp_all`
+   loop; the level-3 `simp` rung closes the superposition `img`/`lineImg` map coincidences that crash bare
+   `euclid_finish`. It's fail-closed: STEP A materializes + build-checks Main; if that FAILS (almost always
+   a `wlog … generalizing` frame — the have shifts `Hsym`'s arity) it leaves the haves and stops → fix the
+   frame by hand (**add the redundant arg to `exact Hsym …`; never delete the have**) → `assumptions.py
+   <prop> --tag-only`. After classifying it re-builds the COMBINED Main; if THAT fails it stops (tags NOT
+   written) and leaves it for review. A plain re-run on an already-materialized prop auto-skips STEP A (it
+   re-classifies in place — never re-materializes/duplicates).
+
+   **The sweep (no LLM).** Once every prop is mapped + gate-A `--save`'d, run the ladder over all of them in
+   a plain loop — no agent needed, since it auto-closes the trivial premises:
+   ```
+   for p in 01 02 03 04 05 07 08 09 10; do python3 scripts/assumptions.py Book1/Prop$p; done
+   ```
+   `gap`s are EXPECTED (Phase B proves them) — they are NOT failures. Only these need you+LLM: a prop that
+   **exits 1** (STEP-A frame break or the final-build stop) or reports a **`sat`** (false premise / map
+   bug). Fix those (frame fix via `/faithful-assumptions`; map bug by re-mapping), re-run `--tag-only` on
+   just them, and the assumption phase is done → Phase B.
 
 **3. Phase B — prove (skill):**  `/faithful-prove Book2/Prop04/Main.lean`
    The agent creates each `stepN.lean` and proves it, decomposing recursively (adding `have`+backing
@@ -155,7 +176,7 @@ itself was mid-compile at the kill — which warm deps prevent.
 |---|---|---|
 | `check_signatures.py` `[--save]` | guard proposition **statements** (must never change) | human, once + gate C |
 | `check_steps.py [--save] <Main>` | guard approved **claim types** AND `@assumption` types (both frozen-HARD after gate A — assumption drift is now a hard fail, no drop/retype) | human, gate A + gate C |
-| `assumptions.py <propdir> [--dry-run] [--tag-only]` | **Assumption Phase**, two fail-closed steps: STEP A materializes a sorry have per `@assumption` + build-checks (fail → leave haves, fix the frame by hand, then `--tag-only`); STEP B classifies at 3s (`euclid_finish`), tags valid/gap, writes `scripts/assumption_tags.json` + gap report | human (real run); agent (`--dry-run` only) |
+| `assumptions.py <propdir> [--dry-run] [--tag-only]` | **Assumption Phase** (no LLM): STEP A materializes a sorry have per `@assumption` + build-checks (fail → leave haves, fix the frame, `--tag-only`); STEP B classifies each by the LADDER (1 rfl · 2 assumption · 3 simp[zetaDelta] · 4 linarith · 5 nlinarith · 6 euclid_finish@30s), persists the first that closes + records level/closed_by, tags valid/gap in `scripts/assumption_tags.json`, then re-builds the combined Main (fail → STOP for review). Plain re-run on a materialized prop = auto `--tag-only` (no duplicate) | human (real run + sweep); agent (`--dry-run`, or fixing an exit-1 prop) |
 | `check_step.py <propdir> <node>` | certify ONLY that one node (SF→SP→P, stops at first fail) — does NOT check its sub-nodes | agent (Phase B) |
 | `check_step.py <propdir> --subtree <node>` | certify a node's WHOLE CONE (it + every sub-node it transitively contains), bottom-up, scoped — doesn't touch other steps; confirms a container/step is done | agent (Phase B) |
 | `check_step.py <propdir> --sufficient/--suppliable/--provable <node>` | run just one of SF/SP/P (diagnostics; `--provable` reports remaining-sorry file:lines) | agent (Phase B) |
@@ -203,12 +224,19 @@ terminal — NOT inside an agent session** (a nested `claude` spawn is hard-deni
 
 The per-prop order is: (manual) split → map → `--save` → **`assumptions`** → **`prove`** → (manual) Phase C.
 
-1. **assumptions** — batch the Assumption Phase (after each prop's map is `--save`'d):
+1. **assumptions** — the Assumption Phase (after each prop's map is `--save`'d). **Prefer the plain no-LLM
+   sweep first** — the ladder auto-closes the trivial premises, so most props need no agent:
    ```
-   python3 scripts/run_faithful.py assumptions Book1/Prop18 Book1/Prop19 … --concurrency 30
+   for p in Book1/Prop18 Book1/Prop19 …; do python3 scripts/assumptions.py $p; done
    ```
-   Each spawns `/faithful-assumptions` (runs `assumptions.py`; the agent fixes any `wlog` frame break
-   itself), then a `check_step --provable` build-check confirms Main still elaborates.
+   Then spawn the LLM ONLY on the props that exited 1 (a `wlog`/`Hsym` frame break or the final-build stop)
+   or reported `sat`:
+   ```
+   python3 scripts/run_faithful.py assumptions <the-exit-1-props> --concurrency 30
+   ```
+   Each spawns `/faithful-assumptions` (fixes the frame, then `--tag-only`), and a `check_step --provable`
+   build-check confirms Main still elaborates. (Running the batch over ALL props still works — the agent is
+   just idle overhead on the ones the sweep already handled.)
 2. **prove** — the resumable prove loop, across the whole batch:
    ```
    python3 scripts/run_faithful.py prove Book1/Prop18 Book1/Prop19 … --concurrency 30

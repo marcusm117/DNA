@@ -1560,17 +1560,24 @@ class restore_files:
 
 
 # ── assumption phase: materialized-have structure (#1 FORCE + #3 PARITY) + tag/count helpers ─────────
-# A materialized assumption have is named `<sentenceName>_assumptionN`. VALID ones carry the inline
-# `:= by euclid_finish` body (skipped by parse_nodes_in_file); GAP ones are `:= by sorry` nodes with a
+# A materialized assumption have is named `<sentenceName>_assumptionN`. VALID ones carry an inline
+# CLOSER-tactic body (any rung of the classification ladder — `rfl`/`assumption`/`linarith`/`nlinarith`/
+# `euclid_finish`; all node-invisible: `euclid_finish` is skipped as 'smell', the rest have no canonical
+# body shape so `find_body` returns None and they're skipped too). GAP ones are `:= by sorry` nodes with a
 # backing file. So we scan the source directly here, independent of the node model.
 _ASSUMPTION_HAVE_RE = re.compile(r'\bhave\s+(\w+_assumption\d+)\s*:')
+# The ladder's terminal closers (order-independent here; `nlinarith` before `linarith` is harmless).
+# `simp\b` matches `simp (config := …)` but NOT `simp_all` (no word boundary before `_`), which is correct
+# — the ladder persists a goal-only `simp`, never `simp_all`.
+ASSUMPTION_CLOSER_TACTICS = ("euclid_finish", "rfl", "assumption", "simp", "nlinarith", "linarith")
+_ASSUMPTION_CLOSER_RE = re.compile(r':=\s*by\s+(?:' + "|".join(ASSUMPTION_CLOSER_TACTICS) + r')\b')
 
 
 def assumption_current_tags(main_path):
     """{have_name: "valid"|"gap"} for every materialized assumption have in Main, derived from its BODY —
-    inline `:= by euclid_finish` ⟹ valid; anything else (`sorry` in dev, or a wired backing call) ⟹ gap.
-    The body state is the authoritative classification (real code in content_sha); the `-- @assumption_*`
-    comment is just documentation."""
+    an inline closer-tactic body (any ladder rung) ⟹ valid; anything else (`sorry` in dev, or a wired
+    backing call) ⟹ gap. The body state is the authoritative classification (real code in content_sha);
+    the `-- @assumption_*` comment is just documentation."""
     clean = blank_comments(open(main_path, encoding="utf-8").read())
     out = {}
     for m in _ASSUMPTION_HAVE_RE.finditer(clean):
@@ -1578,21 +1585,25 @@ def assumption_current_tags(main_path):
             _t, sep = type_until_assign(clean, m.end())
         except FaithfulError:
             continue
-        out[m.group(1)] = "valid" if re.match(r':=\s*by\s+euclid_finish\b', clean[sep:sep + 40]) else "gap"
+        out[m.group(1)] = "valid" if _ASSUMPTION_CLOSER_RE.match(clean[sep:sep + 40]) else "gap"
     return out
 
 
 def count_inline_assumption_haves(main_path):
-    """Number of VALID (inline `:= by euclid_finish`) assumption haves in Main — the passers whose SMT
-    runs on every Main build. Used to scale the build wall (`WALL + 3*N`)."""
+    """Number of VALID (inline closer-tactic) assumption haves in Main — the passers whose proof runs on
+    every Main build. Used to scale the build wall. Most close instantly (rfl/assumption/linarith), but a
+    `euclid_finish`-rung passer can run up to the full dev solver cap, so the wall budgets for that."""
     return sum(1 for v in assumption_current_tags(main_path).values() if v == "valid")
 
 
 def main_wall(propdir):
-    """Build wall for a full Main build after the assumption phase: base WALL plus 3s per inline
-    (valid) assumption have, since those N `euclid_finish` calls run sequentially each ≤3s (else a fixed
-    wall would SIGKILL a legitimate Main build mid-way). See the assumption-phase plan."""
-    return WALL + 3 * count_inline_assumption_haves(main_file(propdir))
+    """Build wall for a full Main build after the assumption phase: base WALL plus the dev solver cap
+    (`CAP_SECONDS`) per inline (valid) assumption have. A valid have may carry a `:= by euclid_finish`
+    body (the ladder's last rung) that runs at the full 30s cap, so N of them run sequentially for up to
+    `CAP_SECONDS` each — budget for that so a legitimate Main build isn't SIGKILL'd mid-way. (Over-budgets
+    the cheap rfl/linarith passers, which is fine: a healthy build finishes early; the wall only bounds a
+    hung one.) = 45 + 30·N."""
+    return WALL + CAP_SECONDS * count_inline_assumption_haves(main_file(propdir))
 
 
 def assumption_structure_problems(propdir, names=None):

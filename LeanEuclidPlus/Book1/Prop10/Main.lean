@@ -31,6 +31,10 @@ theorem proposition_10 : ∀ (a b : Point) (AB : Line), distinctPointsOnLine a b
     "I say that the straight-line $AB$ has been cut in half at  point $D$. "
     (step3 : between a d b ∧ |(a─d)| = |(d─b)|) := by sorry
 
+  -- @assumption_valid
+  have step4_assumption1 : |(a─c)| = |(c─b)| := by euclid_finish
+  -- @assumption_valid
+  have step4_assumption2 : |(c─d)| = |(c─d)| := by rfl
   -- @assumption ("$AC$ is equal to $CB$", |(a─c)| = |(c─b)|)
   -- @assumption ("$CD$ (is) common", |(c─d)| = |(c─d)|)
   euclid_sentence "1.10.4"

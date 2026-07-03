@@ -1,15 +1,243 @@
 {
   "Book1/Prop01": {
     "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
       "tag": "valid",
       "text": "the point $A$ is the center of the circle $CDB$",
       "type": "a.isCentre BCD",
       "verdict": "closes"
     },
     "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
       "tag": "valid",
       "text": "the point $B$ is the center of the circle $CAE$",
       "type": "b.isCentre ACE",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop02": {
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the point $B$ is the center of (the circle) $CGH$",
+      "type": "b.isCentre CGH",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the point $D$ is the center of the circle $GKL$",
+      "type": "d.isCentre GKL",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop03": {
+    "step3_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $A$ is the center of  circle $DEF$",
+      "type": "a.isCentre DEF",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop04": {
+    "step1_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AB$ being equal to $DE$",
+      "type": "|(a\u2500b)| = |(d\u2500e)|",
+      "verdict": "closes"
+    },
+    "step2_assumption1": {
+      "closed_by": "simp (config := { zetaDelta := true })",
+      "level": 3,
+      "tag": "valid",
+      "text": "$AB$ coinciding with $DE$",
+      "type": "lineImg AB = DE",
+      "verdict": "closes"
+    },
+    "step2_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the angle $BAC$ being equal to $EDF$",
+      "type": "\u2220 b:a:c = \u2220 e:d:f",
+      "verdict": "closes"
+    },
+    "step3_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AC$ being equal to $DF$",
+      "type": "|(a\u2500c)| = |(d\u2500f)|",
+      "verdict": "closes"
+    },
+    "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $B$  certainly also coincided with point $E$",
+      "type": "ptImg b = e",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$B$ coincides with $E$",
+      "type": "ptImg b = e",
+      "verdict": "closes"
+    },
+    "step5_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$C$ with $F$",
+      "type": "ptImg c = f",
+      "verdict": "closes"
+    },
+    "step5_assumption3": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the base $BC$ does not coincide with $EF$",
+      "type": "lineImg BC \u2260 EF",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the base $BC$ will coincide with $EF$",
+      "type": "lineImg BC = EF",
+      "verdict": "closes"
+    },
+    "step8_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "the whole triangle $ABC$ will coincide with the whole triangle $DEF$",
+      "type": "ptImg a = d \u2227 ptImg b = e \u2227 ptImg c = f",
+      "verdict": "crash"
+    }
+  },
+  "Book1/Prop05": {
+    "step11_assumption1": {
+      "closed_by": "linarith",
+      "level": 3,
+      "tag": "valid",
+      "text": "the whole of $AF$ is equal to the whole of $AG$",
+      "type": "|(a\u2500f)| = |(a\u2500g)|",
+      "verdict": "closes"
+    },
+    "step11_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AB$ is equal to $AC$",
+      "type": "|(a\u2500b)| = |(a\u2500c)|",
+      "verdict": "closes"
+    },
+    "step20_assumption1": {
+      "closed_by": "linarith",
+      "level": 3,
+      "tag": "valid",
+      "text": "the whole angle $ABG$ was shown (to be) equal to the whole angle $ACF$",
+      "type": "\u2220 a:b:g = \u2220 a:c:f",
+      "verdict": "closes"
+    },
+    "step20_assumption2": {
+      "closed_by": "linarith",
+      "level": 3,
+      "tag": "valid",
+      "text": "$CBG$ is equal to $BCF$",
+      "type": "\u2220 c:b:g = \u2220 b:c:f",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop07": {
+    "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AC$ is equal to $AD$",
+      "type": "|(a\u2500c)| = |(a\u2500d)|",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$CB$ is equal to $DB$",
+      "type": "|(c\u2500b)| = |(d\u2500b)|",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop08": {
+    "step1_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BC$ being equal to $EF$",
+      "type": "|(b\u2500c)| = |(e\u2500f)|",
+      "verdict": "closes"
+    },
+    "step2_assumption1": {
+      "closed_by": "simp (config := { zetaDelta := true })",
+      "level": 3,
+      "tag": "valid",
+      "text": "$BC$ coinciding with $EF$",
+      "type": "lineImg BC = EF",
+      "verdict": "closes"
+    },
+    "step3_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "base $BC$ coincides with base $EF$",
+      "type": "lineImg BC = EF",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop09": {
+    "step7_assumption1": {
+      "closed_by": "linarith",
+      "level": 3,
+      "tag": "valid",
+      "text": "$AD$ is equal to  $AE$",
+      "type": "|(a\u2500d)| = |(a\u2500e)|",
+      "verdict": "closes"
+    },
+    "step7_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$AF$ is common",
+      "type": "|(a\u2500f)| = |(a\u2500f)|",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop10": {
+    "step4_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 5,
+      "tag": "valid",
+      "text": "$AC$ is equal to $CB$",
+      "type": "|(a\u2500c)| = |(c\u2500b)|",
+      "verdict": "closes"
+    },
+    "step4_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$CD$ (is) common",
+      "type": "|(c\u2500d)| = |(c\u2500d)|",
       "verdict": "closes"
     }
   }
