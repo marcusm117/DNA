@@ -1,0 +1,132 @@
+[
+  {
+    "role": "intro",
+    "text": "To place a straight-line equal to a given straight-line at a given point (as an extremity). Let $A$ be the given point, and $BC$ the given straight-line. So  it is required to place a straight-line at point $A$ equal to the given straight-line $BC$. "
+  },
+  {
+    "role": "construction",
+    "text": "For  let the straight-line $AB$ have been joined from point $A$ to point $B$ [Post.~1],",
+    "construction_cite": null,
+    "objects_introduced": ["$AB$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let the equilateral triangle $DAB$ have been been constructed upon it [Prop.~1.1]. ",
+    "construction_cite": "1.1",
+    "objects_introduced": ["$DAB$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let the straight-lines $AE$ and $BF$ have been produced in a straight-line with $DA$ and $DB$  (respectively) [Post.~2].",
+    "construction_cite": null,
+    "objects_introduced": ["$AE$", "$BF$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let the circle $CGH$ with center $B$ and radius $BC$ have been drawn [Post.~3],",
+    "construction_cite": null,
+    "objects_introduced": ["$CGH$"]
+  },
+  {
+    "role": "construction",
+    "text": "and again let the circle $GKL$ with center $D$ and radius $DG$ have been drawn [Post.~3].     ",
+    "construction_cite": null,
+    "objects_introduced": ["$GKL$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since the point $B$ is the center of (the circle) $CGH$, $BC$ is equal to  $BG$ [Def.~1.15].",
+    "assertion": "BC is equal to BG (B is the center of circle CGH)",
+    "spans": [
+      { "label": "glue", "text": "Therefore, since " },
+      { "label": "assumption", "text": "the point $B$ is the center of (the circle) $CGH$" },
+      { "label": "glue", "text": ", " },
+      { "label": "assertion", "text": "$BC$ is equal to  $BG$" },
+      { "label": "glue", "text": " [Def.~1.15]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since the point $D$ is the center of the circle $GKL$, $DL$ is equal to $DG$ [Def.~1.15].",
+    "assertion": "DL is equal to DG (D is the center of circle GKL)",
+    "spans": [
+      { "label": "glue", "text": "Again, since " },
+      { "label": "assumption", "text": "the point $D$ is the center of the circle $GKL$" },
+      { "label": "glue", "text": ", " },
+      { "label": "assertion", "text": "$DL$ is equal to $DG$" },
+      { "label": "glue", "text": " [Def.~1.15]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And within these,  $DA$ is equal to $DB$.",
+    "assertion": "DA is equal to DB",
+    "spans": [
+      { "label": "glue", "text": "And within these,  " },
+      { "label": "assertion", "text": "$DA$ is equal to $DB$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remainder $AL$ is equal to the remainder $BG$ [C.N.~3].",
+    "assertion": "remainder AL is equal to remainder BG",
+    "spans": [
+      { "label": "glue", "text": "Thus, the " },
+      { "label": "assertion", "text": "remainder $AL$ is equal to the remainder $BG$" },
+      { "label": "glue", "text": " [C.N.~3]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But $BC$ was also shown (to be)  equal to $BG$.",
+    "assertion": "BC is equal to BG (shown earlier)",
+    "spans": [
+      { "label": "glue", "text": "But " },
+      { "label": "assertion", "text": "$BC$ was also shown (to be)  equal to $BG$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus,  $AL$ and $BC$ are each equal to $BG$.",
+    "assertion": "AL and BC are each equal to BG",
+    "spans": [
+      { "label": "glue", "text": "Thus,  " },
+      { "label": "assertion", "text": "$AL$ and $BC$ are each equal to $BG$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But things equal to the same thing are also equal to one another [C.N.~1].",
+    "assertion": "things equal to the same thing are equal to one another",
+    "spans": [
+      { "label": "glue", "text": "But " },
+      { "label": "assertion", "text": "things equal to the same thing are also equal to one another" },
+      { "label": "glue", "text": " [C.N.~1]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AL$ is also equal to $BC$. ",
+    "assertion": "AL is equal to BC",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "$AL$ is also equal to $BC$" },
+      { "label": "glue", "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, the straight-line $AL$, equal to the given straight-line $BC$, has been placed at the given point $A$. (Which is) the very thing it was required to do."
+  }
+]

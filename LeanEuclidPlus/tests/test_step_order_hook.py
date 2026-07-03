@@ -214,10 +214,22 @@ def test_hook_allows_fp_node():
     assert decision is None
 
 
-def test_hook_allows_step8_subnode_in_prop11():
-    """step8_ahb_mag is a sub-node of certified step8 in Prop11 — allowed."""
-    path = os.path.join(LEAN_ROOT, "Book2", "Prop11", "step8_ahb_mag.lean")
-    decision, _ = run_hook(path)
+PROP11 = os.path.join(LEAN_ROOT, "Book2", "Prop11")
+
+
+def test_hook_allows_subnode_of_non_beyond_frontier_node_in_prop11():
+    """A sub-node of a node AT-OR-BEFORE the frontier is allowed (e.g. `step8_ahb_mag.lean` when step8
+    is certified). Derived from the LIVE board — NOT hardcoded "step8 is certified in Prop11" — so it
+    can't rot as Prop11's frontier drifts (a cert-hash migration can re-stale the certified prefix and
+    pull the frontier back to step1, which is exactly what broke the old hardcoded assertion)."""
+    frontier, names, _state = _load_hook().find_frontier(PROP11)
+    if frontier is None:
+        pytest.skip("Prop11 fully certified — no frontier to test")
+    # Prefer a node strictly BEFORE the frontier (a certified node); fall back to the frontier itself
+    # (whose sub-nodes are also allowed). Both give ancestor_idx <= frontier_idx → allow.
+    idx = names.index(frontier)
+    target = names[idx - 1] if idx > 0 else names[idx]
+    decision, _ = run_hook(os.path.join(PROP11, f"{target}_ahb_mag.lean"))
     assert decision is None
 
 

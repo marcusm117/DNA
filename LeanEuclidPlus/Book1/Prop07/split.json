@@ -1,0 +1,107 @@
+[
+  {
+    "role": "intro",
+    "text": "On the same straight-line, two other straight-lines  equal, respectively, to  two (given) straight-lines (which meet) cannot be constructed (meeting) at  a different point on the same side (of the straight-line), but having the same ends as the given straight-lines.      For, if possible, let the two straight-lines $AC$, $CB$, equal to two other straight-lines $AD$, $DB$, respectively, have been constructed on the same straight-line $AB$, meeting at different points, $C$ and $D$, on the same side (of $AB$), and having the same ends (on $AB$)."
+  },
+  {
+    "role": "deduction",
+    "text": "So $CA$ is equal to $DA$, having the same end $A$ as it,",
+    "assertion": "CA is equal to DA",
+    "spans": [
+      { "label": "glue", "text": "So " },
+      { "label": "assertion", "text": "$CA$ is equal to $DA$" },
+      { "label": "glue", "text": ", having the same end $A$ as it," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $CB$ is equal to $DB$, having the same end $B$ as it.",
+    "assertion": "CB is equal to DB",
+    "spans": [
+      { "label": "glue", "text": "and " },
+      { "label": "assertion", "text": "$CB$ is equal to $DB$" },
+      { "label": "glue", "text": ", having the same end $B$ as it." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "And let $CD$ have been joined [Post.~1]. ",
+    "construction_cite": null,
+    "objects_introduced": ["$CD$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since $AC$ is equal to $AD$,  the angle $ACD$ is also equal to angle $ADC$ [Prop.~1.5].",
+    "assertion": "angle ACD equals angle ADC",
+    "spans": [
+      { "label": "glue", "text": "Therefore, since " },
+      { "label": "assumption", "text": "$AC$ is equal to $AD$" },
+      { "label": "glue", "text": ",  the " },
+      { "label": "assertion", "text": "angle $ACD$ is also equal to angle $ADC$" },
+      { "label": "glue", "text": " [Prop.~1.5]." }
+    ],
+    "proof_cite": "1.5"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $ADC$ (is) greater than $DCB$ [C.N.~5].",
+    "assertion": "angle ADC is greater than angle DCB",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "$ADC$ (is) greater than $DCB$" },
+      { "label": "glue", "text": " [C.N.~5]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $CDB$ is much greater than $DCB$ [C.N.~5].",
+    "assertion": "angle CDB is much greater than angle DCB",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "$CDB$ is much greater than $DCB$" },
+      { "label": "glue", "text": " [C.N.~5]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since  $CB$ is equal to $DB$, the angle $CDB$ is also equal to angle $DCB$ [Prop.~1.5].",
+    "assertion": "angle CDB equals angle DCB",
+    "spans": [
+      { "label": "glue", "text": "Again, since  " },
+      { "label": "assumption", "text": "$CB$ is equal to $DB$" },
+      { "label": "glue", "text": ", the " },
+      { "label": "assertion", "text": "angle $CDB$ is also equal to angle $DCB$" },
+      { "label": "glue", "text": " [Prop.~1.5]." }
+    ],
+    "proof_cite": "1.5"
+  },
+  {
+    "role": "deduction",
+    "text": "But it was shown that the former (angle) is also much greater (than the latter).",
+    "assertion": "angle CDB was shown to be much greater than angle DCB",
+    "spans": [
+      { "label": "glue", "text": "But it was shown that " },
+      { "label": "assertion", "text": "the former (angle) is also much greater (than the latter)" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible. ",
+    "assertion": "contradiction: CDB both equal to and much greater than DCB",
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue", "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, on the same straight-line, two other straight-lines equal, respectively, to   two (given) straight-lines  (which meet) cannot be constructed (meeting) at a different point on the same side (of the straight-line), but having the same ends as the given straight-lines. (Which is) the very thing it was required to show."
+  }
+]

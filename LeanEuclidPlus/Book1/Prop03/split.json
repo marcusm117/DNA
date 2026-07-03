@@ -1,0 +1,68 @@
+[
+  {
+    "role": "intro",
+    "text": "For two given unequal straight-lines, to cut off from the greater a straight-line equal to the lesser.  Let $AB$ and $C$ be the two given unequal straight-lines, of which let the greater be $AB$. So it is required to cut off a straight-line equal to the lesser $C$ from the greater $AB$. "
+  },
+  {
+    "role": "construction",
+    "text": "Let the line $AD$, equal to the straight-line $C$, have been placed at  point $A$ [Prop.~1.2].",
+    "construction_cite": "1.2",
+    "objects_introduced": ["$AD$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let the circle $DEF$ have been drawn with center $A$ and radius $AD$ [Post.~3]. ",
+    "construction_cite": null,
+    "objects_introduced": ["$DEF$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since  point $A$ is the center of  circle $DEF$, $AE$ is equal to $AD$ [Def.~1.15].",
+    "assertion": "AE is equal to AD",
+    "spans": [
+      { "label": "glue",       "text": "And since  " },
+      { "label": "assumption", "text": "point $A$ is the center of  circle $DEF$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$AE$ is equal to $AD$" },
+      { "label": "glue",       "text": " [Def.~1.15]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, $C$ is also equal to $AD$.",
+    "assertion": "C is equal to AD",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "$C$ is also equal to $AD$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AE$ and $C$ are each equal to $AD$.",
+    "assertion": "AE and C are each equal to AD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AE$ and $C$ are each equal to $AD$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So $AE$ is also equal to $C$ [C.N.~1].",
+    "assertion": "AE is equal to C",
+    "spans": [
+      { "label": "glue",      "text": "So " },
+      { "label": "assertion", "text": "$AE$ is also equal to $C$" },
+      { "label": "glue",      "text": " [C.N.~1]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, for two given unequal straight-lines, $AB$ and $C$, the (straight-line) $AE$, equal to the lesser $C$, has been cut off from the greater $AB$. (Which is) the very thing it was required to do."
+  }
+]

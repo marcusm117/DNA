@@ -97,6 +97,18 @@ recurring ones:
   helper or repeated structure (exemplar `Book1/Prop06`).
 - **Superposition** — add `euclid_apply (superposition …) as (…)` (it births the image point + phantom
   apex); "coincide" → image equality `c' = f` (exemplar `Book/Prop08.lean`).
+- **Mid-text "I say that …"** (the goal restatement, when the text places it AFTER a construction) — it is
+  a NORMAL `euclid_sentence` whose claim is the GOAL BODY (exemplar `Book1/Prop10` `1.10.3`:
+  `(step3 : between a d b ∧ |(a─d)| = |(d─b)|)`), and the goal closes with `exact ⟨witness, step3⟩`.
+  ⛔ Do NOT demote it to `euclid_intro_sentence`/`euclid_conclude_sentence`: those are STRUCTURAL
+  (claimless) and a HARD `check_faithful` gate allows them ONLY as the LEADING block (before the first
+  `euclid_sentence`) / the TRAILING block (after the last). It IS provable in position — the SMT solver
+  reasons from the AXIOMS in context, not from Euclid's sentence ORDER, so a fact Euclid *spells out* in
+  later sentences is usually already provable now (Prop10 step3 closes by SAS from the equilateral +
+  bisection facts, with steps 4/5/6 NOT needed as hyps). If you think a claim "isn't provable in
+  position", TEST it (`check_step --smell`/`--provable`) BEFORE restructuring — never invent an ordering
+  constraint, and never launder a dodge as a "flagged deliberate call" (the operator WILL check; green
+  gates ≠ correct).
 Open the exemplar's `Main.lean` for the frame SHAPE **(structure only — NEVER copy a claim TYPE; the claim
 is THIS prop's own sentence)**. If the proof is a reductio/case-split, the map is a genuine restructuring,
 not a fill-in-the-blanks — do it, and do it faithfully.
@@ -174,12 +186,58 @@ names; new construction points follow the Euclid label (`$E$`→`e`); intermedia
 | "the square on AB equals…" | `\|(a─b)\| * \|(a─b)\| = …` |
 | "X is the rectangle by A and B" | area (triangle-sum) `= \|(a─…)\| * \|(b─…)\|` |
 | "let BG be made equal to A" (construction) | `\|(b─g)\| = \|(a₁─a₂)\|` |
+| "let the equilateral triangle DEF be constructed" (construction) | `formTriangle d e f DE EF DF ∧ \|(f─d)\|=\|(d─e)\| ∧ \|(f─e)\|=\|(d─e)\|` |
 | "drawn parallel to AD" (construction) | `e.onLine EF ∧ ¬(EF.intersectsLine AD)` |
 | "let EA, EB be joined" (construction) | `distinctPointsOnLine e a EA ∧ distinctPointsOnLine e b EB` |
 | "the very thing is impossible" (reductio) | `False` (inside the frame) |
 | "BE is not straight-on to CB" (a negation) | `¬ (between c b e)` |
+ \|(b─c)\| = \|(b─g)\| → \|(a─l)\| = \|(b─c)\|` |
 
----
+A trivially-valid claim like this last row is FAITHFUL — not a RULE-2 vacuity violation — precisely
+*because Euclid states it as a sentence*. The sentence IS the claim; when Euclid invokes a Common
+Notion ("things equal to the same thing…") as its own step, translate it as the implication he asserts,
+not as `True`.
+
+### Figural language stays figural — translate the FIGURE Euclid NAMES, not the consequence it implies
+Congruence / base-angle props (I.4–I.8, I.26 …) keep tripping this. The mistake is substituting the
+arithmetic that *follows* for what the sentence *says*. Translate what is named:
+- **IF THE SENTENCE SAYS "TRIANGLE", THE CLAIM CONTAINS `formTriangle` — full stop** (likewise
+  "square"/"parallelogram" → `formParallelogram`). A CONSTRUCTION that NAMES a figure asserts the FIGURE,
+  not the construction call's output shape. "let the equilateral triangle DEF be constructed [I.1]" →
+  `formTriangle d e f DE EF DF ∧ <the equal sides>`, even though the cited call (`proposition_1'`) only
+  *outputs* two length equalities + an `opposingSides` (no `formTriangle`). The call's OUTPUTS are NOT the
+  claim; the sentence's word "triangle" is. Build whatever side-lines the figure needs FIRST (silently, as Prop02/Prop10 join the two new sides
+  before their triangle sentence: `line_from_points e f as EF`, `line_from_points d f as DF`) so
+  `formTriangle` has its lines. Same law for "square"/"parallelogram" → `formParallelogram …`. (This is
+  RULE 0: matching a construction's return type instead of the sentence is the single most common figure
+  miss — Prop09 step4 was originally written without the triangle for exactly this reason.)
+- **"the triangle X = triangle Y"** = *figure/area* equality → `Triangle.area △ x… = Triangle.area △ y…`
+  WHEN base and angles are stated as their OWN separate sentences (I.5: base | triangle | angles — the
+  "triangle" clause is the one thing base+angles don't cover). ONLY if "triangle = triangle [I.4]" is the
+  *bundled* congruence (no separate base/angle sentences — I.6) → the congruence parts
+  `|base₁|=|base₂| ∧ ∠…=∠… ∧ ∠…=∠…`. Decider: are base & angles their own sentences? yes → area; no → parts.
+- **"the base BC is common to them"** = a shared *side* → `distinctPointsOnLine b c BC`, NOT the vacuous
+  distance identity `|(b─c)| = |(c─b)|`.
+- **"they encompass a common angle XYZ"** → NAME it: both figures' vertex-angle = `∠ x:y:z`, e.g.
+  `(∠ f:a:c = ∠ f:a:g) ∧ (∠ g:a:b = ∠ f:a:g)` — not the re-lettered `∠ f:a:c = ∠ g:a:b`.
+- **"they are at / under the base"** (locational) → the claim is the IDENTIFICATION "these ARE the
+  [base / under-base] angles", NOT the equality that follows. If the angles already ARE the goal's angles
+  (no conversion) it collapses to that equality; if they're auxiliary (need a ray-identity — e.g. F on BD
+  ⟹ ∠FBC=∠CBD) the identification is the claim and the goal-conjunct equality is ASSEMBLED in the closing
+  tail (`exact ⟨…, h.1.symm.trans (h2.trans h.2)⟩` — a term-mode `exact`, which is not a "bulk tactic").
+
+### Closing the goal — the ONLY two places a `sorry` may appear
+A `sorry` is allowed in EXACTLY two slots: a `euclid_sentence "…" "…" (stepN : …) := by sorry` body, or a
+`have <n> : <claim> := by sorry`. **A `by sorry` ANYWHERE ELSE is a STRAY sorry and is a hard error** —
+most often smuggled into a tail term like `exact ⟨f, by sorry, step6⟩`. (`check_step --provable` now
+rejects this at map time; see [[book1-prop09-faithful-map]].)
+- **Existential goal `∃ w, P w ∧ Q w`** whose witness has a side-condition NOT asserted by any sentence
+  (e.g. `f ≠ a`, `between a h b`): `use <witness>` then discharge each unmet conjunct as its OWN
+  `have <n> : <side-cond> := by sorry`, then `exact ⟨…⟩`. NEVER inline the gap as `by sorry` in the
+  `exact`. E.g. `use f` / `have hfa : f ≠ a := by sorry` / `exact ⟨hfa, step6⟩` (Prop09), or route the
+  side-condition to a Phase-B helper à la Prop11's `between_ahb` (`refine ⟨between_ahb, step23⟩`).
+- If a conjunct IS a context hyp, `use <witness>` alone (or a plain `exact ⟨…⟩` over named haves) closes
+  it — no sorry needed.
 
 ## `@assumption` (INPUTS-ONLY)
 Each `-- @assumption ("substring", TODO)` line the scaffold seeded marks a prior fact this sentence
@@ -207,7 +265,9 @@ GF = DF`), never `e = e`. (Exemplar: `Book1/Prop08/Main.lean`.)
 2. For each sentence IN ORDER:
    a. Replace its `(stepN : True)` with the real claim (RULE 0/2, VOCABULARY). For a **construction**
       sentence, ALSO add the object-producing `euclid_apply (…) as …` line(s) in Main BEFORE the sentence
-      (the claim references those objects). For a sentence needing a **frame** (reductio/`by_cases`/`wlog`)
+      (the claim references those objects) — and if it calls a cited PROP (`proposition_3`, `_46`, …) add
+      `import Book.PropM` at the top (the scaffold stamps only `import SystemE`, so a cited prop is an
+      `unknown identifier` until imported). For a sentence needing a **frame** (reductio/`by_cases`/`wlog`)
       or a construction beyond the vocab (superposition): add the frame / `euclid_apply (superposition …)`
       — read `Book/PropNN.lean` for the shape (READING POLICY). Bodies stay `:= by sorry`.
    b. Fill any `@assumption` `TODO` on that sentence (INPUTS-ONLY).
@@ -236,7 +296,18 @@ GF = DF`), never `e = e`. (Exemplar: `Book1/Prop08/Main.lean`.)
   □ Every `@assumption`: substring is verbatim from the sentence, and the type is a genuine consumed INPUT
     (not a conjunct of this step's own claim).
   □ No construction-byproduct incidences in any claim — only what the sentence asserts.
+  □ Figural sentences translated as the FIGURE, not the consequence: "triangle=triangle" → area (parts
+    separate) / congruence (bundled); "base common" → shared side; "common angle XYZ" → named `∠ x:y:z`;
+    "at/under the base" → the locational identification, not the equality it implies.
+  □ **A construction NAMING a figure claims the figure** (`formTriangle`/`formParallelogram` + equal
+    sides), NOT the construction call's output shape — build the needed side-lines first.
   □ Every figure-area claim uses the figure's REAL corners; no region double-counted or omitted.
+  □ **NO stray sorry** — every `sorry` sits in a `euclid_sentence` body or a `have := by sorry`; none in a
+    tail `exact`/term (an existential witness side-condition is a `have`, not an inline `by sorry`).
+  □ **`euclid_intro_sentence`/`euclid_conclude_sentence` ONLY bracket the proof** (leading / trailing) —
+    NEVER mid-body. A mid-text "I say that …" is a normal `euclid_sentence` carrying the goal body; if a
+    claim seems "unprovable in position", TEST it (`--smell`/`--provable`) before restructuring — do not
+    demote it to a claimless narrative line (hard-failed by `check_faithful`).
   □ You did NOT edit any sentence's text / locator / ordering (Step-0 scaffold owns tiling).
   □ Every cited CONSTRUCTION prop has its `euclid_apply (…) as …` present in Main.
 
@@ -244,4 +315,8 @@ GF = DF`), never `e = e`. (Exemplar: `Book1/Prop08/Main.lean`.)
 - Do NOT prove (leave `:= by sorry`; no real tactic bodies). Do NOT wire `euclid_apply (helper…)`.
 - Do NOT touch the theorem signature, or any sentence's text/locator.
 - Do NOT read geometry off the diagram (RULE 0) or invent facts a sentence didn't state.
-- Do NOT over-read axioms — prefer the vocab; dig deeper only when a sentence can't be expressed.
+- Do NOT over-read axioms — prefer the vocab; dig deeper only when a sentence can't be expressed. When a
+  precedent is needed, go to the ONE canonical exemplar (this skill names it), not every done prop; and
+  do NOT re-Read a file already quoted in your context — both waste API for no new information.
+- Do NOT leave a stray `by sorry` in a tail term — the only sorry slots are a `euclid_sentence` body or a
+  `have := by sorry`.

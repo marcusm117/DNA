@@ -1,0 +1,88 @@
+[
+  {
+    "role": "intro",
+    "text": "To cut a given rectilinear angle in half.  Let $BAC$ be the given rectilinear angle. So it is required to cut it in half. "
+  },
+  {
+    "role": "construction",
+    "text": "Let the point $D$ have been taken at random on $AB$,",
+    "construction_cite": null,
+    "objects_introduced": ["$D$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $AE$, equal to $AD$,  have been cut off from $AC$  [Prop.~1.3],",
+    "construction_cite": "1.3",
+    "objects_introduced": ["$AE$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $DE$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$DE$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let the equilateral triangle $DEF$ have been constructed upon $DE$ [Prop.~1.1],",
+    "construction_cite": "1.1",
+    "objects_introduced": ["$DEF$", "$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $AF$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AF$"]
+  },
+  {
+    "role": "deduction",
+    "text": "I say that the angle $BAC$ has been cut in half by the straight-line $AF$. ",
+    "assertion": "AF cuts angle BAC in half",
+    "spans": [
+      { "label": "glue", "text": "I say that the " },
+      { "label": "assertion", "text": "angle $BAC$ has been cut in half by the straight-line $AF$" },
+      { "label": "glue", "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "For since $AD$ is equal to  $AE$, and $AF$ is common, the two (straight-lines) $DA$, $AF$ are equal to the two (straight-lines) $EA$, $AF$, respectively.",
+    "assertion": "the two straight-lines DA, AF equal the two straight-lines EA, AF respectively",
+    "spans": [
+      { "label": "glue", "text": "For since " },
+      { "label": "assumption", "text": "$AD$ is equal to  $AE$" },
+      { "label": "glue", "text": ", and " },
+      { "label": "assumption", "text": "$AF$ is common" },
+      { "label": "glue", "text": ", the " },
+      { "label": "assertion", "text": "two (straight-lines) $DA$, $AF$ are equal to the two (straight-lines) $EA$, $AF$, respectively" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the base $DF$ is equal to the base $EF$.",
+    "assertion": "base DF equals base EF",
+    "spans": [
+      { "label": "glue", "text": "And the " },
+      { "label": "assertion", "text": "base $DF$ is equal to the base $EF$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $DAF$ is equal to angle $EAF$ [Prop.~1.8]. ",
+    "assertion": "angle DAF equals angle EAF",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "angle $DAF$ is equal to angle $EAF$" },
+      { "label": "glue", "text": " [Prop.~1.8]. " }
+    ],
+    "proof_cite": "1.8"
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, the given rectilinear angle $BAC$ has been cut in half by the straight-line $AF$. (Which is) the very thing it was required to do."
+  }
+]

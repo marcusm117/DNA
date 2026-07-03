@@ -773,13 +773,25 @@ def mode_build_main(propdir):
     compile"), and sorry is fine because its sentence nodes are sorry. This is the all-sorry skeleton
     elaboration the agent uses in Phase A (raw safe_build is hard-denied)."""
     mf = L.main_file(propdir)
+    # STRAY-SORRY GATE (source scan, before the build). Even in the all-sorry Phase-A skeleton, the ONLY
+    # sorries allowed are declared node bodies (`have <n> := by sorry` / a `euclid_sentence` body). A
+    # `by sorry` buried in a tail term (e.g. `exact ⟨f, by sorry, step6⟩`) is a stray sorry — the build
+    # tolerates it, but it's an unaccounted gap, so reject it here at map time (same rule integrity_scan
+    # enforces at `--all`).
+    stray = L.stray_sorry_problems(mf, L.book_num(propdir))
+    if stray:
+        print(f"FAIL: stray `sorry` in {os.path.relpath(mf, L.BOOK_ROOT)} — the only sorry allowed is a "
+              f"declared node body (a `have … := by sorry` or a `euclid_sentence … := by sorry`):")
+        for p in stray:
+            print("  - " + p)
+        return 1
     print(f"[check_step --provable] building {os.path.relpath(mf, L.BOOK_ROOT)} (no parent; tolerating sorry)…")
     ok, out = L.lake_build(L.target_of(mf), wall=L.WALL)
     if not ok:
         print("FAIL: Main did not elaborate (or hit the 30s cap).\n")
         print(_fail_output(out))
         return 1
-    print("OK: Main elaborates (sorry tolerated). The sentence map type-checks.")
+    print("OK: Main elaborates (sorry tolerated; no stray sorry). The sentence map type-checks.")
     return 0
 
 

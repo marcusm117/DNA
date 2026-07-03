@@ -1462,6 +1462,61 @@ def has_sorry(output):
     return "declaration uses 'sorry'" in output
 
 
+def stray_sorry_problems(path, book):
+    """Return a problem string for every `sorry`/`admit`/cheat token in `path` that is NOT inside a
+    declared NODE body. The ONLY sorries allowed in a dev-state file are declared node bodies — a
+    `have <n> : … := by sorry` or a `euclid_sentence "…" "…" (stepN : …) := by sorry` (which the script
+    wires in Phase C). A `sorry`/`admit` ANYWHERE ELSE — most commonly a `by sorry` buried in a tail term
+    like `exact ⟨f, by sorry, step6⟩` — is a STRAY sorry: an unaccounted gap the certification model does
+    not track, so it must be a hard error, not a tolerated one. Shared by `integrity_scan` (the whole-prop
+    / subtree audits) AND the Phase-A `--provable` Main build, so a stray sorry in the sentence map is
+    caught at MAP time, not only at the final `--all`."""
+    src = open(path, encoding="utf-8").read()
+    clean = blank_comments(src)
+    node_body_spans = [(nd.body_start, nd.body_end) for nd in parse_nodes_in_file(path, book)]
+    problems = []
+    for cm in CHEAT_RE.finditer(clean):
+        pos = cm.start()
+        if any(s <= pos < e for s, e in node_body_spans):
+            continue                                            # a declared node's own `:= by sorry` — fine
+        ln = clean.count("\n", 0, pos) + 1
+        problems.append(f"{os.path.relpath(path, BOOK_ROOT)}:{ln} has a STRAY `{cm.group(0).strip()}` "
+                        f"that is NOT a declared node body — the ONLY `sorry` allowed is a declared node "
+                        f"body (a `have <n> : … := by sorry` or a `euclid_sentence … := by sorry`). A "
+                        f"`by sorry` anywhere else (e.g. inside a tail `exact ⟨…, by sorry, …⟩`) is a "
+                        f"stray sorry — move it into a `have <n> : <claim> := by sorry`.")
+    return problems
+
+
+def intro_conclude_placement_problems(anns):
+    """Return a problem string for every `euclid_intro_sentence` that appears AFTER the first
+    `euclid_sentence`, or every `euclid_conclude_sentence` that appears BEFORE the last `euclid_sentence`.
+    intro/conclude are STRUCTURAL (they carry no claim) and must BRACKET the proof: an intro sentence
+    attaches to `euclid_intros` (the enunciation + "I say that …" up front) so it may live ONLY in the
+    leading block; a conclude sentence attaches to the final `exact`/QED so it may live ONLY in the
+    trailing block. A mid-body intro/conclude is a faithfulness DODGE — the canonical case is demoting a
+    real mid-text "I say that …" (whose claim IS the goal body, provable in position) to a claimless
+    narrative line to slip past the no-`True` gate. `anns` is a list of dicts each with 'kind'
+    ('sentence' | 'intro_sentence' | 'conclude_sentence'), 'loc', 'ref', and 'start' (source offset);
+    ordering is by 'start'. No `euclid_sentence` present ⟹ no constraint (returns [])."""
+    sent_starts = [a['start'] for a in anns if a['kind'] == 'sentence']
+    if not sent_starts:
+        return []
+    first_sent, last_sent = min(sent_starts), max(sent_starts)
+    problems = []
+    for a in anns:
+        if a['kind'] == 'intro_sentence' and a['start'] > first_sent:
+            problems.append(
+                f"euclid_intro_sentence {a['loc']} ({a['ref']}) appears mid-proof (after a "
+                f"euclid_sentence) — intro sentences may only precede the first euclid_sentence. A "
+                f"mid-text \"I say that …\" is a NORMAL euclid_sentence carrying the goal body, not narrative.")
+        elif a['kind'] == 'conclude_sentence' and a['start'] < last_sent:
+            problems.append(
+                f"euclid_conclude_sentence {a['loc']} ({a['ref']}) appears before the last "
+                f"euclid_sentence — conclude sentences may only follow every euclid_sentence.")
+    return problems
+
+
 # ── atomic restore guard ────────────────────────────────────────────────────────────────────────────
 class restore_files:
     """Context manager: snapshot the exact bytes of `paths`, and restore them on __exit__ (success OR
@@ -1605,18 +1660,8 @@ def integrity_scan(propdir, names=None):
         # faked container combine written `… := by sorry` as a bare tactic, or a leaf that cheats — is a
         # hard error. This is what lets P be LEAF-ONLY and `--all` still GUARANTEE Phase C: SP doesn't
         # catch a stray sorry (a build with a sorry warning still "succeeds"), so the guarantee depends
-        # on this source scan. Node bodies (their canonical `:= by sorry` spans) are the only exemption.
-        clean = blank_comments(src)
-        node_body_spans = [(nd.body_start, nd.body_end) for nd in parse_nodes_in_file(path, book)]
-        for cm in CHEAT_RE.finditer(clean):
-            pos = cm.start()
-            if any(s <= pos < e for s, e in node_body_spans):
-                continue                                        # a declared node's own `:= by sorry` — fine
-            ln = clean.count("\n", 0, pos) + 1
-            problems.append(f"{os.path.relpath(path, BOOK_ROOT)}:{ln} has a STRAY `{cm.group(0).strip()}` "
-                            f"that is NOT a declared node body — proofs may not be faked. (A container's "
-                            f"combine must be real tactics, e.g. `euclid_finish`, never `sorry`; only a "
-                            f"node's canonical `:= by sorry` is allowed, and only because the script wires it.)")
+        # on this source scan. (Shared with the Phase-A `--provable` Main build via stray_sorry_problems.)
+        problems.extend(stray_sorry_problems(path, book))
     return problems
 
 

@@ -53,17 +53,32 @@ helper (see Prop06's `sym`) or by repeating the branch structure. Each case's se
 circle predicate. Circle membership sentences ("B lies on the circle") use `b.onCircle α` / `a.isCentre α`.
 
 ## PATTERN: superposition / "applied to" / "coincide"  (Props I.4, I.8)
-**Exemplar:** `Book1/Prop08/Main.lean`.
-**Frame:** `euclid_apply (superposition …) as (c', g, …)` births the image points (read `Book/Prop08.lean`
-+ `find.py --name superposition`). Make the map EXPLICIT as a function so claims name images, not raw
-vertices — `classical` then
-`let img : Point → Point := fun p => if p = b then e else if p = c then c' else if p = a then g else p`
-(`b↦e` is the placement — definitional, E is a given point; `c'`,`g` are fresh image points).
-**Rendering:** "X coincides with Y" → an image-point equality (`img c = f`, `img a = d`), NEVER the given
-length. "side XY coincides with UV" = BOTH endpoints, EITHER way round (a segment is unordered):
-`(img x = u ∧ img y = v) ∨ (img x = v ∧ img y = u)`; negate/conjoin PER SIDE, with `∧` between the two
-sides ("respectively"). "same ends" = the constructed & given lines share the base endpoint
-(`e.onLine EG ∧ e.onLine DE`). Keep the impossible correspondence (redundant) with a one-line note.
+**Exemplar:** `Book1/Prop04/Main.lean` and `Book1/Prop08/Main.lean` (both use the TWO-map form below).
+**Frame:** `euclid_apply (superposition …) as (b', c', BC', DC')` births image points AND image lines
+(read `Book/Prop0N.lean` + `find.py --name superposition`). Make BOTH maps EXPLICIT so claims name images,
+not the opaque primed outputs — `classical` then
+`let ptImg : Point → Point := fun p => if p = a then d else if p = b then b' else if p = c then c' else p`
+`let lineImg : Line → Line := fun L => if L = AB then DE else if L = AC then DC' else if L = BC then BC' else L`
+(the placed vertex↦target is DEFINITIONAL — `ptImg a = d` reduces to `d=d`; the rest are the fresh output
+points/lines).
+**Rendering — MATCH WHAT COINCIDES (the whole game; getting this wrong is the classic error):**
+- POINT coincides with POINT → point-image equality `ptImg c = f`. NEVER the given length.
+- LINE / SIDE coincides with LINE → LINE-image equality `lineImg AC = DF`, `lineImg BC = EF`. **NOT** a
+  point-endpoint disjunction `(ptImg x=u ∧ …)∨…` — a coincidence of *lines* is about *lines*; the
+  endpoint/orientation ("flip") is settled in the PROOF (I.7 / line-uniqueness), never in the claim. A
+  line-image equality is orientation-free, so no disjunction is needed.
+- SAME typing governs `@assumption`s: "AB coinciding with DE" → `lineImg AB = DE`, not `ptImg a=d ∧ ptImg b=e`.
+  (`lineImg BC = EF` follows straight from the superposition — the image lands ON the target line — so it
+  doesn't even need the derived endpoint coincidence.) length/angle "equal" → the length/angle equality.
+- TRIANGLE / ANGLE coincidence (no map exists) → vertex-conjunction `ptImg a=d ∧ ptImg b=e ∧ ptImg c=f`.
+**"two straight-lines will encompass an area" (I.4's Post-1 reductio):** has NO literal rendering — System E
+has no area-of-lune object (there is NO triangle here, and a length-product is trivial/wrong). It IS the
+configuration `two_points_determine_line` (Post 1) forbids: two distinct lines through the same two points →
+`distinctPointsOnLine e f (lineImg BC) ∧ distinctPointsOnLine e f EF`, with `lineImg BC ≠ EF` the reductio
+hyp, closing to `False`. REQUIRED reviewer comment: `-- the assertion here cannot be literally expressed in
+system E`. "same ends" = constructed & given lines share the base endpoint (`e.onLine EG ∧ e.onLine DE`).
+NB `Book/Prop08.lean`'s original proof does NOT use this lines structure (it uses `c'=f` + `by_cases d=g` +
+I.7) — faithfulness follows Euclid's SENTENCES ("the sides coincide" = lines), not the original proof.
 
 ---
 

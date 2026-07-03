@@ -361,6 +361,13 @@ def check_source(path: str) -> int:
                  not true_claims, true_claims or [f"{sum(1 for a in anns if a['kind'] == 'sentence')} "
                                                   "sentence claim(s) are non-trivial"])
 
+    # STRUCTURAL PLACEMENT (hard gate): `euclid_intro_sentence`/`euclid_conclude_sentence` are STRUCTURAL —
+    # they carry no claim and must bracket the proof (intro before the first euclid_sentence, conclude
+    # after the last). A mid-body intro/conclude is a faithfulness DODGE (see fl.intro_conclude_placement).
+    place_problems = fl.intro_conclude_placement_problems(anns)
+    rc |= report("euclid_intro/conclude_sentence bracket the proof (leading / trailing only)",
+                 not place_problems, place_problems or ["placement OK"])
+
     # Reminder: the third faithfulness criterion (each step's TYPE honestly captures its sentence)
     # is HUMAN-checked — no machine verifies it.
     print("  [note] not machine-checked: that each step's type honestly captures its sentence (review by hand)")

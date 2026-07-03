@@ -1,0 +1,152 @@
+[
+  {
+    "role": "intro",
+    "text": "If two triangles have two  sides equal to two sides, respectively, and have the angle(s) enclosed by the equal straight-lines equal, then they will also have the base equal to the base, and the triangle will be equal to the triangle,  and the remaining angles subtended by the equal sides will be equal to the corresponding remaining angles. Let $ABC$ and $DEF$ be  two triangles having the two sides $AB$ and $AC$ equal to the two sides $DE$ and $DF$, respectively. (That is) $AB$ to $DE$, and $AC$ to $DF$. And (let) the angle $BAC$ (be) equal to the angle $EDF$. I say that the base $BC$ is also equal to the base $EF$, and  triangle $ABC$ will be equal to triangle $DEF$, and the remaining angles subtended by the equal sides will be equal to the corresponding remaining angles. (That is) $ABC$ to $DEF$, and $ACB$ to $DFE$."
+  },
+  {
+    "role": "deduction",
+    "text": "For if triangle $ABC$ is applied to triangle $DEF$, the point $A$ being placed on the point $D$, and the straight-line $AB$ on $DE$, then the point $B$ will also coincide with $E$, on account of $AB$ being equal to $DE$.",
+    "assertion": "under superposition (A on D, AB on DE), point B coincides with E because AB = DE",
+    "spans": [
+      { "label": "glue", "text": "For if triangle $ABC$ is applied to triangle $DEF$, the point $A$ being placed on the point $D$, and the straight-line $AB$ on $DE$, then the " },
+      { "label": "assertion", "text": "point $B$ will also coincide with $E$" },
+      { "label": "glue", "text": ", on account of " },
+      { "label": "assumption", "text": "$AB$ being equal to $DE$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So (because of) $AB$ coinciding with $DE$, the straight-line $AC$ will also coincide with $DF$, on account of the angle $BAC$ being equal to $EDF$.",
+    "assertion": "AC coincides with DF because angle BAC = angle EDF",
+    "spans": [
+      { "label": "glue", "text": "So (because of) " },
+      { "label": "assumption", "text": "$AB$ coinciding with $DE$" },
+      { "label": "glue", "text": ", the " },
+      { "label": "assertion", "text": "straight-line $AC$ will also coincide with $DF$" },
+      { "label": "glue", "text": ", on account of " },
+      { "label": "assumption", "text": "the angle $BAC$ being equal to $EDF$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So the point $C$ will also coincide with the point $F$,  again on account of $AC$ being equal to $DF$. ",
+    "assertion": "point C coincides with point F because AC = DF",
+    "spans": [
+      { "label": "glue", "text": "So the " },
+      { "label": "assertion", "text": "point $C$ will also coincide with the point $F$" },
+      { "label": "glue", "text": ",  again on account of " },
+      { "label": "assumption", "text": "$AC$ being equal to $DF$" },
+      { "label": "glue", "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But,  point $B$  certainly also coincided with point $E$, so that the base $BC$ will coincide with the base $EF$.",
+    "assertion": "since B coincides with E, the base BC will coincide with the base EF",
+    "spans": [
+      { "label": "glue", "text": "But,  " },
+      { "label": "assumption", "text": "point $B$  certainly also coincided with point $E$" },
+      { "label": "glue", "text": ", so that the " },
+      { "label": "assertion", "text": "base $BC$ will coincide with the base $EF$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "For if $B$ coincides with $E$, and $C$ with $F$, and the base $BC$ does not coincide with $EF$, then two straight-lines will encompass an area.",
+    "assertion": "if B=E, C=F, but BC does not coincide with EF, then two straight-lines would encompass an area",
+    "spans": [
+      { "label": "glue", "text": "For if " },
+      { "label": "assumption", "text": "$B$ coincides with $E$" },
+      { "label": "glue", "text": ", and " },
+      { "label": "assumption", "text": "$C$ with $F$" },
+      { "label": "glue", "text": ", and " },
+      { "label": "assumption", "text": "the base $BC$ does not coincide with $EF$" },
+      { "label": "glue", "text": ", then " },
+      { "label": "assertion", "text": "two straight-lines will encompass an area" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible [Post.~1].",
+    "assertion": "two straight-lines encompassing an area is impossible (Post. 1)",
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue", "text": " [Post.~1]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $BC$ will coincide with $EF$, and will be equal to it [C.N.~4].",
+    "assertion": "base BC coincides with EF and hence equals it (C.N. 4)",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assumption", "text": "the base $BC$ will coincide with $EF$" },
+      { "label": "glue", "text": ", and " },
+      { "label": "assertion", "text": "will be equal to it" },
+      { "label": "glue", "text": " [C.N.~4]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So  the whole triangle $ABC$ will coincide with the whole triangle $DEF$, and will be equal to it [C.N.~4].",
+    "assertion": "triangle ABC coincides with triangle DEF and hence equals it (C.N. 4)",
+    "spans": [
+      { "label": "glue", "text": "So  " },
+      { "label": "assumption", "text": "the whole triangle $ABC$ will coincide with the whole triangle $DEF$" },
+      { "label": "glue", "text": ", and " },
+      { "label": "assertion", "text": "will be equal to it" },
+      { "label": "glue", "text": " [C.N.~4]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the remaining angles will coincide with the remaining angles, and  will be equal to them [C.N.~4].",
+    "assertion": "the remaining angles coincide with the remaining angles and hence equal them (C.N. 4)",
+    "spans": [
+      { "label": "glue", "text": "And " },
+      { "label": "assumption", "text": "the remaining angles will coincide with the remaining angles" },
+      { "label": "glue", "text": ", and  " },
+      { "label": "assertion", "text": "will be equal to them" },
+      { "label": "glue", "text": " [C.N.~4]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "(That is) $ABC$ to $DEF$,",
+    "assertion": "angle ABC equals angle DEF",
+    "spans": [
+      { "label": "glue", "text": "(That is) " },
+      { "label": "assertion", "text": "$ABC$ to $DEF$" },
+      { "label": "glue", "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $ACB$ to $DFE$ [C.N.~4].",
+    "assertion": "angle ACB equals angle DFE",
+    "spans": [
+      { "label": "glue", "text": "and " },
+      { "label": "assertion", "text": "$ACB$ to $DFE$" },
+      { "label": "glue", "text": " [C.N.~4]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if two triangles have two  sides equal to two sides, respectively, and have the angle(s) enclosed by the equal straight-line equal, then they will also have the base equal to the base, and the triangle will be equal to the triangle,  and the remaining angles subtended by the equal sides will be equal to the corresponding remaining angles. (Which is) the very thing it was required to show."
+  }
+]

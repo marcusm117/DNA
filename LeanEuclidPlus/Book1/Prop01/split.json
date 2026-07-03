@@ -1,0 +1,109 @@
+[
+  {
+    "role": "intro",
+    "text": "To construct an equilateral triangle on a given finite straight-line. Let $AB$ be the given finite straight-line. So it is required to construct an equilateral triangle on the straight-line $AB$."
+  },
+  {
+    "role": "construction",
+    "text": "Let the circle $BCD$ with center $A$ and radius $AB$ have been drawn [Post.~3],",
+    "construction_cite": null,
+    "objects_introduced": ["$BCD$"]
+  },
+  {
+    "role": "construction",
+    "text": "and again let the circle $ACE$ with center $B$ and radius $BA$ have been drawn [Post.~3].And",
+    "construction_cite": null,
+    "objects_introduced": ["$ACE$"]
+  },
+  {
+    "role": "construction",
+    "text": "let the straight-lines $CA$ and $CB$ have been joined from the point $C$, where the circles cut one another, to the points $A$ and $B$ (respectively) [Post.~1].And",
+    "construction_cite": null,
+    "objects_introduced": ["$C$", "$CA$", "$CB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "since the point $A$ is the center of the circle $CDB$, $AC$ is equal to $AB$ [Def.~1.15].",
+    "assertion": "AC equals AB",
+    "spans": [
+      { "label": "glue", "text": "since " },
+      { "label": "assumption", "text": "the point $A$ is the center of the circle $CDB$" },
+      { "label": "glue", "text": ", " },
+      { "label": "assertion", "text": "$AC$ is equal to $AB$" },
+      { "label": "glue", "text": " [Def.~1.15]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again,since the point $B$ is the center of the circle $CAE$, $BC$ is equal to $BA$ [Def.~1.15].",
+    "assertion": "BC equals BA",
+    "spans": [
+      { "label": "glue", "text": "Again,since " },
+      { "label": "assumption", "text": "the point $B$ is the center of the circle $CAE$" },
+      { "label": "glue", "text": ", " },
+      { "label": "assertion", "text": "$BC$ is equal to $BA$" },
+      { "label": "glue", "text": " [Def.~1.15]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But $CA$ was also shown (to be) equal to $AB$.",
+    "assertion": "CA equals AB (recalled)",
+    "spans": [
+      { "label": "glue", "text": "But " },
+      { "label": "assertion", "text": "$CA$ was also shown (to be) equal to $AB$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $CA$ and $CB$ are each equal to $AB$.",
+    "assertion": "CA and CB are each equal to AB",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "$CA$ and $CB$ are each equal to $AB$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But things equal to the same thing are also equal to one another [C.N.~1].",
+    "assertion": "things equal to the same thing are equal to one another (C.N.1)",
+    "spans": [
+      { "label": "glue", "text": "But " },
+      { "label": "assertion", "text": "things equal to the same thing are also equal to one another" },
+      { "label": "glue", "text": " [C.N.~1]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $CA$ is also equal to $CB$.",
+    "assertion": "CA equals CB",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "$CA$ is also equal to $CB$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the three (straight-lines) $CA$, $AB$, and $BC$ are equal to one another.Thus,",
+    "assertion": "the three straight-lines CA, AB, BC are all equal to one another",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "the three (straight-lines) $CA$, $AB$, and $BC$ are equal to one another" },
+      { "label": "glue", "text": ".Thus," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "the triangle $ABC$ is equilateral, and has been constructed on the given finite straight-line $AB$. (Which is) the very thing it was required to do."
+  }
+]
