@@ -227,7 +227,7 @@ def test_main_status_empty_manifest_guidance(tmp_path, monkeypatch, capsys):
     out = capsys.readouterr().out
     assert code == 0
     assert "no certification manifest yet" in out
-    assert "--subtree step1" in out
+    assert "--drive" in out            # --drive is the default driving command (not hand-run --subtree)
     assert "then step2" in out
 
 

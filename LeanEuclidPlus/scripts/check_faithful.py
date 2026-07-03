@@ -219,9 +219,12 @@ def strip_comments(src: str) -> str:
         out.append(src[i]); i += 1
     return "".join(out)
 
-# any of the three annotation tactics, then "loc" "text" — both strings allow escaped quotes \"
+# any of the annotation tactics, then "loc" "text" — both strings allow escaped quotes \"
+# (`wts` = mid-proof "I say that …" what-to-show: STRUCTURAL like intro/conclude — no claim binder,
+#  but placement-unconstrained — so the True-gate skips it, the intro/conclude placement gate ignores
+#  it, and only its text tiles.)
 PAT = re.compile(
-    r'euclid_(sentence|intro_sentence|conclude_sentence)\s*'
+    r'euclid_(sentence|intro_sentence|conclude_sentence|wts)\s*'
     r'"((?:[^"\\]|\\.)*)"\s*"((?:[^"\\]|\\.)*)"')
 
 def sentence_claim(src: str, start_pos: int):

@@ -52,6 +52,20 @@ helper (see Prop06's `sym`) or by repeating the branch structure. Each case's se
 **Handling:** the sentence asserts a LENGTH (radius) equality `|(a─b)| = |(a─c)|` — state that, not a
 circle predicate. Circle membership sentences ("B lies on the circle") use `b.onCircle α` / `a.isCentre α`.
 
+## PATTERN: mid-proof "I say that …" (what-to-show / WTS)
+**Tells:** a sentence, placed AFTER the construction (not in the leading enunciation block), that
+announces the goal — "I say that CH is perpendicular …", "So I say that (it is) also right-angled."
+**Exemplars (once converted):** `Book1/Prop09/10/11/12`, `Book2/Prop04` (`2.4.13`), `Book2/Prop11` (`2.11.8`).
+**Handling:** map it as **`euclid_wts "loc" "text"`** — a STRUCTURAL tactic (no claim, no node, no backing
+file) that is legal mid-proof (unlike `euclid_intro_sentence`/`euclid_conclude_sentence`, which are gated
+to the leading/trailing brackets). It is the opening-bookend mirror of the closing `euclid_conclude_sentence`
+"Thus X". The goal X is proved by the sentences that FOLLOW and assembled by the trailing
+`exact ⟨witness, stepA, stepB⟩` from those real component steps — NEVER from the WTS sentence.
+**Why not a `euclid_sentence` with the goal body:** that forces proving X at the announcement's position,
+before its supporting facts exist in source order → you re-derive the whole argument (or a monolithic helper
+proves X and the following sentences re-prove it — the redundant assert-then-reprove this pattern removes).
+Requires SystemE with the `euclid_wts` tactic (`SystemE/Meta/Tactics/Faithful.lean`).
+
 ## PATTERN: superposition / "applied to" / "coincide"  (Props I.4, I.8)
 **Exemplar:** `Book1/Prop04/Main.lean` and `Book1/Prop08/Main.lean` (both use the TWO-map form below).
 **Frame:** `euclid_apply (superposition …) as (b', c', BC', DC')` births image points AND image lines

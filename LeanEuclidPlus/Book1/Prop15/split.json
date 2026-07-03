@@ -1,0 +1,90 @@
+[
+  {
+    "role": "intro",
+    "text": "If two straight-lines cut one another then they make the vertically opposite angles equal to one another.  For let the two straight-lines $AB$ and $CD$ cut one another at the point $E$. I say that  angle $AEC$ is equal to (angle) $DEB$, and (angle) $CEB$ to (angle) $AED$. "
+  },
+  {
+    "role": "deduction",
+    "text": "For since the straight-line $AE$ stands on the straight-line $CD$, making the angles $CEA$ and $AED$, the (sum of the) angles $CEA$ and $AED$ is thus equal to two right-angles [Prop.~1.13].",
+    "assertion": "the sum of angles CEA and AED equals two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "For since " },
+      { "label": "assumption","text": "the straight-line $AE$ stands on the straight-line $CD$, making the angles $CEA$ and $AED$" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "the (sum of the) angles $CEA$ and $AED$ is thus equal to two right-angles" },
+      { "label": "glue",      "text": " [Prop.~1.13]." }
+    ],
+    "proof_cite": "1.13"
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since the straight-line $DE$ stands on the straight-line $AB$, making the angles $AED$ and $DEB$, the (sum of the) angles $AED$ and $DEB$ is thus equal to two right-angles [Prop.~1.13].",
+    "assertion": "the sum of angles AED and DEB equals two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "Again, since " },
+      { "label": "assumption","text": "the straight-line $DE$ stands on the straight-line $AB$, making the angles $AED$ and $DEB$" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "the (sum of the) angles $AED$ and $DEB$ is thus equal to two right-angles" },
+      { "label": "glue",      "text": " [Prop.~1.13]." }
+    ],
+    "proof_cite": "1.13"
+  },
+  {
+    "role": "deduction",
+    "text": "But (the sum of) $CEA$ and $AED$ was also shown (to be) equal to two right-angles.",
+    "assertion": "sum of angles CEA and AED equals two right-angles (recalled from step 1)",
+    "spans": [
+      { "label": "glue",      "text": "But " },
+      { "label": "assertion", "text": "(the sum of) $CEA$ and $AED$ was also shown (to be) equal to two right-angles" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $CEA$ and $AED$ is equal to (the sum of) $AED$ and $DEB$ [C.N.~1].",
+    "assertion": "sum of CEA and AED equals sum of AED and DEB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(the sum of) $CEA$ and $AED$ is equal to (the sum of) $AED$ and $DEB$" },
+      { "label": "glue",      "text": " [C.N.~1]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Let $AED$ have been subtracted from both.",
+    "assertion": "angle AED is subtracted from both sides",
+    "spans": [
+      { "label": "assertion", "text": "Let $AED$ have been subtracted from both" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remainder $CEA$ is equal to the remainder $BED$ [C.N.~3].",
+    "assertion": "angle CEA equals angle BED",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remainder $CEA$ is equal to the remainder $BED$" },
+      { "label": "glue",      "text": " [C.N.~3]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Similarly, it can be shown that $CEB$ and $DEA$ are also equal. ",
+    "assertion": "angle CEB equals angle DEA",
+    "spans": [
+      { "label": "glue",      "text": "Similarly, it can be shown that " },
+      { "label": "assertion", "text": "$CEB$ and $DEA$ are also equal" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if two straight-lines cut one another then they make the vertically opposite angles equal to one another. (Which is) the very thing it was required to show."
+  }
+]

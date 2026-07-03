@@ -56,7 +56,10 @@ structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate �
       `check_faithful` as it goes), adds any structural FRAME (reductio/`by_cases`/`wlog`) or construction
       beyond the vocab (superposition → reads `Book/`+`find.py`/`SystemE`), and self-reviews.
       **Every sentence gets a REAL claim — NEVER `True`** at the end, and NEVER a restated given (that's an
-      `@assumption`). Bodies stay `:= by sorry`.
+      `@assumption`). Bodies stay `:= by sorry`. **EXCEPTION — a mid-proof "I say that …" (what-to-show)
+      sentence is `euclid_wts "loc" "text"`** (a claimless STRUCTURAL tactic, legal mid-proof — the
+      opening mirror of the trailing `euclid_conclude_sentence`); it announces the goal, which the
+      FOLLOWING sentences prove and the tail `exact` assembles — do NOT give it the goal body as a claim.
    Confirm with `check_step.py PropNN --provable` (Main elaborates) + `check_faithful.py PropNN/Main.lean`
    (text tiling + construction deps + **hard-FAIL on any `True` claim**). STOPS for **human review** +
    `python3 scripts/check_steps.py --save PropNN/Main.lean`.
@@ -88,8 +91,11 @@ structure — e.g. "make Book2/PropNN faithful") the pipeline is **A → gate �
    Phase B: prove each step with the **recursive SF/SP/P atom** (delegates to `prove-euclid`). The agent
    creates/proves `stepN.lean` (recursing into `have`+backing files until every build ≤30s) and
    verifies each node with `scripts/check_step.py <propdir> <node>` (runs SF→SP→P, stops at first fail;
-   this checks ONLY that node). Driving order: certify leaves, confirm each container/step with
-   `--subtree <node>` (audits that node's whole cone, scoped — not the rest of the prop), bottom-up;
+   this checks ONLY that node). Driving order: prove leaves, then **`--drive` is the default driving
+   command** — it auto-loops the subtree audit over Main's not-done nodes IN ORDER, certifying each
+   node's whole cone, skipping anything already done, and stopping at the first not-yet-proved node
+   (fix it, re-run `--drive` to resume). Prefer `--drive` over hand-running `--subtree <node>` (that's
+   only for surgically re-confirming ONE cone — e.g. after editing a shared helper);
    `--all` is the single FINAL audit, run ONCE — NEVER mid-work to hunt a failure. `--all` also enforces
    **criterion-3 deps** (every cited `[Prop.~B.N]` satisfied by a Main construction `… as …` OR the
    sentence's helper cone); `check_step --dependency` isolates that check fast (number-only — the human's
@@ -161,10 +167,12 @@ Every other Book-2 prop is at a varying/in-progress state — follow the skills'
     pipe; just read what the script prints). `scaffold_step.py <file-or-propdir> <node>` creates a
     skeleton backing file with correct naming law + 30s cap + claim type pre-filled — for BOTH Main
     `euclid_sentence` steps and `have` sub-nodes (Phase B uses this to avoid boilerplate; new node ⟹
-    scaffold first). `assumptions.py` is the Assumption Phase, run by the agent via the
-    `/faithful-assumptions` skill (all modes — the tags it writes are mechanical + build-verified, so no
-    human `--save`-style gate is needed; `scripts/assumption_tags.json` stays agent-Write/Edit-denied so
-    only the script writes it).
+    scaffold first). `assumptions.py` is the Assumption Phase: the **HUMAN** runs it as the no-LLM SWEEP
+    (a plain batch loop over all props — see the "Assumption Phase" step above). The AGENT touches it
+    ONLY via the REPAIR-ONLY `/faithful-assumptions` skill, on just the exit-1 props the sweep flags,
+    finishing with `--tag-only` — NEVER to run the phase fresh. The tags it writes are mechanical +
+    build-verified, so no human `--save`-style gate is needed; `scripts/assumption_tags.json` stays
+    agent-Write/Edit-denied so only the script writes it.
   - **read-only git**: `status`/`diff`/`log`/`show`/`branch`/`blame`/`ls-files` (git mutations are
     denied by policy — the human owns git, it's the safety net).
   - **path/shell helpers**: `cd LeanEuclidPlus` (the one allowed cd — see the bare-command rule above),

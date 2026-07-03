@@ -85,8 +85,10 @@ THE CHECKS (node X, parent container Cnt, backing file X.lean):
   this for the WHOLE prop + a no-stray-sorry scan. All green in `--all` ⟹ the Phase-C wired build cannot
   fail and is sorry-free: every SMT query in that build is one already measured ≤30s by a leaf-P or a
   combine-check, and every wire discharges by SMT-free `assumption`.
-  DRIVING ORDER: leaves first (bare `check_step`), then `--subtree` each container/step bottom-up (only
-  after its components pass), then `--all` ONCE at the very end. NEVER run `--all` to find a failure.
+  DRIVING ORDER: prove leaves first (bare `check_step`), then `--drive` (the DEFAULT driving command —
+  auto-loops the subtree audit over Main's not-`done` nodes in order, skipping done ones) to march the
+  board forward; `--subtree <node>` is only for surgically re-confirming ONE cone. `--all` ONCE at the
+  very end. NEVER run `--all` to find a failure.
 
 Every build carries a 30s SMT cap (`solverTime`, the proving BUDGET) and is wrapped in a 45s WALL timeout
 (a diagnostic/safety bound, deliberately > the SMT cap — see WALL in faithful_lib.py). A solver that gives
@@ -901,8 +903,8 @@ def mode_whatchanged(propdir):
     files = manifest.get("files", {})
     if not certified:
         print(f"[check_step --whatchanged] no certification manifest for {rel} yet "
-              f"(or it's empty). Run `python3 scripts/check_step.py {rel} --all` (or a `--subtree "
-              f"<node>`) first — that records what's certified; then this reports what an edit invalidates.")
+              f"(or it's empty). Run `python3 scripts/check_step.py {rel} --drive` first — that proves "
+              f"and records what's certified; then this reports what an edit invalidates.")
         return 0
 
     # 1) which RECORDED input files changed on disk (content differs, or the file is now gone)?
@@ -972,11 +974,13 @@ def mode_status(propdir):
                   "sentences first (Phase A: faithful-split → faithful-translate → faithful_map_assemble.py).")
             return 0
         names = [nd.name for nd in main_nodes]
-        print("  Drive Main's nodes in order (each --subtree certifies that node's whole cone):")
-        print(f"    python3 scripts/check_step.py {rel} --subtree {names[0]}")
+        print("  Drive Main's nodes in order — use --drive (certifies each node's whole cone, in "
+              "order, skipping any already done):")
+        print(f"    python3 scripts/check_step.py {rel} --drive")
         if len(names) > 1:
-            print(f"  then {', '.join(names[1:])}.  Once a node is ✓ it's DONE — never revisit an "
-                  f"earlier one.")
+            print(f"  It runs {names[0]} then {', '.join(names[1:])}, stopping at the first not-yet-"
+                  f"proved node. Once a node is ✓ it's DONE — never revisit an earlier one. "
+                  f"(--subtree <node> is only for surgically re-confirming one cone.)")
         return 0
 
     rows, checks = L.status_rows(propdir)
@@ -1018,8 +1022,10 @@ def mode_status(propdir):
     print(f"  → NOT all-green — --all will NOT pass yet. Blocking: {', '.join(blocking)}.")
 
     if first_not_done:
-        print("\n  NEXT (Main order — only --subtree certifies a Main row):")
-        print(f"    python3 scripts/check_step.py {rel} --subtree {first_not_done}")
+        print(f"\n  NEXT — use --drive (default): certifies the first not-done node ({first_not_done}) "
+              f"then continues in order, skipping done nodes:")
+        print(f"    python3 scripts/check_step.py {rel} --drive")
+        print(f"    (--subtree {first_not_done} only if you want to surgically re-confirm that one cone.)")
     return 0
 
 

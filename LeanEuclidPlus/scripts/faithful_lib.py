@@ -1777,7 +1777,7 @@ APPLY_NOAS_RE = re.compile(r'euclid_apply\s*\((.*?)\)(?!\s*as\b)', re.DOTALL)
 PROP_NUM_RE = re.compile(r'proposition_(\d+)')
 # a sentence head that ALSO captures the Euclid text (SENTENCE_HEAD drops it); Main-only scan.
 SENTENCE_TEXT_RE = re.compile(
-    r'euclid_(?:sentence|intro_sentence|conclude_sentence)\s*"((?:[^"\\]|\\.)*)"\s*"((?:[^"\\]|\\.)*)"')
+    r'euclid_(?:sentence|intro_sentence|conclude_sentence|wts)\s*"((?:[^"\\]|\\.)*)"\s*"((?:[^"\\]|\\.)*)"')
 
 
 def _prop_nums_in(terms):
@@ -2067,7 +2067,7 @@ def status_rows(propdir):
                 if backing_file(propdir, name) is None:
                     rows.append((name, "todo", "no backing file yet"))
                 else:
-                    rows.append((name, "todo", f"Main subtree not certified — run --subtree {name}"))
+                    rows.append((name, "todo", "Main subtree not certified — run --drive"))
                 prefix_ok = False
                 first_bad = name
                 continue
@@ -2075,7 +2075,7 @@ def status_rows(propdir):
             old_nodes = set(rec.get("nodes", []))
             now_nodes = cone_names(propdir, name)
             if old_nodes != now_nodes:
-                rows.append((name, "stale", f"cone membership changed since audit (--subtree {name})"))
+                rows.append((name, "stale", "cone membership changed since audit — re-run --drive"))
                 prefix_ok = False
                 first_bad = name
                 continue
@@ -2084,7 +2084,7 @@ def status_rows(propdir):
             stale_files = sorted(changed)
             if stale_files:
                 rows.append((name, "stale",
-                            f"{', '.join(stale_files)} changed since audit (--subtree {name})"))
+                            f"{', '.join(stale_files)} changed since audit — re-run --drive"))
                 prefix_ok = False
                 first_bad = name
             else:

@@ -226,7 +226,7 @@
   "Book1/Prop10": {
     "step4_assumption1": {
       "closed_by": "euclid_finish",
-      "level": 5,
+      "level": 6,
       "tag": "valid",
       "text": "$AC$ is equal to $CB$",
       "type": "|(a\u2500c)| = |(c\u2500b)|",
@@ -238,6 +238,148 @@
       "tag": "valid",
       "text": "$CD$ (is) common",
       "type": "|(c\u2500d)| = |(c\u2500d)|",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop11": {
+    "step10_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "a straight-line stood on  a(nother) straight-line makes the adjacent angles equal to one another",
+      "type": "\u2220 d:c:f = \u2220 e:c:f \u2227 between d c e",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "$DC$ is equal to $CE$",
+      "type": "|(c\u2500d)| = |(c\u2500e)|",
+      "verdict": "closes"
+    },
+    "step6_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$CF$ is common",
+      "type": "|(c\u2500f)| = |(c\u2500f)|",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop12": {
+    "step10_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the adjacent angles equal to one another",
+      "type": "\u2220 c:h:g = \u2220 e:h:c",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$GH$ is equal to $HE$",
+      "type": "|(g\u2500h)| = |(h\u2500e)|",
+      "verdict": "closes"
+    },
+    "step6_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$HC$ (is) common",
+      "type": "|(h\u2500c)| = |(h\u2500c)|",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop13": {
+    "step4_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$CBE$ is equal to the two (angles) $CBA$ and $ABE$",
+      "type": "\u2220 c:b:e = \u2220 c:b:a + \u2220 a:b:e",
+      "verdict": "hard"
+    },
+    "step6_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$DBA$ is equal to the two (angles) $DBE$ and $EBA$",
+      "type": "\u2220 d:b:a = \u2220 d:b:e + \u2220 e:b:a",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop14": {
+    "step1_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "if $BD$ is not straight-on to $BC$",
+      "type": "BD \u2260 BC",
+      "verdict": "closes"
+    },
+    "step2_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "since the straight-line $AB$ stands on the straight-line $CBE$",
+      "type": "between c b e",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop15": {
+    "step1_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the straight-line $AE$ stands on the straight-line $CD$",
+      "type": "between d e c",
+      "verdict": "closes"
+    },
+    "step2_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the straight-line $DE$ stands on the straight-line $AB$, making the angles $AED$ and $DEB$",
+      "type": "between a e b",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop16": {
+    "step2_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$BE$ being joined",
+      "type": "distinctPointsOnLine b e BE",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AE$ is equal to $EC$",
+      "type": "|(a\u2500e)| = |(e\u2500c)|",
+      "verdict": "closes"
+    },
+    "step6_assumption2": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "$BE$ to $EF$",
+      "type": "|(b\u2500e)| = |(e\u2500f)|",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop17": {
+    "step2_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the angle $ACD$ is external to triangle $ABC$",
+      "type": "between b c d",
       "verdict": "closes"
     }
   }

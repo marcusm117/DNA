@@ -1,0 +1,24 @@
+import SystemE
+import Book.Prop05
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
+
+namespace Elements.Book1
+
+-- Case 1: a.sameSide b CD ∧ d.sameSide b AC → direct via sum_angles at C
+theorem helper_1_7_step5_c1 (a b c d : Point) (AB AC CB AD DB CD : Line)
+    (haAB : a.onLine AB) (hbAB : b.onLine AB)
+    (haAC : a.onLine AC) (hcAC : c.onLine AC) (hac : a ≠ c)
+    (hcCB : c.onLine CB) (hbCB : b.onLine CB) (hcb : c ≠ b)
+    (haAD : a.onLine AD) (hdAD : d.onLine AD) (had : a ≠ d)
+    (hdDB : d.onLine DB) (hbDB : b.onLine DB) (hdb : d ≠ b)
+    (hsameSide : c.sameSide d AB) (hcd : c ≠ d)
+    (hcCD : c.onLine CD) (hdCD : d.onLine CD)
+    (hlen : |(a─c)| = |(a─d)|) (hlen2 : |(c─b)| = |(d─b)|)
+    (step4 : ∠ a:c:d = ∠ a:d:c)
+    (h1 : a.sameSide b CD) (h2 : d.sameSide b AC)
+    : ∠ a:d:c > ∠ d:c:b := by
+  euclid_apply (sum_angles_onlyif c a d b AC CD)
+  euclid_finish
+
+end Elements.Book1

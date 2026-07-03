@@ -97,18 +97,26 @@ recurring ones:
   helper or repeated structure (exemplar `Book1/Prop06`).
 - **Superposition** — add `euclid_apply (superposition …) as (…)` (it births the image point + phantom
   apex); "coincide" → image equality `c' = f` (exemplar `Book/Prop08.lean`).
-- **Mid-text "I say that …"** (the goal restatement, when the text places it AFTER a construction) — it is
-  a NORMAL `euclid_sentence` whose claim is the GOAL BODY (exemplar `Book1/Prop10` `1.10.3`:
-  `(step3 : between a d b ∧ |(a─d)| = |(d─b)|)`), and the goal closes with `exact ⟨witness, step3⟩`.
-  ⛔ Do NOT demote it to `euclid_intro_sentence`/`euclid_conclude_sentence`: those are STRUCTURAL
-  (claimless) and a HARD `check_faithful` gate allows them ONLY as the LEADING block (before the first
-  `euclid_sentence`) / the TRAILING block (after the last). It IS provable in position — the SMT solver
-  reasons from the AXIOMS in context, not from Euclid's sentence ORDER, so a fact Euclid *spells out* in
-  later sentences is usually already provable now (Prop10 step3 closes by SAS from the equilateral +
-  bisection facts, with steps 4/5/6 NOT needed as hyps). If you think a claim "isn't provable in
-  position", TEST it (`check_step --smell`/`--provable`) BEFORE restructuring — never invent an ordering
-  constraint, and never launder a dodge as a "flagged deliberate call" (the operator WILL check; green
-  gates ≠ correct).
+- **Mid-text "I say that …"** (the goal announcement, placed AFTER the construction) — map it as
+  **`euclid_wts "loc" "text"`** (the what-to-show tactic: STRUCTURAL, no claim, no node, but legal
+  mid-proof). Euclid's "I say that X" ANNOUNCES the goal; it is not an assertion that X is already
+  proven. X is established by the sentences that FOLLOW it and assembled by the trailing `exact` from
+  those real component steps — e.g. `exact ⟨witness, stepFoo, stepBar⟩`, NOT from the WTS sentence.
+  ⛔ Do NOT map it as a `euclid_sentence` carrying the goal body: that forces you to *prove X at the
+  announcement's position*, but X's supporting facts come LATER in source order, so you'd re-derive the
+  whole argument there (or a monolithic helper proves X and the following sentences re-prove it — the
+  redundant assert-then-reprove `euclid_wts` exists to kill). `euclid_wts` is symmetric with the already-
+  structural closing "Thus X" (`euclid_conclude_sentence`); faithfulness is preserved because X lives in
+  the theorem's goal + the real component steps. (⛔ Still NEVER use `euclid_intro_sentence`/
+  `euclid_conclude_sentence` mid-proof — those are gated to the LEADING/TRAILING brackets; `euclid_wts`
+  is the mid-proof structural tactic.) Exemplars: `Book1/Prop09/10/11/12`.
+  **Tail pattern after `euclid_wts`:** the following sentences prove the goal's components under their
+  construction labels (e.g. step9 proves `∠ d:a:f = ∠ e:a:f` using auxiliary points D/E, while the goal
+  needs `∠ b:a:f = ∠ c:a:f`). If the step types don't match the goal form exactly, add a bridging
+  `have hbridge : <goal-type> := by sorry` in the tail (proved in Phase C by euclid_finish from the
+  between/on-line facts that D is on AB, E on AC). Similarly, implicit geometric facts not stated by any
+  sentence (e.g. `between a d b` in Prop10 — D is the construction intersection) need their own named
+  `have`. These are NOT stray sorrys — they are the standard `have <n> : <claim> := by sorry` form.
 Open the exemplar's `Main.lean` for the frame SHAPE **(structure only — NEVER copy a claim TYPE; the claim
 is THIS prop's own sentence)**. If the proof is a reductio/case-split, the map is a genuine restructuring,
 not a fill-in-the-blanks — do it, and do it faithfully.
@@ -234,8 +242,10 @@ rejects this at map time; see [[book1-prop09-faithful-map]].)
 - **Existential goal `∃ w, P w ∧ Q w`** whose witness has a side-condition NOT asserted by any sentence
   (e.g. `f ≠ a`, `between a h b`): `use <witness>` then discharge each unmet conjunct as its OWN
   `have <n> : <side-cond> := by sorry`, then `exact ⟨…⟩`. NEVER inline the gap as `by sorry` in the
-  `exact`. E.g. `use f` / `have hfa : f ≠ a := by sorry` / `exact ⟨hfa, step6⟩` (Prop09), or route the
-  side-condition to a Phase-B helper à la Prop11's `between_ahb` (`refine ⟨between_ahb, step23⟩`).
+  `exact`. E.g. Prop09 (post-`euclid_wts`): `use f` / `have hfa : f ≠ a := by sorry` /
+  `have hangle : ∠ b:a:f = ∠ c:a:f := by sorry` / `exact ⟨hfa, hangle⟩` — `hangle` bridges step9's
+  auxiliary-label form `∠ d:a:f = ∠ e:a:f` to the goal form (D on AB, E on AC). Or route side-conditions
+  to a Phase-B helper à la Prop11's `between_ahb` (`refine ⟨between_ahb, step23⟩`).
 - If a conjunct IS a context hyp, `use <witness>` alone (or a plain `exact ⟨…⟩` over named haves) closes
   it — no sorry needed.
 
@@ -310,9 +320,10 @@ GF = DF`), never `e = e`. (Exemplar: `Book1/Prop08/Main.lean`.)
   □ **NO stray sorry** — every `sorry` sits in a `euclid_sentence` body or a `have := by sorry`; none in a
     tail `exact`/term (an existential witness side-condition is a `have`, not an inline `by sorry`).
   □ **`euclid_intro_sentence`/`euclid_conclude_sentence` ONLY bracket the proof** (leading / trailing) —
-    NEVER mid-body. A mid-text "I say that …" is a normal `euclid_sentence` carrying the goal body; if a
-    claim seems "unprovable in position", TEST it (`--smell`/`--provable`) before restructuring — do not
-    demote it to a claimless narrative line (hard-failed by `check_faithful`).
+    NEVER mid-body. A mid-text "I say that …" (goal announcement) is **`euclid_wts "loc" "text"`**
+    (structural, no claim, mid-proof-legal) — the goal is proved by the FOLLOWING sentences and assembled
+    in the tail `exact`. Do NOT map it as a `euclid_sentence` carrying the goal body (assert-then-reprove),
+    and do NOT demote it to intro/conclude (those are bracket-only, hard-failed mid-body by `check_faithful`).
   □ You did NOT edit any sentence's text / locator / ordering (Step-0 scaffold owns tiling).
   □ Every cited CONSTRUCTION prop has its `euclid_apply (…) as …` present in Main.
 

@@ -1,0 +1,117 @@
+[
+  {
+    "role": "intro",
+    "text": "To draw a straight-line perpendicular to a given infinite straight-line from a given point which is not on it.   Let $AB$ be the given infinite straight-line  and $C$ the given point, which is not on ($AB$). So it is required to draw a  straight-line  perpendicular to the given infinite straight-line $AB$ from the given point $C$, which is not on ($AB$). "
+  },
+  {
+    "role": "construction",
+    "text": "For let point $D$ have been taken at random on the other side (to $C$) of  the straight-line $AB$,",
+    "construction_cite": null,
+    "objects_introduced": ["$D$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let the circle $EFG$ have been drawn with center $C$ and radius $CD$ [Post.~3],",
+    "construction_cite": null,
+    "objects_introduced": ["$EFG$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let the straight-line $EG$ have been cut in half at (point) $H$ [Prop.~1.10],",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$H$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let the straight-lines $CG$, $CH$, and $CE$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$CG$", "$CH$", "$CE$"]
+  },
+  {
+    "role": "deduction",
+    "text": "I say that the  (straight-line) $CH$ has been drawn  perpendicular to the given infinite straight-line $AB$ from the given point $C$, which is not on ($AB$). ",
+    "assertion": "CH has been drawn perpendicular to AB from C",
+    "spans": [
+      { "label": "glue",      "text": "I say that " },
+      { "label": "assertion", "text": "the  (straight-line) $CH$ has been drawn  perpendicular to the given infinite straight-line $AB$ from the given point $C$, which is not on ($AB$)" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "For since $GH$ is equal to $HE$, and $HC$ (is) common, the two (straight-lines) $GH$,  $HC$ are equal to the two (straight-lines) $EH$, $HC$, respectively,",
+    "assertion": "GH and HC equal EH and HC respectively",
+    "spans": [
+      { "label": "glue",       "text": "For since " },
+      { "label": "assumption", "text": "$GH$ is equal to $HE$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$HC$ (is) common" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the two (straight-lines) $GH$,  $HC$ are equal to the two (straight-lines) $EH$, $HC$, respectively" },
+      { "label": "glue",       "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and the base $CG$ is equal to the base $CE$.",
+    "assertion": "base CG equals base CE",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "the base $CG$ is equal to the base $CE$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the angle $CHG$ is equal to the angle $EHC$ [Prop.~1.8],",
+    "assertion": "angle CHG equals angle EHC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the angle $CHG$ is equal to the angle $EHC$" },
+      { "label": "glue",      "text": " [Prop.~1.8]," }
+    ],
+    "proof_cite": "1.8"
+  },
+  {
+    "role": "deduction",
+    "text": "and they are adjacent.",
+    "assertion": "angles CHG and EHC are adjacent",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "they are adjacent" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But when a straight-line stood on a(nother) straight-line makes the adjacent angles equal to one another, each of the equal angles is a right-angle,",
+    "assertion": "each of the equal angles CHG and EHC is a right-angle",
+    "spans": [
+      { "label": "glue",       "text": "But when a straight-line stood on a(nother) straight-line makes " },
+      { "label": "assumption", "text": "the adjacent angles equal to one another" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "each of the equal angles is a right-angle" },
+      { "label": "glue",       "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and the former straight-line is called a perpendicular to that upon which it stands [Def.~1.10]. ",
+    "assertion": "CH is called a perpendicular to AB",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "the former straight-line is called a perpendicular to that upon which it stands" },
+      { "label": "glue",      "text": " [Def.~1.10]. " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, the (straight-line) $CH$ has been drawn perpendicular to the given infinite straight-line $AB$ from the given point $C$, which is not on  ($AB$). (Which is) the very thing it was required to do."
+  }
+]

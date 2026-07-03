@@ -114,6 +114,15 @@ def _segments(cmd):
     return segs
 
 
+# Protected baselines the agent must NEVER write directly: only the pipeline scripts write them —
+# `check_steps.py`/`check_signatures.py --save` → the two *_signatures.json; `assumptions.py` →
+# assumption_tags.json. A `>`/`>>` redirect into one (any path, incl. the /u symlink + quotes) bypasses
+# the settings Write/Edit deny via an allowlisted command (`echo … > f`), so the hook blocks it here.
+_PROTECTED_JSON = ("step_signatures.json", "proposition_signatures.json", "assumption_tags.json")
+_REDIR_PROTECTED = re.compile(
+    ">>?\\s*['\"]?[^\\s'\"]*(?:" + "|".join(re.escape(f) for f in _PROTECTED_JSON) + ")")
+
+
 def main():
     try:
         data = json.load(sys.stdin)
@@ -122,6 +131,16 @@ def main():
     cmd = ((data.get("tool_input") or {}).get("command") or "")
     if not cmd.strip():
         sys.exit(0)
+
+    # Protected-baseline guard (see _REDIR_PROTECTED): block ANY shell redirect that would WRITE one of the
+    # three baselines, whatever (possibly allowlisted) command performs it. Closes the `echo … > f` bypass
+    # of the Write/Edit deny; these files are human/script-only (check_steps/check_signatures --save,
+    # assumptions.py). Reading them (no `>`) stays free.
+    if _REDIR_PROTECTED.search(cmd):
+        gate("writing a protected baseline via a shell redirect is DENIED — step_signatures.json / "
+             "proposition_signatures.json / assumption_tags.json are written ONLY by the pipeline scripts "
+             "(check_steps/check_signatures --save, assumptions.py), never edited directly by the agent. "
+             + ALLOWED_SUMMARY)
 
     # Inspect every sub-command (split on shell separators) against a POSITIVE allowlist — anything
     # that doesn't match a known-good shape is gated (ask/deny per hygiene.conf), not just the named

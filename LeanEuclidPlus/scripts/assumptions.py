@@ -30,15 +30,20 @@ After persisting, the COMBINED Main is re-built once (each ladder probe only ver
 isolation); if that fails the run STOPS, tags are NOT written, and the Main is left for review.
 
 USAGE  (run from LeanEuclidPlus/):
-  python3 scripts/assumptions.py <propdir>              FRESH prop: materialize (STEP A) + build-check +
-                                                          classify (STEP B) + persist + write tags. If the
-                                                          prop is ALREADY materialized, STEP A is skipped
-                                                          automatically (re-classify in place; never
-                                                          re-materializes/duplicates) — same as --tag-only.
+  python3 scripts/assumptions.py <propdir>              BARE run = materialize (STEP A) + build-check +
+                                                          classify (STEP B) + persist + write tags, ALWAYS
+                                                          from the current `-- @assumption` comments. If the
+                                                          prop is ALREADY materialized, it RE-MATERIALIZES
+                                                          FROM SCRATCH — deletes every existing have and
+                                                          re-adds from the current comments (so an added /
+                                                          removed / retyped assumption is reflected) — after
+                                                          a y/N confirm. (A fresh prop has no haves ⟹ no
+                                                          prompt; a non-TTY "no" answer aborts safely.)
   python3 scripts/assumptions.py <propdir> --tag-only   STEP B ONLY on already-materialized haves: re-run
-                                                          the ladder + re-tag, skipping STEP A. Use after a
-                                                          manual frame fix (a `wlog`/`Hsym` break), or to
-                                                          re-classify with an updated ladder. Errors if no
+                                                          the ladder + re-tag, skipping STEP A (no delete,
+                                                          no prompt). Use after a manual frame fix (a
+                                                          `wlog`/`Hsym` break), or to re-classify the SAME
+                                                          have set with an updated ladder. Errors if no
                                                           haves are materialized yet.
   python3 scripts/assumptions.py <propdir> --dry-run    materialize + classify + REPORT only (reverts every
                                                           edit; writes nothing) — the diagnostic.
@@ -181,6 +186,28 @@ def materialize(src):
 
 
 _HAVE_HEAD_RE = re.compile(r'(?m)^([ \t]*)have (\w+_assumption\d+)\b')
+
+# Inverse of `materialize` (+ the STEP-B tag): a `-- @assumption_valid`/`@assumption_gap` tag line, and a
+# single-line `have stepK_assumptionN … := by …`. NOT the `-- @assumption ("…", type)` comment (that has a
+# space+`(`, not the `_valid`/`_gap` suffix) — those are the source of truth and MUST survive a strip.
+_ASSUMPTION_TAG_RE  = re.compile(r'(?m)^[ \t]*--[ \t]*@assumption_(?:valid|gap)[ \t]*\r?\n')
+_ASSUMPTION_HAVE_RE = re.compile(r'(?m)^[ \t]*have \w+_assumption\d+\b[^\n]*\r?\n')
+
+
+def strip_materialized(src):
+    """Remove every materialized assumption have + its valid/gap tag, leaving the `-- @assumption (…)`
+    comment blocks intact. Lets a bare run RE-materialize from scratch (reflecting added/removed/retyped
+    assumptions) without duplicating — the robust inverse of the old auto-skip."""
+    return _ASSUMPTION_HAVE_RE.sub('', _ASSUMPTION_TAG_RE.sub('', src))
+
+
+def _confirm(prompt):
+    """Interactive y/N. A non-`y` answer — including EOF / a non-TTY stdin — returns False (safe default:
+    abort, so a scripted/headless bare re-run never destructively re-materializes without a human `y`)."""
+    try:
+        return input(prompt).strip().lower() in ("y", "yes")
+    except EOFError:
+        return False
 
 
 def _set_have_body(src, name, tactic):
@@ -412,27 +439,49 @@ def run(propdir, dry_run=False, tag_only=False):
         print(f"[assumptions] {rel} — no @assumption annotations; nothing to do.")
         return 0
 
-    # STEP B ONLY (skip STEP A materialize) when EITHER the user passed --tag-only OR the prop is ALREADY
-    # materialized. Re-running materialize on an existing have set would INSERT a second copy of every have
-    # (silent duplication/corruption), so an already-materialized full run is auto-routed here with a
-    # NOTICE (never silent). STEP A below is reached only for a FRESH (unmaterialized) prop.
     present = {m.group(2) for m in _HAVE_HEAD_RE.finditer(original)}
-    if tag_only or present:
-        if tag_only and not present:
+
+    # --tag-only: STEP B ONLY on the EXISTING have set (the repair path) — re-classify in place, never
+    # (re-)materialize, never delete, never prompt.
+    if tag_only:
+        if not present:
             print(f"ERROR: --tag-only but no `stepK_assumptionN` haves in {rel}. Run `assumptions.py "
-                  f"{rel}` (no flag) first — STEP A materializes + build-checks.")
+                  f"{rel}` (no flag) first — a bare run materializes + build-checks.")
             return 2
-        if present and not tag_only:
-            print(f"[assumptions] {rel} — {len(present)} assumption have(s) already materialized; skipping "
-                  f"STEP A (re-classifying IN PLACE — will NOT re-materialize/duplicate; same as --tag-only).")
         try:
-            return _step_b(propdir, book, original, dry_run=(False if tag_only else dry_run))
+            return _step_b(propdir, book, original, dry_run=False)
         except BaseException:
             open(mf, "w", encoding="utf-8").write(original)
             raise
 
-    # STEP A — materialize the all-sorry haves, then build-check Main.
-    open(mf, "w", encoding="utf-8").write(materialize(original))
+    # --dry-run over an ALREADY-materialized prop stays a pure diagnostic (re-classify in place + revert);
+    # it never does the destructive re-materialize below.
+    if dry_run and present:
+        try:
+            return _step_b(propdir, book, original, dry_run=True)
+        except BaseException:
+            open(mf, "w", encoding="utf-8").write(original)
+            raise
+
+    # BARE run = ALWAYS materialize from the CURRENT `-- @assumption` comments (the source of truth). If
+    # haves already exist, RE-MATERIALIZE FROM SCRATCH: delete them all + re-add from the current comments,
+    # so an added / removed / retyped assumption is reflected (the old auto-skip silently ignored added
+    # ones). Confirm first — a re-run is interactive (a fresh sweep has no haves ⟹ never prompts), so no
+    # --yes flag is needed; a non-TTY/EOF answer is "no" (abort, no destructive write). Reverts below still
+    # target `original` (the TRUE on-disk content), so a crash restores the prior state, not the stripped one.
+    to_materialize = original
+    if present:
+        print(f"[assumptions] {rel} — {len(present)} assumption have(s) already materialized. A bare run "
+              f"RE-MATERIALIZES FROM SCRATCH: DELETE all {len(present)} and re-add from the current "
+              f"`-- @assumption` comments (reflecting any added / removed / retyped assumption).")
+        if not _confirm("  Proceed? [y/N] "):
+            print(f"[assumptions] {rel} — aborted; no changes. (Use `--tag-only` to only RE-CLASSIFY the "
+                  f"existing haves without re-materializing.)")
+            return 0
+        to_materialize = strip_materialized(original)
+
+    # STEP A — materialize the all-sorry haves (from the current comments), then build-check Main.
+    open(mf, "w", encoding="utf-8").write(materialize(to_materialize))
     materialized = open(mf, encoding="utf-8").read()
     try:
         ok, out = L.lake_build(L.target_of(mf), wall=L.main_wall(propdir))

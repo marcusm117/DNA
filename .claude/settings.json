@@ -77,10 +77,12 @@
       "Bash(./scripts/safe_build.sh:*)",
       "Bash(lake build:*)",
 
-      "Write(LeanEuclidPlus/scripts/step_signatures.json)",
-      "Edit(LeanEuclidPlus/scripts/step_signatures.json)",
-      "Write(LeanEuclidPlus/scripts/proposition_signatures.json)",
-      "Edit(LeanEuclidPlus/scripts/proposition_signatures.json)",
+      "Write(**/step_signatures.json)",
+      "Edit(**/step_signatures.json)",
+      "Write(**/proposition_signatures.json)",
+      "Edit(**/proposition_signatures.json)",
+      "Write(**/assumption_tags.json)",
+      "Edit(**/assumption_tags.json)",
 
       "Bash(git add:*)",
       "Bash(git commit:*)",

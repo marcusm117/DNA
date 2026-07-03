@@ -23,10 +23,15 @@ theorem proposition_14 : ∀ (a b c d : Point) (AB BC BD : Line),
   have habsurd : ¬ (BC ≠ BD) := by
     intro hne
     euclid_apply (extend_point BC c b) as e
+    -- @assumption_valid
+    have step1_assumption1 : BD ≠ BC := by euclid_finish
+    --@assumption ("if $BD$ is not straight-on to $BC$", BD ≠ BC)
     euclid_sentence "1.14.1"
       "For if $BD$ is not straight-on to $BC$ then let $BE$ be straight-on to $CB$. "
-      (step1 : between c b e) := by euclid_apply (helper_1_14_step1 c b e (by euclid_assumption "" (show between c b e; assumption)))
+      (step1 : between c b e) := by euclid_apply (helper_1_14_step1 c b e BC BD (by euclid_assumption "" (show between c b e; assumption)) (by euclid_assumption "if $BD$ is not straight-on to $BC$" (show BD ≠ BC; assumption)))
 
+    -- @assumption_valid
+    have step2_assumption1 : between c b e := by assumption
     -- @assumption ("since the straight-line $AB$ stands on the straight-line $CBE$", between c b e)
     euclid_sentence "1.14.2"
       "Therefore, since the straight-line $AB$ stands on the straight-line $CBE$, the (sum of the) angles $ABC$ and $ABE$ is thus equal to two right-angles [Prop.~1.13]."

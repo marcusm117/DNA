@@ -64,9 +64,10 @@ def extract_file(path: str):
     """Return {loc -> {file, line, name, claim, assumptions?}} for every euclid_sentence in one .lean
     file. `assumptions` is present (and non-empty) only when the node has `-- @assumption` annotations;
     each entry is `{"text": str, "type": str}` or `{"text": str, "type": str, "override": str}`.
-    `@assumption` types are Phase-A's best-guess reasoning map (saved here at gate). Unlike the claim
-    type, they are NOT frozen-hard: Phase B may drop/retype a cited input the real context shows isn't
-    consumed (see faithful-prove), so drift against this baseline is a WARNING, not a failure."""
+    `@assumption` types are Phase-A's reasoning map, frozen at the gate ALONGSIDE the claim type: under
+    the Assumption Phase they are first-class, so drift against this baseline is a HARD FAIL (not a
+    warning) — an intended change (a bad assumption dropped/retyped) must be re-approved and re-saved
+    with `--save`, exactly like a claim-type change."""
     raw = open(path, encoding="utf-8").read()
     rel = os.path.relpath(path, BOOK_ROOT)
     # Use faithful_lib to get Node objects (with .assumptions populated) for assumption data.

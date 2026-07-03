@@ -95,7 +95,17 @@ syntax (name := euclidIntroSentence)
 syntax (name := euclidConcludeSentence)
   "euclid_conclude_sentence " str str : tactic
 
-/-- Shared recorder for the two structural tactics. -/
+/-- `euclid_wts "loc" "euclid text"`
+
+Record a *structural* mid-proof "I say that …" (what-to-show) sentence. Like the intro/conclude
+tactics it emits no `have` (proof term / context unchanged) and only contributes its text to the
+criterion-1 concatenation — but unlike them it is permitted MID-proof. Euclid's "I say that X"
+announces the goal; it is NOT an assertion that X is already proven, so it carries no claim. The real
+content X is established by the following sentences and assembled by the trailing `exact`. -/
+syntax (name := euclidWts)
+  "euclid_wts " str str : tactic
+
+/-- Shared recorder for the structural tactics. -/
 private def recordStructural (loc txt : TSyntax `str) : TacticM Unit := do
   let (posStr, modName, lineNo) ← refLoc
   modifyEnv fun env => faithfulExt.addEntry env {
@@ -114,6 +124,7 @@ private def recordStructural (loc txt : TSyntax `str) : TacticM Unit := do
 elab_rules : tactic
   | `(tactic| euclid_intro_sentence $loc:str $txt:str)    => recordStructural loc txt
   | `(tactic| euclid_conclude_sentence $loc:str $txt:str) => recordStructural loc txt
+  | `(tactic| euclid_wts $loc:str $txt:str)               => recordStructural loc txt
 
 -- Faithfulness CHECKING (criterion 1: concatenate sentence texts, compare to the canonical
 -- source) is done OUTSIDE Lean by `scripts/check_faithful.py`, which reads these annotations

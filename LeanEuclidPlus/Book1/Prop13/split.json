@@ -1,0 +1,139 @@
+[
+  {
+    "role": "intro",
+    "text": "If a straight-line stood on a(nother)  straight-line makes angles, it will certainly either make two right-angles, or (angles whose sum is) equal to two right-angles. For  let some straight-line $AB$ stood on the straight-line $CD$ make the angles $CBA$ and $ABD$. I say that the angles $CBA$ and $ABD$ are certainly either two right-angles, or (have a sum) equal to two right-angles. "
+  },
+  {
+    "role": "deduction",
+    "text": "In fact, if $CBA$ is equal to $ABD$ then they are two right-angles [Def.~1.10].",
+    "assertion": "if CBA equals ABD, then CBA and ABD are two right-angles",
+    "spans": [
+      {"label": "glue",      "text": "In fact, if "},
+      {"label": "assumption","text": "$CBA$ is equal to $ABD$"},
+      {"label": "glue",      "text": " then "},
+      {"label": "assertion", "text": "they are two right-angles"},
+      {"label": "glue",      "text": " [Def.~1.10]."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "But, if not, let $BE$ have been drawn from the point $B$ at right-angles to [the straight-line] $CD$ [Prop.~1.11].",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$BE$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $CBE$ and $EBD$ are two right-angles.",
+    "assertion": "angles CBE and EBD are two right-angles",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$CBE$ and $EBD$ are two right-angles"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And since $CBE$ is equal to the two (angles) $CBA$ and $ABE$, let $EBD$ have been added to both.",
+    "assertion": "CBE equals the sum of angles CBA and ABE",
+    "spans": [
+      {"label": "glue",      "text": "And since "},
+      {"label": "assertion", "text": "$CBE$ is equal to the two (angles) $CBA$ and $ABE$"},
+      {"label": "glue",      "text": ", let $EBD$ have been added to both."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (sum of the angles) $CBE$ and $EBD$ is equal to the  (sum of the) three (angles) $CBA$, $ABE$, and $EBD$ [C.N.~2].",
+    "assertion": "CBE + EBD equals CBA + ABE + EBD",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the (sum of the angles) $CBE$ and $EBD$ is equal to the  (sum of the) three (angles) $CBA$, $ABE$, and $EBD$"},
+      {"label": "glue",      "text": " [C.N.~2]."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since $DBA$ is equal to the two (angles) $DBE$ and $EBA$, let $ABC$ have been added to both.",
+    "assertion": "DBA equals the sum of angles DBE and EBA",
+    "spans": [
+      {"label": "glue",      "text": "Again, since "},
+      {"label": "assertion", "text": "$DBA$ is equal to the two (angles) $DBE$ and $EBA$"},
+      {"label": "glue",      "text": ", let $ABC$ have been added to both."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (sum of the angles) $DBA$ and $ABC$ is equal to the (sum of the) three (angles) $DBE$, $EBA$, and $ABC$ [C.N.~2].",
+    "assertion": "DBA + ABC equals DBE + EBA + ABC",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the (sum of the angles) $DBA$ and $ABC$ is equal to the (sum of the) three (angles) $DBE$, $EBA$, and $ABC$"},
+      {"label": "glue",      "text": " [C.N.~2]."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But (the sum of) $CBE$ and $EBD$ was also shown (to be) equal to the (sum of the) same three (angles).",
+    "assertion": "CBE + EBD was shown equal to the same three angles",
+    "spans": [
+      {"label": "glue",      "text": "But "},
+      {"label": "assertion", "text": "(the sum of) $CBE$ and $EBD$ was also shown (to be) equal to the (sum of the) same three (angles)"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And things equal to the same thing are also equal to one another [C.N.~1].",
+    "assertion": "things equal to the same thing are equal to one another",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "things equal to the same thing are also equal to one another"},
+      {"label": "glue",      "text": " [C.N.~1]."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore,  (the sum of) $CBE$ and $EBD$ is also equal to (the sum of) $DBA$ and $ABC$.",
+    "assertion": "CBE + EBD equals DBA + ABC",
+    "spans": [
+      {"label": "glue",      "text": "Therefore,  "},
+      {"label": "assertion", "text": "(the sum of) $CBE$ and $EBD$ is also equal to (the sum of) $DBA$ and $ABC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, (the sum of) $CBE$ and $EBD$ is two right-angles.",
+    "assertion": "CBE + EBD is two right-angles",
+    "spans": [
+      {"label": "glue",      "text": "But, "},
+      {"label": "assertion", "text": "(the sum of) $CBE$ and $EBD$ is two right-angles"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $ABD$ and $ABC$ is also equal to two right-angles. ",
+    "assertion": "ABD + ABC equals two right-angles",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "(the sum of) $ABD$ and $ABC$ is also equal to two right-angles"},
+      {"label": "glue",      "text": ". "}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if a straight-line stood on a(nother)  straight-line makes angles, it will certainly either make two right-angles, or (angles whose sum is) equal to two right-angles. (Which is) the very thing it was required to show."
+  }
+]

@@ -321,9 +321,16 @@ rule #8 (explicit application) made concrete. When you hit one, consult the **`e
 it lists goal-shape → chain → gotcha, grounded in the proven files. Build each as its own `have`+backing
 sub-node; don't re-derive a chain you can look up.
 
-> **✅ `linarith` / `nlinarith` / `ring` ARE available — Mathlib is a project dependency.** Import the
-> specific tactic module at the top of the backing file (e.g. `import Mathlib.Tactic.Linarith`) and use
-> them for the pure-arithmetic *tail* of a step — the linear/ring combine over ℝ (`2·x = ∟ ⟹ x = ∟/2`,
+> **✅ `linarith` / `nlinarith` / `ring` ARE available — Mathlib is a project dependency.** `ring`,
+> `ring_nf`, `omega`, `simp`, `positivity` come free with the `import SystemE` every backing file has —
+> but `linarith`, `nlinarith`, and `field_simp` do NOT (SystemE doesn't pull in their Mathlib module),
+> so a fresh file reports **`unknown tactic`** for them. That is not a dead end: just ADD the module
+> import at the top of the backing file — `import Mathlib.Tactic.Linarith` (covers `linarith` +
+> `nlinarith`), `import Mathlib.Tactic.FieldSimp` (covers `field_simp`). The import is legal and
+> permanent (`check_step … --check` flags only the prop's own `Book<N>.PropNN.*` pipeline imports, never
+> a `Mathlib.*` one; ref `Book2/Prop08/step11.lean`). NEVER abandon the tactic thinking it's unavailable
+> — add the import and continue.
+> Use them for the pure-arithmetic *tail* of a step — the linear/ring combine over ℝ (`2·x = ∟ ⟹ x = ∟/2`,
 > area/length sums). The SMT translator behind `euclid_finish` chokes on exactly this arithmetic (notably
 > `2 * x` in hypothesis position), so `linarith`/`ring` is often the *right* closer there, not a fallback.
 > They obey the same rules as any tactic: a real justified step (rule #1), ≤30s (they're fast), correct

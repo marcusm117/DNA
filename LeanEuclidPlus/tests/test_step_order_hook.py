@@ -200,11 +200,20 @@ def test_hook_allows_helpers_dir():
     assert decision is None
 
 
-def test_hook_allows_no_manifest_prop():
-    """Props with no manifest (e.g. Prop04 with wiped .lake/) allow everything."""
-    path = os.path.join(LEAN_ROOT, "Book2", "Prop04", "step5.lean")
-    decision, _ = run_hook(path)
-    assert decision is None
+def test_hook_allows_no_manifest_prop(tmp_path):
+    """A prop with NO certification manifest (fresh / wiped .lake) has no frontier ⟹ allows everything
+    (don't block step1). Uses a temp propdir + find_frontier in-process so it can't rot: real props gain
+    manifests over time (Prop04 used to have none; it now carries per-node `certified` entries, which
+    CORRECTLY enforce the frontier — the fail-open fix means certified-but-no-`subtrees` is real progress,
+    not a fresh prop)."""
+    propdir = os.path.join(tmp_path, "Prop99")
+    os.makedirs(propdir)
+    with open(os.path.join(propdir, "Main.lean"), "w", encoding="utf-8") as f:
+        f.write('  euclid_sentence "9.99.1" "x" (step1 : foo) := by sorry\n'
+                '  euclid_sentence "9.99.2" "y" (step2 : bar) := by sorry\n')
+    frontier, names, _state = _load_hook().find_frontier(propdir)
+    assert frontier is None                       # no manifest ⟹ no frontier ⟹ allow everything
+    assert names == ["step1", "step2"]
 
 
 def test_hook_allows_fp_node():

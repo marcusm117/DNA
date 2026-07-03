@@ -1,0 +1,33 @@
+import SystemE
+import Book1.Prop07.step5_c1
+import Book1.Prop07.step5_c2
+import Book1.Prop07.step5_c3
+import Book1.Prop07.step5_c4
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
+
+namespace Elements.Book1
+
+theorem helper_1_7_step5 (a b c d : Point) (AB AC CB AD DB CD : Line)
+    (haAB : a.onLine AB) (hbAB : b.onLine AB) (hab : a ≠ b)
+    (haAC : a.onLine AC) (hcAC : c.onLine AC) (hac : a ≠ c)
+    (hcCB : c.onLine CB) (hbCB : b.onLine CB) (hcb : c ≠ b)
+    (haAD : a.onLine AD) (hdAD : d.onLine AD) (had : a ≠ d)
+    (hdDB : d.onLine DB) (hbDB : b.onLine DB) (hdb : d ≠ b)
+    (hsameSide : c.sameSide d AB)
+    (hcd : c ≠ d)
+    (hcCD : c.onLine CD) (hdCD : d.onLine CD)
+    (hlen : |(a─c)| = |(a─d)|) (hlen2 : |(c─b)| = |(d─b)|)
+    (step4 : ∠ a:c:d = ∠ a:d:c)
+    : ∠ a:d:c > ∠ d:c:b := by
+  by_cases h1 : a.sameSide b CD <;> by_cases h2 : d.sameSide b AC
+  · have step5_c1 : ∠ a:d:c > ∠ d:c:b := by euclid_apply (helper_1_7_step5_c1 a b c d AB AC CB AD DB CD (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a ≠ c; assumption)) (by euclid_assumption "" (show c.onLine CB; assumption)) (by euclid_assumption "" (show b.onLine CB; assumption)) (by euclid_assumption "" (show c ≠ b; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show a ≠ d; assumption)) (by euclid_assumption "" (show d.onLine DB; assumption)) (by euclid_assumption "" (show b.onLine DB; assumption)) (by euclid_assumption "" (show d ≠ b; assumption)) (by euclid_assumption "" (show c.sameSide d AB; assumption)) (by euclid_assumption "" (show c ≠ d; assumption)) (by euclid_assumption "" (show c.onLine CD; assumption)) (by euclid_assumption "" (show d.onLine CD; assumption)) (by euclid_assumption "" (show |(a─c)| = |(a─d)|; assumption)) (by euclid_assumption "" (show |(c─b)| = |(d─b)|; assumption)) (by euclid_assumption "" (show ∠ a:c:d = ∠ a:d:c; assumption)) (by euclid_assumption "" (show a.sameSide b CD; assumption)) (by euclid_assumption "" (show d.sameSide b AC; assumption)))
+    exact step5_c1
+  · have step5_c2 : ∠ a:d:c > ∠ d:c:b := by euclid_apply (helper_1_7_step5_c2 a b c d AB AC CB AD DB CD (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a ≠ c; assumption)) (by euclid_assumption "" (show c.onLine CB; assumption)) (by euclid_assumption "" (show b.onLine CB; assumption)) (by euclid_assumption "" (show c ≠ b; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show a ≠ d; assumption)) (by euclid_assumption "" (show d.onLine DB; assumption)) (by euclid_assumption "" (show b.onLine DB; assumption)) (by euclid_assumption "" (show d ≠ b; assumption)) (by euclid_assumption "" (show c.sameSide d AB; assumption)) (by euclid_assumption "" (show c ≠ d; assumption)) (by euclid_assumption "" (show c.onLine CD; assumption)) (by euclid_assumption "" (show d.onLine CD; assumption)) (by euclid_assumption "" (show |(a─c)| = |(a─d)|; assumption)) (by euclid_assumption "" (show |(c─b)| = |(d─b)|; assumption)) (by euclid_assumption "" (show ∠ a:c:d = ∠ a:d:c; assumption)) (by euclid_assumption "" (show a.sameSide b CD; assumption)) (by euclid_assumption "" (show ¬d.sameSide b AC; assumption)))
+    exact step5_c2
+  · have step5_c3 : ∠ a:d:c > ∠ d:c:b := by euclid_apply (helper_1_7_step5_c3 a b c d AB AC CB AD DB CD (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a ≠ c; assumption)) (by euclid_assumption "" (show c.onLine CB; assumption)) (by euclid_assumption "" (show b.onLine CB; assumption)) (by euclid_assumption "" (show c ≠ b; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show a ≠ d; assumption)) (by euclid_assumption "" (show d.onLine DB; assumption)) (by euclid_assumption "" (show b.onLine DB; assumption)) (by euclid_assumption "" (show d ≠ b; assumption)) (by euclid_assumption "" (show c.sameSide d AB; assumption)) (by euclid_assumption "" (show c ≠ d; assumption)) (by euclid_assumption "" (show c.onLine CD; assumption)) (by euclid_assumption "" (show d.onLine CD; assumption)) (by euclid_assumption "" (show |(a─c)| = |(a─d)|; assumption)) (by euclid_assumption "" (show |(c─b)| = |(d─b)|; assumption)) (by euclid_assumption "" (show ∠ a:c:d = ∠ a:d:c; assumption)) (by euclid_assumption "" (show ¬a.sameSide b CD; assumption)) (by euclid_assumption "" (show d.sameSide b AC; assumption)))
+    exact step5_c3
+  · have step5_c4 : ∠ a:d:c > ∠ d:c:b := by euclid_apply (helper_1_7_step5_c4 a b c d AB AC CB AD DB CD (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a ≠ c; assumption)) (by euclid_assumption "" (show c.onLine CB; assumption)) (by euclid_assumption "" (show b.onLine CB; assumption)) (by euclid_assumption "" (show c ≠ b; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show a ≠ d; assumption)) (by euclid_assumption "" (show d.onLine DB; assumption)) (by euclid_assumption "" (show b.onLine DB; assumption)) (by euclid_assumption "" (show d ≠ b; assumption)) (by euclid_assumption "" (show c.sameSide d AB; assumption)) (by euclid_assumption "" (show c ≠ d; assumption)) (by euclid_assumption "" (show c.onLine CD; assumption)) (by euclid_assumption "" (show d.onLine CD; assumption)) (by euclid_assumption "" (show |(a─c)| = |(a─d)|; assumption)) (by euclid_assumption "" (show |(c─b)| = |(d─b)|; assumption)) (by euclid_assumption "" (show ∠ a:c:d = ∠ a:d:c; assumption)) (by euclid_assumption "" (show ¬a.sameSide b CD; assumption)) (by euclid_assumption "" (show ¬d.sameSide b AC; assumption)))
+    exact step5_c4
+
+end Elements.Book1

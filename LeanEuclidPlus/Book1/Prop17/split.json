@@ -1,0 +1,94 @@
+[
+  {
+    "role": "intro",
+    "text": "For any triangle,  (the sum of) two angles taken together in any (possible way) is less than two right-angles. Let $ABC$ be a triangle. I say that (the sum of) two angles of triangle $ABC$ taken together in any (possible way) is less than two right-angles. "
+  },
+  {
+    "role": "construction",
+    "text": "For let $BC$ have been produced to $D$. ",
+    "construction_cite": null,
+    "objects_introduced": ["$D$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since the angle $ACD$ is external to triangle $ABC$, it is greater than the internal and opposite angle $ABC$ [Prop.~1.16].",
+    "assertion": "angle ACD is greater than the internal and opposite angle ABC",
+    "spans": [
+      {"label": "glue",       "text": "And since "},
+      {"label": "assumption", "text": "the angle $ACD$ is external to triangle $ABC$"},
+      {"label": "glue",       "text": ", it "},
+      {"label": "assertion",  "text": "is greater than the internal and opposite angle $ABC$"},
+      {"label": "glue",       "text": " [Prop.~1.16]."}
+    ],
+    "proof_cite": "1.16"
+  },
+  {
+    "role": "deduction",
+    "text": "Let $ACB$ have been added to both.",
+    "assertion": "angle ACB is added to both sides of the inequality",
+    "spans": [
+      {"label": "assertion", "text": "Let $ACB$ have been added to both"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (sum of the angles) $ACD$ and $ACB$ is greater than the  (sum of the angles) $ABC$ and $BCA$.",
+    "assertion": "ACD + ACB is greater than ABC + BCA",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the (sum of the angles) $ACD$ and $ACB$ is greater than the  (sum of the angles) $ABC$ and $BCA$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, (the sum of) $ACD$ and $ACB$ is equal to two right-angles [Prop.~1.13].",
+    "assertion": "ACD + ACB equals two right-angles",
+    "spans": [
+      {"label": "glue",      "text": "But, "},
+      {"label": "assertion", "text": "(the sum of) $ACD$ and $ACB$ is equal to two right-angles"},
+      {"label": "glue",      "text": " [Prop.~1.13]."}
+    ],
+    "proof_cite": "1.13"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $ABC$ and $BCA$ is less than two right-angles.",
+    "assertion": "ABC + BCA is less than two right-angles",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "(the sum of) $ABC$ and $BCA$ is less than two right-angles"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Similarly, we can show that (the sum of) $BAC$ and $ACB$ is also less than two right-angles,",
+    "assertion": "BAC + ACB is less than two right-angles",
+    "spans": [
+      {"label": "glue",      "text": "Similarly, we can show that "},
+      {"label": "assertion", "text": "(the sum of) $BAC$ and $ACB$ is also less than two right-angles"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and further (that the sum of) $CAB$ and $ABC$ (is less than two right-angles). ",
+    "assertion": "CAB + ABC is less than two right-angles",
+    "spans": [
+      {"label": "glue",      "text": "and further "},
+      {"label": "assertion", "text": "(that the sum of) $CAB$ and $ABC$ (is less than two right-angles)"},
+      {"label": "glue",      "text": ". "}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, for any triangle,  (the sum of) two angles taken together in any (possible way) is less than two right-angles. (Which is) the very thing it was required to show."
+  }
+]

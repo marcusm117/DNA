@@ -119,8 +119,13 @@ def find_frontier(propdir):
 
     subtrees = manifest.get("subtrees", {})
 
-    # Only enforce when there's genuine partial progress (at least one subtree cert)
-    if not subtrees:
+    # Fail open ONLY on a genuinely-fresh prop — no progress of ANY kind recorded. A manifest with
+    # per-node `certified` leaf certs but no `subtrees` cert is REAL progress: the board (status_rows)
+    # promotes a Main node to "done" only on a `--subtree`/`--all` cert, so its frontier stays at the
+    # first not-subtree-certified node. We must still enforce in-order writes there. (Bailing on
+    # `not subtrees` disabled the hook for exactly that state — an agent certifying leaves with plain
+    # per-node `check_step <node>` and never `--subtree` could create step2/3/4/… past the frontier.)
+    if not subtrees and not manifest.get("certified"):
         return None, node_names, None
 
     # AUTHORITATIVE path: ask status_rows which node is the first not-done (stale OR todo). This is
@@ -236,10 +241,11 @@ def main():
         else:
             why = f"the current frontier '{frontier}' is not yet certified"
         deny(f"IN-ORDER DISCIPLINE: '{ancestor}.lean' is for Main node '{ancestor}' which is AFTER "
-             f"{why}. Re-certify it first — the systematic way is "
-             f"`python3 scripts/check_step.py {book_dir}/{prop_dir} --drive` (it re-runs the first "
-             f"not-done node, which is '{frontier}', then continues in order); or surgically "
-             f"`--subtree {frontier}`. Finish steps IN ORDER — do not skip ahead.")
+             f"{why}. Re-certify it first. USE `--drive` — it is the default driving command: "
+             f"`python3 scripts/check_step.py {book_dir}/{prop_dir} --drive` certifies the first "
+             f"not-done node ('{frontier}'), then continues in order and skips everything already "
+             f"done — no need to hand-pick nodes. (`--subtree {frontier}` is only for surgically "
+             f"re-confirming that ONE cone.) Finish steps IN ORDER — do not skip ahead.")
 
 
 if __name__ == "__main__":
