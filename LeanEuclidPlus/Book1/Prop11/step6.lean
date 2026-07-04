@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 -- TODO: fill object/hypothesis binders (run --context step6)
 theorem helper_1_11_step6
   -- Reasoning hypotheses (from @assumption — keep these types in the signature):

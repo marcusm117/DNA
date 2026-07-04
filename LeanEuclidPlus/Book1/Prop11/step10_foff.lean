@@ -4,13 +4,13 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-theorem helper_1_11_step9
-    (a b c d e : Point) (AB : Line)
+theorem helper_1_11_step10_foff
+    (a b c d e f : Point) (AB : Line)
     (hacb : between a c b)
     (ha : a.onLine AB) (hb : b.onLine AB)
-    (hdAB : d.onLine AB)
-    (hadc : between a d c) (hceb : between c e b) :
-    between d c e := by
+    (hdAB : d.onLine AB) (hdc : between c d a) (hce : between c e b)
+    (hfd : |(f─d)| = |(d─e)|) (hfe : |(f─e)| = |(d─e)|) :
+    ¬(f.onLine AB) := by
   euclid_finish
 
 end Elements.Book1

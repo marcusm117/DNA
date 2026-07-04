@@ -1,0 +1,128 @@
+[
+  {
+    "role": "intro",
+    "text": "In any triangle, the greater angle is subtended by the greater side. Let $ABC$ be a triangle having the angle $ABC$ greater than $BCA$. I say that side $AC$ is also greater than side $AB$. "
+  },
+  {
+    "role": "deduction",
+    "text": "For if not, $AC$ is certainly either equal to, or less than, $AB$.",
+    "assertion": "AC is either equal to or less than AB (assuming AC is not greater)",
+    "spans": [
+      {"label": "glue",      "text": "For if not, "},
+      {"label": "assertion", "text": "$AC$ is certainly either equal to, or less than, $AB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "In fact, $AC$ is not equal to $AB$.",
+    "assertion": "AC is not equal to AB",
+    "spans": [
+      {"label": "glue",      "text": "In fact, "},
+      {"label": "assertion", "text": "$AC$ is not equal to $AB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "For then angle $ABC$  would also have been equal to $ACB$ [Prop.~1.5].",
+    "assertion": "if AC equals AB then angle ABC equals angle ACB (by Prop 1.5)",
+    "spans": [
+      {"label": "glue",      "text": "For then "},
+      {"label": "assertion", "text": "angle $ABC$  would also have been equal to $ACB$"},
+      {"label": "glue",      "text": " [Prop.~1.5]."}
+    ],
+    "proof_cite": "1.5"
+  },
+  {
+    "role": "deduction",
+    "text": "But it is not.",
+    "assertion": "angle ABC is not equal to angle ACB (given)",
+    "spans": [
+      {"label": "assertion", "text": "But it is not"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AC$ is not equal to $AB$.",
+    "assertion": "AC is not equal to AB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$AC$ is not equal to $AB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Neither, indeed, is $AC$ less than $AB$.",
+    "assertion": "AC is not less than AB",
+    "spans": [
+      {"label": "assertion", "text": "Neither, indeed, is $AC$ less than $AB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "For then angle $ABC$ would also have been less than $ACB$ [Prop.~1.18].",
+    "assertion": "if AC is less than AB then angle ABC is less than angle ACB (by Prop 1.18)",
+    "spans": [
+      {"label": "glue",      "text": "For then "},
+      {"label": "assertion", "text": "angle $ABC$ would also have been less than $ACB$"},
+      {"label": "glue",      "text": " [Prop.~1.18]."}
+    ],
+    "proof_cite": "1.18"
+  },
+  {
+    "role": "deduction",
+    "text": "But it is not.",
+    "assertion": "angle ABC is not less than angle ACB (given)",
+    "spans": [
+      {"label": "assertion", "text": "But it is not"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AC$ is not less than $AB$.",
+    "assertion": "AC is not less than AB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$AC$ is not less than $AB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But it was  shown that ($AC$) is    not equal (to $AB$) either.",
+    "assertion": "AC was shown to not be equal to AB (recalling the first case result)",
+    "spans": [
+      {"label": "glue",       "text": "But it was  shown that "},
+      {"label": "assumption", "text": "($AC$) is    not equal (to $AB$)"},
+      {"label": "glue",       "text": " either."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AC$  is greater than $AB$.",
+    "assertion": "AC is greater than AB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$AC$  is greater than $AB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in any triangle, the greater angle is subtended by the greater side. (Which is) the very thing it was required to show."
+  }
+]

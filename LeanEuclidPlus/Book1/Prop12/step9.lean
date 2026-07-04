@@ -4,10 +4,9 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-theorem helper_1_11_step7
-    (d e f : Point)
-    (h1 : |(f─d)| = |(d─e)|) (h2 : |(f─e)| = |(d─e)|) :
-    |(d─f)| = |(f─e)| := by
+theorem helper_1_12_step9 (e h g : Point) (AB : Line)
+    (hbetween : between e h g) (heAB : e.onLine AB) (hgAB : g.onLine AB) :
+    h.onLine AB := by
   euclid_finish
 
 end Elements.Book1

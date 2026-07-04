@@ -3,7 +3,6 @@
 
 ## Prove last done
 - 10 (14 also done)
-- 8 not done
 ## Map last done (including assumption):
 - 17
 
