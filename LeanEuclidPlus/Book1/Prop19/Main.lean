@@ -12,9 +12,12 @@ theorem proposition_19 : ∀ (a b c : Point) (AB BC AC : Line),
   euclid_intro_sentence "1.19.0"
     "In any triangle, the greater angle is subtended by the greater side. Let $ABC$ be a triangle having the angle $ABC$ greater than $BCA$. I say that side $AC$ is also greater than side $AB$. "
 
+  by_contra h_notgt
+  -- h_notgt : ¬(|(a─c)| > |(a─b)|); goal: False
+
   euclid_sentence "1.19.1"
     "For if not, $AC$ is certainly either equal to, or less than, $AB$."
-    (step1 : ¬(|(a─c)| > |(a─b)|) → (|(a─c)| = |(a─b)| ∨ |(a─c)| < |(a─b)|)) := by sorry
+    (step1 : |(a─c)| = |(a─b)| ∨ |(a─c)| < |(a─b)|) := by sorry
 
   euclid_wts "1.19.2"
     "In fact, $AC$ is not equal to $AB$."
@@ -48,6 +51,8 @@ theorem proposition_19 : ∀ (a b c : Point) (AB BC AC : Line),
     "Thus, $AC$ is not less than $AB$."
     (step9 : ¬(|(a─c)| < |(a─b)|)) := by sorry
 
+  -- @assumption_valid
+  have step10_assumption1 : |(a─c)| ≠ |(a─b)| := by assumption
   -- @assumption ("($AC$) is    not equal (to $AB$)", |(a─c)| ≠ |(a─b)|)
   euclid_sentence "1.19.10"
     "But it was  shown that ($AC$) is    not equal (to $AB$) either."
@@ -57,7 +62,7 @@ theorem proposition_19 : ∀ (a b c : Point) (AB BC AC : Line),
     "Thus, $AC$  is greater than $AB$."
     (step11 : |(a─c)| > |(a─b)|) := by sorry
 
-  exact step11
+  exact h_notgt step11
   euclid_conclude_sentence "1.19.12"
     "Thus, in any triangle, the greater angle is subtended by the greater side. (Which is) the very thing it was required to show."
 

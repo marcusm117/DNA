@@ -2,6 +2,7 @@ import SystemE
 import Book.Prop03
 import Book.Prop05
 import Book.Prop16
+import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -25,11 +26,15 @@ theorem proposition_18 : ∀ (a b c : Point) (AB BC AC : Line),
     "and let $BD$ have been joined. "
     (step2 : distinctPointsOnLine b d BD) := by sorry
 
+  -- @assumption_valid
+  have step3_assumption1 : between a d c := by assumption
   -- @assumption ("angle $ADB$ is external to triangle $BCD$", between a d c)
   euclid_sentence "1.18.3"
     "And since angle $ADB$ is external to triangle $BCD$, it is greater than the internal and opposite (angle) $DCB$ [Prop.~1.16]."
     (step3 : ∠ a:d:b > ∠ d:c:b) := by sorry
 
+  -- @assumption_valid
+  have step4_assumption1 : |(a─b)| = |(a─d)| := by linarith
   -- @assumption ("$AB$ is also equal to side $AD$", |(a─b)| = |(a─d)|)
   euclid_sentence "1.18.4"
     "But $ADB$ (is) equal to $ABD$, since side $AB$ is also equal to side $AD$ [Prop.~1.5]."

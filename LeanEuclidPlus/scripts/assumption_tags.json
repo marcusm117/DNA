@@ -382,5 +382,51 @@
       "type": "between b c d",
       "verdict": "closes"
     }
+  },
+  "Book1/Prop18": {
+    "step3_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "angle $ADB$ is external to triangle $BCD$",
+      "type": "between a d c",
+      "verdict": "closes"
+    },
+    "step4_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "$AB$ is also equal to side $AD$",
+      "type": "|(a\u2500b)| = |(a\u2500d)|",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop19": {
+    "step10_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "($AC$) is    not equal (to $AB$)",
+      "type": "|(a\u2500c)| \u2260 |(a\u2500b)|",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop20": {
+    "step4_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$DA$ is equal to $AC$",
+      "type": "|(d\u2500a)| = |(a\u2500c)|",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$DCB$ is a triangle having the angle $BCD$ greater than $BDC$",
+      "type": "\u2220 b:c:d > \u2220 b:d:c",
+      "verdict": "closes"
+    }
   }
 }

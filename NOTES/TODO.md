@@ -2,9 +2,9 @@
 - MAPPING done up to prop 13 (mapping means assumption is also done running.)
 
 ## Prove last done
-- 10 (14 also done)
+- 15
 ## Map last done (including assumption):
-- 17
+- 20
 
 
 # Naming is off
