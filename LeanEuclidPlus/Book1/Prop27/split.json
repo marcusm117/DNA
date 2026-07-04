@@ -1,0 +1,74 @@
+[
+  { "role": "intro",
+    "text": "If a straight-line falling across two straight-lines makes  the alternate angles equal to one another then the (two) straight-lines will be parallel to one another.  For let the straight-line $EF$, falling across the two straight-lines $AB$ and $CD$, make the alternate angles $AEF$ and $EFD$ equal to one another. I say that $AB$ and $CD$ are parallel. " },
+
+  { "role": "deduction",
+    "text": "For if not, being produced, $AB$ and $CD$ will certainly meet together: either in the direction of $B$ and $D$, or (in the direction) of $A$ and $C$ [Def.~1.23].",
+    "assertion": "if AB and CD are not parallel, being produced they meet either toward B,D or toward A,C",
+    "spans": [
+      { "label": "glue",      "text": "For if not, being produced, " },
+      { "label": "assertion", "text": "$AB$ and $CD$ will certainly meet together: either in the direction of $B$ and $D$, or (in the direction) of $A$ and $C$" },
+      { "label": "glue",      "text": " [Def.~1.23]." } ],
+    "proof_cite": "1.23" },
+
+  { "role": "construction",
+    "text": "Let them have been produced, and let them meet together in the direction of $B$ and $D$ at  (point) $G$.",
+    "construction_cite": null,
+    "objects_introduced": ["$G$"] },
+
+  { "role": "deduction",
+    "text": "So, for the triangle $GEF$, the external angle $AEF$ is equal to the interior and opposite (angle) $EFG$.",
+    "assertion": "for triangle GEF, external angle AEF equals interior opposite angle EFG",
+    "spans": [
+      { "label": "glue",      "text": "So, for the triangle $GEF$, the " },
+      { "label": "assertion", "text": "external angle $AEF$ is equal to the interior and opposite (angle) $EFG$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "The very thing is impossible [Prop.~1.16].",
+    "assertion": "this is impossible (contradicts the exterior angle inequality)",
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": " [Prop.~1.16]." } ],
+    "proof_cite": "1.16" },
+
+  { "role": "deduction",
+    "text": "Thus, being produced, $AB$ and $CD$ will not meet together in the direction of $B$ and $D$.",
+    "assertion": "AB and CD do not meet in the direction of B and D",
+    "spans": [
+      { "label": "glue",      "text": "Thus, being produced, " },
+      { "label": "assertion", "text": "$AB$ and $CD$ will not meet together in the direction of $B$ and $D$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Similarly,  it can be shown that neither (will they meet together) in (the direction of) $A$ and $C$.",
+    "assertion": "AB and CD do not meet in the direction of A and C either",
+    "spans": [
+      { "label": "glue",      "text": "Similarly,  it can be shown that " },
+      { "label": "assertion", "text": "neither (will they meet together) in (the direction of) $A$ and $C$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "But  (straight-lines) meeting in neither direction are parallel [Def.~1.23].",
+    "assertion": "straight-lines meeting in neither direction are parallel",
+    "spans": [
+      { "label": "glue",      "text": "But  " },
+      { "label": "assertion", "text": "(straight-lines) meeting in neither direction are parallel" },
+      { "label": "glue",      "text": " [Def.~1.23]." } ],
+    "proof_cite": "1.23" },
+
+  { "role": "deduction",
+    "text": "Thus, $AB$ and $CD$ are parallel. ",
+    "assertion": "AB and CD are parallel",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AB$ and $CD$ are parallel" },
+      { "label": "glue",      "text": ". " } ],
+    "proof_cite": null },
+
+  { "role": "conclusion",
+    "text": "Thus, if a straight-line falling across two straight-lines makes  the alternate angles equal to one another then the (two) straight-lines will be parallel (to one another). (Which is) the very thing it was required to show." }
+]

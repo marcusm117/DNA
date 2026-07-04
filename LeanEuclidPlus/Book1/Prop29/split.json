@@ -1,0 +1,176 @@
+[
+  {
+    "role": "intro",
+    "text": "A straight-line falling across  parallel straight-lines makes the alternate angles equal to one another,  the external (angle) equal to the internal and opposite (angle), and the (sum of the) internal (angles) on the same side equal to two right-angles.   For let the straight-line $EF$ fall across the parallel straight-lines $AB$ and $CD$. I say that it makes the  alternate angles, $AGH$ and $GHD$,  equal,  the external angle $EGB$ equal to the internal and opposite (angle) $GHD$, and the (sum of the) internal (angles) on the same side, $BGH$ and $GHD$, equal to two right-angles. "
+  },
+  {
+    "role": "deduction",
+    "text": "For if $AGH$ is unequal to $GHD$ then one of them is greater.",
+    "assertion": "if AGH is unequal to GHD then one of them is greater",
+    "spans": [
+      { "label": "assertion", "text": "For if $AGH$ is unequal to $GHD$ then one of them is greater." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Let $AGH$ be greater.",
+    "assertion": "AGH is greater than GHD",
+    "spans": [
+      { "label": "assertion", "text": "Let $AGH$ be greater." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Let $BGH$ have been added to both.",
+    "assertion": "BGH has been added to both sides",
+    "spans": [
+      { "label": "assertion", "text": "Let $BGH$ have been added to both." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $AGH$ and $BGH$ is greater than (the sum of) $BGH$ and $GHD$.",
+    "assertion": "AGH + BGH > BGH + GHD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, (the sum of) " },
+      { "label": "assertion", "text": "$AGH$ and $BGH$ is greater than (the sum of) $BGH$ and $GHD$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But, (the sum of) $AGH$ and $BGH$ is equal to two right-angles [Prop~1.13].",
+    "assertion": "AGH + BGH equals two right-angles",
+    "proof_cite": "1.13",
+    "spans": [
+      { "label": "glue",      "text": "But, (the sum of) " },
+      { "label": "assertion", "text": "$AGH$ and $BGH$ is equal to two right-angles" },
+      { "label": "glue",      "text": " [Prop~1.13]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus,  (the sum of) $BGH$ and $GHD$ is [also] less than two right-angles. ",
+    "assertion": "BGH + GHD is less than two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "Thus,  (the sum of) " },
+      { "label": "assertion", "text": "$BGH$ and $GHD$ is [also] less than two right-angles" },
+      { "label": "glue",      "text": ". " }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But (straight-lines) being produced to infinity from (internal angles whose sum is) less than two right-angles meet together [Post.~5].",
+    "assertion": "straight-lines from angles summing to less than two right-angles will meet when produced to infinity",
+    "spans": [
+      { "label": "assertion", "text": "But (straight-lines) being produced to infinity from (internal angles whose sum is) less than two right-angles meet together" },
+      { "label": "glue",      "text": " [Post.~5]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AB$ and $CD$, being produced to infinity, will meet together.",
+    "assertion": "AB and CD will meet when produced to infinity",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AB$ and $CD$, being produced to infinity, will meet together" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But they do not meet, on account of them (initially) being assumed parallel (to one another) [Def.~1.23].",
+    "assertion": "AB and CD do not meet (contradiction with parallel assumption)",
+    "spans": [
+      { "label": "glue",       "text": "But " },
+      { "label": "assertion",  "text": "they do not meet" },
+      { "label": "glue",       "text": ", on account of " },
+      { "label": "assumption", "text": "them (initially) being assumed parallel (to one another)" },
+      { "label": "glue",       "text": " [Def.~1.23]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AGH$ is not unequal to $GHD$.",
+    "assertion": "AGH is not unequal to GHD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AGH$ is not unequal to $GHD$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (it is) equal.",
+    "assertion": "AGH equals GHD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(it is) equal" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But, $AGH$ is equal to $EGB$ [Prop.~1.15]. ",
+    "assertion": "AGH equals EGB",
+    "proof_cite": "1.15",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "$AGH$ is equal to $EGB$" },
+      { "label": "glue",      "text": " [Prop.~1.15]. " }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $EGB$ is thus also equal to $GHD$.",
+    "assertion": "EGB equals GHD",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$EGB$ is thus also equal to $GHD$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Let $BGH$ be added to both.",
+    "assertion": "BGH added to both EGB and GHD",
+    "spans": [
+      { "label": "assertion", "text": "Let $BGH$ be added to both." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $EGB$ and $BGH$ is equal to (the sum of) $BGH$ and $GHD$.",
+    "assertion": "EGB + BGH equals BGH + GHD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, (the sum of) " },
+      { "label": "assertion", "text": "$EGB$ and $BGH$ is equal to (the sum of) $BGH$ and $GHD$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But, (the sum of) $EGB$ and $BGH$ is equal to two right-angles [Prop.~1.13]. ",
+    "assertion": "EGB + BGH equals two right-angles",
+    "proof_cite": "1.13",
+    "spans": [
+      { "label": "glue",      "text": "But, (the sum of) " },
+      { "label": "assertion", "text": "$EGB$ and $BGH$ is equal to two right-angles" },
+      { "label": "glue",      "text": " [Prop.~1.13]. " }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $BGH$ and $GHD$ is also equal to two right-angles. ",
+    "assertion": "BGH + GHD equals two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "Thus, (the sum of) " },
+      { "label": "assertion", "text": "$BGH$ and $GHD$ is also equal to two right-angles" },
+      { "label": "glue",      "text": ". " }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, a straight-line falling across parallel straight-lines makes the alternate angles equal to one another,  the external (angle) equal to the internal and opposite (angle), and the (sum of the) internal (angles) on the same side equal to two right-angles. (Which is) the very thing it was required to show."
+  }
+]

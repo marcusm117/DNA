@@ -1,0 +1,19 @@
+[
+  {"role": "intro", "text": "To draw a straight-line parallel to a given straight-line, through a given point.  Let $A$ be the given point, and $BC$ the given straight-line. So it is required to draw a straight-line parallel to the straight-line $BC$, through the point $A$. "},
+  {"role": "construction", "text": "Let the point $D$ have been taken a random  on $BC$,", "construction_cite": null, "objects_introduced": ["$D$"]},
+  {"role": "construction", "text": "and let $AD$ have been joined.", "construction_cite": null, "objects_introduced": ["$AD$"]},
+  {"role": "construction", "text": "And let (angle) $DAE$, equal to angle $ADC$,  have been constructed  on the straight-line $DA$ at the point $A$ on it [Prop.~1.23].", "construction_cite": "1.23", "objects_introduced": ["$E$"]},
+  {"role": "construction", "text": "And let the straight-line $AF$ have been produced in a straight-line with $EA$.  ", "construction_cite": null, "objects_introduced": ["$F$"]},
+  {"role": "deduction",
+    "text": "And since the straight-line $AD$, (in) falling across the two straight-lines $BC$ and $EF$,  has made the alternate angles $EAD$ and $ADC$ equal to one another, $EAF$ is thus parallel to $BC$ [Prop.~1.27]. ",
+    "assertion": "EAF is parallel to BC",
+    "spans": [
+      {"label": "glue", "text": "And since "},
+      {"label": "assumption", "text": "the straight-line $AD$, (in) falling across the two straight-lines $BC$ and $EF$,  has made the alternate angles $EAD$ and $ADC$ equal to one another"},
+      {"label": "glue", "text": ", "},
+      {"label": "assertion", "text": "$EAF$ is thus parallel to $BC$"},
+      {"label": "glue", "text": " [Prop.~1.27]. "}
+    ],
+    "proof_cite": "1.27"},
+  {"role": "conclusion", "text": "Thus, the straight-line $EAF$ has been drawn parallel to the given straight-line $BC$, through the  given point $A$. (Which is) the very thing it was required to do."}
+]

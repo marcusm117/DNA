@@ -1,0 +1,112 @@
+[
+  {
+    "role": "intro",
+    "text": "In any triangle,  (if) one of the sides (is) produced  (then) the external angle is equal to the (sum of the) two internal and opposite (angles), and the (sum of the) three internal angles of the triangle is equal to two right-angles. Let $ABC$ be a triangle, and let one of its sides $BC$ have been produced to $D$. I say that the external angle $ACD$ is equal to the (sum of the) two internal and opposite angles $CAB$ and $ABC$, and the (sum of the) three internal angles of the triangle---$ABC$, $BCA$, and $CAB$---is equal to two right-angles. "
+  },
+  {
+    "role": "construction",
+    "text": "For let $CE$ have been drawn through point $C$ parallel to the straight-line $AB$ [Prop.~1.31]. ",
+    "construction_cite": "1.31",
+    "objects_introduced": ["$CE$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $AB$ is parallel to $CE$, and $AC$ has fallen across them, the alternate angles $BAC$ and $ACE$ are equal to one another [Prop.~1.29].",
+    "assertion": "alternate angles BAC and ACE are equal to one another",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$AB$ is parallel to $CE$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$AC$ has fallen across them" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "alternate angles $BAC$ and $ACE$ are equal to one another" },
+      { "label": "glue",       "text": " [Prop.~1.29]." }
+    ],
+    "proof_cite": "1.29"
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since $AB$ is parallel to $CE$, and the straight-line $BD$ has fallen across them,  the external angle $ECD$ is equal to the internal and opposite (angle) $ABC$ [Prop.~1.29].",
+    "assertion": "external angle ECD equals the internal and opposite angle ABC",
+    "spans": [
+      { "label": "glue",       "text": "Again, since " },
+      { "label": "assumption", "text": "$AB$ is parallel to $CE$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "the straight-line $BD$ has fallen across them" },
+      { "label": "glue",       "text": ",  the " },
+      { "label": "assertion",  "text": "external angle $ECD$ is equal to the internal and opposite (angle) $ABC$" },
+      { "label": "glue",       "text": " [Prop.~1.29]." }
+    ],
+    "proof_cite": "1.29"
+  },
+  {
+    "role": "deduction",
+    "text": "But $ACE$ was also shown (to be) equal to $BAC$.",
+    "assertion": "angle ACE was shown equal to angle BAC",
+    "spans": [
+      { "label": "glue",      "text": "But " },
+      { "label": "assertion", "text": "$ACE$ was also shown (to be) equal to $BAC$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the whole angle $ACD$ is equal to the (sum of the) two internal and opposite (angles) $BAC$ and $ABC$. ",
+    "assertion": "whole angle ACD equals the sum of the two internal and opposite angles BAC and ABC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "whole angle $ACD$ is equal to the (sum of the) two internal and opposite (angles) $BAC$ and $ABC$" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Let $ACB$ have been added to both.",
+    "assertion": "add angle ACB to both sides",
+    "spans": [
+      { "label": "glue",      "text": "Let " },
+      { "label": "assertion", "text": "$ACB$ have been added to both" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $ACD$ and $ACB$ is equal to the (sum of the) three (angles) $ABC$, $BCA$, and $CAB$.",
+    "assertion": "ACD plus ACB equals the sum of the three angles ABC, BCA, and CAB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(the sum of) $ACD$ and $ACB$ is equal to the (sum of the) three (angles) $ABC$, $BCA$, and $CAB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, (the sum of) $ACD$ and $ACB$ is equal to two right-angles [Prop.~1.13].",
+    "assertion": "ACD plus ACB equals two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "(the sum of) $ACD$ and $ACB$ is equal to two right-angles" },
+      { "label": "glue",      "text": " [Prop.~1.13]." }
+    ],
+    "proof_cite": "1.13"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $ACB$, $CBA$, and $CAB$ is also equal to two right-angles. ",
+    "assertion": "ACB plus CBA plus CAB equals two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(the sum of) $ACB$, $CBA$, and $CAB$ is also equal to two right-angles" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in any triangle,  (if) one of the sides  (is) produced (then) the external angle is equal to the (sum of the) two internal and opposite (angles), and the (sum of the) three internal angles of the triangle is equal to two right-angles. (Which is) the very thing it was required to show."
+  }
+]

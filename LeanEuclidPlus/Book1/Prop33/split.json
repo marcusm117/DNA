@@ -1,0 +1,96 @@
+[
+  { "role": "intro",
+    "text": "Straight-lines joining equal and parallel (straight-lines) on the same sides are  themselves also equal and parallel.  Let $AB$ and $CD$ be equal and parallel (straight-lines), and let the straight-lines $AC$ and $BD$ join them on the same sides. I say that $AC$ and $BD$ are also equal and parallel. " },
+
+  { "role": "construction",
+    "text": "Let $BC$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$BC$"] },
+
+  { "role": "deduction",
+    "text": "And since $AB$ is parallel to $CD$, and $BC$ has fallen across them, the alternate angles $ABC$ and $BCD$ are equal to one another [Prop.~1.29].",
+    "assertion": "alternate angles ABC and BCD are equal to one another",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$AB$ is parallel to $CD$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$BC$ has fallen across them" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "alternate angles $ABC$ and $BCD$ are equal to one another" },
+      { "label": "glue",       "text": " [Prop.~1.29]." } ],
+    "proof_cite": "1.29" },
+
+  { "role": "deduction",
+    "text": "And since $AB$ is equal to $CD$, and $BC$ is common, the two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DC$, $CB$.And the angle $ABC$ is equal to the angle $BCD$.",
+    "assertion": "the two lines AB,BC equal the two lines DC,CB; and angle ABC equals angle BCD",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$AB$ is equal to $CD$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$BC$ is common" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DC$, $CB$" },
+      { "label": "glue",       "text": ".And the " },
+      { "label": "assertion",  "text": "angle $ABC$ is equal to the angle $BCD$" },
+      { "label": "glue",       "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, the base $AC$ is equal to the base $BD$,",
+    "assertion": "base AC is equal to base BD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "base $AC$ is equal to the base $BD$" },
+      { "label": "glue",      "text": "," } ],
+    "proof_cite": "1.4" },
+
+  { "role": "deduction",
+    "text": "and triangle $ABC$ is equal to triangle $DCB$,",
+    "assertion": "triangle ABC is equal to triangle DCB",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "triangle $ABC$ is equal to triangle $DCB$" },
+      { "label": "glue",      "text": "," } ],
+    "proof_cite": "1.4" },
+
+  { "role": "deduction",
+    "text": "and the remaining angles will be equal to the corresponding remaining angles subtended by the equal sides [Prop.~1.4].",
+    "assertion": "the remaining angles equal the corresponding remaining angles subtended by the equal sides",
+    "spans": [
+      { "label": "glue",      "text": "and the " },
+      { "label": "assertion", "text": "remaining angles will be equal to the corresponding remaining angles subtended by the equal sides" },
+      { "label": "glue",      "text": " [Prop.~1.4]." } ],
+    "proof_cite": "1.4" },
+
+  { "role": "deduction",
+    "text": "Thus,  angle $ACB$  is equal to $CBD$.",
+    "assertion": "angle ACB is equal to angle CBD",
+    "spans": [
+      { "label": "glue",      "text": "Thus,  " },
+      { "label": "assertion", "text": "angle $ACB$  is equal to $CBD$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Also, since the straight-line $BC$, (in) falling across the two straight-lines $AC$ and $BD$, has made the alternate angles  ($ACB$ and $CBD$) equal to one another, $AC$ is thus parallel to $BD$ [Prop.~1.27].",
+    "assertion": "AC is parallel to BD",
+    "spans": [
+      { "label": "glue",       "text": "Also, since " },
+      { "label": "assumption", "text": "the straight-line $BC$, (in) falling across the two straight-lines $AC$ and $BD$, has made the alternate angles  ($ACB$ and $CBD$) equal to one another" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$AC$ is thus parallel to $BD$" },
+      { "label": "glue",       "text": " [Prop.~1.27]." } ],
+    "proof_cite": "1.27" },
+
+  { "role": "deduction",
+    "text": "And ($AC$) was also shown (to be) equal to ($BD$). ",
+    "assertion": "AC was also shown to be equal to BD",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "($AC$) was also shown (to be) equal to ($BD$)" },
+      { "label": "glue",      "text": ". " } ],
+    "proof_cite": null },
+
+  { "role": "conclusion",
+    "text": "Thus, straight-lines joining equal and parallel (straight-lines) on the same sides are  themselves also equal and parallel. (Which is) the very thing it was required to show." }
+]

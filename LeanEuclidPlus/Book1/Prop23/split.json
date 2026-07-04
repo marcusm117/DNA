@@ -1,0 +1,69 @@
+[
+  {
+    "role": "intro",
+    "text": "To construct a rectilinear angle equal to a given rectilinear angle at a (given) point on a given straight-line. Let $AB$ be the given straight-line,  $A$ the (given) point on it, and  $DCE$ the given rectilinear angle. So it is required to construct a rectilinear angle equal to the given rectilinear angle $DCE$ at the (given) point $A$ on the given straight-line $AB$. "
+  },
+  {
+    "role": "construction",
+    "text": "Let the points $D$ and $E$ have been taken at random on each of the (straight-lines) $CD$ and $CE$ (respectively), and let $DE$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$D$", "$E$", "$DE$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let the triangle $AFG$ have been constructed from three straight-lines which are equal to $CD$, $DE$, and $CE$,",
+    "construction_cite": null,
+    "objects_introduced": ["$F$", "$G$", "$AFG$"]
+  },
+  {
+    "role": "deduction",
+    "text": "such that $CD$ is equal to $AF$,",
+    "assertion": "CD equals AF",
+    "spans": [
+      { "label": "glue",      "text": "such that " },
+      { "label": "assertion", "text": "$CD$ is equal to $AF$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "$CE$ to $AG$,",
+    "assertion": "CE equals AG",
+    "spans": [
+      { "label": "assertion", "text": "$CE$ to $AG$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and further $DE$ to $FG$ [Prop.~1.22]. ",
+    "assertion": "DE equals FG",
+    "spans": [
+      { "label": "glue",      "text": "and further " },
+      { "label": "assertion", "text": "$DE$ to $FG$" },
+      { "label": "glue",      "text": " [Prop.~1.22]. " }
+    ],
+    "proof_cite": "1.22"
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since the two (straight-lines) $DC$, $CE$ are equal to the two (straight-lines) $FA$, $AG$, respectively, and the base $DE$ is equal to the base $FG$, the angle $DCE$ is thus equal to the angle $FAG$ [Prop.~1.8]. ",
+    "assertion": "angle DCE equals angle FAG",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "the two (straight-lines) $DC$, $CE$ are equal to the two (straight-lines) $FA$, $AG$, respectively" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "the base $DE$ is equal to the base $FG$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the angle $DCE$ is thus equal to the angle $FAG$" },
+      { "label": "glue",       "text": " [Prop.~1.8]. " }
+    ],
+    "proof_cite": "1.8"
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, the rectilinear angle $FAG$,  equal to the  given rectilinear angle $DCE$, has been constructed at the (given) point $A$ on the given straight-line $AB$. (Which is) the very thing it was required to do."
+  }
+]

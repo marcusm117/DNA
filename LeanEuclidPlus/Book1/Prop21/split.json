@@ -1,0 +1,142 @@
+[
+  {
+    "role": "intro",
+    "text": "If two internal straight-lines are constructed on one of the sides of a triangle, from its ends,  the constructed (straight-lines) will be less than the two remaining  sides of the triangle, but will encompass a greater angle. For let the two internal straight-lines $BD$ and $DC$ have been constructed on one of the sides $BC$ of the triangle $ABC$, from its ends $B$ and $C$ (respectively). I say that  $BD$ and $DC$ are less than the (sum of the) two  remaining sides of the triangle $BA$ and $AC$, but encompass an angle $BDC$ greater than $BAC$. "
+  },
+  {
+    "role": "construction",
+    "text": "For let $BD$ have been drawn through to $E$.",
+    "construction_cite": null,
+    "objects_introduced": ["$E$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since in any triangle (the sum of any) two sides is greater than the remaining (side) [Prop.~1.20],  in triangle $ABE$ the  (sum of the) two sides $AB$ and $AE$ is thus  greater than $BE$.",
+    "assertion": "AB and AE is greater than BE (in triangle ABE, by Prop 1.20)",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "in any triangle (the sum of any) two sides is greater than the remaining (side) [Prop.~1.20]" },
+      { "label": "glue",       "text": ",  in triangle $ABE$ the  (sum of the) two sides " },
+      { "label": "assertion",  "text": "$AB$ and $AE$ is thus  greater than $BE$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": "1.20"
+  },
+  {
+    "role": "deduction",
+    "text": "Let $EC$ have been added to both.",
+    "assertion": "EC is added to both sides of the inequality",
+    "spans": [
+      { "label": "assertion", "text": "Let $EC$ have been added to both" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $BA$ and $AC$ is greater than (the sum of) $BE$ and $EC$. ",
+    "assertion": "BA and AC is greater than BE and EC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, (the sum of) " },
+      { "label": "assertion", "text": "$BA$ and $AC$ is greater than (the sum of) $BE$ and $EC$" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since in triangle $CED$ the (sum of the) two sides $CE$ and $ED$ is  greater than $CD$, let $DB$ have been added to both.",
+    "assertion": "DB is added to both sides of CE + ED > CD, giving CE + ED + DB > CD + DB",
+    "spans": [
+      { "label": "glue",       "text": "Again, since in triangle $CED$ the (sum of the) two sides " },
+      { "label": "assumption", "text": "$CE$ and $ED$ is  greater than $CD$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "let $DB$ have been added to both" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus,  (the sum of) $CE$ and $EB$ is greater than  (the sum of) $CD$ and $DB$.",
+    "assertion": "CE and EB is greater than CD and DB",
+    "spans": [
+      { "label": "glue",      "text": "Thus,  (the sum of) " },
+      { "label": "assertion", "text": "$CE$ and $EB$ is greater than  (the sum of) $CD$ and $DB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, (the sum of) $BA$ and $AC$ was shown (to be) greater than (the sum of) $BE$  and $EC$.",
+    "assertion": "BA and AC was shown greater than BE and EC (recalled)",
+    "spans": [
+      { "label": "glue",       "text": "But, (the sum of) " },
+      { "label": "assumption", "text": "$BA$ and $AC$ was shown (to be) greater than (the sum of) $BE$  and $EC$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $BA$ and $AC$ is much greater than (the sum of) $BD$ and $DC$. ",
+    "assertion": "BA and AC is much greater than BD and DC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, (the sum of) " },
+      { "label": "assertion", "text": "$BA$ and $AC$ is much greater than (the sum of) $BD$ and $DC$" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since in any  triangle the external angle  is greater than the internal and opposite (angles) [Prop. 1.16],  in triangle $CDE$ the external angle $BDC$ is thus greater than $CED$. ",
+    "assertion": "BDC is greater than CED (external angle of triangle CDE, by Prop 1.16)",
+    "spans": [
+      { "label": "glue",       "text": "Again, since " },
+      { "label": "assumption", "text": "in any  triangle the external angle  is greater than the internal and opposite (angles) [Prop. 1.16]" },
+      { "label": "glue",       "text": ",  in triangle $CDE$ the external angle " },
+      { "label": "assertion",  "text": "$BDC$ is thus greater than $CED$" },
+      { "label": "glue",       "text": ". " }
+    ],
+    "proof_cite": "1.16"
+  },
+  {
+    "role": "deduction",
+    "text": "Accordingly, for the same (reason),  the external angle $CEB$ of the triangle $ABE$ is also greater than $BAC$.",
+    "assertion": "CEB is greater than BAC (external angle of triangle ABE)",
+    "spans": [
+      { "label": "glue",      "text": "Accordingly, for the same (reason),  the external angle " },
+      { "label": "assertion", "text": "$CEB$ of the triangle $ABE$ is also greater than $BAC$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, $BDC$ was shown (to be)  greater than $CEB$.",
+    "assertion": "BDC was shown greater than CEB (recalled)",
+    "spans": [
+      { "label": "glue",       "text": "But, " },
+      { "label": "assumption", "text": "$BDC$ was shown (to be)  greater than $CEB$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $BDC$ is much greater than $BAC$. ",
+    "assertion": "BDC is much greater than BAC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$BDC$ is much greater than $BAC$" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if two internal straight-lines are constructed on one of the sides of a triangle, from its ends,  the constructed (straight-lines) are less than the two remaining  sides of the triangle, but  encompass a greater angle. (Which is) the very thing it was required to show."
+  }
+]

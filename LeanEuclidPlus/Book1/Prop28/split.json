@@ -1,0 +1,106 @@
+[
+  {
+    "role": "intro",
+    "text": "If a straight-line falling across two straight-lines makes the external angle equal to the internal and opposite angle on the same side, or (makes) the (sum  of the) internal (angles) on the same side equal to two right-angles, then the (two) straight-lines will be parallel to one another.   For let $EF$, falling across the two straight-lines $AB$ and $CD$, make the external angle $EGB$ equal to the internal and opposite angle $GHD$, or the (sum of the) internal (angles) on the same side, $BGH$ and $GHD$, equal to two right-angles. I say that $AB$ is parallel to $CD$. "
+  },
+  {
+    "role": "deduction",
+    "text": "For since (in the first case) $EGB$ is equal to $GHD$, but $EGB$ is equal to $AGH$ [Prop.~1.15], $AGH$ is thus also equal to $GHD$.",
+    "assertion": "AGH is equal to GHD (by transitivity via EGB)",
+    "spans": [
+      { "label": "glue",       "text": "For since (in the first case) " },
+      { "label": "assumption", "text": "$EGB$ is equal to $GHD$" },
+      { "label": "glue",       "text": ", but " },
+      { "label": "assumption", "text": "$EGB$ is equal to $AGH$ [Prop.~1.15]" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$AGH$ is thus also equal to $GHD$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": "1.15"
+  },
+  {
+    "role": "deduction",
+    "text": "And they are alternate (angles).",
+    "assertion": "AGH and GHD are alternate angles",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "they are alternate (angles)" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AB$ is  parallel to $CD$ [Prop.~1.27].  ",
+    "assertion": "AB is parallel to CD (Case 1)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AB$ is  parallel to $CD$ [Prop.~1.27]" },
+      { "label": "glue",      "text": ".  " }
+    ],
+    "proof_cite": "1.27"
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since (in the second case, the sum of) $BGH$ and $GHD$ is equal to two right-angles,  and (the sum of) $AGH$ and $BGH$ is also equal to two right-angles [Prop.~1.13],  (the sum of) $AGH$ and $BGH$ is thus equal to (the sum of) $BGH$ and $GHD$.",
+    "assertion": "AGH + BGH equals BGH + GHD",
+    "spans": [
+      { "label": "glue",       "text": "Again, since (in the second case, the sum of) " },
+      { "label": "assumption", "text": "$BGH$ and $GHD$ is equal to two right-angles" },
+      { "label": "glue",       "text": ",  and (the sum of) " },
+      { "label": "assumption", "text": "$AGH$ and $BGH$ is also equal to two right-angles [Prop.~1.13]" },
+      { "label": "glue",       "text": ",  " },
+      { "label": "assertion",  "text": "(the sum of) $AGH$ and $BGH$ is thus equal to (the sum of) $BGH$ and $GHD$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": "1.13"
+  },
+  {
+    "role": "deduction",
+    "text": "Let $BGH$ have been subtracted from both.",
+    "assertion": "BGH is subtracted from both (AGH+BGH) and (BGH+GHD)",
+    "spans": [
+      { "label": "glue",      "text": "Let " },
+      { "label": "assertion", "text": "$BGH$ have been subtracted from both" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remainder $AGH$ is equal to the remainder $GHD$.",
+    "assertion": "remainder AGH equals remainder GHD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "remainder $AGH$ is equal to the remainder $GHD$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And they are alternate (angles).",
+    "assertion": "AGH and GHD are alternate angles",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "they are alternate (angles)" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AB$ is parallel to $CD$ [Prop.~1.27]. ",
+    "assertion": "AB is parallel to CD (Case 2)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AB$ is parallel to $CD$ [Prop.~1.27]" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": "1.27"
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if a straight-line falling across  two straight-lines makes the external angle equal to the internal and opposite angle on the same side, or (makes) the (sum of the) internal (angles) on the same side equal to two right-angles, then the (two) straight-lines will be parallel (to one another). (Which is) the very thing it was required to show."
+  }
+]

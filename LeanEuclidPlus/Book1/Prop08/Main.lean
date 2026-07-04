@@ -38,7 +38,7 @@ theorem proposition_8 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
     L
 
   have h_ptImg_c : ptImg c = c' := by
-    have hcb : c ≠ b := by euclid_finish
+    have hcb : c ≠ b := by clear ptImg lineImg; euclid_finish
     simp (config := { zetaDelta := true }) [hcb]
   have h_lineImg_AB : lineImg AB = EG := by
     simp (config := { zetaDelta := true }) [left_7]

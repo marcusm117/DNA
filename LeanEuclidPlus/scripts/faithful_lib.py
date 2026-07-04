@@ -1825,6 +1825,8 @@ def dependency_problems(propdir):
     problems = []
     for m in SENTENCE_TEXT_RE.finditer(blank_comments(main_src)):
         loc, text = m.group(1), m.group(2)
+        if not m.group(0).startswith('euclid_sentence'):
+            continue                                        # intro/conclude/wts: background citations only
         for cb, cn in CITE_RE.findall(text):
             num = int(cn)
             if num in cons:

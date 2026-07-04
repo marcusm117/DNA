@@ -1,0 +1,440 @@
+[
+  {
+    "role": "intro",
+    "text": "If  two triangles have two angles equal to two angles, respectively,  and one side equal to one side---in fact, either that by the equal angles, or that subtending one of the equal angles---then (the triangles) will also have the remaining sides equal to the [corresponding] remaining sides, and the remaining angle (equal) to the remaining angle.  Let $ABC$ and $DEF$ be two triangles having the two angles $ABC$ and $BCA$ equal to the two (angles) $DEF$ and $EFD$, respectively. (That is) $ABC$ (equal) to $DEF$, and $BCA$ to $EFD$. And let them also have one side equal to one side. First of all, the (side) by the equal angles. (That is) $BC$ (equal) to $EF$. I say that they will have the  remaining sides equal to the corresponding remaining sides. (That is) $AB$ (equal) to $DE$, and $AC$ to $DF$. And (they will have) the remaining angle (equal) to the remaining angle. (That is) $BAC$ (equal) to $EDF$."
+  },
+  {
+    "role": "deduction",
+    "text": " For if $AB$ is unequal to $DE$ then one of them is greater.",
+    "assertion": "if AB unequal to DE then one is greater",
+    "spans": [
+      { "label": "glue",      "text": " For if " },
+      { "label": "assertion", "text": "$AB$ is unequal to $DE$ then one of them is greater" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "construction",
+    "text": "Let $AB$ be greater, and let $BG$ be made equal to $DE$ [Prop.~1.3], and let $GC$ have been joined.",
+    "construction_cite": "1.3",
+    "objects_introduced": ["$BG$", "$GC$"]
+  },
+  {
+    "role": "deduction",
+    "text": " Therefore, since $BG$ is equal to $DE$, and $BC$ to $EF$, the two (straight-lines) $GB$, $BC$ are equal to the two (straight-lines) $DE$, $EF$, respectively.",
+    "assertion": "GB and BC equal DE and EF respectively",
+    "spans": [
+      { "label": "glue",       "text": " Therefore, since " },
+      { "label": "assumption", "text": "$BG$ is equal to $DE$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$BC$ to $EF$" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "two (straight-lines) $GB$, $BC$ are equal to the two (straight-lines) $DE$, $EF$, respectively" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $GBC$ is equal to angle $DEF$.",
+    "assertion": "angle GBC equals angle DEF",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "angle $GBC$ is equal to angle $DEF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $GC$ is equal to the base $DF$,",
+    "assertion": "base GC equals base DF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "base $GC$ is equal to the base $DF$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and triangle $GBC$ is equal to triangle $DEF$,",
+    "assertion": "triangle GBC equals triangle DEF",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "triangle $GBC$ is equal to triangle $DEF$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and the remaining angles  subtended by the equal sides will be equal to the (corresponding) remaining angles [Prop.~1.4].",
+    "assertion": "remaining angles subtended by equal sides are equal",
+    "spans": [
+      { "label": "glue",      "text": "and the " },
+      { "label": "assertion", "text": "remaining angles  subtended by the equal sides will be equal to the (corresponding) remaining angles" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $GCB$ (is equal) to $DFE$.",
+    "assertion": "angle GCB equals angle DFE",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$GCB$ (is equal) to $DFE$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But,  $DFE$ was assumed (to be) equal to $BCA$.",
+    "assertion": "DFE equals BCA (given assumption)",
+    "spans": [
+      { "label": "glue",      "text": "But,  " },
+      { "label": "assertion", "text": "$DFE$ was assumed (to be) equal to $BCA$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $BCG$ is also equal to $BCA$, the lesser to the greater.",
+    "assertion": "BCG equals BCA, lesser to greater (contradiction setup)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$BCG$ is also equal to $BCA$, the lesser to the greater" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing (is) impossible.",
+    "assertion": "contradiction",
+    "spans": [
+      { "label": "assertion", "text": "The very thing (is) impossible" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AB$ is not unequal to $DE$.",
+    "assertion": "AB is not unequal to DE",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AB$ is not unequal to $DE$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (it is) equal.",
+    "assertion": "AB equals DE",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(it is) equal" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $BC$ is also equal to $EF$.",
+    "assertion": "BC equals EF",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$BC$ is also equal to $EF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So the two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DE$, $EF$, respectively.",
+    "assertion": "AB and BC equal DE and EF respectively",
+    "spans": [
+      { "label": "glue",      "text": "So the " },
+      { "label": "assertion", "text": "two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DE$, $EF$, respectively" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $ABC$ is equal to angle $DEF$.",
+    "assertion": "angle ABC equals angle DEF",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "angle $ABC$ is equal to angle $DEF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $AC$ is equal to the base $DF$,",
+    "assertion": "base AC equals base DF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "base $AC$ is equal to the base $DF$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and the remaining angle $BAC$ is equal to the remaining angle $EDF$ [Prop.~1.4].",
+    "assertion": "angle BAC equals angle EDF",
+    "spans": [
+      { "label": "glue",      "text": "and the " },
+      { "label": "assertion", "text": "remaining angle $BAC$ is equal to the remaining angle $EDF$" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": " But, again, let the sides subtending the equal angles be equal: for instance,  (let) $AB$ (be equal) to $DE$.",
+    "assertion": "second case: AB equals DE (sides subtending equal angles)",
+    "spans": [
+      { "label": "glue",      "text": " But, again, let the sides subtending the equal angles be equal: for instance,  (let) " },
+      { "label": "assertion", "text": "$AB$ (be equal) to $DE$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": " Again, I say that the remaining sides will be equal to the remaining sides.",
+    "assertion": "the remaining sides will be equal to the remaining sides",
+    "spans": [
+      { "label": "glue",      "text": " Again, I say that the " },
+      { "label": "assertion", "text": "remaining sides will be equal to the remaining sides" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "(That is) $AC$ (equal) to $DF$,",
+    "assertion": "AC equals DF",
+    "spans": [
+      { "label": "glue",      "text": "(That is) " },
+      { "label": "assertion", "text": "$AC$ (equal) to $DF$" },
+      { "label": "glue",      "text": "," }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "and $BC$ to $EF$.",
+    "assertion": "BC equals EF",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "$BC$ to $EF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Furthermore, the remaining angle $BAC$ is equal to the remaining angle $EDF$.",
+    "assertion": "angle BAC equals angle EDF",
+    "spans": [
+      { "label": "glue",      "text": "Furthermore, the " },
+      { "label": "assertion", "text": "remaining angle $BAC$ is equal to the remaining angle $EDF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": " For if $BC$ is unequal to $EF$ then one of them is greater.",
+    "assertion": "if BC unequal to EF then one is greater",
+    "spans": [
+      { "label": "glue",      "text": " For if " },
+      { "label": "assertion", "text": "$BC$ is unequal to $EF$ then one of them is greater" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "construction",
+    "text": "If possible, let $BC$ be greater. And let $BH$ be made equal to $EF$ [Prop.~1.3], and let $AH$ have been joined.",
+    "construction_cite": "1.3",
+    "objects_introduced": ["$BH$", "$AH$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $BH$ is equal to $EF$, and $AB$ to $DE$, the two (straight-lines) $AB$, $BH$ are equal to the two (straight-lines) $DE$, $EF$, respectively.",
+    "assertion": "AB and BH equal DE and EF respectively",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$BH$ is equal to $EF$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$AB$ to $DE$" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "two (straight-lines) $AB$, $BH$ are equal to the two (straight-lines) $DE$, $EF$, respectively" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And the angles they encompass (are also equal).",
+    "assertion": "the angles encompassed by AB,BH and DE,EF are equal",
+    "spans": [
+      { "label": "glue",      "text": "And the " },
+      { "label": "assertion", "text": "angles they encompass (are also equal)" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $AH$ is equal to the base   $DF$,",
+    "assertion": "base AH equals base DF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "base $AH$ is equal to the base   $DF$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and the triangle $ABH$ is equal to the triangle $DEF$,",
+    "assertion": "triangle ABH equals triangle DEF",
+    "spans": [
+      { "label": "glue",      "text": "and the " },
+      { "label": "assertion", "text": "triangle $ABH$ is equal to the triangle $DEF$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and the remaining angles subtended by the equal sides will be equal to the (corresponding) remaining angles [Prop.~1.4].",
+    "assertion": "remaining angles subtended by equal sides are equal",
+    "spans": [
+      { "label": "glue",      "text": "and the " },
+      { "label": "assertion", "text": "remaining angles subtended by the equal sides will be equal to the (corresponding) remaining angles" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $BHA$  is equal to $EFD$.",
+    "assertion": "angle BHA equals angle EFD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "angle $BHA$  is equal to $EFD$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But, $EFD$ is equal to $BCA$.",
+    "assertion": "EFD equals BCA (given)",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "$EFD$ is equal to $BCA$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So, in triangle $AHC$, the external angle $BHA$ is equal to the internal and opposite angle  $BCA$.",
+    "assertion": "in triangle AHC, external angle BHA equals internal and opposite angle BCA",
+    "spans": [
+      { "label": "glue",      "text": "So, in triangle $AHC$, the " },
+      { "label": "assertion", "text": "external angle $BHA$ is equal to the internal and opposite angle  $BCA$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing (is) impossible [Prop.~1.16].",
+    "assertion": "contradiction",
+    "spans": [
+      { "label": "assertion", "text": "The very thing (is) impossible" },
+      { "label": "glue",      "text": " [Prop.~1.16]." }
+    ],
+    "proof_cite": "1.16"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $BC$ is not unequal to $EF$.",
+    "assertion": "BC is not unequal to EF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$BC$ is not unequal to $EF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (it is) equal.",
+    "assertion": "BC equals EF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(it is) equal" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $AB$ is also equal to $DE$.",
+    "assertion": "AB equals DE",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$AB$ is also equal to $DE$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So the two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DE$, $EF$, respectively.",
+    "assertion": "AB and BC equal DE and EF respectively",
+    "spans": [
+      { "label": "glue",      "text": "So the " },
+      { "label": "assertion", "text": "two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DE$, $EF$, respectively" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And they encompass equal angles.",
+    "assertion": "AB,BC and DE,EF encompass equal angles",
+    "spans": [
+      { "label": "glue",      "text": "And they " },
+      { "label": "assertion", "text": "encompass equal angles" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $AC$ is equal to the base $DF$,",
+    "assertion": "base AC equals base DF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "base $AC$ is equal to the base $DF$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and triangle $ABC$ (is) equal to triangle $DEF$,",
+    "assertion": "triangle ABC equals triangle DEF",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "triangle $ABC$ (is) equal to triangle $DEF$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and the remaining angle $BAC$ (is) equal to the remaining angle $EDF$ [Prop.~1.4].",
+    "assertion": "angle BAC equals angle EDF",
+    "spans": [
+      { "label": "glue",      "text": "and the " },
+      { "label": "assertion", "text": "remaining angle $BAC$ (is) equal to the remaining angle $EDF$" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "conclusion",
+    "text": " Thus, if two triangles have two angles equal to two angles, respectively,  and one side equal to one side---in fact, either that by the equal angles, or that subtending one of the equal angles---then (the triangles) will also have the remaining sides equal to the (corresponding) remaining sides, and the remaining angle (equal) to the remaining angle. (Which is) the very thing it was required to show."
+  }
+]

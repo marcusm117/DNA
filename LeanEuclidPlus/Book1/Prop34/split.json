@@ -1,0 +1,170 @@
+[
+  { "role": "intro",
+    "text": "In parallelogrammic figures the opposite sides and angles are equal to one another, and a diagonal cuts them in half.  Let $ACDB$ be a parallelogrammic figure, and $BC$ its diagonal. I say that for parallelogram $ACDB$, the opposite sides and angles are equal to one another, and the diagonal $BC$ cuts it in half. " },
+
+  { "role": "deduction",
+    "text": "For since $AB$ is parallel to $CD$, and the straight-line $BC$ has fallen across  them, the alternate angles $ABC$ and $BCD$ are equal to one another [Prop.~1.29]. ",
+    "assertion": "the alternate angles ABC and BCD are equal",
+    "spans": [
+      { "label": "glue",       "text": "For since " },
+      { "label": "assumption", "text": "$AB$ is parallel to $CD$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "the straight-line $BC$ has fallen across  them" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "alternate angles $ABC$ and $BCD$ are equal to one another" },
+      { "label": "glue",       "text": " [Prop.~1.29]. " } ],
+    "proof_cite": "1.29" },
+
+  { "role": "deduction",
+    "text": "Again, since $AC$ is parallel to $BD$, and $BC$ has fallen across them, the alternate angles $ACB$ and $CBD$ are equal to one another [Prop.~1.29]. ",
+    "assertion": "the alternate angles ACB and CBD are equal",
+    "spans": [
+      { "label": "glue",       "text": "Again, since " },
+      { "label": "assumption", "text": "$AC$ is parallel to $BD$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$BC$ has fallen across them" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "alternate angles $ACB$ and $CBD$ are equal to one another" },
+      { "label": "glue",       "text": " [Prop.~1.29]. " } ],
+    "proof_cite": "1.29" },
+
+  { "role": "deduction",
+    "text": "So $ABC$ and $BCD$ are two triangles having the two angles $ABC$ and $BCA$ equal to the two (angles) $BCD$ and $CBD$, respectively, and one side equal to one side---the (one) by the equal angles and common to them, (namely) $BC$.",
+    "assertion": "triangles ABC and BCD have two angles equal to two angles respectively, with the common side BC",
+    "spans": [
+      { "label": "glue",       "text": "So " },
+      { "label": "assertion",  "text": "$ABC$ and $BCD$ are two triangles having " },
+      { "label": "assumption", "text": "the two angles $ABC$ and $BCA$ equal to the two (angles) $BCD$ and $CBD$, respectively" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assertion",  "text": "one side equal to one side---the (one) by the equal angles and common to them, (namely) $BC$" },
+      { "label": "glue",       "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, they will also  have the remaining sides  equal to the corresponding remaining (sides), and the remaining angle (equal) to the remaining angle [Prop.~1.26].",
+    "assertion": "the remaining sides are equal to the remaining sides, and the remaining angle equal to the remaining angle",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "they will also  have the remaining sides  equal to the corresponding remaining (sides), and the remaining angle (equal) to the remaining angle" },
+      { "label": "glue",      "text": " [Prop.~1.26]." } ],
+    "proof_cite": "1.26" },
+
+  { "role": "deduction",
+    "text": "Thus, side $AB$ is equal to $CD$,",
+    "assertion": "side AB equals CD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, side " },
+      { "label": "assertion", "text": "$AB$ is equal to $CD$" },
+      { "label": "glue",      "text": "," } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "and $AC$ to $BD$.",
+    "assertion": "side AC equals BD",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "$AC$ to $BD$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Furthermore, angle $BAC$ is  equal to $CDB$.",
+    "assertion": "angle BAC equals angle CDB",
+    "spans": [
+      { "label": "glue",      "text": "Furthermore, angle " },
+      { "label": "assertion", "text": "$BAC$ is  equal to $CDB$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "And since angle $ABC$ is equal to $BCD$, and $CBD$ to $ACB$, the whole (angle) $ABD$ is thus equal to the whole (angle) $ACD$.",
+    "assertion": "the whole angle ABD equals the whole angle ACD",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "angle $ABC$ is equal to $BCD$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$CBD$ to $ACB$" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "whole (angle) $ABD$ is thus equal to the whole (angle) $ACD$" },
+      { "label": "glue",       "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "And  $BAC$ was also shown  (to be) equal to $CDB$. ",
+    "assertion": "angle BAC was shown equal to CDB",
+    "spans": [
+      { "label": "glue",      "text": "And  " },
+      { "label": "assertion", "text": "$BAC$ was also shown  (to be) equal to $CDB$" },
+      { "label": "glue",      "text": ". " } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, in parallelogrammic figures the opposite sides and angles are equal to one another. ",
+    "assertion": "in parallelograms the opposite sides and angles are equal to one another",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "in parallelogrammic figures the opposite sides and angles are equal to one another" },
+      { "label": "glue",      "text": ". " } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "And, I also say that a diagonal cuts them in half.",
+    "assertion": "(what-to-show) a diagonal cuts them in half",
+    "spans": [
+      { "label": "glue",      "text": "And, I also say that " },
+      { "label": "assertion", "text": "a diagonal cuts them in half" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "For since $AB$ is equal to $CD$, and $BC$ (is) common, the two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DC$, $CB$, respectively.",
+    "assertion": "the two lines AB, BC are equal to the two lines DC, CB respectively",
+    "spans": [
+      { "label": "glue",       "text": "For since " },
+      { "label": "assumption", "text": "$AB$ is equal to $CD$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$BC$ (is) common" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DC$, $CB$, respectively" },
+      { "label": "glue",       "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "And angle $ABC$ is equal to angle $BCD$.",
+    "assertion": "angle ABC equals angle BCD",
+    "spans": [
+      { "label": "glue",      "text": "And angle " },
+      { "label": "assertion", "text": "$ABC$ is equal to angle $BCD$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, the base $AC$ (is) also equal to $DB$,",
+    "assertion": "the base AC equals DB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "base $AC$ (is) also equal to $DB$" },
+      { "label": "glue",      "text": "," } ],
+    "proof_cite": "1.4" },
+
+  { "role": "deduction",
+    "text": "and triangle $ABC$ is equal to triangle $BCD$ [Prop.~1.4]. ",
+    "assertion": "triangle ABC equals triangle BCD",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "triangle $ABC$ is equal to triangle $BCD$" },
+      { "label": "glue",      "text": " [Prop.~1.4]. " } ],
+    "proof_cite": "1.4" },
+
+  { "role": "deduction",
+    "text": "Thus, the diagonal $BC$ cuts the parallelogram $ACDB$ in half.",
+    "assertion": "the diagonal BC cuts the parallelogram ACDB in half",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "diagonal $BC$ cuts the parallelogram $ACDB$ in half" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "conclusion",
+    "text": "(Which is) the very thing it was required to show." }
+]

@@ -1,0 +1,86 @@
+[
+  {
+    "role": "intro",
+    "text": "(Straight-lines) parallel to the same straight-line are also parallel to one another.  Let each of the (straight-lines) $AB$ and $CD$ be parallel to $EF$. I say that $AB$ is also parallel to $CD$. "
+  },
+  {
+    "role": "construction",
+    "text": "For let the straight-line $GK$ fall across  ($AB$, $CD$, and $EF$). ",
+    "construction_cite": null,
+    "objects_introduced": ["$GK$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since the straight-line $GK$ has fallen across the parallel straight-lines $AB$ and $EF$, (angle) $AGK$ (is) thus equal to $GHF$ [Prop.~1.29].",
+    "assertion": "angle AGK equals angle GHF",
+    "spans": [
+      {"label": "glue",       "text": "And since "},
+      {"label": "assumption", "text": "the straight-line $GK$ has fallen across the parallel straight-lines $AB$ and $EF$"},
+      {"label": "glue",       "text": ", (angle) "},
+      {"label": "assertion",  "text": "$AGK$ (is) thus equal to $GHF$"},
+      {"label": "glue",       "text": " [Prop.~1.29]."}
+    ],
+    "proof_cite": "1.29"
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since the straight-line $GK$ has fallen across the parallel straight-lines $EF$ and $CD$, (angle) $GHF$ is equal to $GKD$ [Prop.~1.29].",
+    "assertion": "angle GHF equals angle GKD",
+    "spans": [
+      {"label": "glue",       "text": "Again, since "},
+      {"label": "assumption", "text": "the straight-line $GK$ has fallen across the parallel straight-lines $EF$ and $CD$"},
+      {"label": "glue",       "text": ", (angle) "},
+      {"label": "assertion",  "text": "$GHF$ is equal to $GKD$"},
+      {"label": "glue",       "text": " [Prop.~1.29]."}
+    ],
+    "proof_cite": "1.29"
+  },
+  {
+    "role": "deduction",
+    "text": "But $AGK$ was also shown (to be) equal to $GHF$.",
+    "assertion": "AGK equals GHF (recalled)",
+    "spans": [
+      {"label": "glue",      "text": "But "},
+      {"label": "assertion", "text": "$AGK$ was also shown (to be) equal to $GHF$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AGK$ is also equal to  $GKD$.",
+    "assertion": "angle AGK equals angle GKD",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$AGK$ is also equal to  $GKD$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And they are alternate (angles).",
+    "assertion": "AGK and GKD are alternate angles",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "they are alternate (angles)"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AB$ is parallel to $CD$ [Prop.~1.27].",
+    "assertion": "AB is parallel to CD",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$AB$ is parallel to $CD$"},
+      {"label": "glue",      "text": " [Prop.~1.27]."}
+    ],
+    "proof_cite": "1.27"
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, (straight-lines) parallel to the same straight-line are also parallel to one another.] (Which is) the very thing it was required to show."
+  }
+]

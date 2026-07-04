@@ -498,6 +498,8 @@ def check_olean(json_path: str) -> int:
         construction = applied_by_mod.get(main_mod, [])               # whole-Main `as` constructions
         dep_lines, n_cites = [], 0
         for s in sents:
+            if s.get('kind') == 'structural':
+                continue                                              # intro/conclude/wts: background citations, not proof steps
             for cbook, num in CITE.findall(s['text']):
                 n_cites += 1
                 if any(name_matches(ap['name'], cbook, num) for ap in construction):
