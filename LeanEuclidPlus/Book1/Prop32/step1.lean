@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_32_step1 (c e : Point) (AB CE : Line)
     (hc_CE : c.onLine CE) (he_CE : e.onLine CE) (hCE_AB : ¬CE.intersectsLine AB) :
     c.onLine CE ∧ e.onLine CE ∧ ¬(CE.intersectsLine AB) := by

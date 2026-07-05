@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_32_step4
     (a b c e : Point) (AB BC AC CE : Line)
     (hstep2 : ∠ b:a:c = ∠ a:c:e) :
