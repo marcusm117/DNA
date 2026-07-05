@@ -1,10 +1,23 @@
 import SystemE
+import Book1.Prop35.step1
+import Book1.Prop35.step2
+import Book1.Prop35.step3
+import Book1.Prop35.step4
+import Book1.Prop35.step5
+import Book1.Prop35.step6
+import Book1.Prop35.step7
+import Book1.Prop35.step8
+import Book1.Prop35.step9
+import Book1.Prop35.step10
+import Book1.Prop35.step11
+import Book1.Prop35.step12
+import Book1.Prop35.step13
+import Book1.Prop35.step14
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem proposition_35 : ∀ (a b c d e f g : Point) (AF BC AB CD EB FC : Line),
   formParallelogram a d b c AF BC AB CD ∧ formParallelogram e f b c AF BC EB FC ∧
   between a d e ∧ between d e f ∧ g.onLine CD ∧ g.onLine EB →
@@ -18,60 +31,60 @@ theorem proposition_35 : ∀ (a b c d e f g : Point) (AF BC AB CD EB FC : Line),
   -- @assumption ("$ABCD$ is a parallelogram", formParallelogram a d b c AF BC AB CD)
   euclid_sentence "1.35.1"
     "For since $ABCD$ is a parallelogram, $AD$ is equal to $BC$ [Prop.~1.34]."
-    (step1 : |(a─d)| = |(b─c)|) := by sorry
+    (step1 : |(a─d)| = |(b─c)|) := by euclid_apply (helper_1_35_step1 a d b c AF BC AB CD (by euclid_assumption "$ABCD$ is a parallelogram" (show formParallelogram a d b c AF BC AB CD; assumption)))
 
   euclid_sentence "1.35.2"
     "So, for the same (reasons), $EF$ is also equal to $BC$."
-    (step2 : |(e─f)| = |(b─c)|) := by sorry
+    (step2 : |(e─f)| = |(b─c)|) := by euclid_apply (helper_1_35_step2 e f b c AF BC EB FC (by euclid_assumption "" (show e.onLine AF; assumption)) (by euclid_assumption "" (show f.onLine AF; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show f.onLine FC; assumption)) (by euclid_assumption "" (show c.onLine FC; assumption)) (by euclid_assumption "" (show f ≠ c; assumption)) (by euclid_assumption "" (show e.sameSide b FC; assumption)) (by euclid_assumption "" (show ¬AF.intersectsLine BC; assumption)) (by euclid_assumption "" (show ¬EB.intersectsLine FC; assumption)))
 
   euclid_sentence "1.35.3"
     "So $AD$ is also equal to $EF$."
-    (step3 : |(a─d)| = |(e─f)|) := by sorry
+    (step3 : |(a─d)| = |(e─f)|) := by euclid_apply (helper_1_35_step3 a d e f b c (by euclid_assumption "" (show |(a─d)| = |(b─c)|; assumption)) (by euclid_assumption "" (show |(e─f)| = |(b─c)|; assumption)))
 
   euclid_sentence "1.35.4"
     "And $DE$ is common."
-    (step4 : distinctPointsOnLine d e AF) := by sorry
+    (step4 : distinctPointsOnLine d e AF) := by euclid_apply (helper_1_35_step4 a d e AF (by euclid_assumption "" (show d.onLine AF; assumption)) (by euclid_assumption "" (show e.onLine AF; assumption)) (by euclid_assumption "" (show between a d e; assumption)))
 
   euclid_sentence "1.35.5"
     "Thus, the whole (straight-line) $AE$ is equal to the whole (straight-line) $DF$. "
-    (step5 : |(a─e)| = |(d─f)|) := by sorry
+    (step5 : |(a─e)| = |(d─f)|) := by euclid_apply (helper_1_35_step5 a d e f (by euclid_assumption "" (show between a d e; assumption)) (by euclid_assumption "" (show between d e f; assumption)) (by euclid_assumption "" (show |(a─d)| = |(e─f)|; assumption)))
 
   euclid_sentence "1.35.6"
     "And $AB$ is also equal to $DC$."
-    (step6 : |(a─b)| = |(d─c)|) := by sorry
+    (step6 : |(a─b)| = |(d─c)|) := by euclid_apply (helper_1_35_step6 a d b c AF BC AB CD (by euclid_assumption "" (show formParallelogram a d b c AF BC AB CD; assumption)))
 
   euclid_sentence "1.35.7"
     "So the two (straight-lines) $EA$, $AB$ are equal to the two (straight-lines) $FD$, $DC$, respectively."
-    (step7 : |(e─a)| = |(f─d)| ∧ |(a─b)| = |(d─c)|) := by sorry
+    (step7 : |(e─a)| = |(f─d)| ∧ |(a─b)| = |(d─c)|) := by euclid_apply (helper_1_35_step7 a d e f b c (by euclid_assumption "" (show |(a─e)| = |(d─f)|; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─c)|; assumption)))
 
   euclid_sentence "1.35.8"
     "And angle $FDC$ is equal to angle $EAB$, the external to the internal [Prop.~1.29]."
-    (step8 : ∠ f:d:c = ∠ e:a:b) := by sorry
+    (step8 : ∠ f:d:c = ∠ e:a:b) := by euclid_apply (helper_1_35_step8 a d e f b c AF BC AB CD (by euclid_assumption "" (show formParallelogram a d b c AF BC AB CD; assumption)) (by euclid_assumption "" (show f.onLine AF; assumption)) (by euclid_assumption "" (show e.onLine AF; assumption)) (by euclid_assumption "" (show between a d e; assumption)) (by euclid_assumption "" (show between d e f; assumption)))
 
   euclid_sentence "1.35.9"
     "Thus, the base $EB$ is equal to the base $FC$,"
-    (step9 : |(e─b)| = |(f─c)|) := by sorry
+    (step9 : |(e─b)| = |(f─c)|) := by euclid_apply (helper_1_35_step9 a d e f b c AF BC AB CD EB FC (by euclid_assumption "" (show formParallelogram a d b c AF BC AB CD; assumption)) (by euclid_assumption "" (show e.onLine AF; assumption)) (by euclid_assumption "" (show f.onLine AF; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show f.onLine FC; assumption)) (by euclid_assumption "" (show c.onLine FC; assumption)) (by euclid_assumption "" (show between a d e; assumption)) (by euclid_assumption "" (show between d e f; assumption)) (by euclid_assumption "" (show ¬EB.intersectsLine FC; assumption)) (by euclid_assumption "" (show e.sameSide b FC; assumption)) (by euclid_assumption "" (show |(a─e)| = |(d─f)|; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─c)|; assumption)) (by euclid_assumption "" (show ∠ f:d:c = ∠ e:a:b; assumption)))
 
   euclid_sentence "1.35.10"
     "and triangle $EAB$ will be equal to triangle $DFC$ [Prop.~1.4]."
-    (step10 : Triangle.area △ e:a:b = Triangle.area △ d:f:c) := by sorry
+    (step10 : Triangle.area △ e:a:b = Triangle.area △ d:f:c) := by euclid_apply (helper_1_35_step10 a d e f b c AF BC AB CD EB FC (by euclid_assumption "" (show formParallelogram a d b c AF BC AB CD; assumption)) (by euclid_assumption "" (show e.onLine AF; assumption)) (by euclid_assumption "" (show f.onLine AF; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show f.onLine FC; assumption)) (by euclid_assumption "" (show c.onLine FC; assumption)) (by euclid_assumption "" (show between a d e; assumption)) (by euclid_assumption "" (show between d e f; assumption)) (by euclid_assumption "" (show ¬EB.intersectsLine FC; assumption)) (by euclid_assumption "" (show e.sameSide b FC; assumption)) (by euclid_assumption "" (show |(a─e)| = |(d─f)|; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─c)|; assumption)) (by euclid_assumption "" (show ∠ f:d:c = ∠ e:a:b; assumption)) (by euclid_assumption "" (show |(e─b)| = |(f─c)|; assumption)))
 
   euclid_sentence "1.35.11"
     "Let $DGE$ have been taken away from both. "
-    (step11 : Triangle.area △ e:a:b - Triangle.area △ d:g:e = Triangle.area △ d:f:c - Triangle.area △ d:g:e) := by sorry
+    (step11 : Triangle.area △ e:a:b - Triangle.area △ d:g:e = Triangle.area △ d:f:c - Triangle.area △ d:g:e) := by euclid_apply (helper_1_35_step11 e a b d g f c (by euclid_assumption "" (show Triangle.area △ e:a:b = Triangle.area △ d:f:c; assumption)))
 
   euclid_sentence "1.35.12"
     "Thus, the remaining trapezium $ABGD$ is equal to the remaining trapezium $EGCF$."
-    (step12 : Triangle.area △ a:b:d + Triangle.area △ b:g:d = Triangle.area △ e:g:c + Triangle.area △ e:c:f) := by sorry
+    (step12 : Triangle.area △ a:b:d + Triangle.area △ b:g:d = Triangle.area △ e:g:c + Triangle.area △ e:c:f) := by euclid_apply (helper_1_35_step12 a d e f b c g AF BC AB CD EB FC (by euclid_assumption "" (show formParallelogram a d b c AF BC AB CD; assumption)) (by euclid_assumption "" (show e.onLine AF; assumption)) (by euclid_assumption "" (show f.onLine AF; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show f.onLine FC; assumption)) (by euclid_assumption "" (show c.onLine FC; assumption)) (by euclid_assumption "" (show g.onLine CD; assumption)) (by euclid_assumption "" (show g.onLine EB; assumption)) (by euclid_assumption "" (show between a d e; assumption)) (by euclid_assumption "" (show between d e f; assumption)) (by euclid_assumption "" (show ¬EB.intersectsLine FC; assumption)) (by euclid_assumption "" (show e.sameSide b FC; assumption)) (by euclid_assumption "" (show f ≠ c; assumption)) (by euclid_assumption "" (show Triangle.area △ e:a:b - Triangle.area △ d:g:e = Triangle.area △ d:f:c - Triangle.area △ d:g:e; assumption)))
 
   euclid_sentence "1.35.13"
     "Let triangle $GBC$ have been added to both."
     (step13 : Triangle.area △ a:b:d + Triangle.area △ b:g:d + Triangle.area △ g:b:c =
-              Triangle.area △ e:g:c + Triangle.area △ e:c:f + Triangle.area △ g:b:c) := by sorry
+              Triangle.area △ e:g:c + Triangle.area △ e:c:f + Triangle.area △ g:b:c) := by euclid_apply (helper_1_35_step13 a b c d e f g (by euclid_assumption "" (show Triangle.area △ a:b:d + Triangle.area △ b:g:d = Triangle.area △ e:g:c + Triangle.area △ e:c:f; assumption)))
 
   euclid_sentence "1.35.14"
     "Thus, the whole parallelogram $ABCD$ is equal to the whole parallelogram $EBCF$. "
-    (step14 : Triangle.area △ a:b:d + Triangle.area △ d:b:c = Triangle.area △ e:b:c + Triangle.area △ e:c:f) := by sorry
+    (step14 : Triangle.area △ a:b:d + Triangle.area △ d:b:c = Triangle.area △ e:b:c + Triangle.area △ e:c:f) := by euclid_apply (helper_1_35_step14 a d e f b c g AF BC AB CD EB FC (by euclid_assumption "" (show formParallelogram a d b c AF BC AB CD; assumption)) (by euclid_assumption "" (show e.onLine AF; assumption)) (by euclid_assumption "" (show f.onLine AF; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show f.onLine FC; assumption)) (by euclid_assumption "" (show c.onLine FC; assumption)) (by euclid_assumption "" (show g.onLine CD; assumption)) (by euclid_assumption "" (show g.onLine EB; assumption)) (by euclid_assumption "" (show between a d e; assumption)) (by euclid_assumption "" (show between d e f; assumption)) (by euclid_assumption "" (show ¬EB.intersectsLine FC; assumption)) (by euclid_assumption "" (show e.sameSide b FC; assumption)) (by euclid_assumption "" (show f ≠ c; assumption)) (by euclid_assumption "" (show Triangle.area △ a:b:d + Triangle.area △ b:g:d + Triangle.area △ g:b:c = Triangle.area △ e:g:c + Triangle.area △ e:c:f + Triangle.area △ g:b:c; assumption)))
 
   exact step14
   euclid_conclude_sentence "1.35.15"

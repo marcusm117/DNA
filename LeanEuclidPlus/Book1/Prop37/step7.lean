@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_37_step7 (a b c d e f : Point) (AB BC AC BD CD AD BE CF : Line)
     (h_b_BC : b.onLine BC) (h_c_BC : c.onLine BC)
     (h_d_BD : d.onLine BD) (h_b_BD : b.onLine BD)

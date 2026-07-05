@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_36_step6_ss (a e b : Point) (CH : Line)
   (h_step6_ss_ssa : e.sameSide a CH)
   (h_step6_ss_ssb : a.sameSide b CH) :

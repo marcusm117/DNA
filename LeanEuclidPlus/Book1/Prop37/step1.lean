@@ -1,10 +1,11 @@
 import SystemE
+import Book1.Prop37.step1_dae
+import Book1.Prop37.step1_adf
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_37_step1 (a b c d e f : Point) (AB BC AC BD CD AD BE CF : Line)
     (h_a_AB : a.onLine AB) (h_b_AB : b.onLine AB) (h_ab : a ≠ b)
     (h_b_BC : b.onLine BC) (h_c_BC : c.onLine BC)
@@ -20,8 +21,8 @@ theorem helper_1_37_step1 (a b c d e f : Point) (AB BC AC BD CD AD BE CF : Line)
     (h_c_CF : c.onLine CF) (h_CF_BD : ¬CF.intersectsLine BD)
     (h_f_AD : f.onLine AD) (h_f_CF : f.onLine CF) :
     between d a e ∧ between a d f := by
-  have step1_dae : between d a e := by sorry
-  have step1_adf : between a d f := by sorry
+  have step1_dae : between d a e := by euclid_apply (helper_1_37_step1_dae a b c d e AB BC AC AD BE (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ AC; assumption)) (by euclid_assumption "" (show AC ≠ AB; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show a ≠ d; assumption)) (by euclid_assumption "" (show ¬AD.intersectsLine BC; assumption)) (by euclid_assumption "" (show d.sameSide c AB; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show ¬BE.intersectsLine AC; assumption)) (by euclid_assumption "" (show e.onLine AD; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)))
+  have step1_adf : between a d f := by euclid_apply (helper_1_37_step1_adf a b c d f AB BC BD CD AD CF (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine CD; assumption)) (by euclid_assumption "" (show d.onLine CD; assumption)) (by euclid_assumption "" (show BD ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ CD; assumption)) (by euclid_assumption "" (show CD ≠ BD; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show a ≠ d; assumption)) (by euclid_assumption "" (show ¬AD.intersectsLine BC; assumption)) (by euclid_assumption "" (show d.sameSide c AB; assumption)) (by euclid_assumption "" (show c.onLine CF; assumption)) (by euclid_assumption "" (show ¬CF.intersectsLine BD; assumption)) (by euclid_assumption "" (show f.onLine AD; assumption)) (by euclid_assumption "" (show f.onLine CF; assumption)))
   exact ⟨step1_dae, step1_adf⟩
 
 end Elements.Book1

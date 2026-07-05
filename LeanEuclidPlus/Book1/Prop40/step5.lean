@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_40_step5
     (a b c f e : Point) (AB BC AC CD AF FE : Line)
     -- first triangle abc

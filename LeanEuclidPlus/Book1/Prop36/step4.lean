@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_36_step4 (b c e h : Point) (BE CH : Line)
   (h_step1 : distinctPointsOnLine b e BE ∧ distinctPointsOnLine c h CH) :
   distinctPointsOnLine e b BE ∧ distinctPointsOnLine h c CH := by

@@ -1,11 +1,13 @@
 import SystemE
 import Book.Prop34
+import Book1.Prop36.step6_ss_ssa
+import Book1.Prop36.step6_ss_ssb
+import Book1.Prop36.step6_ss
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_36_step6 (a b c d e h : Point) (AH BG AB CD BE CH : Line)
   (h_a_AH : a.onLine AH) (h_e_AH : e.onLine AH) (h_h_AH : h.onLine AH)
   (h_b_BG : b.onLine BG) (h_c_BG : c.onLine BG)
@@ -34,9 +36,9 @@ theorem helper_1_36_step6 (a b c d e h : Point) (AH BG AB CD BE CH : Line)
     exact same_side_symm a b CD h_ss_ab_CD
   have h_b_ne_c : b ≠ c := fun h_eq => h_b_not_CD (h_eq ▸ h_c_CD)
   have h_dp_bc_BG : distinctPointsOnLine b c BG := ⟨h_b_BG, h_c_BG, h_b_ne_c⟩
-  have step6_ss_ssa : e.sameSide a CH := by sorry
-  have step6_ss_ssb : a.sameSide b CH := by sorry
-  have step6_ss : e.sameSide b CH := by sorry
+  have step6_ss_ssa : e.sameSide a CH := by euclid_apply (helper_1_36_step6_ss_ssa a b c d e h AH BG AB CD CH (by euclid_assumption "" (show a.onLine AH; assumption)) (by euclid_assumption "" (show e.onLine AH; assumption)) (by euclid_assumption "" (show h.onLine AH; assumption)) (by euclid_assumption "" (show b.onLine BG; assumption)) (by euclid_assumption "" (show c.onLine BG; assumption)) (by euclid_assumption "" (show d.onLine AH; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine CD; assumption)) (by euclid_assumption "" (show c.onLine CD; assumption)) (by euclid_assumption "" (show d ≠ c; assumption)) (by euclid_assumption "" (show a.sameSide b CD; assumption)) (by euclid_assumption "" (show ¬AB.intersectsLine CD; assumption)) (by euclid_assumption "" (show c.onLine CH; assumption)) (by euclid_assumption "" (show h.onLine CH; assumption)) (by euclid_assumption "" (show ¬AH.intersectsLine BG; assumption)) (by euclid_assumption "" (show distinctPointsOnLine h c CH; assumption)) (by euclid_assumption "" (show distinctPointsOnLine e h AH; assumption)) (by euclid_assumption "" (show between a e h; assumption)))
+  have step6_ss_ssb : a.sameSide b CH := by euclid_apply (helper_1_36_step6_ss_ssb a b c d e h AH BG AB CD CH (by euclid_assumption "" (show a.onLine AH; assumption)) (by euclid_assumption "" (show e.onLine AH; assumption)) (by euclid_assumption "" (show h.onLine AH; assumption)) (by euclid_assumption "" (show b.onLine BG; assumption)) (by euclid_assumption "" (show c.onLine BG; assumption)) (by euclid_assumption "" (show d.onLine AH; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine CD; assumption)) (by euclid_assumption "" (show c.onLine CD; assumption)) (by euclid_assumption "" (show d ≠ c; assumption)) (by euclid_assumption "" (show a.sameSide b CD; assumption)) (by euclid_assumption "" (show ¬AB.intersectsLine CD; assumption)) (by euclid_assumption "" (show c.onLine CH; assumption)) (by euclid_assumption "" (show h.onLine CH; assumption)) (by euclid_assumption "" (show ¬AH.intersectsLine BG; assumption)) (by euclid_assumption "" (show distinctPointsOnLine e h AH; assumption)) (by euclid_assumption "" (show distinctPointsOnLine b c BG; assumption)) (by euclid_assumption "" (show e.sameSide a CH; assumption)) (by euclid_assumption "" (show between a e h; assumption)) (by euclid_assumption "" (show between a d h; assumption)))
+  have step6_ss : e.sameSide b CH := by euclid_apply (helper_1_36_step6_ss a e b CH (by euclid_assumption "" (show e.sameSide a CH; assumption)) (by euclid_assumption "" (show a.sameSide b CH; assumption)))
   euclid_apply (proposition_34' a d b c AH BG AB CD)
   exact ⟨h_e_AH, h_h_AH, h_b_BG, h_c_BG, h_e_BE, h_b_BE, ⟨h_h_CH, h_c_CH, h_ne_hc⟩, step6_ss, h_par, h_ne_be_ch⟩
 

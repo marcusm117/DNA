@@ -1,11 +1,11 @@
 import SystemE
 import Book.Prop37
+import Book1.Prop39.step5_triEBC
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_39_step5
     (a b c d e : Point) (AB BC AC BD CD EC AE : Line)
     -- triangle abc
@@ -27,7 +27,7 @@ theorem helper_1_39_step5
     : Triangle.area △ a:b:c = Triangle.area △ e:b:c := by
   by_cases hane : a = e
   · subst hane; rfl
-  · have step5_triEBC : formTriangle e b c BD BC EC := by sorry
+  · have step5_triEBC : formTriangle e b c BD BC EC := by euclid_apply (helper_1_39_step5_triEBC a e b c d BD BC EC AE CD (by euclid_assumption "" (show e.onLine BD; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine EC; assumption)) (by euclid_assumption "" (show e.onLine EC; assumption)) (by euclid_assumption "" (show BD ≠ BC; assumption)) (by euclid_assumption "" (show c.onLine CD; assumption)) (by euclid_assumption "" (show d.onLine CD; assumption)) (by euclid_assumption "" (show CD ≠ BD; assumption)) (by euclid_assumption "" (show d ≠ b; assumption)) (by euclid_assumption "" (show a.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine AE; assumption)) (by euclid_assumption "" (show ¬(AE.intersectsLine BC); assumption)) (by euclid_assumption "" (show a.sameSide d BC; assumption)))
     have step5_distAE : distinctPointsOnLine a e AE := ⟨haAE, heAE, hane⟩
     euclid_apply (proposition_37' a b c e AB BC AC BD EC AE)
     euclid_finish

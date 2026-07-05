@@ -6,7 +6,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 private theorem helper_1_38_step1_adh_placeholder : True := trivial
 
 end Elements.Book1

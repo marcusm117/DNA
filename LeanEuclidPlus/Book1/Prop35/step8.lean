@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_35_step8
   (a d e f b c : Point) (AF BC AB CD : Line)
   (hassump1 : formParallelogram a d b c AF BC AB CD)

@@ -9,7 +9,6 @@ namespace Elements.Book1
 -- Impossibility: (△d:c:e).area = (△f:c:e).area contradicts d on AD (meets BC) vs f on AF (∥ BC).
 -- Proof: d ≠ f (AF=AD contradiction), d.sameSide f BC (via AF ∥ BC), then Prop39
 -- gives ¬(CD.intersectsLine BC), but c on CD ∩ BC gives the intersect → False.
-set_option systemE.solverTime 30 in
 theorem helper_1_40_step8
     (a b c d e f : Point) (BC AF CD AD DE FE : Line)
     (hbBC : b.onLine BC) (hcBC : c.onLine BC) (heBC : e.onLine BC)
