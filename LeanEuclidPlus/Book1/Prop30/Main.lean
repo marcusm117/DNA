@@ -27,37 +27,42 @@ theorem proposition_30 : ∀ (AB CD EF : Line),
     "For let the straight-line $GK$ fall across  ($AB$, $CD$, and $EF$). "
     (step1 : AB.intersectsLine GK ∧ EF.intersectsLine GK ∧ CD.intersectsLine GK) := by sorry
 
-  -- @assumption_valid
-  have step2_assumption1 : AB.intersectsLine GK ∧ EF.intersectsLine GK ∧ ¬(AB.intersectsLine EF) := by euclid_finish
-  -- @assumption ("the straight-line $GK$ has fallen across the parallel straight-lines $AB$ and $EF$", AB.intersectsLine GK ∧ EF.intersectsLine GK ∧ ¬(AB.intersectsLine EF))
-  euclid_sentence "1.30.2"
-    "And since the straight-line $GK$ has fallen across the parallel straight-lines $AB$ and $EF$, (angle) $AGK$ (is) thus equal to $GHF$ [Prop.~1.29]."
-    (step2 : ∠ a:g:k = ∠ g:h:f) := by sorry
+  by_cases hc : between g h k
+  ·
+    -- @assumption_valid
+    have step2_assumption1 : AB.intersectsLine GK ∧ EF.intersectsLine GK ∧ ¬(AB.intersectsLine EF) := by euclid_finish
+    -- @assumption ("the straight-line $GK$ has fallen across the parallel straight-lines $AB$ and $EF$", AB.intersectsLine GK ∧ EF.intersectsLine GK ∧ ¬(AB.intersectsLine EF))
+    euclid_sentence "1.30.2"
+      "And since the straight-line $GK$ has fallen across the parallel straight-lines $AB$ and $EF$, (angle) $AGK$ (is) thus equal to $GHF$ [Prop.~1.29]."
+      (step2 : ∠ a:g:k = ∠ g:h:f) := by sorry
 
-  -- @assumption_valid
-  have step3_assumption1 : EF.intersectsLine GK ∧ CD.intersectsLine GK ∧ ¬(CD.intersectsLine EF) := by euclid_finish
-  -- @assumption ("the straight-line $GK$ has fallen across the parallel straight-lines $EF$ and $CD$", EF.intersectsLine GK ∧ CD.intersectsLine GK ∧ ¬(CD.intersectsLine EF))
-  euclid_sentence "1.30.3"
-    "Again, since the straight-line $GK$ has fallen across the parallel straight-lines $EF$ and $CD$, (angle) $GHF$ is equal to $GKD$ [Prop.~1.29]."
-    (step3 : ∠ g:h:f = ∠ g:k:d) := by sorry
+    -- @assumption_valid
+    have step3_assumption1 : EF.intersectsLine GK ∧ CD.intersectsLine GK ∧ ¬(CD.intersectsLine EF) := by euclid_finish
+    -- @assumption ("the straight-line $GK$ has fallen across the parallel straight-lines $EF$ and $CD$", EF.intersectsLine GK ∧ CD.intersectsLine GK ∧ ¬(CD.intersectsLine EF))
+    euclid_sentence "1.30.3"
+      "Again, since the straight-line $GK$ has fallen across the parallel straight-lines $EF$ and $CD$, (angle) $GHF$ is equal to $GKD$ [Prop.~1.29]."
+      (step3 : ∠ g:h:f = ∠ g:k:d) := by sorry
 
-  euclid_sentence "1.30.4"
-    "But $AGK$ was also shown (to be) equal to $GHF$."
-    (step4 : ∠ a:g:k = ∠ g:h:f) := by sorry
+    euclid_sentence "1.30.4"
+      "But $AGK$ was also shown (to be) equal to $GHF$."
+      (step4 : ∠ a:g:k = ∠ g:h:f) := by sorry
 
-  euclid_sentence "1.30.5"
-    "Thus, $AGK$ is also equal to  $GKD$."
-    (step5 : ∠ a:g:k = ∠ g:k:d) := by sorry
+    euclid_sentence "1.30.5"
+      "Thus, $AGK$ is also equal to  $GKD$."
+      (step5 : ∠ a:g:k = ∠ g:k:d) := by sorry
 
-  euclid_sentence "1.30.6"
-    "And they are alternate (angles)."
-    (step6 : a.opposingSides d GK) := by sorry
+    euclid_sentence "1.30.6"
+      "And they are alternate (angles)."
+      (step6 : a.opposingSides d GK) := by sorry
 
-  euclid_sentence "1.30.7"
-    "Thus, $AB$ is parallel to $CD$ [Prop.~1.27]."
-    (step7 : ¬(AB.intersectsLine CD)) := by sorry
+    euclid_sentence "1.30.7"
+      "Thus, $AB$ is parallel to $CD$ [Prop.~1.27]."
+      (step7 : ¬(AB.intersectsLine CD)) := by sorry
 
-  exact step7 (by assumption)
+    exact step7 (by assumption)
+  ·
+    have step7_othercases : ¬(AB.intersectsLine CD) := by sorry
+    exact step7_othercases (by assumption)
   euclid_conclude_sentence "1.30.8"
     "Thus, (straight-lines) parallel to the same straight-line are also parallel to one another.] (Which is) the very thing it was required to show."
 

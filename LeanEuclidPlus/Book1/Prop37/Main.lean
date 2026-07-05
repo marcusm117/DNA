@@ -1,4 +1,5 @@
 import SystemE
+import Book.Prop31
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -13,18 +14,18 @@ theorem proposition_37 : ∀ (a b c d : Point) (AB BC AC BD CD AD : Line),
   euclid_intro_sentence "1.37.0"
     "Triangles which are on the same base and between the same parallels are equal to one another.    Let $ABC$ and $DBC$ be triangles on the same base $BC$, and between the same parallels $AD$ and $BC$. I say that triangle $ABC$ is equal to triangle $DBC$. "
 
-  euclid_apply (extend_point AD d a) as e
-  euclid_apply (extend_point AD a d) as f
+  euclid_apply (proposition_31 b a c AC) as BE
+  euclid_apply (intersection_lines AD BE) as e
+  euclid_apply (proposition_31 c b d BD) as CF
+  euclid_apply (intersection_lines AD CF) as f
   euclid_sentence "1.37.1"
     "Let $AD$ have been produced in both directions to $E$ and $F$,"
     (step1 : between d a e ∧ between a d f) := by sorry
 
-  euclid_apply (line_from_points b e) as BE
   euclid_sentence "1.37.2"
     "and let the (straight-line) $BE$ have been drawn through $B$ parallel to $CA$ [Prop.~1.31],"
     (step2 : b.onLine BE ∧ e.onLine BE ∧ ¬(BE.intersectsLine AC)) := by sorry
 
-  euclid_apply (line_from_points c f) as CF
   euclid_sentence "1.37.3"
     "and let the (straight-line) $CF$ have been drawn through $C$ parallel to $BD$ [Prop.~1.31]."
     (step3 : c.onLine CF ∧ f.onLine CF ∧ ¬(CF.intersectsLine BD)) := by sorry

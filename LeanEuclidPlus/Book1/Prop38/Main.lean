@@ -20,7 +20,7 @@ theorem proposition_38 : ∀ (a b c d e f: Point) (AD BF AB AC DE DF : Line),
   euclid_apply (intersection_lines AD FH) as h
   euclid_sentence "1.38.1"
     "For let $AD$ have been produced in both directions to $G$ and $H$,"
-    (step1 : between g a d ∧ between a d h) := by sorry
+    (step1 : g.onLine AD ∧ h.onLine AD) := by sorry
 
   euclid_sentence "1.38.2"
     "and let the (straight-line) $BG$ have been drawn through $B$ parallel to $CA$ [Prop.~1.31],"

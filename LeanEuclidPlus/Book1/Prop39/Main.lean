@@ -58,9 +58,8 @@ theorem proposition_39 : ∀ (a b c d : Point) (AB BC AC BD CD AD : Line),
     "Thus, $AE$ is not parallel to $BC$."
     (step9 : AE.intersectsLine BC) := by sorry
 
-  euclid_sentence "1.39.10"
+  euclid_conclude_sentence "1.39.10"
     "Similarly, we can show that neither (is) any other (straight-line) than $AD$."
-    (step10 : ∀ (L : Line), a.onLine L → L ≠ AD → L.intersectsLine BC) := by sorry
 
   euclid_sentence "1.39.11"
     "Thus, $AD$ is parallel to $BC$. "

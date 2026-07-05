@@ -1,0 +1,5 @@
+- extra care Prop40 of Book 1
+- props done
+- baseline could be for a more complicated proof assuming the map is correct. so both baseline and my method on fatifhul proof so only the method changes and not the quality.
+- assumption gap measuring inspired by Yeqi
+- 

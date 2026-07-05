@@ -1,0 +1,16 @@
+import SystemE
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
+
+namespace Elements.Book1
+
+set_option systemE.solverTime 30 in
+theorem helper_1_36_step5_ss (a e b : Point) (CH : Line)
+  (h_step5_ss_ssa : e.sameSide a CH)
+  (h_step5_ss_ssb : a.sameSide b CH) :
+  e.sameSide b CH := by
+  euclid_apply (same_side_symm e a CH)
+  euclid_apply (same_side_trans a e b CH)
+  assumption
+
+end Elements.Book1

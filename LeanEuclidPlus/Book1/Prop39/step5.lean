@@ -1,0 +1,35 @@
+import SystemE
+import Book.Prop37
+set_option linter.unusedVariables false
+set_option linter.unnecessarySeqFocus false
+
+namespace Elements.Book1
+
+set_option systemE.solverTime 30 in
+theorem helper_1_39_step5
+    (a b c d e : Point) (AB BC AC BD CD EC AE : Line)
+    -- triangle abc
+    (haAB : a.onLine AB) (hbAB : b.onLine AB) (habne : a ≠ b)
+    (hbBC : b.onLine BC) (hcBC : c.onLine BC)
+    (hcAC : c.onLine AC) (haAC : a.onLine AC)
+    (hABBC : AB ≠ BC) (hBCAC : BC ≠ AC) (hACAB : AC ≠ AB)
+    -- triangle dbc
+    (hdBD : d.onLine BD) (hbBD : b.onLine BD) (hdbne : d ≠ b) (hcCD : c.onLine CD) (hdCD : d.onLine CD)
+    (hBDBC : BD ≠ BC) (hBCCD : BC ≠ CD) (hCDBD : CD ≠ BD)
+    -- triangle ebc atoms
+    (heBD : e.onLine BD) (hcEC : c.onLine EC) (heEC : e.onLine EC)
+    -- same-side (used by step5_triEBC)
+    (hasdBC : a.sameSide d BC)
+    -- both apexes on parallel AE
+    (haAE : a.onLine AE) (heAE : e.onLine AE)
+    -- @assumption ("on the same base as it, $BC$, and between the same parallels", ¬(AE.intersectsLine BC))
+    (hassump1 : ¬(AE.intersectsLine BC))
+    : Triangle.area △ a:b:c = Triangle.area △ e:b:c := by
+  by_cases hane : a = e
+  · subst hane; rfl
+  · have step5_triEBC : formTriangle e b c BD BC EC := by sorry
+    have step5_distAE : distinctPointsOnLine a e AE := ⟨haAE, heAE, hane⟩
+    euclid_apply (proposition_37' a b c e AB BC AC BD EC AE)
+    euclid_finish
+
+end Elements.Book1
