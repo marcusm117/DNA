@@ -31,6 +31,17 @@ locators, or ordering.** Your whole job is to replace each `True` with a real cl
 real type. (Right after Step 0, `check_faithful` will report every claim as a `True` failure and
 `--provable` will report the trailing `exact stepK` mismatch — both are EXPECTED and disappear as you fill.)
 
+**Structural markers from `split.json` are ALREADY STAMPED for you** — you fill, you don't build the frame:
+- A **`wts`** entry ("I say that …") comes out as `euclid_wts "<loc>" "<text>"` — no `True` slot, nothing
+  to fill.
+- A **reductio** (split's `reductio_open` / `contradiction` / `reductio_close` frames) comes out as a
+  nested `have habsurd<k> : ¬(sorry) := by / intro hsuppose<k> / … / exact <False-step>` block, already
+  indented, with the contradiction step's claim pre-set to `False`. **Fill the `¬(sorry)` with the real
+  negated supposition (typically a `≠`, e.g. `¬(|(a─b)| ≠ |(d─e)|)`) and make the trailing
+  reductio_close claim match it.** The script does NOT stamp `split_ors`/`by_cases`/`wlog` — if the case
+  structure needs one (e.g. I.26's two cases, or a "one of them is greater" symmetric `wlog`), you add it
+  around the stamped block. See the STRUCTURAL FRAMES section for the semantics.
+
 ## ⛔ THE THREE HARD RULES
 
 **RULE 0 — THE SENTENCE IS THE CLAIM. THE DIAGRAM ONLY RESOLVES LABELS.** A `stepN` type is a faithful

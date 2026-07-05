@@ -601,6 +601,49 @@ def check_split(propdir: str) -> int:
         print(f"  [warn] {w}")
         print( "         → likely two claims; split into atomic entries (AI makes the final call)")
 
+    # REDUCTIO FRAMES (opt-in): entries carrying a `frame` object drive the assembler's nested
+    # `have habsurd … := by intro …` skeleton. They must form well-formed triples, LINKED BY TEXT (no
+    # indices): a `reductio_close`'s `closes` copies its `reductio_open`'s `supposition` VERBATIM, with a
+    # `contradiction` sitting between them. This catches a malformed reductio at split time — before the
+    # assembler stamps a broken block. (`wts` role + a frame-free split are completely unaffected.)
+    frames = [(i, e["frame"]) for i, e in enumerate(data)
+              if isinstance(e, dict) and isinstance(e.get("frame"), dict) and e["frame"].get("kind")]
+    frame_problems = []
+    if frames:
+        KNOWN = {"reductio_open", "contradiction", "reductio_close"}
+        opens  = [(i, fr.get("supposition")) for i, fr in frames if fr["kind"] == "reductio_open"]
+        closes = [(i, fr.get("closes"))      for i, fr in frames if fr["kind"] == "reductio_close"]
+        contras = [i for i, fr in frames if fr["kind"] == "contradiction"]
+        for i, fr in frames:
+            if fr["kind"] not in KNOWN:
+                frame_problems.append(f"split.json[{i}]: unknown frame kind {fr['kind']!r} (expected "
+                                      "reductio_open / contradiction / reductio_close)")
+        for i, supp in opens:
+            if not supp:
+                frame_problems.append(f"split.json[{i}]: reductio_open has no `supposition` text")
+                continue
+            match = [j for j, c in closes if c and norm(c) == norm(supp)]
+            if not match:
+                frame_problems.append(f"split.json[{i}]: reductio_open supposition {norm(supp)!r} has no "
+                                      "matching reductio_close (a close's `closes` must copy it verbatim)")
+                continue
+            j = match[0]
+            if j < i:
+                frame_problems.append(f"split.json[{i}]: its reductio_close at [{j}] precedes the open")
+            elif not any(i < k < j for k in contras):
+                frame_problems.append(f"split.json[{i}]: no `contradiction` frame between the open and its "
+                                      f"close at [{j}]")
+        for j, c in closes:
+            if not c:
+                frame_problems.append(f"split.json[{j}]: reductio_close has no `closes` text")
+            elif not any(s and norm(s) == norm(c) for _, s in opens):
+                frame_problems.append(f"split.json[{j}]: reductio_close `closes` {norm(c)!r} matches no "
+                                      "reductio_open `supposition`")
+        if contras and not opens:
+            frame_problems.append("a `contradiction` frame is present but no `reductio_open` opens it")
+        rc |= report("reductio frames form well-formed open/contradiction/close triples (linked by text)",
+                     not frame_problems, frame_problems or [f"{len(opens)} reductio(s) well-formed"])
+
     print(f"  => {'PASS' if rc == 0 else 'FAILED'} (--split mode)")
     return rc
 

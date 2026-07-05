@@ -201,29 +201,74 @@ def assemble_main(translate_json: list, split_text: dict, main_path: Path, book:
     body_lines.append(f'    "{text_for(intro_entry.get("index", 0))}"')
     body_lines.append("")
 
-    # Emit each step
-    last_step_name = None
-    for entry in step_entries:
+    # Emit each step. `indent` tracks reductio nesting: a `reductio_open` frame stamps a
+    # `have habsurd<k> : ¬(sorry) := by / intro hsuppose<k>` block and deepens the indent by one; the
+    # matching `contradiction` frame stamps `exact <False-step>` and pops back out, so the trailing
+    # `reductio_close` (and everything after) lands at the outer level automatically. The script stamps
+    # ONLY the reductio frame — text-signalled by "For if…" / "impossible" / "Thus … not …" — NOT
+    # split_ors/by_cases/wlog, which the map agent adds. At depth 1 the output is byte-identical to a
+    # frame-free prop (sp()="  ", sp(1)="    ").
+    indent = 1
+
+    def sp(extra=0):
+        return "  " * (indent + extra)
+
+    def emit_step(entry):
+        """Emit construction calls + @assumption annotations + the euclid_sentence for one step at the
+        CURRENT indent. Returns the step name."""
         step_name = entry["step_name"]
         step_idx = int(step_name.replace("step", ""))
         loc = f"{book}.{prop}.{step_idx}"
-        last_step_name = step_name
-
-        # Construction calls go before the sentence
         if entry.get("construction") and entry["construction"].get("calls"):
             for line in format_construction_calls(entry["construction"]):
-                body_lines.append(line)
-
-        # Assumption annotations
+                body_lines.append(sp() + line.lstrip())
         for assumption in entry.get("assumptions", []):
-            body_lines.append(format_assumption_annotation(assumption))
-
-        # The euclid_sentence itself (TEXT from split.json, CLAIM from translate.json)
+            body_lines.append(sp() + format_assumption_annotation(assumption).lstrip())
         claim = entry["lean_claim"]
-        body_lines.append(f'  euclid_sentence "{loc}"')
-        body_lines.append(f'    "{text_for(entry.get("index", step_idx))}"')
-        body_lines.append(f'    ({step_name} : {claim}) := by sorry')
+        body_lines.append(f'{sp()}euclid_sentence "{loc}"')
+        body_lines.append(f'{sp(1)}"{text_for(entry.get("index", step_idx))}"')
+        body_lines.append(f'{sp(1)}({step_name} : {claim}) := by sorry')
         body_lines.append("")
+        return step_name
+
+    last_step_name = None          # last TOP-LEVEL step — the final `exact` target (inside-block steps skip)
+    habsurd_count = 0
+    for entry in step_entries:
+        role = entry.get("role")
+        frame = entry.get("frame") or {}
+        kind = frame.get("kind")
+
+        # wts — mid-proof "I say that …" what-to-show: STRUCTURAL, no claim binder → euclid_wts.
+        if role == "wts":
+            idx = entry.get("index")
+            loc = f"{book}.{prop}.{idx}"
+            body_lines.append(f'{sp()}euclid_wts "{loc}"')
+            body_lines.append(f'{sp(1)}"{text_for(idx)}"')
+            body_lines.append("")
+            continue
+
+        if kind == "reductio_open":
+            habsurd_count += 1
+            # ¬(sorry) = the negation of the supposition; the map agent fills the ≠ expression and makes
+            # the trailing reductio_close claim match. `intro` names the supposition hypothesis.
+            body_lines.append(f'{sp()}have habsurd{habsurd_count} : ¬(sorry) := by')
+            indent += 1
+            body_lines.append(f'{sp()}intro hsuppose{habsurd_count}')
+            emit_step(entry)       # the open sentence's own claim (e.g. the ∨) lives inside the block
+            continue
+
+        if kind == "contradiction":
+            sname = emit_step(entry)   # claim pre-set to `False`
+            if body_lines and body_lines[-1] == "":
+                body_lines.pop()       # keep `exact` flush against the impossible-sentence, then blank
+            body_lines.append(f'{sp()}exact {sname}')
+            body_lines.append("")
+            indent = max(1, indent - 1)
+            continue
+
+        sname = emit_step(entry)       # normal step (a reductio_close is just an outer-level step)
+        if indent == 1:
+            last_step_name = sname
 
     # Emit the closing
     # Detect existential conclusion (the step claim won't match the ∃ goal directly)
@@ -260,6 +305,10 @@ def placeholder_entries(split_json: list) -> list:
         if role in ("intro", "conclusion"):
             out.append({"index": idx, "role": role, "lean_claim": None})
             continue
+        # wts — mid-proof "I say that …": STRUCTURAL, no claim (assembles to euclid_wts, no stepN).
+        if role == "wts":
+            out.append({"index": idx, "role": "wts"})
+            continue
         # @assumption seeds: prefer the opt-in `spans` (assumption-label slices); else fall back to the
         # legacy `justifications` (byte-identical output for split.json without spans).
         spans = e.get("spans")
@@ -271,10 +320,18 @@ def placeholder_entries(split_json: list) -> list:
             assumptions = [{"substring": j["substring"], "lean_type": "TODO"}
                            for j in e.get("justifications", [])
                            if isinstance(j, dict) and j.get("substring")]
-        entry = {"index": idx, "role": role, "step_name": f"step{idx}", "lean_claim": "True",
+        # reductio frame (opt-in): reductio_open/contradiction/reductio_close drive the assembler's
+        # nested `have habsurd … := by intro …` skeleton. A contradiction sentence's claim is `False`
+        # (it reaches the absurdity, not a new geometric fact); everything else starts `True`.
+        frame = e.get("frame") if isinstance(e.get("frame"), dict) else None
+        kind = frame.get("kind") if frame else None
+        claim = "False" if kind == "contradiction" else "True"
+        entry = {"index": idx, "role": role, "step_name": f"step{idx}", "lean_claim": claim,
                  "assumptions": assumptions}
         if role == "construction":
             entry["construction"] = {"calls": []}      # /faithful-map adds the euclid_apply calls
+        if frame and kind:
+            entry["frame"] = frame
         out.append(entry)
     return out
 

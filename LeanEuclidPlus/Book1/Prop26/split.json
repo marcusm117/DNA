@@ -7,6 +7,7 @@
     "role": "deduction",
     "text": " For if $AB$ is unequal to $DE$ then one of them is greater.",
     "assertion": "if AB unequal to DE then one is greater",
+    "frame": { "kind": "reductio_open", "supposition": "$AB$ is unequal to $DE$" },
     "spans": [
       { "label": "glue",      "text": " For if " },
       { "label": "assertion", "text": "$AB$ is unequal to $DE$ then one of them is greater" },
@@ -110,6 +111,7 @@
     "role": "deduction",
     "text": "The very thing (is) impossible.",
     "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
     "spans": [
       { "label": "assertion", "text": "The very thing (is) impossible" },
       { "label": "glue",      "text": "." }
@@ -119,6 +121,7 @@
     "role": "deduction",
     "text": "Thus, $AB$ is not unequal to $DE$.",
     "assertion": "AB is not unequal to DE",
+    "frame": { "kind": "reductio_close", "closes": "$AB$ is unequal to $DE$" },
     "spans": [
       { "label": "glue",      "text": "Thus, " },
       { "label": "assertion", "text": "$AB$ is not unequal to $DE$" },
@@ -198,49 +201,26 @@
     ]
   },
   {
-    "role": "deduction",
-    "text": " Again, I say that the remaining sides will be equal to the remaining sides.",
-    "assertion": "the remaining sides will be equal to the remaining sides",
-    "spans": [
-      { "label": "glue",      "text": " Again, I say that the " },
-      { "label": "assertion", "text": "remaining sides will be equal to the remaining sides" },
-      { "label": "glue",      "text": "." }
-    ]
+    "role": "wts",
+    "text": " Again, I say that the remaining sides will be equal to the remaining sides."
   },
   {
-    "role": "deduction",
-    "text": "(That is) $AC$ (equal) to $DF$,",
-    "assertion": "AC equals DF",
-    "spans": [
-      { "label": "glue",      "text": "(That is) " },
-      { "label": "assertion", "text": "$AC$ (equal) to $DF$" },
-      { "label": "glue",      "text": "," }
-    ]
+    "role": "wts",
+    "text": "(That is) $AC$ (equal) to $DF$,"
   },
   {
-    "role": "deduction",
-    "text": "and $BC$ to $EF$.",
-    "assertion": "BC equals EF",
-    "spans": [
-      { "label": "glue",      "text": "and " },
-      { "label": "assertion", "text": "$BC$ to $EF$" },
-      { "label": "glue",      "text": "." }
-    ]
+    "role": "wts",
+    "text": "and $BC$ to $EF$."
   },
   {
-    "role": "deduction",
-    "text": "Furthermore, the remaining angle $BAC$ is equal to the remaining angle $EDF$.",
-    "assertion": "angle BAC equals angle EDF",
-    "spans": [
-      { "label": "glue",      "text": "Furthermore, the " },
-      { "label": "assertion", "text": "remaining angle $BAC$ is equal to the remaining angle $EDF$" },
-      { "label": "glue",      "text": "." }
-    ]
+    "role": "wts",
+    "text": "Furthermore, the remaining angle $BAC$ is equal to the remaining angle $EDF$."
   },
   {
     "role": "deduction",
     "text": " For if $BC$ is unequal to $EF$ then one of them is greater.",
     "assertion": "if BC unequal to EF then one is greater",
+    "frame": { "kind": "reductio_open", "supposition": "$BC$ is unequal to $EF$" },
     "spans": [
       { "label": "glue",      "text": " For if " },
       { "label": "assertion", "text": "$BC$ is unequal to $EF$ then one of them is greater" },
@@ -344,6 +324,7 @@
     "role": "deduction",
     "text": "The very thing (is) impossible [Prop.~1.16].",
     "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
     "spans": [
       { "label": "assertion", "text": "The very thing (is) impossible" },
       { "label": "glue",      "text": " [Prop.~1.16]." }
@@ -354,6 +335,7 @@
     "role": "deduction",
     "text": "Thus, $BC$ is not unequal to $EF$.",
     "assertion": "BC is not unequal to EF",
+    "frame": { "kind": "reductio_close", "closes": "$BC$ is unequal to $EF$" },
     "spans": [
       { "label": "glue",      "text": "Thus, " },
       { "label": "assertion", "text": "$BC$ is not unequal to $EF$" },

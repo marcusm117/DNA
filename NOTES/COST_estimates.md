@@ -7,7 +7,7 @@
 
 # map copy paste
 
-/faithful-split /LeanEuclidPlus/Book1/Prop41. Note you are in DNA and must cd to LeanEuclidPlus.
+/faithful-split /LeanEuclidPlus/Book1/Prop44. Note you are in DNA and must cd to LeanEuclidPlus.
 
 
 # path

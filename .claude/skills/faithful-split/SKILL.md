@@ -98,8 +98,51 @@ WARNs on a compound assertion span; you make the final call.
   - `proof_cite`: if `[Prop.~B.N]` appears, record `"B.N"`.
   (The legacy `justifications` field is superseded by the `assumption` spans — omit it once you write `spans`.)
 
+- **wts** ("what to show") — a MID-PROOF "I say that …" / "Again, I say that …" announcement of the
+  goal (and its sub-parts "(That is) $AC$ to $DF$", "and $BC$ to $EF$", …). It states what the FOLLOWING
+  sentences will prove — it is NOT itself a proven fact. Mark role `wts` and give ONLY `text` (no
+  `spans`, no `assertion`, no `proof_cite`). The assembler stamps it as `euclid_wts` (a claimless
+  structural tactic — the opening mirror of the trailing conclusion), so the map agent has no claim to
+  fill. (The enunciation's OWN "I say that…" at the end of the text block is absorbed into `intro`,
+  index 0 — `wts` is only for a mid-proof re-announcement, typically after "Again," in a second case.)
+
 - **conclusion** — ALWAYS the last entry. The "Thus, if... then... (Which is) the very thing it
   was required to show." restatement.
+
+## Reductio (proof-by-contradiction) frames — the `frame` overlay
+
+A reductio has THREE text-signalled moves. Mark each with an optional `frame` object ON TOP OF its
+normal role (these entries are still `deduction`s — they carry real claims: a disjunction, `False`, a
+negation). The assembler uses them to stamp the nested `have habsurd<k> : ¬(…) := by intro …` block
+automatically, so the map agent never hand-builds the frame — it only fills the `≠` type and adds any
+`split_ors`/`wlog` the case structure needs.
+
+- **reductio_open** — the "For if $AB$ is unequal to $DE$ …" / "For if not …" / "If possible, let …"
+  sentence that SUPPOSES the negation of the goal. Record the supposed fact in `supposition` (the
+  English of what is assumed for contradiction). The rest of the sentence ("… then one of them is
+  greater") is still the entry's normal `assertion`/`spans`.
+  ```json
+  { "role": "deduction", "text": " For if $AB$ is unequal to $DE$ then one of them is greater.",
+    "assertion": "one of them is greater",
+    "frame": { "kind": "reductio_open", "supposition": "$AB$ is unequal to $DE$" },
+    "spans": [ … ] }
+  ```
+- **contradiction** — "The very thing (is) impossible." (`assertion`: "contradiction"). The assembler
+  pre-sets its claim to `False` and stamps the `exact` that closes the block.
+  ```json
+  { "role": "deduction", "text": "The very thing (is) impossible.", "assertion": "contradiction",
+    "frame": { "kind": "contradiction" }, "spans": [ … ], "proof_cite": "1.16" }
+  ```
+- **reductio_close** — "Thus, $AB$ is not unequal to $DE$." — the sentence that DISCHARGES the reductio
+  (establishes `¬supposition`, the block's result). `closes` is a **VERBATIM COPY of the matching
+  open's `supposition`** — the two are linked by TEXT, not by any index number.
+  ```json
+  { "role": "deduction", "text": "Thus, $AB$ is not unequal to $DE$.", "assertion": "AB is not unequal to DE",
+    "frame": { "kind": "reductio_close", "closes": "$AB$ is unequal to $DE$" }, "spans": [ … ] }
+  ```
+`check_faithful.py --split` cross-checks the triples: every `reductio_open` needs a later
+`contradiction` and a later `reductio_close` whose `closes` copies its `supposition`. A prop with two
+reductios (e.g. one per case, as in I.26) just has two open/contradiction/close triples.
 
 ---
 
