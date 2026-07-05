@@ -82,6 +82,14 @@ WARNs on a compound assertion span; you make the final call.
   geometric object. Note:
   - `construction_cite`: if `[Prop.~B.N]` appears, record `"B.N"` (e.g., `"1.46"`)
   - `objects_introduced`: the Euclid labels of new geometric objects (`["$CE$"]`, `["$ADEB$"]`)
+  - `justifications`: **A CONSTRUCTION CAN HAVE A JUSTIFICATION TOO — don't skip it because the
+    entry isn't a deduction.** A leading "For since X, let Y be constructed…" / "since X, let…" clause
+    names a PRIOR FACT the construction consumes (the reason it is legal / possible) — mark it exactly
+    like a deduction's justification: `"justifications": [{"substring": "…", "kind": "prior_fact"}]`.
+    (Real miss: I.24.1 "For since angle $BAC$ is greater than angle $EDF$, let (angle) $EDG$ …
+    have been constructed …" — the "angle $BAC$ is greater than angle $EDF$" clause is a consumed
+    given and MUST be recorded, so faithful-map seeds it as an `@assumption`.) These become
+    `@assumption` markers downstream just as a deduction's do.
 
 - **deduction** — an assertion about a relationship or property (the bulk of the proof). Provide:
   - `spans`: the ordered `assertion`/`assumption`/`glue` partition of the sentence (RULE 6) — the

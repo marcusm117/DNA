@@ -774,5 +774,139 @@
       "type": "\u2220 c:b:d = \u2220 a:c:b",
       "verdict": "closes"
     }
+  },
+  "Book1/Prop35": {
+    "step1_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$ABCD$ is a parallelogram",
+      "type": "formParallelogram a d b c AF BC AB CD",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop36": {
+    "step2_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BC$ is equal to $FG$",
+      "type": "|(b\u2500c)| = |(f\u2500g)|",
+      "verdict": "closes"
+    },
+    "step2_assumption2": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$FG$ is equal to $EH$ [Prop.~1.34]",
+      "type": "|(f\u2500g)| = |(e\u2500h)|",
+      "verdict": "hard"
+    },
+    "step7_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$BC$, as ($ABCD$)",
+      "type": "distinctPointsOnLine b c BG",
+      "verdict": "closes"
+    },
+    "step7_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BC$ and $AH$, as ($ABCD$) [Prop.~1.35]",
+      "type": "\u00ac(BG.intersectsLine AH)",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop37": {
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "they are on the same base $BC$, and between the same parallels $BC$ and $EF$",
+      "type": "formParallelogram e a b c AD BC BE AC \u2227 formParallelogram d f b c AD BC BD CF",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop38": {
+    "step5_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "they are on the equal bases $BC$ and $EF$, and between  the same parallels $BF$ and $GH$",
+      "type": "|(b\u2500c)| = |(e\u2500f)| \u2227 \u00ac(AD.intersectsLine BF)",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "the diagonal $AB$ cuts the latter in half",
+      "type": "formParallelogram g b a c BG AC AD BF",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "the diagonal $DF$ cuts the latter in half",
+      "type": "formParallelogram d e h f DE FH AD BF",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop39": {
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "on the same base as it, $BC$, and between the same parallels",
+      "type": "\u00ac(AE.intersectsLine BC)",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop40": {
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BC$ and $CE$",
+      "type": "|(b\u2500c)| = |(c\u2500e)|",
+      "verdict": "closes"
+    },
+    "step5_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BE$ and $AF$",
+      "type": "\u00ac(AF.intersectsLine BC)",
+      "verdict": "closes"
+    }
+  },
+  "Book1/Prop41": {
+    "step2_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "it is on the same base, $BC$,  as ($EBC$)",
+      "type": "distinctPointsOnLine b c BC",
+      "verdict": "closes"
+    },
+    "step2_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "between the same parallels, $BC$ and $AE$",
+      "type": "\u00ac(AE.intersectsLine BC)",
+      "verdict": "closes"
+    },
+    "step3_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "the diagonal $AC$ cuts the former in half",
+      "type": "Triangle.area \u25b3 a:b:c = Triangle.area \u25b3 a:c:d",
+      "verdict": "hard"
+    }
   }
 }

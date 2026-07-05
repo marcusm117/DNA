@@ -85,14 +85,52 @@ NOT the given `|(b─c)| = |(e─f)|`. Don't over-read: most sentences are a one
 Filling a claim is usually a one-liner — but some props require you to **RESTRUCTURE `Main.lean`**, and
 that is squarely your job, done faithfully. This is NOT always trivial; take it seriously. You edit Main
 directly: add the scaffold, move sentences into branches, put the closing in the tail — whatever the
-proof's logic requires. Consult **`faithful-patterns`** (the catalog of these shapes + exemplars). The
-recurring ones:
+proof's logic requires. Consult **`faithful-patterns`** (the catalog of these shapes + exemplars).
+
+### ⚠ UNDERSTAND EUCLID'S ARGUMENT FIRST — frames are consequences, not keyword triggers
+
+**Before choosing ANY Lean structure** (`by_contra`, `have … := by intro h`, `wlog`, `euclid_wts`, nested
+`have` frames), READ THE WHOLE PROOF and understand what Euclid is SEMANTICALLY doing. The Lean structure
+is a CONSEQUENCE of that understanding — it is NOT triggered by spotting a phrase.
+
+**The fatal mistake:** pattern-matching individual phrases to tactics. "For if not" is not a mechanical
+signal to write `by_contra`. "In fact, X is not Y" is not a mechanical signal for `euclid_wts`. "Neither,
+indeed" does not mechanically start a new `have`. You must ask: **what is Euclid's overall argument?
+What is he asserting here, and why? What scope does each part span?** The answers to those questions
+determine the Lean structure.
+
+**Multiple Lean structures can faithfully encode the same semantic argument.** For a reductio, you might
+write `by_contra h` (assumption in scope as a hypothesis, everything inside, closed by `exact h <fact>`)
+OR you might write `have habsurd : ¬P := by intro hne; …; exact step_k` (the contradiction closes the
+`have`, and Euclid's positive asserting sentences come OUTSIDE the have afterward). Neither is the
+"correct" choice in the abstract — the right structure is whichever one faithfully mirrors what Euclid
+is doing: where the sentences live in his argument, what scope each hypothesis belongs to, what he
+asserts after the sub-argument closes. Only by reading and understanding the argument do you know which
+structure to use.
+
+The recurring frame shapes (below) are PATTERNS to recognize — they are not a lookup table. Identify
+the argument's shape by reading, then pick the matching structure.
+
 - **Reductio / `by_contra`** — exemplars **`Book1/Prop06`** (isosceles) and **`Book2/Prop14`**
   (quadrature). Wrap the reductio body in `have habsurd : ¬(<negation of the goal>) := by intro hne …`;
   the contradiction sentence's claim is `(step_k : False)`; the closing lives in the tail
-  (`exact`/contradiction from `habsurd`). A "…is not…" / "similarly, neither…" sentence carries NO
-  positive claim — **RE-ROUTE its TEXT** to the branch tail or to `euclid_conclude_sentence` (keeps tiling,
-  no vacuous `True`).
+  (`exact`/contradiction from `habsurd`). **When the GOAL ITSELF is a negation `¬P`, `euclid_intros`
+  already `intro`s it — the goal is `False` and the reductio hypothesis `P` is in context (no `habsurd`
+  frame; exemplar `Book1/Prop07`, `Book1/Prop39`). Close the tail with the final positive step applied to
+  that hypothesis: `exact step_k ‹P›`.**
+  - **⛔ A "…is not…" / "similarly, neither…" sentence is STILL A REAL ASSERTION — give it a real claim,
+    do NOT drop it to `euclid_wts`/reroute.** A negation "X is not Y" → the `¬(…)` claim (or, when Y is
+    itself "not-parallel/not-unequal", the *un-negated* primitive: "AE is not parallel to BC" →
+    `AE.intersectsLine BC`; "AB is not unequal to AC" → `¬(|(a─b)| ≠ |(a─c)|)`). A "similarly / for the
+    same reasons / neither is any other …" sentence is a real (often GENERALIZED, e.g.
+    `∀ L, a.onLine L → L ≠ AD → L.intersectsLine BC`) assertion that **Euclid simply does not re-prove** —
+    it still gets a claim; its body stays `:= by sorry` like every other (deferred to Phase B), which is
+    NOT the same as being claimless. Exemplars that DO carry claims: **Prop06 step10** (`¬(…)`),
+    **Prop25 step5/step9** (`≠` / `¬<`), **Prop39 step9/step10**. The ONLY genuinely claimless sentences
+    are the mid-proof "I say that …" (→ `euclid_wts`) and the leading/trailing bracket sentences
+    (→ `euclid_intro_sentence`/`euclid_conclude_sentence`). Reroute-to-claimless is reserved for a
+    sentence with NO expressible System-E content at all (e.g. I.4's "two lines encompass an area") —
+    it is NOT the default for negations or "similarly".
 - **Case-split** — `by_cases h : <disjunct>` / `wlog`, one branch per case; symmetric case via a mirror
   helper or repeated structure (exemplar `Book1/Prop06`).
 - **Superposition** — add `euclid_apply (superposition …) as (…)` (it births the image point + phantom
@@ -194,6 +232,7 @@ names; new construction points follow the Euclid label (`$E$`→`e`); intermedia
 | "the square on AB equals…" | `\|(a─b)\| * \|(a─b)\| = …` |
 | "X is the rectangle by A and B" | area (triangle-sum) `= \|(a─…)\| * \|(b─…)\|` |
 | "let BG be made equal to A" (construction) | `\|(b─g)\| = \|(a₁─a₂)\|` |
+| "let DG be made equal to **either of** AC **or** DF" (construction) | `\|(d─g)\| = \|(a─c)\| ∨ \|(d─g)\| = \|(d─f)\|` — "either…or" is a DISJUNCTION; render it as `∨`, NOT just the first side (I.24.2) |
 | "let the equilateral triangle DEF be constructed" (construction) | `formTriangle d e f DE EF DF ∧ \|(f─d)\|=\|(d─e)\| ∧ \|(f─e)\|=\|(d─e)\|` |
 | "drawn parallel to AD" (construction) | `e.onLine EF ∧ ¬(EF.intersectsLine AD)` |
 | "let EA, EB be joined" (construction) | `distinctPointsOnLine e a EA ∧ distinctPointsOnLine e b EB` |
@@ -263,6 +302,15 @@ retyped. So get the type right and don't tag an assertion as an assumption. (`us
 a seeded substring is actually the assertion (not a consumed input), delete that `@assumption` line. When
 in doubt, drop it.
 
+**⚠ CONSTRUCTION SENTENCES HAVE `@assumption`s TOO — a leading "For since X, let …" clause is a consumed
+input.** Don't assume a construction sentence is `@assumption`-free just because the scaffold seeded none
+(the split can miss a construction's justification). If the sentence opens "For since X, let Y be
+constructed …" / "since X, let …", the "X" clause names a PRIOR FACT the construction consumes — ADD an
+`-- @assumption ("X", <type>)` for it (its assertion stays the constructed object's property). Real miss:
+I.24.1 "For since angle $BAC$ is greater than angle $EDF$, let (angle) $EDG$ … constructed …" — the
+"angle $BAC$ is greater than angle $EDF$" clause (`∠ b:a:c > ∠ e:d:f`, the given) was dropped because the
+sentence looked like a pure construction.
+
 **TRIVIALLY-TRUE INPUTS ARE OK HERE (unlike claims).** RULE 2's no-vacuous ban guards the CLAIM slot; an
 `@assumption` documents a consumed input, so a definitional / trivially-true conjunct is ALLOWED and is
 often the FAITHFUL choice — it makes explicit that a hypothesis really was consumed, so a (paper) reviewer
@@ -310,6 +358,9 @@ GF = DF`), never `e = e`. (Exemplar: `Book1/Prop08/Main.lean`.)
     confusion; the given belongs in `@assumption`.
   □ Every `@assumption`: substring is verbatim from the sentence, and the type is a genuine consumed INPUT
     (not a conjunct of this step's own claim).
+  □ **Every CONSTRUCTION sentence checked for a leading "For since X, let …" clause** — if present, `X` is
+    an `@assumption` (a construction is not automatically `@assumption`-free; e.g. I.24.1).
+  □ **"either of X or Y" rendered as a DISJUNCTION** (`… = X ∨ … = Y`), not just the first side (I.24.2).
   □ No construction-byproduct incidences in any claim — only what the sentence asserts.
   □ Figural sentences translated as the FIGURE, not the consequence: "triangle=triangle" → area (parts
     separate) / congruence (bundled); "base common" → shared side; "common angle XYZ" → named `∠ x:y:z`;

@@ -34,10 +34,27 @@ a contradiction sentence ("The very thing is impossible", "absurd [C.N.5]"), a n
 **Frame (from Prop06):**
 - Wrap the reductio body in `have habsurd : ¬(<negation of the goal>) := by intro hne` … and at the end
   the real goal follows (`exact`/`euclid_finish` from `habsurd`).
-- The **contradiction sentence** gets claim `(step_k : False)` — proved inside the branch.
-- **"X is not …" / "similarly, neither …"** sentences carry NO positive claim: route them to the
-  branch tail / the `euclid_conclude_sentence`, not a standalone `euclid_sentence` claim. (They still
-  keep their TEXT for tiling — as the conclude sentence or a trailing annotation.)
+- **When the GOAL ITSELF is a negation `¬P`:** `euclid_intros` already `intro`s it — no `habsurd` frame,
+  the goal is `False` with hypothesis `P` in context, and the tail closes `exact step_k ‹P›`
+  (exemplars `Book1/Prop07`, `Book1/Prop39`).
+- The **contradiction sentence** ("…is impossible" / "absurd") gets claim `(step_k : False)` — **but ONLY
+  when it is the LAST sentence in a SCOPED reductio block and is immediately `exact`ed** (Prop06's
+  `(step9 : False); exact step9` inside `habsurd`). ⚠ **If Euclid states further sentences AFTER the
+  contradiction (post-absurdity conclusions like "Thus X is not Y", "similarly …", "Thus AD ∥ BC"), do NOT
+  leave a bare `(step_k : False)` in the LIVE context** — a floating `False` hypothesis makes every later
+  step ex-falso-provable (an inconsistent context, not a geometric proof). Instead map "the very thing is
+  impossible" as the `≠`/`¬` of the SPECIFIC equality/claim it denies (Prop39: the prior step asserts
+  `△DBC = △EBC`, so "impossible" → `Triangle.area △ d:b:c ≠ Triangle.area △ e:b:c`), and close the `False`
+  goal only at the very END via the final positive step applied to the reductio hyp (`exact step11 ‹P›`).
+- **⛔ "X is not …" / "similarly, neither …" sentences ARE REAL ASSERTIONS — give each a real claim, NOT
+  `euclid_wts`/reroute.** A negation "X is not Y" → the `¬(…)` claim (or the un-negated primitive when Y
+  is itself a negation: "AE is not parallel to BC" → `AE.intersectsLine BC`). A "similarly / for the same
+  reasons / neither is any other …" sentence is a real (often GENERALIZED — e.g.
+  `∀ L, a.onLine L → L ≠ AD → L.intersectsLine BC`) assertion Euclid simply DOESN'T re-prove; it still
+  carries a claim, body `:= by sorry` (deferred to Phase B) — deferred ≠ claimless. These DO carry claims
+  in the exemplars: **Prop06 step10** (`¬(…)`), **Prop25 step5/step9** (`≠` / `¬<`), **Prop39 step9/step10**.
+  Reroute-to-claimless is ONLY for a sentence with no expressible System-E content at all (I.4's "two
+  lines encompass an area"), never the default for a negation or a "similarly".
 - A **"one of them is greater"** disjunction → the reductio often nests a `by_cases hgt : <disjunct>`
   with the written case in one branch and the symmetric case via a mirror helper (Prop06's `sym`).
 **Forward sentences** (the angle/length equalities before the contradiction) translate normally.

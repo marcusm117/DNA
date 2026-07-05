@@ -1,0 +1,112 @@
+[
+  {
+    "role": "intro",
+    "text": "Parallelograms which are on equal bases and between the same parallels are equal to one another. Let $ABCD$ and $EFGH$ be parallelograms which are on the equal bases $BC$ and $FG$, and (are) between the same parallels $AH$ and $BG$. I say that the parallelogram $ABCD$ is equal to $EFGH$. "
+  },
+  {
+    "role": "construction",
+    "text": "For let $BE$ and $CH$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$BE$", "$CH$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $BC$ is equal to $FG$, but $FG$ is equal to $EH$ [Prop.~1.34], $BC$ is thus equal to $EH$.",
+    "assertion": "BC is equal to EH",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$BC$ is equal to $FG$" },
+      { "label": "glue",       "text": ", but " },
+      { "label": "assumption", "text": "$FG$ is equal to $EH$ [Prop.~1.34]" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$BC$ is thus equal to $EH$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And they are also parallel,",
+    "assertion": "BC and EH are parallel",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "they are also parallel" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $EB$ and $HC$ join them.",
+    "assertion": "EB and HC join BC and EH",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "$EB$ and $HC$ join them" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But (straight-lines) joining equal and parallel (straight-lines) on the same sides are (themselves) equal and parallel [Prop.~1.33] [thus, $EB$ and $HC$ are also equal and parallel].",
+    "assertion": "EB and HC are equal and parallel",
+    "spans": [
+      { "label": "glue",      "text": "But " },
+      { "label": "assertion", "text": "(straight-lines) joining equal and parallel (straight-lines) on the same sides are (themselves) equal and parallel [Prop.~1.33] [thus, $EB$ and $HC$ are also equal and parallel]" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": "1.33"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $EBCH$ is a parallelogram [Prop.~1.34],",
+    "assertion": "EBCH is a parallelogram",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$EBCH$ is a parallelogram [Prop.~1.34]" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": "1.34"
+  },
+  {
+    "role": "deduction",
+    "text": "and is equal to $ABCD$. For it has  the same base, $BC$, as ($ABCD$), and is between the same parallels, $BC$ and $AH$, as ($ABCD$) [Prop.~1.35].",
+    "assertion": "EBCH is equal to ABCD",
+    "spans": [
+      { "label": "glue",       "text": "and " },
+      { "label": "assertion",  "text": "is equal to $ABCD$" },
+      { "label": "glue",       "text": ". For it has  the same base, " },
+      { "label": "assumption", "text": "$BC$, as ($ABCD$)" },
+      { "label": "glue",       "text": ", and is between the same parallels, " },
+      { "label": "assumption", "text": "$BC$ and $AH$, as ($ABCD$) [Prop.~1.35]" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": "1.35"
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), $EFGH$ is also equal to the same (parallelogram) $EBCH$ [Prop.~1.34]. ",
+    "assertion": "EFGH is equal to EBCH",
+    "spans": [
+      { "label": "glue",      "text": "So, for the same (reasons), " },
+      { "label": "assertion", "text": "$EFGH$ is also equal to the same (parallelogram) $EBCH$ [Prop.~1.34]" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": "1.34"
+  },
+  {
+    "role": "deduction",
+    "text": "So that the parallelogram $ABCD$ is  also equal to $EFGH$. ",
+    "assertion": "ABCD is equal to EFGH",
+    "spans": [
+      { "label": "glue",      "text": "So that " },
+      { "label": "assertion", "text": "the parallelogram $ABCD$ is  also equal to $EFGH$" },
+      { "label": "glue",      "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, parallelograms which are on equal bases and between the same parallels are equal to one another. (Which is) the very thing it was required to show."
+  }
+]

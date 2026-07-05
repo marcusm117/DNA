@@ -1,0 +1,156 @@
+[
+  {
+    "role": "intro",
+    "text": "Parallelograms which are on the same base and between the same parallels are equal to one another. Let $ABCD$ and $EBCF$ be parallelograms on the same base $BC$, and between the same parallels $AF$ and $BC$. I say that $ABCD$ is equal to parallelogram $EBCF$. "
+  },
+  {
+    "role": "deduction",
+    "text": "For since $ABCD$ is a parallelogram, $AD$ is equal to $BC$ [Prop.~1.34].",
+    "assertion": "AD is equal to BC",
+    "spans": [
+      {"label": "glue",       "text": "For since "},
+      {"label": "assumption", "text": "$ABCD$ is a parallelogram"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "$AD$ is equal to $BC$"},
+      {"label": "glue",       "text": " [Prop.~1.34]."}
+    ],
+    "proof_cite": "1.34"
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), $EF$ is also equal to $BC$.",
+    "assertion": "EF is equal to BC",
+    "spans": [
+      {"label": "glue",      "text": "So, for the same (reasons), "},
+      {"label": "assertion", "text": "$EF$ is also equal to $BC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So $AD$ is also equal to $EF$.",
+    "assertion": "AD is equal to EF",
+    "spans": [
+      {"label": "glue",      "text": "So "},
+      {"label": "assertion", "text": "$AD$ is also equal to $EF$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $DE$ is common.",
+    "assertion": "DE is common to both",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$DE$ is common"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the whole (straight-line) $AE$ is equal to the whole (straight-line) $DF$. ",
+    "assertion": "AE is equal to DF",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the whole (straight-line) $AE$ is equal to the whole (straight-line) $DF$"},
+      {"label": "glue",      "text": ". "}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $AB$ is also equal to $DC$.",
+    "assertion": "AB is equal to DC",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$AB$ is also equal to $DC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So the two (straight-lines) $EA$, $AB$ are equal to the two (straight-lines) $FD$, $DC$, respectively.",
+    "assertion": "EA=FD and AB=DC respectively (SAS pair)",
+    "spans": [
+      {"label": "glue",      "text": "So "},
+      {"label": "assertion", "text": "the two (straight-lines) $EA$, $AB$ are equal to the two (straight-lines) $FD$, $DC$, respectively"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $FDC$ is equal to angle $EAB$, the external to the internal [Prop.~1.29].",
+    "assertion": "angle FDC equals angle EAB",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "angle $FDC$ is equal to angle $EAB$"},
+      {"label": "glue",      "text": ", the external to the internal [Prop.~1.29]."}
+    ],
+    "proof_cite": "1.29"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $EB$ is equal to the base $FC$,",
+    "assertion": "EB is equal to FC",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the base $EB$ is equal to the base $FC$"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and triangle $EAB$ will be equal to triangle $DFC$ [Prop.~1.4].",
+    "assertion": "triangle EAB equals triangle DFC",
+    "spans": [
+      {"label": "glue",      "text": "and "},
+      {"label": "assertion", "text": "triangle $EAB$ will be equal to triangle $DFC$"},
+      {"label": "glue",      "text": " [Prop.~1.4]."}
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "construction",
+    "text": "Let $DGE$ have been taken away from both. ",
+    "construction_cite": null,
+    "objects_introduced": ["$G$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining trapezium $ABGD$ is equal to the remaining trapezium $EGCF$.",
+    "assertion": "trapezium ABGD equals trapezium EGCF",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the remaining trapezium $ABGD$ is equal to the remaining trapezium $EGCF$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let triangle $GBC$ have been added to both.",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the whole parallelogram $ABCD$ is equal to the whole parallelogram $EBCF$. ",
+    "assertion": "parallelogram ABCD equals parallelogram EBCF",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the whole parallelogram $ABCD$ is equal to the whole parallelogram $EBCF$"},
+      {"label": "glue",      "text": ". "}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, parallelograms which are on the same base and between the same parallels are equal to one another. (Which is) the very thing it was required to show."
+  }
+]

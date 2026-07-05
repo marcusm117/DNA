@@ -1,0 +1,100 @@
+[
+  {
+    "role": "intro",
+    "text": "Triangles which are on equal bases and between the same parallels are equal to one another. Let $ABC$ and $DEF$ be triangles on the equal bases $BC$ and $EF$, and between the same parallels $BF$ and $AD$. I say that triangle $ABC$ is equal to triangle $DEF$. "
+  },
+  {
+    "role": "construction",
+    "text": "For let $AD$ have been produced in both directions to $G$ and $H$,",
+    "construction_cite": null,
+    "objects_introduced": ["$G$", "$H$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let the (straight-line) $BG$ have been drawn through $B$ parallel to $CA$ [Prop.~1.31],",
+    "construction_cite": "1.31",
+    "objects_introduced": ["$BG$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let the (straight-line) $FH$ have been drawn through $F$ parallel to $DE$ [Prop.~1.31].",
+    "construction_cite": "1.31",
+    "objects_introduced": ["$FH$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus,  $GBCA$ and $DEFH$ are each parallelograms.",
+    "assertion": "GBCA and DEFH are each parallelograms",
+    "spans": [
+      { "label": "glue", "text": "Thus,  " },
+      { "label": "assertion", "text": "$GBCA$ and $DEFH$ are each parallelograms" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $GBCA$ is equal to $DEFH$. For they are on the equal bases $BC$ and $EF$, and between  the same parallels $BF$ and $GH$ [Prop.~1.36].",
+    "assertion": "GBCA is equal to DEFH",
+    "spans": [
+      { "label": "glue", "text": "And " },
+      { "label": "assertion", "text": "$GBCA$ is equal to $DEFH$" },
+      { "label": "glue", "text": ". For " },
+      { "label": "assumption", "text": "they are on the equal bases $BC$ and $EF$, and between  the same parallels $BF$ and $GH$" },
+      { "label": "glue", "text": " [Prop.~1.36]." }
+    ],
+    "proof_cite": "1.36"
+  },
+  {
+    "role": "deduction",
+    "text": "And triangle $ABC$ is half of the parallelogram $GBCA$. For the diagonal $AB$ cuts the latter in half [Prop.~1.34].",
+    "assertion": "triangle ABC is half of parallelogram GBCA",
+    "spans": [
+      { "label": "glue", "text": "And " },
+      { "label": "assertion", "text": "triangle $ABC$ is half of the parallelogram $GBCA$" },
+      { "label": "glue", "text": ". For " },
+      { "label": "assumption", "text": "the diagonal $AB$ cuts the latter in half" },
+      { "label": "glue", "text": " [Prop.~1.34]." }
+    ],
+    "proof_cite": "1.34"
+  },
+  {
+    "role": "deduction",
+    "text": "And triangle $FED$ (is) half of parallelogram $DEFH$. For the diagonal $DF$ cuts the latter in half.",
+    "assertion": "triangle FED is half of parallelogram DEFH",
+    "spans": [
+      { "label": "glue", "text": "And " },
+      { "label": "assertion", "text": "triangle $FED$ (is) half of parallelogram $DEFH$" },
+      { "label": "glue", "text": ". For " },
+      { "label": "assumption", "text": "the diagonal $DF$ cuts the latter in half" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "[And the halves of equal things are equal to one another.]",
+    "assertion": "the halves of equal things are equal to one another",
+    "spans": [
+      { "label": "glue", "text": "[And " },
+      { "label": "assertion", "text": "the halves of equal things are equal to one another" },
+      { "label": "glue", "text": ".]" }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, triangle $ABC$ is equal to triangle $DEF$. ",
+    "assertion": "triangle ABC is equal to triangle DEF",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "triangle $ABC$ is equal to triangle $DEF$" },
+      { "label": "glue", "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, triangles which are on equal bases and between the same parallels are equal to one another. (Which is) the very thing it was required to show."
+  }
+]

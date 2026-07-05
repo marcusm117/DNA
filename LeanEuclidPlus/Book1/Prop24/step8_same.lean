@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_24_step8_same
   (a b c d e f g g' g'' : Point) (AB BC AC DE EF DF DG EG FG : Line)
   -- formTriangle abc atoms (to rule out g'.onLine DE)
@@ -32,6 +31,37 @@ theorem helper_1_24_step8_same
   (hassump1 : |(d─f)| = |(d─g)|)
   (h_step7 : ∠ d:g:f = ∠ d:f:g)
   (h_same : d.sameSide g EF)
-  : ∠ d:f:g > ∠ e:g:f := by sorry
+  : ∠ d:f:g > ∠ e:g:f := by
+  have h_g_DG : g.onLine DG := by euclid_finish
+  have h_g_ne_d : g ≠ d := by euclid_finish
+  have h_f_ne_g : f ≠ g := h_step3.2.2.2
+  have h_f_ne_d : f ≠ d := by euclid_finish
+  have h_edg_gt : ∠ e:d:g > ∠ e:d:f := by rw [h_step1]; exact h_bac_gt
+  -- g is on f's side of DE (from g' construction)
+  have h_g'_sf_f : g'.sameSide f DE := by
+    rcases h_g'_sf_or_on with h | h
+    · exact absurd h_g'_angle (by euclid_finish)
+    · exact h
+  have h_g_sf_f : g.sameSide f DE := by euclid_finish
+  -- DG ≠ DF (needed for triple_incidence_2 distinctness)
+  have h_DG_ne_DF : DG ≠ DF := by
+    intro h_eq
+    have h_g_DF : g.onLine DF := h_eq ▸ h_g_DG
+    exact absurd (show g = f from by euclid_finish) h_f_ne_g.symm
+  -- g is not on DF (if it were, |dg|=|df| and g on f's side of DE → g=f)
+  have h_g_off_DF : ¬(g.onLine DF) := by euclid_finish
+  -- e and g are on opposite sides of DF (g inside angle, e on one ray)
+  have h_e_opp_g_DF : ¬(e.sameSide g DF) := by euclid_finish
+  -- triple_incidence_2 at d (on DE, DF, DG): e.sameSide f DG
+  euclid_apply (triple_incidence_2 DE DF DG d e f g)
+  -- d and e are on the same side of FG
+  have h_d_sf_e_FG : d.sameSide e FG := by euclid_finish
+  -- sum_angles_onlyif at g: ∠d:g:f = ∠d:g:e + ∠e:g:f
+  euclid_apply (sum_angles_onlyif g d f e DG FG)
+  -- ∠d:g:e > 0 since d, g, e are non-collinear
+  have h_dge_pos : ∠ d:g:e > 0 := by euclid_finish
+  -- From step7: ∠d:g:f = ∠d:f:g; from sum_angles: ∠d:g:f = ∠d:g:e + ∠e:g:f
+  -- Therefore ∠d:f:g = ∠d:g:e + ∠e:g:f > ∠e:g:f
+  linarith
 
 end Elements.Book1

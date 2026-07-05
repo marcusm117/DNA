@@ -7,7 +7,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_26_h_sym
     (a b c d e f : Point) (AB BC AC DE EF DF : Line)
     (ha_AB : a.onLine AB) (hb_AB : b.onLine AB) (hab : a ≠ b)
@@ -22,6 +21,14 @@ theorem helper_1_26_h_sym
     (hbc : |(b─c)| = |(e─f)|)
     (hstep1 : |(a─b)| > |(d─e)| ∨ |(d─e)| > |(a─b)|)
     (hgt : ¬|(a─b)| > |(d─e)|) :
-    False := by sorry
+    False := by
+  have hlt : |(d─e)| > |(a─b)| := by
+    rcases hstep1 with h | h
+    · exact absurd h hgt
+    · exact h
+  euclid_apply (proposition_3 e d b a DE AB) as g
+  euclid_apply (line_from_points g f) as GF
+  euclid_apply (proposition_4 e g f b a c DE GF EF AB AC BC)
+  euclid_finish
 
 end Elements.Book1

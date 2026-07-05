@@ -1,0 +1,55 @@
+[
+  {
+    "role": "intro",
+    "text": "If a parallelogram has the same base as a triangle, and is between the same parallels, then the parallelogram is double (the area) of the triangle.  For let parallelogram $ABCD$ have the same base $BC$ as triangle $EBC$, and let it be between the same parallels, $BC$ and $AE$. I say that  parallelogram $ABCD$ is double (the area) of triangle $BEC$. "
+  },
+  {
+    "role": "construction",
+    "text": "For let $AC$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AC$"]
+  },
+  {
+    "role": "deduction",
+    "text": "So triangle $ABC$ is equal to triangle $EBC$. For it is on the same base, $BC$,  as ($EBC$), and between the same parallels, $BC$ and $AE$ [Prop.~1.37].",
+    "assertion": "triangle ABC equals triangle EBC",
+    "spans": [
+      { "label": "glue", "text": "So " },
+      { "label": "assertion", "text": "triangle $ABC$ is equal to triangle $EBC$" },
+      { "label": "glue", "text": ". For " },
+      { "label": "assumption", "text": "it is on the same base, $BC$,  as ($EBC$)" },
+      { "label": "glue", "text": ", and " },
+      { "label": "assumption", "text": "between the same parallels, $BC$ and $AE$" },
+      { "label": "glue", "text": " [Prop.~1.37]." }
+    ],
+    "proof_cite": "1.37"
+  },
+  {
+    "role": "deduction",
+    "text": "But, parallelogram $ABCD$ is double (the area) of triangle $ABC$. For the diagonal $AC$ cuts the former in half [Prop.~1.34].",
+    "assertion": "parallelogram ABCD is double triangle ABC",
+    "spans": [
+      { "label": "glue", "text": "But, " },
+      { "label": "assertion", "text": "parallelogram $ABCD$ is double (the area) of triangle $ABC$" },
+      { "label": "glue", "text": ". For " },
+      { "label": "assumption", "text": "the diagonal $AC$ cuts the former in half" },
+      { "label": "glue", "text": " [Prop.~1.34]." }
+    ],
+    "proof_cite": "1.34"
+  },
+  {
+    "role": "deduction",
+    "text": "So parallelogram $ABCD$ is also double (the area) of triangle $EBC$. ",
+    "assertion": "parallelogram ABCD is double triangle EBC",
+    "spans": [
+      { "label": "glue", "text": "So " },
+      { "label": "assertion", "text": "parallelogram $ABCD$ is also double (the area) of triangle $EBC$" },
+      { "label": "glue", "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if a parallelogram has the same base as a triangle, and is between the same parallels, then the parallelogram is double (the area) of the triangle. (Which is) the very thing it was required to show."
+  }
+]

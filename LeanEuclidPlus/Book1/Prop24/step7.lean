@@ -6,7 +6,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem helper_1_24_step7
   (a b c d e g f g' g'' : Point) (AB BC AC DE EF DF DG EG FG : Line)
   -- formTriangle a b c atoms (for ruling out g'.onLine DE)
@@ -69,6 +68,7 @@ theorem helper_1_24_step7
     ⟨⟨h_d_DG, h_g_DG, h_g_ne_d.symm⟩, h_g_FG, h_f_FG, h_f_DF, h_d_DF,
      h_DG_ne_FG, h_FG_ne_DF, h_DG_ne_DF.symm⟩
   -- Apply proposition_5': isosceles base angles equal (|dg| = |df|, so ∠dgf = ∠dfg)
-  exact proposition_5' d g f DG FG DF ⟨h_tri_dgf, hassump1.symm⟩
+  euclid_apply (proposition_5' d g f DG FG DF)
+  euclid_finish
 
 end Elements.Book1

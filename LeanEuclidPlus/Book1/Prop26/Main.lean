@@ -3,13 +3,51 @@ import Book.Prop03
 import Book.Prop04
 import Book.Prop16
 import Mathlib.Tactic.Linarith
+import Book1.Prop26.step1
+import Book1.Prop26.step2
+import Book1.Prop26.step3
+import Book1.Prop26.step4
+import Book1.Prop26.step5
+import Book1.Prop26.step6
+import Book1.Prop26.step7
+import Book1.Prop26.step8
+import Book1.Prop26.step9
+import Book1.Prop26.step10
+import Book1.Prop26.step11
+import Book1.Prop26.step12
+import Book1.Prop26.step13
+import Book1.Prop26.step14
+import Book1.Prop26.step15
+import Book1.Prop26.step16
+import Book1.Prop26.step17
+import Book1.Prop26.step18
+import Book1.Prop26.step19
+import Book1.Prop26.step24
+import Book1.Prop26.step25
+import Book1.Prop26.step26
+import Book1.Prop26.step27
+import Book1.Prop26.step28
+import Book1.Prop26.step29
+import Book1.Prop26.step30
+import Book1.Prop26.step31
+import Book1.Prop26.step32
+import Book1.Prop26.step33
+import Book1.Prop26.step34
+import Book1.Prop26.step35
+import Book1.Prop26.step36
+import Book1.Prop26.step37
+import Book1.Prop26.step38
+import Book1.Prop26.step39
+import Book1.Prop26.step40
+import Book1.Prop26.step41
+import Book1.Prop26.step42
 import Book1.Prop26.h_sym
+import Book1.Prop26.h_sym2
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book1
 
-set_option systemE.solverTime 30 in
 theorem proposition_26 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
   formTriangle a b c AB BC AC ∧ formTriangle d e f DE EF DF ∧
   (∠ a:b:c = ∠ d:e:f) ∧ (∠ b:c:a = ∠ e:f:d) ∧ (|(b─c)| = |(e─f)| ∨ |(a─b)| = |(d─e)|) →
@@ -26,7 +64,7 @@ theorem proposition_26 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
       intro hne
       euclid_sentence "1.26.1"
         " For if $AB$ is unequal to $DE$ then one of them is greater."
-        (step1 : |(a─b)| > |(d─e)| ∨ |(d─e)| > |(a─b)|) := by sorry
+        (step1 : |(a─b)| > |(d─e)| ∨ |(d─e)| > |(a─b)|) := by euclid_apply (helper_1_26_step1 a b d e (by euclid_assumption "" (show |(a─b)| ≠ |(d─e)|; assumption)))
       wlog hgt : |(a─b)| > |(d─e)| generalizing a b c d e f AB BC AC DE EF DF with Hsym
       -- Reduction: ¬(AB > DE); by step1 DE > AB; symmetric argument with swapped triangles
       ·
@@ -36,7 +74,7 @@ theorem proposition_26 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
         euclid_apply (line_from_points g c) as GC
         euclid_sentence "1.26.2"
           "Let $AB$ be greater, and let $BG$ be made equal to $DE$ [Prop.~1.3], and let $GC$ have been joined."
-          (step2 : between b g a ∧ |(b─g)| = |(d─e)| ∧ g.onLine GC ∧ c.onLine GC) := by sorry
+          (step2 : between b g a ∧ |(b─g)| = |(d─e)| ∧ g.onLine GC ∧ c.onLine GC) := by euclid_apply (helper_1_26_step2 b g a d e c GC (by euclid_assumption "" (show between b g a; assumption)) (by euclid_assumption "" (show |(b─g)| = |(e─d)|; assumption)) (by euclid_assumption "" (show g.onLine GC; assumption)) (by euclid_assumption "" (show c.onLine GC; assumption)))
         -- @assumption_valid
         have step3_assumption1 : |(b─g)| = |(d─e)| := by linarith
         -- @assumption_valid
@@ -45,61 +83,61 @@ theorem proposition_26 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
         -- @assumption ("$BC$ to $EF$", |(b─c)| = |(e─f)|)
         euclid_sentence "1.26.3"
           " Therefore, since $BG$ is equal to $DE$, and $BC$ to $EF$, the two (straight-lines) $GB$, $BC$ are equal to the two (straight-lines) $DE$, $EF$, respectively."
-          (step3 : |(g─b)| = |(d─e)| ∧ |(b─c)| = |(e─f)|) := by sorry
+          (step3 : |(g─b)| = |(d─e)| ∧ |(b─c)| = |(e─f)|) := by euclid_apply (helper_1_26_step3 b g d e c (by euclid_assumption "$BG$ is equal to $DE$" (show |(b─g)| = |(d─e)|; assumption)) (by euclid_assumption "$BC$ to $EF$" (show |(b─c)| = |(e─f)|; assumption)))
         euclid_sentence "1.26.4"
           "And angle $GBC$ is equal to angle $DEF$."
-          (step4 : ∠ g:b:c = ∠ d:e:f) := by sorry
+          (step4 : ∠ g:b:c = ∠ d:e:f) := by euclid_apply (helper_1_26_step4 a b c d e f g AB BC AC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ AC; assumption)) (by euclid_assumption "" (show AC ≠ AB; assumption)) (by euclid_assumption "" (show between b g a; assumption)) (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)))
         euclid_sentence "1.26.5"
           "Thus, the base $GC$ is equal to the base $DF$,"
-          (step5 : |(g─c)| = |(d─f)|) := by sorry
+          (step5 : |(g─c)| = |(d─f)|) := by euclid_apply (helper_1_26_step5 a b c d e f g AB BC DE EF DF GC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show g.onLine GC; assumption)) (by euclid_assumption "" (show c.onLine GC; assumption)) (by euclid_assumption "" (show between b g a; assumption)) (by euclid_assumption "" (show |(b─g)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ g:b:c = ∠ d:e:f; assumption)))
         euclid_sentence "1.26.6"
           "and triangle $GBC$ is equal to triangle $DEF$,"
-          (step6 : Triangle.area △ g:b:c = Triangle.area △ d:e:f) := by sorry
+          (step6 : Triangle.area △ g:b:c = Triangle.area △ d:e:f) := by euclid_apply (helper_1_26_step6 a b c d e f g AB BC DE EF DF GC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show g.onLine GC; assumption)) (by euclid_assumption "" (show c.onLine GC; assumption)) (by euclid_assumption "" (show between b g a; assumption)) (by euclid_assumption "" (show |(b─g)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)) (by euclid_assumption "" (show |(g─c)| = |(d─f)|; assumption)) (by euclid_assumption "" (show ∠ g:b:c = ∠ d:e:f; assumption)))
         euclid_sentence "1.26.7"
           "and the remaining angles  subtended by the equal sides will be equal to the (corresponding) remaining angles [Prop.~1.4]."
-          (step7 : ∠ b:g:c = ∠ e:d:f ∧ ∠ g:c:b = ∠ d:f:e) := by sorry
+          (step7 : ∠ b:g:c = ∠ e:d:f ∧ ∠ g:c:b = ∠ d:f:e) := by euclid_apply (helper_1_26_step7 a b c d e f g AB BC DE EF DF GC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show g.onLine GC; assumption)) (by euclid_assumption "" (show c.onLine GC; assumption)) (by euclid_assumption "" (show between b g a; assumption)) (by euclid_assumption "" (show |(b─g)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ g:b:c = ∠ d:e:f; assumption)))
         euclid_sentence "1.26.8"
           "Thus, $GCB$ (is equal) to $DFE$."
-          (step8 : ∠ g:c:b = ∠ d:f:e) := by sorry
+          (step8 : ∠ g:c:b = ∠ d:f:e) := by euclid_apply (helper_1_26_step8 (by euclid_assumption "" (show ∠ b:g:c = ∠ e:d:f ∧ ∠ g:c:b = ∠ d:f:e; assumption)))
         euclid_sentence "1.26.9"
           "But,  $DFE$ was assumed (to be) equal to $BCA$."
-          (step9 : ∠ d:f:e = ∠ b:c:a) := by sorry
+          (step9 : ∠ d:f:e = ∠ b:c:a) := by euclid_apply (helper_1_26_step9 (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show ∠ b:c:a = ∠ e:f:d; assumption)))
         euclid_sentence "1.26.10"
           "Thus, $BCG$ is also equal to $BCA$, the lesser to the greater."
-          (step10 : ∠ b:c:g = ∠ b:c:a) := by sorry
+          (step10 : ∠ b:c:g = ∠ b:c:a) := by euclid_apply (helper_1_26_step10 a b c g AB BC AC GC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ AC; assumption)) (by euclid_assumption "" (show AC ≠ AB; assumption)) (by euclid_assumption "" (show g.onLine GC; assumption)) (by euclid_assumption "" (show c.onLine GC; assumption)) (by euclid_assumption "" (show between b g a; assumption)) (by euclid_assumption "" (show ∠ g:c:b = ∠ d:f:e; assumption)) (by euclid_assumption "" (show ∠ d:f:e = ∠ b:c:a; assumption)))
         euclid_sentence "1.26.11"
           "The very thing (is) impossible."
-          (step11 : False) := by sorry
+          (step11 : False) := by euclid_apply (helper_1_26_step11 a b c g AB BC AC GC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ AC; assumption)) (by euclid_assumption "" (show AC ≠ AB; assumption)) (by euclid_assumption "" (show g.onLine GC; assumption)) (by euclid_assumption "" (show c.onLine GC; assumption)) (by euclid_assumption "" (show between b g a; assumption)) (by euclid_assumption "" (show ∠ b:c:g = ∠ b:c:a; assumption)))
         exact step11
 
     euclid_sentence "1.26.12"
       "Thus, $AB$ is not unequal to $DE$."
-      (step12 : ¬(|(a─b)| ≠ |(d─e)|)) := by sorry
+      (step12 : ¬(|(a─b)| ≠ |(d─e)|)) := by euclid_apply (helper_1_26_step12 (by euclid_assumption "" (show ¬|(a─b)| ≠ |(d─e)|; assumption)))
     euclid_sentence "1.26.13"
       "Thus, (it is) equal."
-      (step13 : |(a─b)| = |(d─e)|) := by sorry
+      (step13 : |(a─b)| = |(d─e)|) := by euclid_apply (helper_1_26_step13 (by euclid_assumption "" (show ¬|(a─b)| ≠ |(d─e)|; assumption)))
     euclid_sentence "1.26.14"
       "And $BC$ is also equal to $EF$."
-      (step14 : |(b─c)| = |(e─f)|) := by sorry
+      (step14 : |(b─c)| = |(e─f)|) := by euclid_apply (helper_1_26_step14 (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)))
     euclid_sentence "1.26.15"
       "So the two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DE$, $EF$, respectively."
-      (step15 : |(a─b)| = |(d─e)| ∧ |(b─c)| = |(e─f)|) := by sorry
+      (step15 : |(a─b)| = |(d─e)| ∧ |(b─c)| = |(e─f)|) := by euclid_apply (helper_1_26_step15 (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)))
     euclid_sentence "1.26.16"
       "And angle $ABC$ is equal to angle $DEF$."
-      (step16 : ∠ a:b:c = ∠ d:e:f) := by sorry
+      (step16 : ∠ a:b:c = ∠ d:e:f) := by euclid_apply (helper_1_26_step16 (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)))
     euclid_sentence "1.26.17"
       "Thus, the base $AC$ is equal to the base $DF$,"
-      (step17 : |(a─c)| = |(d─f)|) := by sorry
+      (step17 : |(a─c)| = |(d─f)|) := by euclid_apply (helper_1_26_step17 a b c d e f AB BC AC DE EF DF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ AC; assumption)) (by euclid_assumption "" (show AC ≠ AB; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)))
     euclid_sentence "1.26.18"
       "and the remaining angle $BAC$ is equal to the remaining angle $EDF$ [Prop.~1.4]."
-      (step18 : ∠ b:a:c = ∠ e:d:f) := by sorry
+      (step18 : ∠ b:a:c = ∠ e:d:f) := by euclid_apply (helper_1_26_step18 a b c d e f AB BC AC DE EF DF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ AC; assumption)) (by euclid_assumption "" (show AC ≠ AB; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)))
     exact ⟨step13, step14, step17, step18⟩
 
   -- Case 2: hab : |(a─b)| = |(d─e)|
   ·
     euclid_sentence "1.26.19"
       " But, again, let the sides subtending the equal angles be equal: for instance,  (let) $AB$ (be equal) to $DE$."
-      (step19 : |(a─b)| = |(d─e)|) := by sorry
+      (step19 : |(a─b)| = |(d─e)|) := by euclid_apply (helper_1_26_step19 (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)))
     euclid_wts "1.26.20"
       " Again, I say that the remaining sides will be equal to the remaining sides."
     euclid_wts "1.26.21"
@@ -112,17 +150,17 @@ theorem proposition_26 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
       intro hne2
       euclid_sentence "1.26.24"
         " For if $BC$ is unequal to $EF$ then one of them is greater."
-        (step24 : |(b─c)| > |(e─f)| ∨ |(e─f)| > |(b─c)|) := by sorry
+        (step24 : |(b─c)| > |(e─f)| ∨ |(e─f)| > |(b─c)|) := by euclid_apply (helper_1_26_step24 (by euclid_assumption "" (show |(b─c)| ≠ |(e─f)|; assumption)))
       wlog hgt2 : |(b─c)| > |(e─f)| generalizing a b c d e f AB BC AC DE EF DF with Hsym2
       -- Reduction: ¬(BC > EF); by step24 EF > BC; symmetric argument with swapped triangles
       ·
-        have h_sym2 : False := by sorry
+        have h_sym2 : False := by euclid_apply (helper_1_26_h_sym2 a b c d e f AB BC AC DE EF DF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ AC; assumption)) (by euclid_assumption "" (show AC ≠ AB; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)) (by euclid_assumption "" (show ∠ b:c:a = ∠ e:f:d; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| > |(e─f)| ∨ |(e─f)| > |(b─c)|; assumption)) (by euclid_assumption "" (show ¬|(b─c)| > |(e─f)|; assumption)))
         exact h_sym2
       · euclid_apply (proposition_3 b c e f BC EF) as h
         euclid_apply (line_from_points a h) as AH
         euclid_sentence "1.26.25"
           "If possible, let $BC$ be greater. And let $BH$ be made equal to $EF$ [Prop.~1.3], and let $AH$ have been joined."
-          (step25 : between b h c ∧ |(b─h)| = |(e─f)| ∧ a.onLine AH ∧ h.onLine AH) := by sorry
+          (step25 : between b h c ∧ |(b─h)| = |(e─f)| ∧ a.onLine AH ∧ h.onLine AH) := by euclid_apply (helper_1_26_step25 a b c e f h AH (by euclid_assumption "" (show between b h c; assumption)) (by euclid_assumption "" (show |(b─h)| = |(e─f)|; assumption)) (by euclid_assumption "" (show a.onLine AH; assumption)) (by euclid_assumption "" (show h.onLine AH; assumption)))
         -- @assumption_valid
         have step26_assumption1 : |(b─h)| = |(e─f)| := by assumption
         -- @assumption_valid
@@ -131,57 +169,57 @@ theorem proposition_26 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
         -- @assumption ("$AB$ to $DE$", |(a─b)| = |(d─e)|)
         euclid_sentence "1.26.26"
           "And since $BH$ is equal to $EF$, and $AB$ to $DE$, the two (straight-lines) $AB$, $BH$ are equal to the two (straight-lines) $DE$, $EF$, respectively."
-          (step26 : |(a─b)| = |(d─e)| ∧ |(b─h)| = |(e─f)|) := by sorry
+          (step26 : |(a─b)| = |(d─e)| ∧ |(b─h)| = |(e─f)|) := by euclid_apply (helper_1_26_step26 h (by euclid_assumption "$BH$ is equal to $EF$" (show |(b─h)| = |(e─f)|; assumption)) (by euclid_assumption "$AB$ to $DE$" (show |(a─b)| = |(d─e)|; assumption)))
         euclid_sentence "1.26.27"
           "And the angles they encompass (are also equal)."
-          (step27 : ∠ a:b:h = ∠ d:e:f) := by sorry
+          (step27 : ∠ a:b:h = ∠ d:e:f) := by euclid_apply (helper_1_26_step27 a b c d e f h AB BC AC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ AC; assumption)) (by euclid_assumption "" (show AC ≠ AB; assumption)) (by euclid_assumption "" (show between b h c; assumption)) (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)))
         euclid_sentence "1.26.28"
           "Thus, the base $AH$ is equal to the base   $DF$,"
-          (step28 : |(a─h)| = |(d─f)|) := by sorry
+          (step28 : |(a─h)| = |(d─f)|) := by euclid_apply (helper_1_26_step28 a b c d e f h AB BC AH DE EF DF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show a.onLine AH; assumption)) (by euclid_assumption "" (show h.onLine AH; assumption)) (by euclid_assumption "" (show between b h c; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─e)| ∧ |(b─h)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ a:b:h = ∠ d:e:f; assumption)))
         euclid_sentence "1.26.29"
           "and the triangle $ABH$ is equal to the triangle $DEF$,"
-          (step29 : Triangle.area △ a:b:h = Triangle.area △ d:e:f) := by sorry
+          (step29 : Triangle.area △ a:b:h = Triangle.area △ d:e:f) := by euclid_apply (helper_1_26_step29 a b c d e f h AB BC AH DE EF DF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show a.onLine AH; assumption)) (by euclid_assumption "" (show h.onLine AH; assumption)) (by euclid_assumption "" (show between b h c; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─e)| ∧ |(b─h)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ a:b:h = ∠ d:e:f; assumption)) (by euclid_assumption "" (show |(a─h)| = |(d─f)|; assumption)))
         euclid_sentence "1.26.30"
           "and the remaining angles subtended by the equal sides will be equal to the (corresponding) remaining angles [Prop.~1.4]."
-          (step30 : ∠ b:a:h = ∠ e:d:f ∧ ∠ b:h:a = ∠ e:f:d) := by sorry
+          (step30 : ∠ b:a:h = ∠ e:d:f ∧ ∠ b:h:a = ∠ e:f:d) := by euclid_apply (helper_1_26_step30 a b c d e f h AB BC AH DE EF DF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show a.onLine AH; assumption)) (by euclid_assumption "" (show h.onLine AH; assumption)) (by euclid_assumption "" (show between b h c; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─e)| ∧ |(b─h)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ a:b:h = ∠ d:e:f; assumption)))
         euclid_sentence "1.26.31"
           "Thus, angle $BHA$  is equal to $EFD$."
-          (step31 : ∠ b:h:a = ∠ e:f:d) := by sorry
+          (step31 : ∠ b:h:a = ∠ e:f:d) := by euclid_apply (helper_1_26_step31 (by euclid_assumption "" (show ∠ b:a:h = ∠ e:d:f ∧ ∠ b:h:a = ∠ e:f:d; assumption)))
         euclid_sentence "1.26.32"
           "But, $EFD$ is equal to $BCA$."
-          (step32 : ∠ e:f:d = ∠ b:c:a) := by sorry
+          (step32 : ∠ e:f:d = ∠ b:c:a) := by euclid_apply (helper_1_26_step32 (by euclid_assumption "" (show ∠ b:c:a = ∠ e:f:d; assumption)))
         euclid_sentence "1.26.33"
           "So, in triangle $AHC$, the external angle $BHA$ is equal to the internal and opposite angle  $BCA$."
-          (step33 : ∠ b:h:a = ∠ b:c:a) := by sorry
+          (step33 : ∠ b:h:a = ∠ b:c:a) := by euclid_apply (helper_1_26_step33 (by euclid_assumption "" (show ∠ b:h:a = ∠ e:f:d; assumption)) (by euclid_assumption "" (show ∠ e:f:d = ∠ b:c:a; assumption)))
         euclid_sentence "1.26.34"
           "The very thing (is) impossible [Prop.~1.16]."
-          (step34 : False) := by sorry
+          (step34 : False) := by euclid_apply (helper_1_26_step34 a b c h AB BC AC AH (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show BC ≠ AC; assumption)) (by euclid_assumption "" (show AC ≠ AB; assumption)) (by euclid_assumption "" (show a.onLine AH; assumption)) (by euclid_assumption "" (show h.onLine AH; assumption)) (by euclid_assumption "" (show between b h c; assumption)) (by euclid_assumption "" (show ∠ b:h:a = ∠ b:c:a; assumption)))
         exact step34
 
     euclid_sentence "1.26.35"
       "Thus, $BC$ is not unequal to $EF$."
-      (step35 : ¬(|(b─c)| ≠ |(e─f)|)) := by sorry
+      (step35 : ¬(|(b─c)| ≠ |(e─f)|)) := by euclid_apply (helper_1_26_step35 (by euclid_assumption "" (show ¬(|(b─c)| ≠ |(e─f)|); assumption)))
     euclid_sentence "1.26.36"
       "Thus, (it is) equal."
-      (step36 : |(b─c)| = |(e─f)|) := by sorry
+      (step36 : |(b─c)| = |(e─f)|) := by euclid_apply (helper_1_26_step36 (by euclid_assumption "" (show ¬(|(b─c)| ≠ |(e─f)|); assumption)))
     euclid_sentence "1.26.37"
       "And $AB$ is also equal to $DE$."
-      (step37 : |(a─b)| = |(d─e)|) := by sorry
+      (step37 : |(a─b)| = |(d─e)|) := by euclid_apply (helper_1_26_step37 (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)))
     euclid_sentence "1.26.38"
       "So the two (straight-lines) $AB$, $BC$ are equal to the two (straight-lines) $DE$, $EF$, respectively."
-      (step38 : |(a─b)| = |(d─e)| ∧ |(b─c)| = |(e─f)|) := by sorry
+      (step38 : |(a─b)| = |(d─e)| ∧ |(b─c)| = |(e─f)|) := by euclid_apply (helper_1_26_step38 (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)))
     euclid_sentence "1.26.39"
       "And they encompass equal angles."
-      (step39 : ∠ a:b:c = ∠ d:e:f) := by sorry
+      (step39 : ∠ a:b:c = ∠ d:e:f) := by euclid_apply (helper_1_26_step39 (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)))
     euclid_sentence "1.26.40"
       "Thus, the base $AC$ is equal to the base $DF$,"
-      (step40 : |(a─c)| = |(d─f)|) := by sorry
+      (step40 : |(a─c)| = |(d─f)|) := by euclid_apply (helper_1_26_step40 a b c d e f AB BC AC DE EF DF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)))
     euclid_sentence "1.26.41"
       "and triangle $ABC$ (is) equal to triangle $DEF$,"
-      (step41 : Triangle.area △ a:b:c = Triangle.area △ d:e:f) := by sorry
+      (step41 : Triangle.area △ a:b:c = Triangle.area △ d:e:f) := by euclid_apply (helper_1_26_step41 a b c d e f AB BC AC DE EF DF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)))
     euclid_sentence "1.26.42"
       "and the remaining angle $BAC$ (is) equal to the remaining angle $EDF$ [Prop.~1.4]."
-      (step42 : ∠ b:a:c = ∠ e:d:f) := by sorry
+      (step42 : ∠ b:a:c = ∠ e:d:f) := by euclid_apply (helper_1_26_step42 a b c d e f AB BC AC DE EF DF (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine BC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show d ≠ e; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show f.onLine DF; assumption)) (by euclid_assumption "" (show AB ≠ BC; assumption)) (by euclid_assumption "" (show DE ≠ EF; assumption)) (by euclid_assumption "" (show EF ≠ DF; assumption)) (by euclid_assumption "" (show DF ≠ DE; assumption)) (by euclid_assumption "" (show |(a─b)| = |(d─e)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(e─f)|; assumption)) (by euclid_assumption "" (show ∠ a:b:c = ∠ d:e:f; assumption)))
     exact ⟨step37, step36, step40, step42⟩
 
   euclid_conclude_sentence "1.26.43"
