@@ -178,43 +178,45 @@ def EuclidApply (rule : Term) (idents : Array Ident)  : TacticM Unit := do
     modifyEnv fun env =>
       appliedExt.addEntry env { mod := modName, name := declName.toString, line := line }
 
+  -- CLOSE-DIRECTLY FIRST (every shape EXCEPT `∃`): a fully-applied rule's conclusion may BE the
+  -- current goal — a faithful `euclid_sentence` claim whose helper-conclusion == node-goal, for ANY
+  -- shape: an atom, an `∧`/`∨`, a conditional `P → R` (C.N.1), or a universally-quantified conclusion
+  -- `∀ x, …` (e.g. a uniqueness claim `¬∃ g, …` / `∀ g, g ≠ f → …`). `exact` closes it with ZERO SMT
+  -- and no destructuring. The `first | …` wrapper gives full state-restoration on failure, so on
+  -- failure (conclusion ≠ goal — the "add a fact to context" use) behavior is byte-identical to
+  -- falling straight through to the shape-specific handling below. Citation recording (appliedExt)
+  -- already ran above, so this loses nothing; on success we return early, skipping the destructuring
+  -- AND the trailing `elimAllConjunctions` (a no-op once the goal is closed).
+  -- We EXCLUDE `∃`: there the `as (x, …)` idents bind a witness that later lines reference, so closing
+  -- the goal early would orphan those bindings. `∃` construction goals keep their exact old behavior.
+  -- NOTE: faithful wires must carry NO trailing closer — a `(try split_ands) <;> assumption` trailer
+  -- errors "no goals" once `exact` closes; wire_main regenerates wires trailer-free.
+  let isExists := match τ.getAppFnArgs with
+    | (``Exists, _) => true
+    | _             => false
+  if !isExists then
+    let closedDirectly ← try
+      evalTactic $ ← `(tactic| first | exact $rule)
+      pure true
+    catch _ =>
+      pure false
+    if closedDirectly then
+      return ()
+
   match τ with
   | .forallE _ hole P _ => -- τ is an arrow
-    if P.hasLooseBVars then  --  τ is an ∀
+    if P.hasLooseBVars then  --  τ is an ∀ whose conclusion is NOT the goal → bind it into context
       evalTactic $ ← `(tactic| obtain ($(mkIdent hnm)) := $rule)
-    else  -- τ is an implication, rather than ∀
-      -- CLOSE-DIRECTLY FIRST: a fully-applied implication-typed rule may BE the current goal — a
-      -- faithful `euclid_sentence` claim that is itself a conditional `P → R`. `exact` closes it with
-      -- zero SMT. On failure (the usual case: the goal is the CONSEQUENT, so this arrow-typed rule
-      -- does not match it) `exact` throws without assigning the goal, and we fall through to
-      -- EuclidSolve unchanged. Mirrors the non-arrow close-directly branch below.
-      let direct ← try
-        evalTactic $ ← `(tactic| first | exact $rule)
-        pure true
-      catch _ =>
-        pure false
-      if direct then
-        pure ()
-      else
-        let Γ ← init (← getMainGoal) hole rule idents
-        EuclidSolve |>.run Γ
+    else  -- τ is an implication whose consequent (not the implication itself) is the goal → EuclidSolve
+      let Γ ← init (← getMainGoal) hole rule idents
+      EuclidSolve |>.run Γ
   -- If there is no implication in the rule, i.e. no antecedent/hole to be filled, then just do the construction.
   | e =>
     match e.getAppFnArgs with
     | (``Exists, _) =>  -- τ is `∃ x, ...`
       evalTactic $ ← `(tactic| obtain ⟨$idents,*, ($(mkIdent hnm))⟩ := $rule)
     | _ =>
-      -- CLOSE-DIRECTLY FIRST: a fully-applied rule's conclusion may BE the current goal (the faithful
-      -- wire always has helper-conclusion == node-goal). `exact $rule` then closes it directly — ZERO
-      -- SMT, works for every claim shape (`∧`, `∨`, atomic, …). Citation recording already ran above
-      -- (appliedExt), so this loses nothing. On failure (conclusion ≠ goal — the old-style "add a
-      -- fact to context" use), fall through unchanged to the destructuring below. If `exact` closes
-      -- the goal, the trailing `elimAllConjunctions` is a no-op via its empty-goals guard (Util.lean).
-      -- NOTE: this requires faithful wires to carry NO trailing closer — the `(try split_ands) <;>
-      -- assumption` trailer errors "no goals" once `exact` closes. wire_main regenerates wires
-      -- trailer-free, so committed props must be unwired + rewired once this is live.
       evalTactic $ ← `(tactic| first
-        | exact $rule
         | (obtain ⟨$(mkIdent hnm)⟩ := $rule)
         | (obtain $(mkIdent hnm) := $rule))
 

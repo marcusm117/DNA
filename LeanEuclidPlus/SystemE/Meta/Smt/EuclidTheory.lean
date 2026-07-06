@@ -1320,6 +1320,14 @@ def euclidConstructionRulesFull : List Smt.Command := [
         )
     )")),
 
+-- Euclid Def. I.15 (existence clause): every circle has a centre. Companion to exists_centre.
+(Smt.Command.assert (Smt.Term.literalT "
+    (forall ((alpha Circle))
+        (exists ((a Point))
+            (Centre a alpha)
+        )
+    )")),
+
 (Smt.Command.assert (Smt.Term.literalT "
     (forall ((alpha Circle))
         (exists ((a Point))

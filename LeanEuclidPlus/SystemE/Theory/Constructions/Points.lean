@@ -66,6 +66,13 @@ axiom exists_point_opposite :
 axiom exists_distinct_point_opposite_side :
   ∀ (L : Line) (b c : Point), ¬(b.onLine L) → ∃ a : Point, a ≠ c ∧ a.opposingSides b L
 
+-- Euclid Def. I.15 (existence clause): a circle has a centre. Avigad's E formalises only
+-- the *metric* half of the definition (transfer rules); the existence of the centre is left
+-- implicit in the meaning of "circle". Made explicit here so III.1's final step
+-- ("no other point is the centre, therefore F is") is licensed.
+axiom exists_centre :
+  ∀ (α : Circle), ∃ a : Point, a.isCentre α
+
 axiom exists_point_on_circle :
   ∀ (α : Circle), ∃ a : Point, a.onCircle α
 
