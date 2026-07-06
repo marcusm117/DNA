@@ -1,6 +1,6 @@
 import SystemE
-import Book1.Prop01.variants
-import Book1.Prop09.variants
+import Book1Variants.Prop01
+import Book1Variants.Prop09
 import Book1.Prop10.step1
 import Book1.Prop10.step2
 import Book1.Prop10.step4

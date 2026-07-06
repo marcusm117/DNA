@@ -1,7 +1,7 @@
 import SystemE
-import Book1.Prop01.variants
+import Book1Variants.Prop01
 import Book1.Prop03.Main
-import Book1.Prop05.variants
+import Book1Variants.Prop05
 import Book1.Prop07.Main
 import Book1.Prop08.Main
 import Book1.Prop09.Main

@@ -1,7 +1,7 @@
 import SystemE
 import Book1.Prop04.Main
-import Book1.Prop29.variants
-import Book1.Prop34.variants
+import Book1Variants.Prop29
+import Book1Variants.Prop34
 import Book1.Prop35.Main
 
 namespace Elements.Book1

@@ -27,6 +27,7 @@ by
     (step1 : distinctPointsOnLine e h EH ∧ distinctPointsOnLine e k EK) := by sorry
 
   -- @assumption ("$BC$ is nearer to the center, and $FG$ further away", |(e─h)| < |(e─k)|)
+  -- orchestrator-restatement: |(e─k)| > |(e─h)| is the hypothesis |(e─h)| < |(e─k)| flipped; Def.3.5 IS the hypothesis encoding, no other form exists
   euclid_sentence "3.15.2"
     "And since $BC$ is nearer to the center, and $FG$ further away, $EK$ (is) thus greater than $EH$ [Def.~3.5]."
     (step2 : |(e─k)| > |(e─h)|) := by sorry
@@ -72,6 +73,7 @@ by
     "But, $ME$ and $EN$ is greater than $MN$ [Prop.~1.20] [also $AD$ is greater than $MN$],"
     (step8 : |(m─e)| + |(e─n)| > |(m─n)|) := by sorry
 
+  -- orchestrator-restatement: step9 flips = from step6 (|(b─c)|=|(m─n)|); Euclid writes both, faithful to keep
   euclid_sentence "3.15.9"
     "and $MN$ (is) equal to $BC$."
     (step9 : |(m─n)| = |(b─c)|) := by sorry
@@ -91,10 +93,12 @@ by
     "But, $MN$ was shown (to be) equal to $BC$ [(so) $BC$ is also greater than $FG$]."
     (step12 : |(b─c)| > |(f─g)|) := by sorry
 
+  -- orchestrator-restatement: step13 restates step10 as part-1 summary; faithful (Euclid writes both)
   euclid_sentence "3.15.13"
     "Thus, the diameter $AD$ (is) the greatest (straight-line),"
     (step13 : |(a─d)| > |(b─c)|) := by sorry
 
+  -- orchestrator-restatement: step14 restates step12 as part-2 summary; faithful (Euclid writes both)
   euclid_sentence "3.15.14"
     "and $BC$ (is) greater than $FG$."
     (step14 : |(b─c)| > |(f─g)|) := by sorry

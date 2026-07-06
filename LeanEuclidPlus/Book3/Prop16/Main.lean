@@ -17,33 +17,30 @@ by
   euclid_intro_sentence "3.16.0"
     "A (straight-line) drawn at right-angles to the diameter of a circle, from its end, will fall outside the circle. And another straight-line cannot be inserted into the space between the (aforementioned) straight-line and the circumference. And the angle of the semi-circle is greater than any acute rectilinear angle whatsoever, and the remaining (angle is) less (than any acute rectilinear angle). Let $ABC$ be a circle around the center $D$ and the diameter $AB$. I say that the (straight-line) drawn from $A$, at right-angles to $AB$ [Prop~1.11], from its end, will fall outside the circle."
 
-  have habsurd1 : ¬(sorry) := by
+  have habsurd1 : ¬(AE.intersectsCircle ABC) := by
     intro hsuppose1
     euclid_sentence "3.16.1"
       "For (if) not (then), if possible, let it fall inside, like $CA$ (in the figure),"
-      (step1 : True) := by sorry
-
+      (step1 : ∃ c : Point, c.onLine AE ∧ c.onCircle ABC ∧ c ≠ a) := by sorry
+    obtain ⟨c, hcAE, hcABC, hcne⟩ := step1
+    have hDC : ∃ DC : Line, d.onLine DC ∧ c.onLine DC := by sorry
+    obtain ⟨DC, hDCd, hDCc⟩ := hDC
     euclid_sentence "3.16.2"
       "and let $DC$ be joined."
-      (step2 : True) := by sorry
-
-    -- @assumption ("$DA$ is equal to $DC$", TODO)
+      (step2 : distinctPointsOnLine d c DC) := by sorry
+    -- @assumption ("$DA$ is equal to $DC$", |(d─a)| = |(d─c)|)
     euclid_sentence "3.16.3"
       "Since $DA$ is equal to $DC$, angle $DAC$ is also equal to angle $ACD$ [Prop.~1.5]."
-      (step3 : True) := by sorry
-
+      (step3 : ∠ d:a:c = ∠ a:c:d) := by sorry
     euclid_sentence "3.16.4"
       "And $DAC$ (is) a right-angle."
-      (step4 : True) := by sorry
-
+      (step4 : ∠ d:a:c = ∟) := by sorry
     euclid_sentence "3.16.5"
       "Thus, $ACD$ (is) also a right-angle."
-      (step5 : True) := by sorry
-
+      (step5 : ∠ a:c:d = ∟) := by sorry
     euclid_sentence "3.16.6"
       "So, in triangle $ACD$, the two angles $DAC$ and $ACD$ are equal to two right-angles."
-      (step6 : True) := by sorry
-
+      (step6 : ∠ d:a:c + ∠ a:c:d = ∟ + ∟) := by sorry
     euclid_sentence "3.16.7"
       "The very thing is impossible [Prop.~1.17]."
       (step7 : False) := by sorry
@@ -51,47 +48,48 @@ by
 
   euclid_sentence "3.16.8"
     "Thus, the (straight-line) drawn from point $A$, at right-angles to $BA$, will not fall inside the circle."
-    (step8 : True) := by sorry
+    (step8 : ¬(AE.intersectsCircle ABC)) := by sorry
 
   euclid_sentence "3.16.9"
     "So, similarly, we can show that neither (will it fall) on the circumference."
-    (step9 : True) := by sorry
+    (step9 : ¬(∃ c : Point, c.onLine AE ∧ c.onCircle ABC ∧ c ≠ a)) := by sorry
 
   euclid_sentence "3.16.10"
     "Thus, (it will fall) outside (the circle)."
-    (step10 : True) := by sorry
+    (step10 : (∃ p : Point, p.onLine AE ∧ p.onCircle ABC) ∧ ¬ AE.intersectsCircle ABC) := by sorry
 
   euclid_sentence "3.16.11"
     "Let it fall like $AE$ (in the figure)."
-    (step11 : True) := by sorry
+    (step11 : (∃ p : Point, p.onLine AE ∧ p.onCircle ABC) ∧ ¬ AE.intersectsCircle ABC) := by sorry
 
   euclid_wts "3.16.12"
     "So, I say that another straight-line cannot be inserted into the space between the straight-line $AE$ and the circumference $CHA$."
 
-  have habsurd2 : ¬(sorry) := by
+  have habsurd2 : ¬(∃ (FA : Line), a.onLine FA ∧ FA ≠ AE ∧ ¬FA.intersectsCircle ABC) := by
     intro hsuppose2
+    obtain ⟨FA, hFAon, hFAne, hFAnot⟩ := hsuppose2
     euclid_sentence "3.16.13"
       "For, if possible, let it be inserted like $FA$ (in the figure),"
-      (step13 : True) := by sorry
-
+      (step13 : a.onLine FA ∧ FA ≠ AE ∧ ¬FA.intersectsCircle ABC) := by sorry
+    have hgDG : ∃ (g : Point) (DG_line : Line),
+        g.onLine FA ∧ ∠ a:g:d = ∟ ∧ d.onLine DG_line ∧ g.onLine DG_line := by sorry
+    obtain ⟨g, DG_line, hgFA, hgperp, hDGd, hDGg⟩ := hgDG
+    have hh : ∃ h : Point, h.onCircle ABC ∧ h.onLine DG_line := by sorry
+    obtain ⟨h, hhcircle, hhline⟩ := hh
     euclid_sentence "3.16.14"
       "and let $DG$ be drawn from point $D$, perpendicular to $FA$ [Prop.~1.12]."
-      (step14 : True) := by sorry
-
-    -- @assumption ("$AGD$ is a right-angle", TODO)
-    -- @assumption ("$DAG$ (is) less than a right-angle", TODO)
+      (step14 : g.onLine FA ∧ ∠ a:g:d = ∟) := by sorry
+    -- @assumption ("$AGD$ is a right-angle", ∠ a:g:d = ∟)
+    -- @assumption ("$DAG$ (is) less than a right-angle", ∠ d:a:g < ∟)
     euclid_sentence "3.16.15"
       "And since $AGD$ is a right-angle, and $DAG$ (is) less than a right-angle, $AD$ (is) thus greater than $DG$ [Prop.~1.19]."
-      (step15 : True) := by sorry
-
+      (step15 : |(a─d)| > |(d─g)|) := by sorry
     euclid_sentence "3.16.16"
       "And $DA$ (is) equal to $DH$."
-      (step16 : True) := by sorry
-
+      (step16 : |(d─a)| = |(d─h)|) := by sorry
     euclid_sentence "3.16.17"
       "Thus, $DH$ (is) greater than $DG$, the lesser than the greater."
-      (step17 : True) := by sorry
-
+      (step17 : |(d─h)| > |(d─g)|) := by sorry
     euclid_sentence "3.16.18"
       "The very thing is impossible."
       (step18 : False) := by sorry
@@ -99,34 +97,42 @@ by
 
   euclid_sentence "3.16.19"
     "Thus, another straight-line cannot be inserted into the space between the straight-line ($AE$) and the circumference."
-    (step19 : True) := by sorry
+    (step19 : ¬(∃ (FA : Line), a.onLine FA ∧ FA ≠ AE ∧ ¬FA.intersectsCircle ABC)) := by sorry
 
   euclid_wts "3.16.20"
     "And I also say that the semi-circular angle contained by the straight-line $BA$ and the circumference $CHA$ is greater than any acute rectilinear angle whatsoever, and the remaining (angle) contained by the circumference $CHA$ and the straight-line $AE$ is less than any acute rectilinear angle whatsoever."
 
+  -- orchestrator-HORN-unrenderable: the antecedent compares rectilinear angles to the
+  -- semi-circular horn angle (BA ∧ arc CHA) and to the curvilinear angle (arc CHA ∧ AE) —
+  -- no curved-angle sort in System E. Expressible gloss (Reading A): the adjacent
+  -- line-incidence consequence — any line through a distinct from AE cuts the circle.
   euclid_sentence "3.16.21"
     "For if any rectilinear angle is greater than the (angle) contained by the straight-line $BA$ and the circumference $CHA$, or less than the (angle) contained by the circumference $CHA$ and the straight-line $AE$, (then) a straight-line can be inserted into the space between the circumference $CHA$ and the straight-line $AE$---anything which will make (an angle) contained by straight-lines greater than the angle contained by the straight-line $BA$ and the circumference $CHA$, or less than the (angle) contained by the circumference $CHA$ and the straight-line $AE$."
-    (step21 : True) := by sorry
+    (step21 : ∀ (FA : Line), a.onLine FA → FA ≠ AE → FA.intersectsCircle ABC) := by sorry
 
   euclid_sentence "3.16.22"
     "But (such a straight-line) cannot be inserted."
-    (step22 : True) := by sorry
+    (step22 : ¬(∃ (FA : Line), a.onLine FA ∧ FA ≠ AE ∧ ¬FA.intersectsCircle ABC)) := by sorry
 
+  -- orchestrator-HORN-unrenderable: "the angle contained by the straight-line $BA$ and the
+  -- circumference $CHA$" is a semi-circular horn angle with no System-E rendering.
+  -- Expressible gloss (Reading A): the tangency universal.
   euclid_sentence "3.16.23"
     "Thus, an acute (angle) contained by straight-lines cannot be greater than the angle contained by the straight-line $BA$ and the circumference $CHA$,"
-    (step23 : True) := by sorry
+    (step23 : ∀ (FA : Line), a.onLine FA → FA ≠ AE → FA.intersectsCircle ABC) := by sorry
 
+  -- orchestrator-HORN-unrenderable: "the angle contained by the circumference $CHA$ and the
+  -- straight-line $AE$" is a curvilinear horn angle with no System-E rendering.
+  -- Expressible gloss (Reading A): same tangency universal.
   euclid_sentence "3.16.24"
     "neither (can it be) less than the (angle) contained by the circumference $CHA$ and the straight-line $AE$."
-    (step24 : True) := by sorry
+    (step24 : ∀ (FA : Line), a.onLine FA → FA ≠ AE → FA.intersectsCircle ABC) := by sorry
 
   euclid_sentence "3.16.25"
     "So, from this, (it is) manifest that a (straight-line) drawn at right-angles to the diameter of a circle, from its extremity, touches the circle [and that the straight-line touches the circle at a single point, inasmuch as it was also shown that a (straight-line) meeting (the circle) at two (points) falls inside it [Prop.~3.2]\\,]."
-    (step25 : True) := by sorry
+    (step25 : (∃ p : Point, p.onLine AE ∧ p.onCircle ABC) ∧ ¬ AE.intersectsCircle ABC) := by sorry
 
-  -- NOTE: existential conclusion — `exact step25` won't close the goal.
-  -- The existential witness + betweenness/construction proof needs manual fixup.
-  sorry
+  exact ⟨step25, step21⟩
   euclid_conclude_sentence "3.16.26"
     "(Which is) the very thing it was required to show."
 

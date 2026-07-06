@@ -1,5 +1,5 @@
 import SystemE
-import Book1.Prop05.variants
+import Book1Variants.Prop05
 import Mathlib.Tactic.Linarith
 import Book1.Prop07.step5_c2_iso
 import Book1.Prop07.step5_c2_sumc

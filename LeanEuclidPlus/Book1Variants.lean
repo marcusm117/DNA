@@ -1,0 +1,15 @@
+import Book1Variants.Prop01
+import Book1Variants.Prop02
+import Book1Variants.Prop05
+import Book1Variants.Prop09
+import Book1Variants.Prop11
+import Book1Variants.Prop22
+import Book1Variants.Prop23
+import Book1Variants.Prop29
+import Book1Variants.Prop34
+import Book1Variants.Prop35
+import Book1Variants.Prop36
+import Book1Variants.Prop37
+import Book1Variants.Prop42
+import Book1Variants.Prop44
+import Book1Variants.Prop46

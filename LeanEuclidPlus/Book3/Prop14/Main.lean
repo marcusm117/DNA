@@ -20,6 +20,11 @@ by
     "In a circle, equal straight-lines are equally far from the center, and (straight-lines) which are equally far from the center are equal to one another. Let $ABDC$$^{\\,\\dag}$ be a circle, and let $AB$ and $CD$ be equal straight-lines within it. I say that $AB$ and $CD$ are equally far from the center."
 
   -- Shared constructions: introduce line objects EF, EG, AE, EC
+  -- Distinctness haves so euclid_apply can discharge e≠f, e≠g, a≠e, e≠c quickly
+  have hef : e ≠ f := by sorry
+  have heg : e ≠ g := by sorry
+  have hae : a ≠ e := by sorry
+  have hec : e ≠ c := by sorry
   euclid_apply (line_from_points e f) as EF
   euclid_apply (line_from_points e g) as EG
   -- orchestrator-note: step1 names the pre-given center E; claim = hypothesis since E is already in signature
@@ -33,6 +38,7 @@ by
 
   euclid_apply (line_from_points a e) as AE
   euclid_apply (line_from_points e c) as EC
+  -- (hae, hec already in context from above)
   euclid_sentence "3.14.3"
     "And let $AE$ and $EC$ be joined."
     (step3 : distinctPointsOnLine a e AE ∧ distinctPointsOnLine e c EC) := by sorry

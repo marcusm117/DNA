@@ -1,6 +1,6 @@
 import SystemE
 import Helpers.SameSide
-import Book1.Prop29.variants
+import Book1Variants.Prop29
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
