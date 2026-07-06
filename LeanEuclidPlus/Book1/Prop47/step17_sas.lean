@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop04
+import Book1.Prop04.Main
 import Book1.Prop47.step17_sas_tri1
 import Book1.Prop47.step17_sas_tri2
 set_option linter.unusedVariables false

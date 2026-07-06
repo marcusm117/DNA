@@ -1,7 +1,7 @@
 import SystemE
-import Book.Prop03
-import Book.Prop05
-import Book.Prop19
+import Book1.Prop03.Main
+import Book1.Prop05.variants
+import Book1.Prop19.Main
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 

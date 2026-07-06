@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop08
+import Book1.Prop08.Main
 import Book1.Prop09.step9_hfab
 import Book1.Prop09.step9_hfac
 set_option linter.unusedVariables false

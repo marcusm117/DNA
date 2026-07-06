@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop33
+import Book1.Prop33.Main
 import Book1.Prop36.step5_ss_ssa
 import Book1.Prop36.step5_ss_ssb
 import Book1.Prop36.step5_ss

@@ -1,0 +1,44 @@
+import SystemE
+import Book1.Prop04.Main
+import Book1.Prop29.variants
+import Book1.Prop34.variants
+import Book1.Prop35.Main
+
+namespace Elements.Book1
+
+theorem proposition_35' : ∀ (a b c d e f : Point) (AF BC AB CD EB FC : Line),
+  formParallelogram a d b c AF BC AB CD ∧ formParallelogram e f b c AF BC EB FC →
+  Triangle.area △a:b:d  + Triangle.area △d:b:c = Triangle.area △e:b:c + Triangle.area △ e:c:f :=
+by
+  euclid_intros
+  euclid_apply (proposition_34' a d b c AF BC AB CD)
+  euclid_apply (proposition_34' e f b c AF BC EB FC)
+  euclid_assert (|(a─d)| = |(e─f)|)
+  by_cases (between a d f)
+  · euclid_apply (intersection_lines CD EB) as g
+    by_cases (between a d e)
+    · euclid_apply (proposition_35 a b c d e f g AF BC AB CD EB FC)
+      euclid_finish
+    · euclid_apply (proposition_29'''' c b f d a CD AB AF)
+      euclid_apply (proposition_4 a e b d f c AF EB AB AF FC CD)
+      euclid_finish
+  · by_cases (a = e)
+    · euclid_finish
+    · euclid_apply (intersection_lines FC AB) as g
+      by_cases (between e f a)
+      · euclid_apply (proposition_35 e b c f a d g AF BC EB FC AB CD)
+        euclid_finish
+      · euclid_apply (proposition_29'''' c b d f e FC EB AF)
+        euclid_apply (proposition_4 e a b f d c AF AB EB AF CD FC)
+        by_cases (f = a)
+        · euclid_finish
+        · -- ▵eab ≅ ▵fdc (from proposition_4 above); apply the area axioms
+          -- explicitly so euclid_finish only does the final arithmetic:
+          --   area-congruence of the corner triangles, plus each parallelogram's
+          --   diagonal split into two triangles.
+          euclid_apply (area_congruence e a b f d c)
+          euclid_apply (parallelogram_area a d b c AF BC AB CD)
+          euclid_apply (parallelogram_area e f b c AF BC EB FC)
+          euclid_finish
+
+end Elements.Book1

@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop30
+import Book1.Prop30.Main
 import Book1.Prop44.step12_hal
 import Book1.Prop44.step12_fbm
 set_option linter.unusedVariables false

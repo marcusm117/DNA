@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop29
+import Book1.Prop29.variants
 import Helpers.SameSide
 import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false

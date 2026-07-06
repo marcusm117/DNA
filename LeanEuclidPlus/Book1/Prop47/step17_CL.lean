@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop41
+import Book1.Prop41.Main
 import Book1.Prop47.step17_ALCE
 import Book1.Prop47.step17_CL_pgram
 set_option linter.unusedVariables false

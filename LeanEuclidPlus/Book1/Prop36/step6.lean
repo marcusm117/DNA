@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop34
+import Book1.Prop34.variants
 import Book1.Prop36.step6_ss_ssa
 import Book1.Prop36.step6_ss_ssb
 import Book1.Prop36.step6_ss

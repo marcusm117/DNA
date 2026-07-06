@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop17
+import Book1.Prop17.Main
 import Book1.Prop47.step17_sas_angle
 import Book1.Prop47.step17_sas
 import Book1.Prop47.step17_CL

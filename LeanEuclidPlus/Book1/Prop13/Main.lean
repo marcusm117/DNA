@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop11
+import Book1.Prop11.variants
 import Book1.Prop13.step1
 import Book1.Prop13.step2
 import Book1.Prop13.step3

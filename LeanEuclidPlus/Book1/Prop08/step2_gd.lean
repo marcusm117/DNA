@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop07
+import Book1.Prop07.Main
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 open Classical

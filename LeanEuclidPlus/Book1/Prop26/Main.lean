@@ -1,7 +1,7 @@
 import SystemE
-import Book.Prop03
-import Book.Prop04
-import Book.Prop16
+import Book1.Prop03.Main
+import Book1.Prop04.Main
+import Book1.Prop16.Main
 import Mathlib.Tactic.Linarith
 import Book1.Prop26.step1
 import Book1.Prop26.step2

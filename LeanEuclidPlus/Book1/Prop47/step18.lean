@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop17
+import Book1.Prop17.Main
 import Book1.Prop47.step17_ALCE
 import Book1.Prop47.step17_ne_same
 import Book1.Prop47.step18_bdec

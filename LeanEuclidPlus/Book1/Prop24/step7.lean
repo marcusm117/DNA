@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop05
+import Book1.Prop05.variants
 import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false

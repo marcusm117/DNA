@@ -1,8 +1,8 @@
 import SystemE
-import Book.Prop03
-import Book.Prop10
-import Book.Prop15
-import Book.Prop04
+import Book1.Prop03.Main
+import Book1.Prop10.Main
+import Book1.Prop15.Main
+import Book1.Prop04.Main
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 

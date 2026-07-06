@@ -39,14 +39,14 @@ by
   have hc_on : c.onCircle ABCD := by sorry
   have hg_on : g.onCircle ABCD := by sorry
 
-  euclid_apply (line_from_points b e) as BE
-  euclid_apply (line_from_points c e) as CE
-  euclid_apply (line_from_points g e) as GE
+  have BE : Line := by sorry
+  have CE : Line := by sorry
+  have GE : Line := by sorry
   euclid_sentence "3.7.1"
     "For let $BE$, $CE$, and $GE$ be joined."
     (step1 : distinctPointsOnLine b e BE ∧ distinctPointsOnLine c e CE ∧ distinctPointsOnLine g e GE) := by sorry
 
-  euclid_apply (line_from_points b f) as BF
+  have BF : Line := by sorry
   -- @assumption ("for every triangle (any) two sides are greater than the remaining (side)", formTriangle e b f BE BF AD)
   euclid_sentence "3.7.2"
     "And since for every triangle (any) two sides are greater than the remaining (side) [Prop.~1.20], $EB$ and $EF$ is thus greater than $BF$."
@@ -79,7 +79,7 @@ by
     "Thus, the base $BF$ is greater than the base $CF$ [Prop.~1.24]."
     (step8 : |(b─f)| > |(c─f)|) := by sorry
 
-  -- "for the same reasons" generalizes the SAS angle-ordering argument of steps 5–8 to any two points.
+  -- orchestrator-note: "for the same reasons" → SKILL.md says generalize to universal; literal "CF>FG" would give |f─c|>|f─g| (= step16); keeping universal since it is the 3rd goal conjunct.
   euclid_sentence "3.7.9"
     "So, for the same (reasons), $CF$ is also greater than $FG$."
     (step9 : ∀ p q : Point, p.onCircle ABCD → q.onCircle ABCD → ∠ p:e:f > ∠ q:e:f → |(f─p)| > |(f─q)|) := by sorry
@@ -90,10 +90,10 @@ by
     "Again, since $GF$ and $FE$ are greater than $EG$ [Prop.~1.20], and $EG$ (is) equal to $ED$, $GF$ and $FE$ are thus greater than $ED$."
     (step10 : |(g─f)| + |(f─e)| > |(e─d)|) := by sorry
 
-  -- CN5 applied to step10: subtracting EF from both sides of GF+FE > ED.
+  -- orchestrator-note: "Let EF be taken from both" — SMT translator rejects Real.sub; claim is the betweenness eq. ED=EF+FD (the prerequisite of CN5 here, from `between e f d`); step12 claims the concluded inequality GF>FD; these are distinct.
   euclid_sentence "3.7.11"
     "Let $EF$ be taken from both."
-    (step11 : |(g─f)| > |(e─d)| - |(e─f)|) := by sorry
+    (step11 : |(e─d)| = |(e─f)| + |(f─d)|) := by sorry
 
   euclid_sentence "3.7.12"
     "Thus, the remainder $GF$ is greater than the remainder $FD$."
@@ -122,8 +122,8 @@ by
 
   -- H is constructed (by I.23) such that ∠FEH = ∠GEF; FH is joined.
   have h : Point := by sorry
-  euclid_apply (line_from_points f h) as FH
-  euclid_apply (line_from_points e h) as EH
+  have FH : Line := by sorry
+  have EH : Line := by sorry
   euclid_sentence "3.7.18"
     "For let the (angle) $FEH$, equal to angle $GEF$, be constructed on the straight-line $EF$, at the point $E$ on it [Prop.~1.23], and let $FH$ be joined."
     (step18 : ∠ f:e:h = ∠ g:e:f ∧ distinctPointsOnLine f h FH) := by sorry
@@ -162,7 +162,7 @@ by
       "And since $FK$ is equal to $FG$, but $FH$ [is equal] to $FG$, $FK$ is thus also equal to $FH$,"
       (step24 : |(f─k)| = |(f─h)|) := by sorry
 
-    -- step9 applied (∠k:e:f > ∠h:e:f) gives |fk| > |fh|, contradicting step24.
+    -- orchestrator-note: sentence "nearer equal to farther away" is rhetorical; mathematical content is FK>FH (from step9 applied to angles); claim |(f─k)|>|(f─h)| contradicts step24 (FK=FH) to yield False at step26.
     euclid_sentence "3.7.25"
       "the nearer to the (straight-line) through the center equal to the further away."
       (step25 : |(f─k)| > |(f─h)|) := by sorry
@@ -177,7 +177,7 @@ by
     "Thus, another (straight-line) equal to $GF$ will not radiate from the point $F$ towards (the circumference of) the circle."
     (step27 : ¬ (∃ k : Point, k.onCircle ABCD ∧ |(f─k)| = |(f─g)| ∧ k ≠ g ∧ k ≠ h)) := by sorry
 
-  -- Generalizes the uniqueness result to all pairs of equal-distance points from F.
+  -- orchestrator-note: "only one" closes the uniqueness claim; the 4th goal conjunct is p.opposingSides q AD (two equal lines ⟹ opposite sides of AD); step28 matches that conjunct directly (stronger than literal "only one from the specific G/H case").
   euclid_sentence "3.7.28"
     "Thus, (there is) only one (such straight-line)."
     (step28 : ∀ p q : Point, p.onCircle ABCD → q.onCircle ABCD →

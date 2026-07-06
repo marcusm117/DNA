@@ -1,6 +1,6 @@
 import SystemE
 import Helpers.SameSide
-import Book.Prop34
+import Book1.Prop34.variants
 import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
