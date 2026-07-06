@@ -191,6 +191,20 @@ Every other Book-2 prop is at a varying/in-progress state — follow the skills'
   `lake build Book Book2`, ad-hoc checks). The lock prevents `.lake` corruption when many build at once.
 - Faithfulness check: `scripts/check_faithful.sh Book2` (needs built `.olean`).
 
+## OldBook1 / OldBook1Variants — FROZEN benchmark baseline, OFF-LIMITS (pretend they don't exist)
+
+`OldBook1/` and `OldBook1Variants/` are a generated, import-isolated copy of the ORIGINAL upstream
+Book-1 proofs, kept ONLY as the baseline for the faithful-vs-original compile-time benchmark. For
+ALL proving / faithful / pipeline work, treat them as if they do not exist:
+- **NEVER edit, prove, wire, "fix", or scaffold anything under `OldBook1/` or `OldBook1Variants/`**
+  (they are regenerated wholesale by `scripts/gen_oldbook1_baseline.py` if ever needed — never by hand).
+- **NEVER write `import OldBook1…` or `import OldBook1Variants…` anywhere.** Nothing in `Book/`,
+  `Book1/`, `Book1Variants/`, `Book2/`, `Book3/`, `Helpers/`, or `SystemE/` may import them — they are
+  a sink that imports only its own modules + `SystemE`. They carry the SAME `Elements.Book1.proposition_N`
+  names as `Book1/`; the ONLY thing preventing a duplicate-declaration collision is that nothing
+  co-imports them, so importing them WILL break the build. (See the memory note
+  `book1-foldered-migration-and-benchmark-plan` for why.)
+
 ## Committing Book work
 
 Book targets depend on `SystemE/` (the faithfulness tactics: `Faithful.lean`, and changes to

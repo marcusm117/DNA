@@ -355,10 +355,13 @@ GF = DF`), never `e = e`. (Exemplar: `Book1/Prop08/Main.lean`.)
    a. Replace its `(stepN : True)` with the real claim (RULE 0/2, VOCABULARY). For a **construction**
       sentence, ALSO add the object-producing `euclid_apply (…) as …` line(s) in Main BEFORE the sentence
       (the claim references those objects) — and if it calls a cited PROP (`proposition_3`, `_46`, …) add
-      `import Book.PropM` at the top (the scaffold stamps only `import SystemE`, so a cited prop is an
-      `unknown identifier` until imported). For a sentence needing a **frame** (reductio/`by_cases`/`wlog`)
+      `import Book1.PropNN.Main` at the top (foldered Book1, zero-padded, e.g. `import Book1.Prop11.Main`;
+      the scaffold stamps only `import SystemE`, so a cited prop is an `unknown identifier` until imported).
+      ⛔ The flat `Book/PropNN.lean` tree is DEAD — NEVER `import Book.PropNN`; always the foldered
+      `Book1.PropNN.Main` (+ `open Elements.Book1`). And NEVER import `OldBook1`/`OldBook1Variants`.
+      For a sentence needing a **frame** (reductio/`by_cases`/`wlog`)
       or a construction beyond the vocab (superposition): add the frame / `euclid_apply (superposition …)`
-      — read `Book/PropNN.lean` for the shape (READING POLICY). Bodies stay `:= by sorry`.
+      — read `Book1/PropNN/Main.lean` for the shape (READING POLICY). Bodies stay `:= by sorry`.
    b. Fill any `@assumption` `TODO` on that sentence (INPUTS-ONLY).
    c. Keep going — do NOT one-shot. When a small batch is filled, BUILD:
       `python3 scripts/check_step.py Book<N>/PropNN --provable` (fix any malformed-claim error it names;

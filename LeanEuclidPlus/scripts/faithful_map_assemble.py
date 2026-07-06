@@ -75,9 +75,10 @@ def build_imports(translate_json: list) -> list[str]:
                     prop_num = int(prop_name.replace("proposition_", ""))
                     if prop_num not in seen_props:
                         seen_props.add(prop_num)
-                        # Book 1 props are in Book/, Book 2 in Book2/
-                        # Construction props are almost always Book 1
-                        imports.append(f"import Book.Prop{prop_num:02d}")
+                        # Book 1 props live in the FOLDERED Book1/ tree (Book1/PropNN/Main.lean,
+                        # module Book1.PropNN.Main, namespace Elements.Book1). The flat Book/ tree is
+                        # DEAD — never import it. Construction props are almost always Book 1.
+                        imports.append(f"import Book1.Prop{prop_num:02d}.Main")
 
     return imports
 

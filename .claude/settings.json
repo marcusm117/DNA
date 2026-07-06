@@ -90,7 +90,16 @@
       "Bash(git restore:*)",
       "Bash(git checkout:*)",
       "Bash(git reset:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+
+      "Edit(LeanEuclidPlus/OldBook1/**)",
+      "Write(LeanEuclidPlus/OldBook1/**)",
+      "Edit(LeanEuclidPlus/OldBook1Variants/**)",
+      "Write(LeanEuclidPlus/OldBook1Variants/**)",
+      "Edit(LeanEuclidPlus/OldBook1.lean)",
+      "Write(LeanEuclidPlus/OldBook1.lean)",
+      "Edit(LeanEuclidPlus/OldBook1Variants.lean)",
+      "Write(LeanEuclidPlus/OldBook1Variants.lean)"
     ]
   },
   "hooks": {
