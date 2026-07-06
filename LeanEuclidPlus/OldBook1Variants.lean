@@ -1,0 +1,15 @@
+import OldBook1Variants.Prop01
+import OldBook1Variants.Prop02
+import OldBook1Variants.Prop05
+import OldBook1Variants.Prop09
+import OldBook1Variants.Prop11
+import OldBook1Variants.Prop22
+import OldBook1Variants.Prop23
+import OldBook1Variants.Prop29
+import OldBook1Variants.Prop34
+import OldBook1Variants.Prop35
+import OldBook1Variants.Prop36
+import OldBook1Variants.Prop37
+import OldBook1Variants.Prop42
+import OldBook1Variants.Prop44
+import OldBook1Variants.Prop46
