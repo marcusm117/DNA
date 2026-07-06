@@ -25,8 +25,18 @@ import re, sys, os, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import faithful_lib as _fl
 
-BOOK_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # LeanEuclidPlus/
+BOOK_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # LeanEuclidPlus/ (realpath → symlink-stable)
 BASELINE  = os.path.join(BOOK_ROOT, "scripts", "step_signatures.json")
+
+
+def canon_rel(p: str) -> str:
+    """Symlink-stable path of `p` relative to BOOK_ROOT. Accepts an absolute path, a path relative to
+    BOOK_ROOT, or a STALE baseline `file` field that was saved through a different symlink branch
+    (e.g. `--save` run from the /u/ mount while home resolves to /h/56, which yields an ugly
+    `../../../../../../../u/.../Main.lean`). `os.path.realpath` collapses every branch to the same
+    on-disk key, so `--save` and the diff match regardless of how either was invoked."""
+    ap = p if os.path.isabs(p) else os.path.join(BOOK_ROOT, p)
+    return os.path.relpath(os.path.realpath(ap), BOOK_ROOT)
 
 # `euclid_sentence "loc" "text" (name :` — we capture loc + name, then balance-scan the type.
 HEAD = re.compile(
@@ -69,7 +79,7 @@ def extract_file(path: str):
     warning) — an intended change (a bad assumption dropped/retyped) must be re-approved and re-saved
     with `--save`, exactly like a claim-type change."""
     raw = open(path, encoding="utf-8").read()
-    rel = os.path.relpath(path, BOOK_ROOT)
+    rel = canon_rel(path)
     # Use faithful_lib to get Node objects (with .assumptions populated) for assumption data.
     try:
         book = _fl.book_num(_fl.propdir_of(os.path.dirname(path)))
@@ -98,8 +108,12 @@ def extract_file(path: str):
 
 
 def resolve(arg: str) -> str:
-    """Accept a path relative to LeanEuclidPlus/ or absolute; return absolute."""
-    return arg if os.path.isabs(arg) else os.path.join(BOOK_ROOT, arg)
+    """Accept a path relative to LeanEuclidPlus/ or absolute, OR a propdir (append Main.lean);
+    return absolute."""
+    p = arg if os.path.isabs(arg) else os.path.join(BOOK_ROOT, arg)
+    if os.path.isdir(p):
+        p = os.path.join(p, "Main.lean")
+    return p
 
 
 def load_baseline():
@@ -116,8 +130,9 @@ def save(prop_arg: str):
         print(f"no euclid_sentence steps found in {prop_arg} — nothing saved")
         return 2
     base = load_baseline()
-    rel = os.path.relpath(path, BOOK_ROOT)
-    base = {k: v for k, v in base.items() if v.get("file") != rel}  # drop old entries for this file
+    rel = canon_rel(path)
+    # drop old entries for this file — compare canonically so a stale symlink-branch key also clears
+    base = {k: v for k, v in base.items() if canon_rel(v.get("file", "")) != rel}
     base.update(steps)                     # merge: this prop's locators replace/add; others untouched
     with open(BASELINE, "w", encoding="utf-8") as f:
         json.dump(base, f, ensure_ascii=False, indent=2, sort_keys=True)
@@ -144,8 +159,8 @@ def diff(prop_arg: str = None):
 
     # Which locators to check: those in the baseline, optionally restricted to one prop's file.
     if prop_arg:
-        rel = os.path.relpath(resolve(prop_arg), BOOK_ROOT)
-        keys = [k for k, v in base.items() if v["file"] == rel]
+        rel = canon_rel(resolve(prop_arg))
+        keys = [k for k, v in base.items() if canon_rel(v["file"]) == rel]
         if not keys:
             print(f"no approved steps recorded for {rel} (run --save after approving its Phase A)")
             return 2

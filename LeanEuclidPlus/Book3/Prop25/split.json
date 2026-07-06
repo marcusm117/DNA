@@ -1,0 +1,249 @@
+[
+  {
+    "role": "intro",
+    "text": "For a given segment of a circle, to complete the circle, the very one of which it is a segment. Let $ABC$ be the given segment of a circle. So it is required to complete the circle for segment $ABC$, the very one of which it is a segment."
+  },
+  {
+    "role": "construction",
+    "text": "For let $AC$ be cut in half at (point) $D$ [Prop.~1.10],",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$D$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $DB$ be drawn from point $D$, at right-angles to $AC$ [Prop.~1.11].",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$DB$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AB$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $ABD$ is surely either greater than, equal to, or less than (angle) $BAD$.",
+    "assertion": "angle ABD is either greater than, equal to, or less than angle BAD (trichotomy)",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "angle $ABD$ is surely either greater than, equal to, or less than (angle) $BAD$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "First of all, let it be greater.",
+    "assertion": "angle ABD is greater than angle BAD (Case 1 hypothesis)",
+    "spans": [
+      {"label": "glue",      "text": "First of all, "},
+      {"label": "assertion", "text": "let it be greater"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "And let (angle) $BAE$, equal to angle $ABD$, be constructed on the straight-line $BA$, at the point $A$ on it [Prop.~1.23].",
+    "construction_cite": "1.23",
+    "objects_introduced": ["$E$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $DB$ be drawn through to $E$,",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "construction",
+    "text": "and let $EC$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$EC$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since angle $ABE$ is equal to $BAE$, the straight-line $EB$ is thus also equal to $EA$ [Prop.~1.6].",
+    "assertion": "EB is equal to EA",
+    "spans": [
+      {"label": "glue",       "text": "Therefore, since "},
+      {"label": "assumption", "text": "angle $ABE$ is equal to $BAE$"},
+      {"label": "glue",       "text": ", the straight-line "},
+      {"label": "assertion",  "text": "$EB$ is thus also equal to $EA$"},
+      {"label": "glue",       "text": " [Prop.~1.6]."}
+    ],
+    "proof_cite": "1.6"
+  },
+  {
+    "role": "deduction",
+    "text": "And since $AD$ is equal to $DC$, and $DE$ (is) common, the two (straight-lines) $AD$, $DE$ are equal to the two (straight-lines) $CD$, $DE$, respectively.",
+    "assertion": "AD,DE equals CD,DE respectively",
+    "spans": [
+      {"label": "glue",       "text": "And since "},
+      {"label": "assumption", "text": "$AD$ is equal to $DC$"},
+      {"label": "glue",       "text": ", and "},
+      {"label": "assumption", "text": "$DE$ (is) common"},
+      {"label": "glue",       "text": ", the "},
+      {"label": "assertion",  "text": "two (straight-lines) $AD$, $DE$ are equal to the two (straight-lines) $CD$, $DE$, respectively"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $ADE$ is equal to angle $CDE$. For each (is) a right-angle.",
+    "assertion": "angle ADE equals angle CDE",
+    "spans": [
+      {"label": "glue",       "text": "And "},
+      {"label": "assertion",  "text": "angle $ADE$ is equal to angle $CDE$"},
+      {"label": "glue",       "text": ". "},
+      {"label": "assumption", "text": "For each (is) a right-angle"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $AE$ is equal to the base $CE$ [Prop.~1.4].",
+    "assertion": "base AE equals base CE",
+    "spans": [
+      {"label": "glue",      "text": "Thus, the "},
+      {"label": "assertion", "text": "base $AE$ is equal to the base $CE$"},
+      {"label": "glue",      "text": " [Prop.~1.4]."}
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": "But, $AE$ was shown (to be) equal to $BE$.",
+    "assertion": "AE equals BE",
+    "spans": [
+      {"label": "glue",      "text": "But, "},
+      {"label": "assertion", "text": "$AE$ was shown (to be) equal to $BE$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $BE$ is also equal to $CE$.",
+    "assertion": "BE equals CE",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$BE$ is also equal to $CE$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the three (straight-lines) $AE$, $EB$, and $EC$ are equal to one another.",
+    "assertion": "AE, EB, EC are equal to one another",
+    "spans": [
+      {"label": "glue",      "text": "Thus, the "},
+      {"label": "assertion", "text": "three (straight-lines) $AE$, $EB$, and $EC$ are equal to one another"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, if a circle is drawn with center $E$, and radius one of $AE$, $EB$, or $EC$, it will also go through the remaining points (of the segment), and the (associated circle) will be completed [Prop.~3.9].",
+    "assertion": "the circle with center E and radius AE/EB/EC passes through remaining segment points and completes the circle",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "if a circle is drawn with center $E$, and radius one of $AE$, $EB$, or $EC$, it will also go through the remaining points (of the segment), and the (associated circle) will be completed"},
+      {"label": "glue",      "text": " [Prop.~3.9]."}
+    ],
+    "proof_cite": "3.9"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, a circle has been completed from the given segment of a circle.",
+    "assertion": "a circle has been completed from the given segment (Case 1 result)",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "a circle has been completed from the given segment of a circle"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And (it is) clear that the segment $ABC$ is less than a semi-circle, because the center $E$ happens to lie outside it.",
+    "assertion": "segment ABC is less than a semi-circle",
+    "spans": [
+      {"label": "glue",       "text": "And (it is) clear that the "},
+      {"label": "assertion",  "text": "segment $ABC$ is less than a semi-circle"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assumption", "text": "because the center $E$ happens to lie outside it"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "[And], similarly, even if angle $ABD$ is equal to $BAD$, (since) $AD$ becomes equal to each of $BD$ [Prop.~1.6] and $DC$, the three (straight-lines) $DA$, $DB$, and $DC$ will be equal to one another.",
+    "assertion": "DA, DB, DC are equal to one another (Case 2)",
+    "spans": [
+      {"label": "glue",       "text": "[And], similarly, even if "},
+      {"label": "assumption", "text": "angle $ABD$ is equal to $BAD$"},
+      {"label": "glue",       "text": ", (since) "},
+      {"label": "assumption", "text": "$AD$ becomes equal to each of $BD$ [Prop.~1.6] and $DC$"},
+      {"label": "glue",       "text": ", the "},
+      {"label": "assertion",  "text": "three (straight-lines) $DA$, $DB$, and $DC$ will be equal to one another"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": "1.6"
+  },
+  {
+    "role": "deduction",
+    "text": "And point $D$ will be the center of the completed circle.",
+    "assertion": "D is the center of the completed circle",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "point $D$ will be the center of the completed circle"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $ABC$ will manifestly be a semi-circle.",
+    "assertion": "ABC is a semi-circle",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$ABC$ will manifestly be a semi-circle"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And if $ABD$ is less than $BAD$, and we construct (angle $BAE$), equal to angle $ABD$, on the straight-line $BA$, at the point $A$ on it [Prop.~1.23], then the center will fall on $DB$, inside the segment $ABC$.",
+    "assertion": "the center falls on DB, inside segment ABC (Case 3)",
+    "spans": [
+      {"label": "glue",       "text": "And if "},
+      {"label": "assumption", "text": "$ABD$ is less than $BAD$"},
+      {"label": "glue",       "text": ", and we construct (angle $BAE$), equal to angle $ABD$, on the straight-line $BA$, at the point $A$ on it [Prop.~1.23], then the "},
+      {"label": "assertion",  "text": "center will fall on $DB$, inside the segment $ABC$"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": "1.23"
+  },
+  {
+    "role": "deduction",
+    "text": "And segment $ABC$ will manifestly be greater than a semi-circle.",
+    "assertion": "segment ABC is greater than a semi-circle",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "segment $ABC$ will manifestly be greater than a semi-circle"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, a circle has been completed from the given segment of a circle. (Which is) the very thing it was required to do."
+  }
+]

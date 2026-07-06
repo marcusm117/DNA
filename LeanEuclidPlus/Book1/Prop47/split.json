@@ -1,0 +1,238 @@
+[
+  {
+    "role": "intro",
+    "text": "In right-angled triangles,  the square on the side subtending the right-angle is equal to the (sum of the) squares on the sides containing the right-angle.  Let $ABC$ be a right-angled triangle having the angle $BAC$a right-angle. I say that the square on $BC$ is equal to the (sum of the) squares on $BA$ and $AC$. "
+  },
+  {
+    "role": "construction",
+    "text": "For let the square $BDEC$ have been described on $BC$, and (the squares) $GB$ and $HC$ on $AB$ and $AC$ (respectively) [Prop.~1.46].",
+    "construction_cite": "1.46",
+    "objects_introduced": ["$BDEC$", "$GB$", "$HC$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AL$ have been drawn through point $A$ parallel to either of $BD$ or $CE$ [Prop.~1.31].",
+    "construction_cite": "1.31",
+    "objects_introduced": ["$AL$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AD$ and $FC$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AD$", "$FC$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since angles $BAC$ and $BAG$ are each right-angles, then two straight-lines $AC$ and $AG$, not lying on the same side, make the adjacent angles with some straight-line $BA$, at the point $A$ on it, (whose sum is) equal to two right-angles.",
+    "assertion": "AC and AG make adjacent angles with BA (whose sum is) equal to two right-angles",
+    "spans": [
+      { "label": "glue", "text": "And since " },
+      { "label": "assumption", "text": "angles $BAC$ and $BAG$ are each right-angles" },
+      { "label": "glue", "text": ", then " },
+      { "label": "assertion", "text": "two straight-lines $AC$ and $AG$, not lying on the same side, make the adjacent angles with some straight-line $BA$, at the point $A$ on it, (whose sum is) equal to two right-angles" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $CA$ is straight-on to $AG$ [Prop.~1.14].",
+    "assertion": "CA is straight-on to AG",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "$CA$ is straight-on to $AG$" },
+      { "label": "glue", "text": " [Prop.~1.14]." }
+    ],
+    "proof_cite": "1.14"
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), $BA$ is also straight-on to $AH$.",
+    "assertion": "BA is straight-on to AH",
+    "spans": [
+      { "label": "glue", "text": "So, for the same (reasons), " },
+      { "label": "assertion", "text": "$BA$ is also straight-on to $AH$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And since angle $DBC$ is equal to $FBA$, for (they are) both right-angles, let $ABC$ have been added to both. ",
+    "assertion": "angle DBC is equal to angle FBA (both being right-angles)",
+    "spans": [
+      { "label": "glue", "text": "And since " },
+      { "label": "assertion", "text": "angle $DBC$ is equal to $FBA$" },
+      { "label": "glue", "text": ", " },
+      { "label": "assumption", "text": "for (they are) both right-angles" },
+      { "label": "glue", "text": ", let $ABC$ have been added to both. " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the whole (angle) $DBA$ is equal to the whole (angle) $FBC$.",
+    "assertion": "whole angle DBA is equal to whole angle FBC",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "the whole (angle) $DBA$ is equal to the whole (angle) $FBC$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And since $DB$ is equal to $BC$, and $FB$ to $BA$, the two (straight-lines) $DB$, $BA$ are equal to the two (straight-lines) $CB$, $BF$, respectively.",
+    "assertion": "the two DB, BA are equal to the two CB, BF respectively",
+    "spans": [
+      { "label": "glue", "text": "And since " },
+      { "label": "assumption", "text": "$DB$ is equal to $BC$" },
+      { "label": "glue", "text": ", and " },
+      { "label": "assumption", "text": "$FB$ to $BA$" },
+      { "label": "glue", "text": ", " },
+      { "label": "assertion", "text": "the two (straight-lines) $DB$, $BA$ are equal to the two (straight-lines) $CB$, $BF$, respectively" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $DBA$ (is) equal to angle $FBC$.",
+    "assertion": "angle DBA is equal to angle FBC",
+    "spans": [
+      { "label": "glue", "text": "And " },
+      { "label": "assertion", "text": "angle $DBA$ (is) equal to angle $FBC$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $AD$ [is] equal to the base $FC$,",
+    "assertion": "base AD is equal to base FC",
+    "spans": [
+      { "label": "glue", "text": "Thus, the base " },
+      { "label": "assertion", "text": "$AD$ [is] equal to the base $FC$" },
+      { "label": "glue", "text": "," }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": "and the triangle $ABD$ is equal to the triangle $FBC$ [Prop.~1.4].",
+    "assertion": "triangle ABD is equal to triangle FBC",
+    "spans": [
+      { "label": "glue", "text": "and the " },
+      { "label": "assertion", "text": "triangle $ABD$ is equal to the triangle $FBC$" },
+      { "label": "glue", "text": " [Prop.~1.4]." }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": "And  parallelogram $BL$ [is] double (the area) of triangle $ABD$. For they have the same base, $BD$, and are between the same parallels, $BD$ and $AL$  [Prop.~1.41].",
+    "assertion": "parallelogram BL is double the area of triangle ABD",
+    "spans": [
+      { "label": "glue", "text": "And  " },
+      { "label": "assertion", "text": "parallelogram $BL$ [is] double (the area) of triangle $ABD$" },
+      { "label": "glue", "text": ". For " },
+      { "label": "assumption", "text": "they have the same base, $BD$, and are between the same parallels, $BD$ and $AL$" },
+      { "label": "glue", "text": "  [Prop.~1.41]." }
+    ],
+    "proof_cite": "1.41"
+  },
+  {
+    "role": "deduction",
+    "text": "And  square $GB$ is double (the area) of triangle $FBC$. For again they have the same base, $FB$, and are between the same parallels, $FB$ and $GC$ [Prop.~1.41].",
+    "assertion": "square GB is double the area of triangle FBC",
+    "spans": [
+      { "label": "glue", "text": "And  " },
+      { "label": "assertion", "text": "square $GB$ is double (the area) of triangle $FBC$" },
+      { "label": "glue", "text": ". For again " },
+      { "label": "assumption", "text": "they have the same base, $FB$, and are between the same parallels, $FB$ and $GC$" },
+      { "label": "glue", "text": " [Prop.~1.41]." }
+    ],
+    "proof_cite": "1.41"
+  },
+  {
+    "role": "deduction",
+    "text": "[And the doubles of equal things are equal to one another.]",
+    "assertion": "the doubles of equal things are equal to one another",
+    "spans": [
+      { "label": "glue", "text": "[And " },
+      { "label": "assertion", "text": "the doubles of equal things are equal to one another" },
+      { "label": "glue", "text": ".]" }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the parallelogram $BL$ is also equal to the square $GB$.",
+    "assertion": "parallelogram BL is equal to square GB",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "the parallelogram $BL$ is also equal to the square $GB$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So, similarly, $AE$ and $BK$ being joined,  the parallelogram $CL$ can be shown (to be)  equal to the square $HC$.",
+    "assertion": "parallelogram CL is equal to square HC",
+    "spans": [
+      { "label": "glue", "text": "So, similarly, $AE$ and $BK$ being joined,  " },
+      { "label": "assertion", "text": "the parallelogram $CL$ can be shown (to be)  equal to the square $HC$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the whole square $BDEC$ is equal to the (sum of the) two squares $GB$ and $HC$.",
+    "assertion": "whole square BDEC is equal to the sum of the two squares GB and HC",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "the whole square $BDEC$ is equal to the (sum of the) two squares $GB$ and $HC$" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the square $BDEC$ is described on $BC$,",
+    "assertion": "square BDEC is described on BC",
+    "spans": [
+      { "label": "glue", "text": "And the square " },
+      { "label": "assertion", "text": "$BDEC$ is described on $BC$" },
+      { "label": "glue", "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and the (squares) $GB$ and $HC$ on $BA$ and $AC$ (respectively).",
+    "assertion": "squares GB and HC are described on BA and AC respectively",
+    "spans": [
+      { "label": "glue", "text": "and the (squares) " },
+      { "label": "assertion", "text": "$GB$ and $HC$ on $BA$ and $AC$ (respectively)" },
+      { "label": "glue", "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the square on the side $BC$ is equal to the (sum of the) squares on the sides $BA$ and $AC$. ",
+    "assertion": "square on side BC is equal to the sum of the squares on sides BA and AC",
+    "spans": [
+      { "label": "glue", "text": "Thus, the " },
+      { "label": "assertion", "text": "square on the side $BC$ is equal to the (sum of the) squares on the sides $BA$ and $AC$" },
+      { "label": "glue", "text": ". " }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in right-angled triangles,  the square on the side subtending the right-angle is equal to the (sum of the) squares on the sides surrounding the right-[angle]. (Which is) the very thing it was required to show."
+  }
+]

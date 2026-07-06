@@ -1,0 +1,122 @@
+[
+  {
+    "role": "intro",
+    "text": "If some straight-line touches a circle, and some (other) straight-line is joined from the center (of the circle) to the point of contact, (then) the (straight-line) so joined will be perpendicular to the tangent. For let some straight-line $DE$ touch the circle $ABC$ at point $C$, and let the center $F$ of circle $ABC$ be found [Prop.~3.1], and let $FC$ be joined from $F$ to $C$. I say that $FC$ is perpendicular to $DE$."
+  },
+  {
+    "role": "deduction",
+    "text": "For if not, let $FG$ be drawn from $F$, perpendicular to $DE$ [Prop.~1.12].",
+    "assertion": "FG is drawn from F, perpendicular to DE",
+    "frame": {
+      "kind": "reductio_open",
+      "supposition": "$FG$ is perpendicular to $DE$"
+    },
+    "proof_cite": "1.12",
+    "objects_introduced": ["$G$", "$FG$"],
+    "spans": [
+      { "label": "glue",      "text": "For if not, let " },
+      { "label": "assertion", "text": "$FG$ be drawn from $F$, perpendicular to $DE$" },
+      { "label": "glue",      "text": " [Prop.~1.12]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since angle $FGC$ is a right-angle, (angle) $FCG$ is thus acute [Prop.~1.17].",
+    "assertion": "angle FCG is acute",
+    "proof_cite": "1.17",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "angle $FGC$ is a right-angle" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "(angle) $FCG$ is thus acute" },
+      { "label": "glue",       "text": " [Prop.~1.17]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And the greater angle is subtended by the greater side [Prop.~1.19]. Thus, $FC$ (is) greater than $FG$.",
+    "assertion": "FC is greater than FG",
+    "proof_cite": "1.19",
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assumption", "text": "the greater angle is subtended by the greater side [Prop.~1.19]" },
+      { "label": "glue",       "text": ". Thus, " },
+      { "label": "assertion",  "text": "$FC$ (is) greater than $FG$" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $FC$ (is) equal to $FB$.",
+    "assertion": "FC is equal to FB",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$FC$ (is) equal to $FB$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FB$ (is) also greater than $FG$, the lesser than the greater.",
+    "assertion": "FB is greater than FG",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$FB$ (is) also greater than $FG$" },
+      { "label": "glue",      "text": ", the lesser than the greater." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible.",
+    "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
+    "proof_cite": null,
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FG$ is not perpendicular to $DE$.",
+    "assertion": "FG is not perpendicular to DE",
+    "frame": {
+      "kind": "reductio_close",
+      "closes": "$FG$ is perpendicular to $DE$"
+    },
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$FG$ is not perpendicular to $DE$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So, similarly, we can show that neither (is) any other (straight-line) except $FC$.",
+    "assertion": "no other straight-line (except FC) is perpendicular to DE",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "So, similarly, we can show that " },
+      { "label": "assertion", "text": "neither (is) any other (straight-line) except $FC$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FC$ is perpendicular to $DE$.",
+    "assertion": "FC is perpendicular to DE",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$FC$ is perpendicular to $DE$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if some straight-line touches a circle, and some (other) straight-line is joined from the center (of the circle) to the point of contact, (then) the (straight-line) so joined will be perpendicular to the tangent. (Which is) the very thing it was required to show."
+  }
+]

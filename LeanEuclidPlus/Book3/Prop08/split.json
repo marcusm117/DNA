@@ -1,0 +1,351 @@
+[
+  {
+    "role": "intro",
+    "text": "If some point is taken outside a circle, and some straight-lines are drawn from the point to the (circumference of the) circle, one of which (passes) through the center, the remainder (being) random, (then) for the straight-lines radiating towards the concave (part of the) circumference, the greatest is that (passing) through the center. For the others, a (straight-line) nearer$^\\dag$ to the (straight-line) through the center is always greater than one further away. For the straight-lines radiating towards the convex (part of the) circumference, the least is that between the point and the diameter. For the others, a (straight-line) nearer to the least (straight-line) is always less than one further away. And only two equal (straight-lines) will radiate from the point towards the (circumference of the) circle, (one) on each (side) of the least (straight-line). Let $ABC$ be a circle, and let some point $D$ be taken outside $ABC$, and from it let some straight-lines, $DA$, $DE$, $DF$, and $DC$, be drawn through (the circle), and let $DA$ be through the center. I say that for the straight-lines radiating towards the concave (part of the) circumference, $AEFC$, the greatest is the one (passing) through the center, (namely) $AD$, and (that) $DE$ (is) greater than $DF$, and $DF$ than $DC$. For the straight-lines radiating towards the convex (part of the) circumference, $HLKG$, the least is the one between the point and the diameter $AG$, (namely) $DG$, and a (straight-line) nearer to the least (straight-line) $DG$ is always less than one farther away, (so that) $DK$ (is less) than $DL$, and $DL$ than than $DH$."
+  },
+  {
+    "role": "construction",
+    "text": "For let the center of the circle be found [Prop.~3.1], and let it be (at point) $M$ [Prop.~3.1].",
+    "construction_cite": "3.1",
+    "objects_introduced": ["$M$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $ME$, $MF$, $MC$, $MK$, $ML$, and $m\\kern -.7pt h$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$ME$", "$MF$", "$MC$", "$MK$", "$ML$", "$m\\kern -.7pt h$"]
+  },
+  {
+    "role": "construction",
+    "text": "And since $AM$ is equal to $EM$, let $MD$ be added to both.",
+    "construction_cite": null,
+    "objects_introduced": [],
+    "justifications": [{"substring": "$AM$ is equal to $EM$", "kind": "prior_fact"}]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AD$ is equal to $EM$ and $MD$.",
+    "assertion": "AD equals EM plus MD",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$AD$ is equal to $EM$ and $MD$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, $EM$ and $MD$ is greater than $ED$ [Prop.~1.20]. Thus, $AD$ is also greater than $ED$.",
+    "assertion": "AD is greater than ED",
+    "spans": [
+      {"label": "glue",       "text": "But, "},
+      {"label": "assumption", "text": "$EM$ and $MD$ is greater than $ED$"},
+      {"label": "glue",       "text": " [Prop.~1.20]. Thus, "},
+      {"label": "assertion",  "text": "$AD$ is also greater than $ED$"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": "1.20"
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since $ME$ is equal to $MF$, and $MD$ (is) common, the (straight-lines) $EM$, $MD$ are thus equal to $FM$, $MD$.",
+    "assertion": "EM and MD equal FM and MD",
+    "spans": [
+      {"label": "glue",       "text": "Again, since "},
+      {"label": "assumption", "text": "$ME$ is equal to $MF$"},
+      {"label": "glue",       "text": ", and "},
+      {"label": "assumption", "text": "$MD$ (is) common"},
+      {"label": "glue",       "text": ", the (straight-lines) "},
+      {"label": "assertion",  "text": "$EM$, $MD$ are thus equal to $FM$, $MD$"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $EMD$ is greater than angle $FMD$.$^\\ddag$",
+    "assertion": "angle EMD is greater than angle FMD",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "angle $EMD$ is greater than angle $FMD$"},
+      {"label": "glue",      "text": ".$^\\ddag$"}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $ED$ is greater than the base $FD$ [Prop.~1.24].",
+    "assertion": "ED is greater than FD",
+    "spans": [
+      {"label": "glue",      "text": "Thus, the base "},
+      {"label": "assertion", "text": "$ED$ is greater than the base $FD$"},
+      {"label": "glue",      "text": " [Prop.~1.24]."}
+    ],
+    "proof_cite": "1.24"
+  },
+  {
+    "role": "deduction",
+    "text": "So, similarly, we can show that $FD$ is also greater than $CD$.",
+    "assertion": "FD is greater than CD",
+    "spans": [
+      {"label": "glue",      "text": "So, similarly, we can show that "},
+      {"label": "assertion", "text": "$FD$ is also greater than $CD$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AD$ (is) the greatest (straight-line),",
+    "assertion": "AD is the greatest straight-line",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$AD$ (is) the greatest (straight-line)"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $DE$ (is) greater than $DF$,",
+    "assertion": "DE is greater than DF",
+    "spans": [
+      {"label": "glue",      "text": "and "},
+      {"label": "assertion", "text": "$DE$ (is) greater than $DF$"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $DF$ than $DC$.",
+    "assertion": "DF is greater than DC",
+    "spans": [
+      {"label": "glue",      "text": "and "},
+      {"label": "assertion", "text": "$DF$ than $DC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And since $MK$ and $KD$ is greater than $MD$ [Prop. 1.20], and $MG$ (is) equal to $MK$, the remainder $KD$ is thus greater than the remainder $GD$.",
+    "assertion": "KD is greater than GD",
+    "spans": [
+      {"label": "glue",       "text": "And since "},
+      {"label": "assumption", "text": "$MK$ and $KD$ is greater than $MD$"},
+      {"label": "glue",       "text": " [Prop. 1.20], and "},
+      {"label": "assumption", "text": "$MG$ (is) equal to $MK$"},
+      {"label": "glue",       "text": ", the remainder "},
+      {"label": "assertion",  "text": "$KD$ is thus greater than the remainder $GD$"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": "1.20"
+  },
+  {
+    "role": "deduction",
+    "text": "So $GD$ is less than $KD$.",
+    "assertion": "GD is less than KD",
+    "spans": [
+      {"label": "glue",      "text": "So "},
+      {"label": "assertion", "text": "$GD$ is less than $KD$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And since in triangle $MLD$, the two internal straight-lines $MK$ and $KD$ were constructed on one of the sides, $MD$, (then) $MK$ and $KD$ are thus less than $ML$ and $LD$ [Prop.~1.21].",
+    "assertion": "MK and KD are less than ML and LD",
+    "spans": [
+      {"label": "glue",       "text": "And since "},
+      {"label": "assumption", "text": "in triangle $MLD$, the two internal straight-lines $MK$ and $KD$ were constructed on one of the sides, $MD$"},
+      {"label": "glue",       "text": ", (then) "},
+      {"label": "assertion",  "text": "$MK$ and $KD$ are thus less than $ML$ and $LD$"},
+      {"label": "glue",       "text": " [Prop.~1.21]."}
+    ],
+    "proof_cite": "1.21"
+  },
+  {
+    "role": "deduction",
+    "text": "And $MK$ (is) equal to $ML$.",
+    "assertion": "MK equals ML",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$MK$ (is) equal to $ML$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remainder $DK$ is less than the remainder $DL$.",
+    "assertion": "DK is less than DL",
+    "spans": [
+      {"label": "glue",      "text": "Thus, the remainder "},
+      {"label": "assertion", "text": "$DK$ is less than the remainder $DL$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So, similarly, we can show that $DL$ is also less than $DH$.",
+    "assertion": "DL is less than DH",
+    "spans": [
+      {"label": "glue",      "text": "So, similarly, we can show that "},
+      {"label": "assertion", "text": "$DL$ is also less than $DH$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $DG$ (is) the least (straight-line),",
+    "assertion": "DG is the least straight-line",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$DG$ (is) the least (straight-line)"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $DK$ (is) less than $DL$,",
+    "assertion": "DK is less than DL",
+    "spans": [
+      {"label": "glue",      "text": "and "},
+      {"label": "assertion", "text": "$DK$ (is) less than $DL$"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $DL$ than $DH$.",
+    "assertion": "DL is less than DH",
+    "spans": [
+      {"label": "glue",      "text": "and "},
+      {"label": "assertion", "text": "$DL$ than $DH$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "wts",
+    "text": "I also say that only two equal (straight-lines) will radiate from point $D$ towards (the circumference of) the circle, (one) on each (side) on the least (straight-line), $DG$."
+  },
+  {
+    "role": "construction",
+    "text": "Let the angle $DMB$, equal to angle $KMD$, be constructed on the straight-line $MD$, at the point $M$ on it [Prop.~1.23], and let $DB$ be joined.",
+    "construction_cite": "1.23",
+    "objects_introduced": ["$B$", "$DB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $MK$ is equal to $MB$, and $MD$ (is) common, the two (straight-lines) $KM$, $MD$ are equal to the two (straight-lines) $BM$, $MD$, respectively.",
+    "assertion": "KM and MD equal BM and MD respectively",
+    "spans": [
+      {"label": "glue",       "text": "And since "},
+      {"label": "assumption", "text": "$MK$ is equal to $MB$"},
+      {"label": "glue",       "text": ", and "},
+      {"label": "assumption", "text": "$MD$ (is) common"},
+      {"label": "glue",       "text": ", the two (straight-lines) "},
+      {"label": "assertion",  "text": "$KM$, $MD$ are equal to the two (straight-lines) $BM$, $MD$, respectively"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $KMD$ (is) equal to angle $BMD$.",
+    "assertion": "angle KMD equals angle BMD",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "angle $KMD$ (is) equal to angle $BMD$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $DK$ is equal to the base $DB$ [Prop.~1.4].",
+    "assertion": "DK equals DB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, the base "},
+      {"label": "assertion", "text": "$DK$ is equal to the base $DB$"},
+      {"label": "glue",      "text": " [Prop.~1.4]."}
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "wts",
+    "text": "[So] I say that another (straight-line) equal to $DK$ will not radiate towards the (circumference of the) circle from point $D$."
+  },
+  {
+    "role": "deduction",
+    "text": "For, if possible, let (such a straight-line) radiate, and let it be $DN$.",
+    "assertion": "a straight-line DN radiates from D towards the circle equal to DK",
+    "frame": {"kind": "reductio_open", "supposition": "another (straight-line) equal to $DK$ radiates towards the (circumference of the) circle from point $D$"},
+    "spans": [
+      {"label": "glue",      "text": "For, if possible, "},
+      {"label": "assertion", "text": "let (such a straight-line) radiate, and let it be $DN$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since $DK$ is equal to $DN$, but $DK$ is equal to $DB$, (then) $DB$ is thus also equal to $DN$,",
+    "assertion": "DB equals DN",
+    "spans": [
+      {"label": "glue",       "text": "Therefore, since "},
+      {"label": "assumption", "text": "$DK$ is equal to $DN$"},
+      {"label": "glue",       "text": ", but "},
+      {"label": "assumption", "text": "$DK$ is equal to $DB$"},
+      {"label": "glue",       "text": ", (then) "},
+      {"label": "assertion",  "text": "$DB$ is thus also equal to $DN$"},
+      {"label": "glue",       "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "(so that) a (straight-line) nearer to the least (straight-line) $DG$ [is] equal to one further away.",
+    "assertion": "a line nearer to DG equals one further from DG",
+    "spans": [
+      {"label": "glue",      "text": "(so that) "},
+      {"label": "assertion", "text": "a (straight-line) nearer to the least (straight-line) $DG$ [is] equal to one further away"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing was shown (to be) impossible.",
+    "assertion": "contradiction",
+    "frame": {"kind": "contradiction"},
+    "spans": [
+      {"label": "assertion", "text": "The very thing was shown (to be) impossible"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, not more than two equal (straight-lines) will radiate towards (the circumference of) circle $ABC$ from point $D$, (one) on each side of the least (straight-line) $DG$.",
+    "assertion": "not more than two equal straight-lines radiate from D",
+    "frame": {"kind": "reductio_close", "closes": "another (straight-line) equal to $DK$ radiates towards the (circumference of the) circle from point $D$"},
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "not more than two equal (straight-lines) will radiate towards (the circumference of) circle $ABC$ from point $D$, (one) on each side of the least (straight-line) $DG$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if some point is taken outside a circle, and some straight-lines are drawn from the point to the (circumference of the) circle, one of which (passes) through the center, the remainder (being) random, (then) for the straight-lines radiating towards the concave (part of the) circumference, the greatest is that (passing) through the center. For the others, a (straight-line) nearer to the (straight-line) through the center is always greater than one further away. For the straight-lines radiating towards the convex (part of the) circumference, the least is that between the point and the diameter. For the others, a (straight-line) nearer to the least (straight-line) is always less than one further away. And only two equal (straight-lines) will radiate from the point towards the (circumference of the) circle, (one) on each (side) of the least (straight-line). (Which is) the very thing it was required to show."
+  }
+]

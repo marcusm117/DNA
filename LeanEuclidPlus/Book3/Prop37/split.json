@@ -1,0 +1,185 @@
+[
+  {
+    "role": "intro",
+    "text": "If some point is taken outside a circle, and two straight-lines radiate from the point towards the circle, and one of them cuts the circle, and the (other) meets (it), and the (rectangle contained) by the whole (straight-line) cutting (the circle), and the (part of it) cut off outside (the circle), between the point and the convex circumference, is equal to the (square) on the (straight-line) meeting (the circle), (then) the (straight-line) meeting (the circle) will touch the circle. For let some point $D$ be taken outside circle $ABC$, and let two straight-lines, $DCA$ and $DB$, radiate from $D$ towards circle $ABC$, and let $DCA$ cut the circle, and let $DB$ meet (the circle). And let the (rectangle contained) by $AD$ and $DC$ be equal to the (square) on $DB$. I say that $DB$ touches circle $ABC$."
+  },
+  {
+    "role": "construction",
+    "text": "For let $DE$ be drawn touching $ABC$ [Prop. 3.17],",
+    "construction_cite": "3.17",
+    "objects_introduced": ["$DE$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let the center of the circle $ABC$ be found, and let it be (at) $F$.",
+    "construction_cite": null,
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $FE$, $FB$, and $FD$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$FE$", "$FB$", "$FD$"]
+  },
+  {
+    "role": "deduction",
+    "text": "(Angle) $FED$ is thus a right-angle [Prop.~3.18].",
+    "assertion": "angle FED is a right-angle",
+    "spans": [
+      {"label": "assertion", "text": "(Angle) $FED$ is thus a right-angle"},
+      {"label": "glue",      "text": " [Prop.~3.18]."}
+    ],
+    "proof_cite": "3.18"
+  },
+  {
+    "role": "deduction",
+    "text": "And since $DE$ touches circle $ABC$, and $DCA$ cuts (it), the (rectangle contained) by $AD$ and $DC$ is thus equal to the (square) on $DE$ [Prop.~3.36].",
+    "assertion": "rectangle AD*DC = square on DE",
+    "spans": [
+      {"label": "glue",      "text": "And since "},
+      {"label": "assumption","text": "$DE$ touches circle $ABC$"},
+      {"label": "glue",      "text": ", and "},
+      {"label": "assumption","text": "$DCA$ cuts (it)"},
+      {"label": "glue",      "text": ", "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ is thus equal to the (square) on $DE$"},
+      {"label": "glue",      "text": " [Prop.~3.36]."}
+    ],
+    "proof_cite": "3.36"
+  },
+  {
+    "role": "deduction",
+    "text": "And the (rectangle contained) by $AD$ and $DC$ was also equal to the (square) on $DB$.",
+    "assertion": "rectangle AD*DC = square on DB (given hypothesis)",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ was also equal to the (square) on $DB$."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (square) on $DE$ is equal to the (square) on $DB$.",
+    "assertion": "square on DE = square on DB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the (square) on $DE$ is equal to the (square) on $DB$."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $DE$ (is) equal to $DB$.",
+    "assertion": "DE = DB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$DE$ (is) equal to $DB$."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $FE$ is also equal to $FB$.",
+    "assertion": "FE = FB",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$FE$ is also equal to $FB$."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So the two (straight-lines) $DE$, $EF$ are equal to the two (straight-lines) $DB$, $BF$ (respectively).",
+    "assertion": "DE,EF equal DB,BF respectively",
+    "spans": [
+      {"label": "glue",      "text": "So "},
+      {"label": "assertion", "text": "the two (straight-lines) $DE$, $EF$ are equal to the two (straight-lines) $DB$, $BF$ (respectively)."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And their base, $FD$, is common.",
+    "assertion": "FD is the common base",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "their base, $FD$, is common."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $DEF$ is equal to angle $DBF$ [Prop.~1.8].",
+    "assertion": "angle DEF = angle DBF",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "angle $DEF$ is equal to angle $DBF$"},
+      {"label": "glue",      "text": " [Prop.~1.8]."}
+    ],
+    "proof_cite": "1.8"
+  },
+  {
+    "role": "deduction",
+    "text": "And $DEF$ (is) a right-angle.",
+    "assertion": "angle DEF is a right-angle",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$DEF$ (is) a right-angle."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $DBF$ (is) also a right-angle.",
+    "assertion": "angle DBF is also a right-angle",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$DBF$ (is) also a right-angle."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $FB$ produced is a diameter,",
+    "assertion": "FB produced is a diameter",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$FB$ produced is a diameter"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And a (straight-line) drawn at right-angles to a diameter of a circle, at its extremity, touches the circle [Prop.~3.16~corr.].",
+    "assertion": "a line at right-angles to a diameter at its extremity touches the circle",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "a (straight-line) drawn at right-angles to a diameter of a circle, at its extremity, touches the circle"},
+      {"label": "glue",      "text": " [Prop.~3.16~corr.]."}
+    ],
+    "proof_cite": "3.16~corr."
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $DB$ touches circle $ABC$.",
+    "assertion": "DB touches circle ABC",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$DB$ touches circle $ABC$."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Similarly, (the same thing) can be shown, even if the center happens to be on $AC$.",
+    "assertion": "similarly the result holds if the center is on AC",
+    "spans": [
+      {"label": "assertion", "text": "Similarly, (the same thing) can be shown, even if the center happens to be on $AC$."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if some point is taken outside a circle, and two straight-lines radiate from the point towards the circle, and one of them cuts the circle, and the (other) meets (it), and the (rectangle contained) by the whole (straight-line) cutting (the circle), and the (part of it) cut off outside (the circle), between the point and the convex circumference, is equal to the (square) on the (straight-line) meeting (the circle), (then) the (straight-line) meeting (the circle) will touch the circle. (Which is) the very thing it was required to show."
+  }
+]

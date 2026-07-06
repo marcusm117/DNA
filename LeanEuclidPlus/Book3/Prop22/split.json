@@ -1,0 +1,107 @@
+[
+  {
+    "role": "intro",
+    "text": "For quadrilaterals within circles, the (sum of the) opposite angles is equal to two right-angles. Let $ABCD$ be a circle, and let $ABCD$ be a quadrilateral within it. I say that the (sum of the) opposite angles is equal to two right-angles."
+  },
+  {
+    "role": "construction",
+    "text": "Let $AC$ and $BD$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AC$", "$BD$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since the three angles of any triangle are equal to two right-angles [Prop.~1.32], the three angles $CAB$, $ABC$, and $BCA$ of triangle $ABC$ are thus equal to two right-angles.",
+    "assertion": "the three angles CAB, ABC, and BCA of triangle ABC are equal to two right-angles",
+    "proof_cite": "1.32",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "the three angles of any triangle are equal to two right-angles" },
+      { "label": "glue",       "text": " [Prop.~1.32], the " },
+      { "label": "assertion",  "text": "three angles $CAB$, $ABC$, and $BCA$ of triangle $ABC$ are thus equal to two right-angles" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $CAB$ (is) equal to $BDC$. For they are in the same segment $BADC$ [Prop.~3.21].",
+    "assertion": "angle CAB equals angle BDC",
+    "proof_cite": "3.21",
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assertion",  "text": "$CAB$ (is) equal to $BDC$" },
+      { "label": "glue",       "text": ". For " },
+      { "label": "assumption", "text": "they are in the same segment $BADC$" },
+      { "label": "glue",       "text": " [Prop.~3.21]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $ACB$ (is equal) to $ADB$. For they are in the same segment $ADCB$ [Prop.~3.21].",
+    "assertion": "angle ACB equals angle ADB",
+    "proof_cite": "3.21",
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assertion",  "text": "$ACB$ (is equal) to $ADB$" },
+      { "label": "glue",       "text": ". For " },
+      { "label": "assumption", "text": "they are in the same segment $ADCB$" },
+      { "label": "glue",       "text": " [Prop.~3.21]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the whole of $ADC$ is equal to $BAC$ and $ACB$.",
+    "assertion": "the whole angle ADC equals BAC plus ACB",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the whole of $ADC$ is equal to $BAC$ and $ACB$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "construction",
+    "text": "Let $ABC$ be added to both.",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $ABC$, $BAC$, and $ACB$ are equal to $ABC$ and $ADC$.",
+    "assertion": "angles ABC, BAC, ACB together equal angles ABC and ADC",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$ABC$, $BAC$, and $ACB$ are equal to $ABC$ and $ADC$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But, $ABC$, $BAC$, and $ACB$ are equal to two right-angles. Thus, $ABC$ and $ADC$ are also equal to two right-angles.",
+    "assertion": "angles ABC and ADC are equal to two right-angles",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",       "text": "But, " },
+      { "label": "assumption", "text": "$ABC$, $BAC$, and $ACB$ are equal to two right-angles" },
+      { "label": "glue",       "text": ". Thus, " },
+      { "label": "assertion",  "text": "$ABC$ and $ADC$ are also equal to two right-angles" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Similarly, we can show that angles $BAD$ and $DCB$ are also equal to two right-angles.",
+    "assertion": "angles BAD and DCB are also equal to two right-angles",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Similarly, we can show that " },
+      { "label": "assertion", "text": "angles $BAD$ and $DCB$ are also equal to two right-angles" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, for quadrilaterals within circles, the (sum of the) opposite angles is equal to two right-angles. (Which is) the very thing it was required to show."
+  }
+]

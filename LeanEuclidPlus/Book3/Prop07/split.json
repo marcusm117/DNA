@@ -1,0 +1,320 @@
+[
+  {
+    "role": "intro",
+    "text": "If some point, which is not the center of the circle, is taken on the diameter of a circle, and some straight-lines radiate from the point towards the (circumference of the) circle, (then) the greatest (straight-line) will be that on which the center (lies), and the least the remainder (of the same diameter). And for the others, a (straight-line) nearer$^\\dag$ to the (straight-line) through the center is always greater than a (straight-line) further away. And only two equal (straight-lines) will radiate from the point towards the (circumference of the) circle, (one) on each (side) of the least (straight-line). Let $ABCD$ be a circle, and let $AD$ be its diameter, and let some point $F$, which is not the center of the circle, be taken on $AD$. Let $E$ be the center of the circle. And let some straight-lines, $FB$, $FC$, and $FG$, radiate from $F$ towards (the circumference of) circle $ABCD$. I say that $FA$ is the greatest (straight-line), $FD$ the least, and of the others, $FB$ (is) greater than $FC$, and $FC$ than $FG$."
+  },
+  {
+    "role": "construction",
+    "text": "For let $BE$, $CE$, and $GE$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$BE$", "$CE$", "$GE$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since for every triangle (any) two sides are greater than the remaining (side) [Prop.~1.20], $EB$ and $EF$ is thus greater than $BF$.",
+    "assertion": "EB and EF is greater than BF",
+    "proof_cite": "1.20",
+    "spans": [
+      { "label": "glue",      "text": "And since " },
+      { "label": "assumption","text": "for every triangle (any) two sides are greater than the remaining (side)" },
+      { "label": "glue",      "text": " [Prop.~1.20], " },
+      { "label": "assertion", "text": "$EB$ and $EF$ is thus greater than $BF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $AE$ (is) equal to $BE$ [thus, $BE$ and $EF$ is equal to $AF$].",
+    "assertion": "BE and EF is equal to AF",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assumption","text": "$AE$ (is) equal to $BE$" },
+      { "label": "glue",      "text": " [thus, " },
+      { "label": "assertion", "text": "$BE$ and $EF$ is equal to $AF$" },
+      { "label": "glue",      "text": "]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AF$ (is) greater than $BF$.",
+    "assertion": "AF is greater than BF",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AF$ (is) greater than $BF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since $BE$ is equal to $CE$, and $FE$ (is) common, the two (straight-lines) $BE$, $EF$ are equal to the two (straight-lines) $CE$, $EF$ (respectively).",
+    "assertion": "the two straight-lines BE, EF are equal to CE, EF respectively",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Again, since " },
+      { "label": "assumption","text": "$BE$ is equal to $CE$" },
+      { "label": "glue",      "text": ", and " },
+      { "label": "assumption","text": "$FE$ (is) common" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "the two (straight-lines) $BE$, $EF$ are equal to the two (straight-lines) $CE$, $EF$ (respectively)" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But, angle $BEF$ (is) also greater than angle $CEF$.$^\\ddag$",
+    "assertion": "angle BEF is greater than angle CEF",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "angle $BEF$ (is) also greater than angle $CEF$" },
+      { "label": "glue",      "text": ".$^\\ddag$" }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $BF$ is greater than the base $CF$.",
+    "assertion": "BF is greater than CF",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the base $BF$ is greater than the base $CF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $BF$ is greater than the base $CF$ [Prop.~1.24].",
+    "assertion": "BF is greater than CF",
+    "proof_cite": "1.24",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the base $BF$ is greater than the base $CF$" },
+      { "label": "glue",      "text": " [Prop.~1.24]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), $CF$ is also greater than $FG$.",
+    "assertion": "CF is greater than FG",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "So, for the same (reasons), " },
+      { "label": "assertion", "text": "$CF$ is also greater than $FG$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since $GF$ and $FE$ are greater than $EG$ [Prop.~1.20], and $EG$ (is) equal to $ED$, $GF$ and $FE$ are thus greater than $ED$.",
+    "assertion": "GF and FE are greater than ED",
+    "proof_cite": "1.20",
+    "spans": [
+      { "label": "glue",      "text": "Again, since " },
+      { "label": "assumption","text": "$GF$ and $FE$ are greater than $EG$" },
+      { "label": "glue",      "text": " [Prop.~1.20], and " },
+      { "label": "assumption","text": "$EG$ (is) equal to $ED$" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "$GF$ and $FE$ are thus greater than $ED$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Let $EF$ be taken from both.",
+    "assertion": "EF is subtracted from both sides",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Let " },
+      { "label": "assertion", "text": "$EF$ be taken from both" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remainder $GF$ is greater than the remainder $FD$.",
+    "assertion": "GF is greater than FD",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remainder $GF$ is greater than the remainder $FD$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FA$ (is) the greatest (straight-line),",
+    "assertion": "FA is the greatest straight-line",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$FA$ (is) the greatest (straight-line)" },
+      { "label": "glue",      "text": "," }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "$FD$ the least,",
+    "assertion": "FD is the least straight-line",
+    "proof_cite": null,
+    "spans": [
+      { "label": "assertion", "text": "$FD$ the least" },
+      { "label": "glue",      "text": "," }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "and $FB$ (is) greater than $FC$,",
+    "assertion": "FB is greater than FC",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "$FB$ (is) greater than $FC$" },
+      { "label": "glue",      "text": "," }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "and $FC$ than $FG$.",
+    "assertion": "FC is greater than FG",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "$FC$ than $FG$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "wts",
+    "text": "I also say that from point $F$ only two equal (straight-lines) will radiate towards (the circumference of) circle $ABCD$, (one) on each (side) of the least (straight-line) $FD$."
+  },
+  {
+    "role": "construction",
+    "text": "For let the (angle) $FEH$, equal to angle $GEF$, be constructed on the straight-line $EF$, at the point $E$ on it [Prop.~1.23], and let $FH$ be joined.",
+    "construction_cite": "1.23",
+    "objects_introduced": ["$H$", "$FH$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since $GE$ is equal to $EH$, and $EF$ (is) common, the two (straight-lines) $GE$, $EF$ are equal to the two (straight-lines) $HE$, $EF$ (respectively).",
+    "assertion": "the two straight-lines GE, EF are equal to HE, EF respectively",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Therefore, since " },
+      { "label": "assumption","text": "$GE$ is equal to $EH$" },
+      { "label": "glue",      "text": ", and " },
+      { "label": "assumption","text": "$EF$ (is) common" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "the two (straight-lines) $GE$, $EF$ are equal to the two (straight-lines) $HE$, $EF$ (respectively)" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $GEF$ (is) equal to angle $HEF$.",
+    "assertion": "angle GEF equals angle HEF",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "angle $GEF$ (is) equal to angle $HEF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $FG$ is equal to the base $FH$ [Prop.~1.4].",
+    "assertion": "FG equals FH",
+    "proof_cite": "1.4",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the base $FG$ is equal to the base $FH$" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ]
+  },
+  {
+    "role": "wts",
+    "text": "So I say that another (straight-line) equal to $FG$ will not radiate towards (the circumference of) the circle from point $F$."
+  },
+  {
+    "role": "deduction",
+    "text": "For, if possible, let $FK$ (so) radiate.",
+    "assertion": "FK radiates from F equal to FG",
+    "proof_cite": null,
+    "frame": {
+      "kind": "reductio_open",
+      "supposition": "another (straight-line) equal to $FG$ will radiate towards (the circumference of) the circle from point $F$"
+    },
+    "spans": [
+      { "label": "glue",      "text": "For, if possible, let " },
+      { "label": "assertion", "text": "$FK$ (so) radiate" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $FK$ is equal to $FG$, but $FH$ [is equal] to $FG$, $FK$ is thus also equal to $FH$,",
+    "assertion": "FK equals FH",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "And since " },
+      { "label": "assumption","text": "$FK$ is equal to $FG$" },
+      { "label": "glue",      "text": ", but " },
+      { "label": "assumption","text": "$FH$ [is equal] to $FG$" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "$FK$ is thus also equal to $FH$" },
+      { "label": "glue",      "text": "," }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "the nearer to the (straight-line) through the center equal to the further away.",
+    "assertion": "the nearer straight-line equals the further away",
+    "proof_cite": null,
+    "spans": [
+      { "label": "assertion", "text": "the nearer to the (straight-line) through the center equal to the further away" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing (is) impossible.",
+    "assertion": "contradiction",
+    "proof_cite": null,
+    "frame": { "kind": "contradiction" },
+    "spans": [
+      { "label": "assertion", "text": "The very thing (is) impossible" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, another (straight-line) equal to $GF$ will not radiate from the point $F$ towards (the circumference of) the circle.",
+    "assertion": "no second straight-line equal to GF radiates from F",
+    "proof_cite": null,
+    "frame": {
+      "kind": "reductio_close",
+      "closes": "another (straight-line) equal to $FG$ will radiate towards (the circumference of) the circle from point $F$"
+    },
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "another (straight-line) equal to $GF$ will not radiate from the point $F$ towards (the circumference of) the circle" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (there is) only one (such straight-line).",
+    "assertion": "only one equal straight-line radiates from F",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(there is) only one (such straight-line)" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if some point, which is not the center of the circle, is taken on the diameter of a circle, and some straight-lines radiate from the point towards the (circumference of the) circle, (then) the greatest (straight-line) will be that on which the center (lies), and the least the remainder (of the same diameter). And for the others, a (straight-line) nearer to the (straight-line) through the center is always greater than a (straight-line) further away. And only two equal (straight-lines) will radiate from the same point towards the (circumference of the) circle, (one) on each (side) of the least (straight-line). (Which is) the very thing it was required to show."
+  }
+]

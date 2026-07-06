@@ -1,0 +1,103 @@
+[
+  {
+    "role": "intro",
+    "text": "In equal circles, equal straight-lines cut off equal circumferences, the greater (circumference being equal) to the greater, and the lesser to the lesser. Let $ABC$ and $DEF$ be equal circles, and let $AB$ and $DE$ be equal straight-lines in these circles, cutting off the greater circumferences $ACB$ and $DFE$, and the lesser (circumferences) $AGB$ and $DHE$ (respectively). I say that the greater circumference $ACB$ is equal to the greater circumference $DFE$, and the lesser circumference $AGB$ to (the lesser) $DHE$."
+  },
+  {
+    "role": "construction",
+    "text": "For let the centers of the circles, $K$ and $L$, be found [Prop.~3.1],",
+    "construction_cite": "3.1",
+    "objects_introduced": ["$K$", "$L$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $AK$, $KB$, $DL$, and $LE$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AK$", "$KB$", "$DL$", "$LE$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since ($ABC$ and $DEF$) are equal circles, their radii are also equal [Def.~3.1].",
+    "assertion": "the radii of circles ABC and DEF are equal",
+    "spans": [
+      {"label": "glue",      "text": "And since "},
+      {"label": "assumption","text": "($ABC$ and $DEF$) are equal circles"},
+      {"label": "glue",      "text": ", "},
+      {"label": "assertion", "text": "their radii are also equal"},
+      {"label": "glue",      "text": " [Def.~3.1]."}
+    ],
+    "proof_cite": "Def.3.1"
+  },
+  {
+    "role": "deduction",
+    "text": "So the two (straight-lines) $AK$, $KB$ are equal to the two (straight-lines) $DL$, $LE$ (respectively).",
+    "assertion": "AK and KB are equal to DL and LE respectively",
+    "spans": [
+      {"label": "glue",      "text": "So "},
+      {"label": "assertion", "text": "the two (straight-lines) $AK$, $KB$ are equal to the two (straight-lines) $DL$, $LE$ (respectively)"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the base $AB$ (is) equal to the base $DE$.",
+    "assertion": "AB is equal to DE",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "the base $AB$ (is) equal to the base $DE$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $AKB$ is equal to angle $DLE$ [Prop.~1.8].",
+    "assertion": "angle AKB equals angle DLE",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "angle $AKB$ is equal to angle $DLE$"},
+      {"label": "glue",      "text": " [Prop.~1.8]."}
+    ],
+    "proof_cite": "1.8"
+  },
+  {
+    "role": "deduction",
+    "text": "And equal angles stand upon equal circumferences, when they are at the centers [Prop.~3.26]. Thus, circumference $AGB$ (is) equal to $DHE$.",
+    "assertion": "lesser arc AGB equals lesser arc DHE",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assumption","text": "equal angles stand upon equal circumferences, when they are at the centers"},
+      {"label": "glue",      "text": " [Prop.~3.26]. Thus, circumference "},
+      {"label": "assertion", "text": "$AGB$ (is) equal to $DHE$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": "3.26"
+  },
+  {
+    "role": "deduction",
+    "text": "And the whole circle $ABC$ is also equal to the whole circle $DEF$.",
+    "assertion": "the whole circle ABC equals the whole circle DEF",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "the whole circle $ABC$ is also equal to the whole circle $DEF$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining circumference $ACB$ is also equal to the remaining circumference $DFE$.",
+    "assertion": "greater arc ACB equals greater arc DFE",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the remaining circumference $ACB$ is also equal to the remaining circumference $DFE$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in equal circles, equal straight-lines cut off equal circumferences, the greater (circumference being equal) to the greater, and the lesser to the lesser. (Which is) the very thing it was required to show."
+  }
+]

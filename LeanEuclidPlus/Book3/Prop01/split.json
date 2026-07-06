@@ -1,0 +1,203 @@
+[
+  {
+    "role": "intro",
+    "text": "To find the center of a given circle. Let $ABC$ be the given circle. So it is required to find the center of circle $ABC$."
+  },
+  {
+    "role": "construction",
+    "text": "Let some straight-line $AB$ be drawn through ($ABC$), at random,",
+    "construction_cite": null,
+    "objects_introduced": ["$AB$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let ($AB$) be cut in half at point $D$ [Prop.~1.9].",
+    "construction_cite": "1.9",
+    "objects_introduced": ["$D$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $DC$ be drawn from $D$, at right-angles to $AB$ [Prop.~1.11].",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$DC$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let ($CD$) be drawn through to $E$.",
+    "construction_cite": null,
+    "objects_introduced": ["$E$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $CE$ be cut in half at $F$ [Prop.~1.9].",
+    "construction_cite": "1.9",
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "wts",
+    "text": "I say that (point) $F$ is the center of the [circle] $ABC$."
+  },
+  {
+    "role": "deduction",
+    "text": "For (if) not (then), if possible, let $G$ (be the center of the circle),",
+    "assertion": "G is supposed to be the center (supposition for contradiction)",
+    "frame": {"kind": "reductio_open", "supposition": "$G$ (is the center of the circle)"},
+    "spans": [
+      {"label": "glue",      "text": "For (if) not (then), if possible, "},
+      {"label": "assertion", "text": "let $G$ (be the center of the circle)"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "and let $GA$, $GD$, and $GB$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$GA$", "$GD$", "$GB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $AD$ is equal to $DB$, and $DG$ (is) common, the two (straight-lines) $AD$, $DG$ are equal to the two (straight-lines) $BD$, $DG$,$^\\dag$ respectively.",
+    "assertion": "the two straight-lines AD, DG are equal to the two straight-lines BD, DG respectively",
+    "spans": [
+      {"label": "glue",       "text": "And since "},
+      {"label": "assumption", "text": "$AD$ is equal to $DB$"},
+      {"label": "glue",       "text": ", and "},
+      {"label": "assumption", "text": "$DG$ (is) common"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "the two (straight-lines) $AD$, $DG$ are equal to the two (straight-lines) $BD$, $DG$,$^\\dag$ respectively"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the base $GA$ is equal to the base $GB$. For (they are both) radii.",
+    "assertion": "base GA equals base GB (they are both radii)",
+    "spans": [
+      {"label": "glue",       "text": "And "},
+      {"label": "assertion",  "text": "the base $GA$ is equal to the base $GB$"},
+      {"label": "glue",       "text": ". "},
+      {"label": "assumption", "text": "For (they are both) radii"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $ADG$ is equal to angle $GDB$ [Prop.~1.8].",
+    "assertion": "angle ADG equals angle GDB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "angle $ADG$ is equal to angle $GDB$"},
+      {"label": "glue",      "text": " [Prop.~1.8]."}
+    ],
+    "proof_cite": "1.8"
+  },
+  {
+    "role": "deduction",
+    "text": "And when a straight-line stood upon (another) straight-line make adjacent angles (which are) equal to one another, each of the equal angles is a right-angle [Def.~1.10].",
+    "assertion": "each of the equal adjacent angles is a right-angle",
+    "spans": [
+      {"label": "glue",       "text": "And when "},
+      {"label": "assumption", "text": "a straight-line stood upon (another) straight-line make adjacent angles (which are) equal to one another"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "each of the equal angles is a right-angle"},
+      {"label": "glue",       "text": " [Def.~1.10]."}
+    ],
+    "proof_cite": "Def.1.10"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $GDB$ is a right-angle.",
+    "assertion": "GDB is a right-angle",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$GDB$ is a right-angle"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $FDB$ is also a right-angle.",
+    "assertion": "FDB is a right-angle",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$FDB$ is also a right-angle"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FDB$ (is) equal to $GDB$, the greater to the lesser.",
+    "assertion": "FDB equals GDB (the greater to the lesser, which is absurd)",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$FDB$ (is) equal to $GDB$, the greater to the lesser"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible.",
+    "assertion": "contradiction",
+    "frame": {"kind": "contradiction"},
+    "spans": [
+      {"label": "assertion", "text": "The very thing is impossible"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (point) $G$ is not the center of the circle $ABC$.",
+    "assertion": "G is not the center of circle ABC",
+    "frame": {"kind": "reductio_close", "closes": "$G$ (is the center of the circle)"},
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "(point) $G$ is not the center of the circle $ABC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So, similarly, we can show that neither is any other (point) except $F$.",
+    "assertion": "no other point except F can be the center of circle ABC",
+    "spans": [
+      {"label": "glue",      "text": "So, similarly, we can show that "},
+      {"label": "assertion", "text": "neither is any other (point) except $F$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, point $F$ is the center of the [circle] $ABC$.",
+    "assertion": "F is the center of circle ABC",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "point $F$ is the center of the [circle] $ABC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So, from this, (it is) manifest that if any straight-line in a circle cuts any (other) straight-line in half, and at right-angles, (then) the center of the circle is on the former (straight-line).",
+    "assertion": "if a straight-line bisects another at right-angles in a circle, the center is on the bisecting line (porism)",
+    "spans": [
+      {"label": "glue",      "text": "So, from this, (it is) manifest that if any straight-line in a circle cuts any (other) straight-line in half, and at right-angles, (then) "},
+      {"label": "assertion", "text": "the center of the circle is on the former (straight-line)"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "--- (Which is) the very thing it was required to do."
+  }
+]

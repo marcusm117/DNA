@@ -1,0 +1,278 @@
+[
+  {
+    "role": "intro",
+    "text": "In a circle, equal straight-lines are equally far from the center, and (straight-lines) which are equally far from the center are equal to one another. Let $ABDC$$^{\\,\\dag}$ be a circle, and let $AB$ and $CD$ be equal straight-lines within it. I say that $AB$ and $CD$ are equally far from the center."
+  },
+  {
+    "role": "construction",
+    "text": "For let the center of circle $ABDC$ be found [Prop.~3.1], and let it be (at) $E$.",
+    "construction_cite": "3.1",
+    "objects_introduced": ["$E$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $EF$ and $EG$ be drawn from (point) $E$, perpendicular to $AB$ and $CD$ (respectively) [Prop.~1.12].",
+    "construction_cite": "1.12",
+    "objects_introduced": ["$EF$", "$EG$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AE$ and $EC$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AE$", "$EC$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since some straight-line, $EF$, through the center (of the circle), cuts some (other) straight-line, $AB$, not through the center, at right-angles, it also cuts it in half [Prop.~3.3].",
+    "assertion": "EF bisects AB (cuts AB in half)",
+    "proof_cite": "3.3",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "some straight-line, $EF$, through the center (of the circle), cuts some (other) straight-line, $AB$, not through the center, at right-angles" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "it also cuts it in half" },
+      { "label": "glue",       "text": " [Prop.~3.3]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AF$ (is) equal to $FB$.",
+    "assertion": "AF equals FB",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AF$ (is) equal to $FB$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AB$ (is) double $AF$.",
+    "assertion": "AB is double AF",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AB$ (is) double $AF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), $CD$ is also double $CG$.",
+    "assertion": "CD is double CG",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "So, for the same (reasons), " },
+      { "label": "assertion", "text": "$CD$ is also double $CG$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $AB$ is equal to $CD$. Thus, $AF$ (is) also equal to $CG$.",
+    "assertion": "AF equals CG",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assumption", "text": "$AB$ is equal to $CD$" },
+      { "label": "glue",       "text": ". Thus, " },
+      { "label": "assertion",  "text": "$AF$ (is) also equal to $CG$" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $AE$ is equal to $EC$, the (square) on $AE$ (is) also equal to the (square) on $EC$.",
+    "assertion": "square on AE equals square on EC",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$AE$ is equal to $EC$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the (square) on $AE$ (is) also equal to the (square) on $EC$" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But, the (sum of the squares) on $AF$ and $EF$ (is) equal to the (square) on $AE$. For the angle at $F$ (is) a right-angle [Prop.~1.47].",
+    "assertion": "sum of squares on AF and EF equals square on AE",
+    "proof_cite": "1.47",
+    "spans": [
+      { "label": "glue",       "text": "But, " },
+      { "label": "assertion",  "text": "the (sum of the squares) on $AF$ and $EF$ (is) equal to the (square) on $AE$" },
+      { "label": "glue",       "text": ". For " },
+      { "label": "assumption", "text": "the angle at $F$ (is) a right-angle" },
+      { "label": "glue",       "text": " [Prop.~1.47]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And the (sum of the squares) on $EG$ and $GC$ (is) equal to the (square) on $EC$. For the angle at $G$ (is) a right-angle [Prop.~1.47].",
+    "assertion": "sum of squares on EG and GC equals square on EC",
+    "proof_cite": "1.47",
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assertion",  "text": "the (sum of the squares) on $EG$ and $GC$ (is) equal to the (square) on $EC$" },
+      { "label": "glue",       "text": ". For " },
+      { "label": "assumption", "text": "the angle at $G$ (is) a right-angle" },
+      { "label": "glue",       "text": " [Prop.~1.47]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (sum of the squares) on $AF$ and $FE$ is equal to the (sum of the squares) on $CG$ and $GE$, of which the (square) on $AF$ is equal to the (square) on $CG$. For $AF$ is equal to $CG$.",
+    "assertion": "sum of squares on AF and FE equals sum of squares on CG and GE, with AF² = CG²",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",       "text": "Thus, " },
+      { "label": "assertion",  "text": "the (sum of the squares) on $AF$ and $FE$ is equal to the (sum of the squares) on $CG$ and $GE$, of which the (square) on $AF$ is equal to the (square) on $CG$" },
+      { "label": "glue",       "text": ". For " },
+      { "label": "assumption", "text": "$AF$ is equal to $CG$" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining (square) on $FE$ is equal to the (remaining square) on $EG$.",
+    "assertion": "square on FE equals square on EG",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remaining (square) on $FE$ is equal to the (remaining square) on $EG$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $EF$ (is) equal to $EG$.",
+    "assertion": "EF equals EG",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$EF$ (is) equal to $EG$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And straight-lines in a circle are said to be equally far from the center when perpendicular (straight-lines) which are drawn to them from the center are equal [Def.~3.4]. Thus, $AB$ and $CD$ are equally far from the center.",
+    "assertion": "AB and CD are equally far from the center",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assumption", "text": "straight-lines in a circle are said to be equally far from the center when perpendicular (straight-lines) which are drawn to them from the center are equal" },
+      { "label": "glue",       "text": " [Def.~3.4]. Thus, " },
+      { "label": "assertion",  "text": "$AB$ and $CD$ are equally far from the center" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "construction",
+    "text": "So, let the straight-lines $AB$ and $CD$ be equally far from the center. That is to say, let $EF$ be equal to $EG$.",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "wts",
+    "text": "I say that $AB$ is also equal to $CD$."
+  },
+  {
+    "role": "deduction",
+    "text": "For, with the same construction, we can, similarly, show that $AB$ is double $AF$, and $CD$ (double) $CG$.",
+    "assertion": "AB is double AF and CD is double CG (by same bisection argument)",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "For, with the same construction, we can, similarly, show that " },
+      { "label": "assertion", "text": "$AB$ is double $AF$, and $CD$ (double) $CG$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $AE$ is equal to $CE$, the (square) on $AE$ is equal to the (square) on $CE$.",
+    "assertion": "square on AE equals square on CE",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$AE$ is equal to $CE$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the (square) on $AE$ is equal to the (square) on $CE$" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "But, the (sum of the squares) on $EF$ and $FA$ is equal to the (square) on $AE$ [Prop.~1.47].",
+    "assertion": "sum of squares on EF and FA equals square on AE",
+    "proof_cite": "1.47",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "the (sum of the squares) on $EF$ and $FA$ is equal to the (square) on $AE$" },
+      { "label": "glue",      "text": " [Prop.~1.47]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And the (sum of the squares) on $EG$ and $GC$ (is) equal to the (square) on $CE$ [Prop.~1.47].",
+    "assertion": "sum of squares on EG and GC equals square on CE",
+    "proof_cite": "1.47",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "the (sum of the squares) on $EG$ and $GC$ (is) equal to the (square) on $CE$" },
+      { "label": "glue",      "text": " [Prop.~1.47]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (sum of the squares) on $EF$ and $FA$ is equal to the (sum of the squares) on $EG$ and $GC$, of which the (square) on $EF$ is equal to the (square) on $EG$. For $EF$ (is) equal to $EG$.",
+    "assertion": "sum of squares on EF and FA equals sum of squares on EG and GC, with EF² = EG²",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",       "text": "Thus, " },
+      { "label": "assertion",  "text": "the (sum of the squares) on $EF$ and $FA$ is equal to the (sum of the squares) on $EG$ and $GC$, of which the (square) on $EF$ is equal to the (square) on $EG$" },
+      { "label": "glue",       "text": ". For " },
+      { "label": "assumption", "text": "$EF$ (is) equal to $EG$" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining (square) on $AF$ is equal to the (remaining square) on $CG$.",
+    "assertion": "square on AF equals square on CG",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remaining (square) on $AF$ is equal to the (remaining square) on $CG$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AF$ (is) equal to $CG$.",
+    "assertion": "AF equals CG",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AF$ (is) equal to $CG$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $AB$ is double $AF$, and $CD$ double $CG$. Thus, $AB$ (is) equal to $CD$.",
+    "assertion": "AB equals CD",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assumption", "text": "$AB$ is double $AF$, and $CD$ double $CG$" },
+      { "label": "glue",       "text": ". Thus, " },
+      { "label": "assertion",  "text": "$AB$ (is) equal to $CD$" },
+      { "label": "glue",       "text": "." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in a circle, equal straight-lines are equally far from the center, and (straight-lines) which are equally far from the center are equal to one another. (Which is) the very thing it was required to show."
+  }
+]

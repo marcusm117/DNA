@@ -1,0 +1,400 @@
+[
+  {
+    "role": "intro",
+    "text": "To draw a segment of a circle, accepting an angle equal to a given rectilinear angle, on a given straight-line. Let $AB$ be the given straight-line, and $C$ the given rectilinear angle. So it is required to draw a segment of a circle, accepting an angle equal to $C$, on the given straight-line $AB$. So the [angle] $C$ is surely either acute, a right-angle, or obtuse. First of all, let it be acute."
+  },
+  {
+    "role": "construction",
+    "text": "And, as in the first diagram (from the left), let (angle) $BAD$, equal to angle $C$, be constructed on the straight-line $AB$, at the point A (on it) [Prop.~1.23].",
+    "construction_cite": "1.23",
+    "objects_introduced": ["$BAD$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $BAD$ is also acute.",
+    "assertion": "angle BAD is acute",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$BAD$ is also acute" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let $AE$ be drawn, at right-angles to $DA$ [Prop.~1.11].",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$AE$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AB$ be cut in half at $F$ [Prop.~1.10].",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $FG$ be drawn from point $F$, at right-angles to $AB$ [Prop.~1.11].",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$G$", "$FG$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $GB$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$GB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $AF$ is equal to $FB$, and $FG$ (is) common, the two (straight-lines) $AF$, $FG$ are equal to the two (straight-lines) $BF$, $FG$ (respectively).",
+    "assertion": "AF,FG equal BF,FG respectively",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$AF$ is equal to $FB$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$FG$ (is) common" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the two (straight-lines) $AF$, $FG$ are equal to the two (straight-lines) $BF$, $FG$ (respectively)" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $AFG$ (is) equal to [angle] $BFG$.",
+    "assertion": "angle AFG equals angle BFG",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "angle $AFG$ (is) equal to [angle] $BFG$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $AG$ is equal to the base $BG$ [Prop.~1.4].",
+    "assertion": "base AG equals base BG",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "base $AG$ is equal to the base $BG$" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the circle drawn with center $G$, and radius $GA$, will also go through $B$ (as well as $A$).",
+    "assertion": "circle with center G radius GA passes through both A and B",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the circle drawn with center $G$, and radius $GA$, will also go through $B$ (as well as $A$)" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let it be drawn, and let it be (denoted) $ABE$.",
+    "construction_cite": null,
+    "objects_introduced": ["$ABE$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $EB$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$EB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since $AD$ is at the extremity of diameter $AE$, (namely, point) $A$, at right-angles to $AE$, the (straight-line) $AD$ thus touches the circle $ABE$ [Prop.~3.16~corr.].",
+    "assertion": "AD touches circle ABE",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "$AD$ is at the extremity of diameter $AE$, (namely, point) $A$, at right-angles to $AE$" },
+      { "label": "glue",       "text": ", the (straight-line) " },
+      { "label": "assertion",  "text": "$AD$ thus touches the circle $ABE$" },
+      { "label": "glue",       "text": " [Prop.~3.16~corr.]." }
+    ],
+    "proof_cite": "3.16"
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since some straight-line $AD$ touches the circle $ABE$, and some (other) straight-line $AB$ has been drawn across from the point of contact $A$ into circle $ABE$, angle $DAB$ is thus equal to the angle $AEB$ in the alternate segment of the circle [Prop.~3.32].",
+    "assertion": "angle DAB equals angle AEB in the alternate segment",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "some straight-line $AD$ touches the circle $ABE$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "some (other) straight-line $AB$ has been drawn across from the point of contact $A$ into circle $ABE$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "angle $DAB$ is thus equal to the angle $AEB$ in the alternate segment of the circle" },
+      { "label": "glue",       "text": " [Prop.~3.32]." }
+    ],
+    "proof_cite": "3.32"
+  },
+  {
+    "role": "deduction",
+    "text": "But, $DAB$ is equal to $C$.",
+    "assertion": "angle DAB equals angle C",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "$DAB$ is equal to $C$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $C$ is also equal to $AEB$.",
+    "assertion": "angle C equals angle AEB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "angle $C$ is also equal to $AEB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, a segment $AEB$ of a circle, accepting the angle $AEB$ (which is) equal to the given (angle) $C$, has been drawn on the given straight-line $AB$.",
+    "assertion": "segment AEB accepting angle equal to C has been drawn on AB (case 1: acute)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "a segment $AEB$ of a circle, accepting the angle $AEB$ (which is) equal to the given (angle) $C$, has been drawn on the given straight-line $AB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "wts",
+    "text": "And so let $C$ be a right-angle. And let it again be necessary to draw a segment of a circle on $AB$, accepting an angle equal to the right-[angle] $C$."
+  },
+  {
+    "role": "construction",
+    "text": "Let the (angle) $BAD$ [again] be constructed, equal to the right-angle $C$ [Prop.~1.23], as in the second diagram (from the left).",
+    "construction_cite": "1.23",
+    "objects_introduced": ["$BAD$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AB$ be cut in half at $F$ [Prop.~1.10].",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let the circle $AEB$ be drawn with center $F$, and radius either $FA$ or $FB$.",
+    "construction_cite": null,
+    "objects_introduced": ["$AEB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the straight-line $AD$ touches the circle $ABE$, on account of the angle at $A$ being a right-angle [Prop.~3.16 corr.].",
+    "assertion": "AD touches circle ABE (right-angle case)",
+    "spans": [
+      { "label": "glue",       "text": "Thus, " },
+      { "label": "assertion",  "text": "the straight-line $AD$ touches the circle $ABE$" },
+      { "label": "glue",       "text": ", on account of " },
+      { "label": "assumption", "text": "the angle at $A$ being a right-angle" },
+      { "label": "glue",       "text": " [Prop.~3.16 corr.]." }
+    ],
+    "proof_cite": "3.16"
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $BAD$ is equal to the angle in segment $AEB$. For (the latter angle), being in a semi-circle, is also a right-angle [Prop.~3.31].",
+    "assertion": "angle BAD equals angle in segment AEB",
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assertion",  "text": "angle $BAD$ is equal to the angle in segment $AEB$" },
+      { "label": "glue",       "text": ". For " },
+      { "label": "assumption", "text": "(the latter angle), being in a semi-circle, is also a right-angle" },
+      { "label": "glue",       "text": " [Prop.~3.31]." }
+    ],
+    "proof_cite": "3.31"
+  },
+  {
+    "role": "deduction",
+    "text": "But, $BAD$ is also equal to $C$.",
+    "assertion": "angle BAD equals angle C",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "$BAD$ is also equal to $C$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (angle) in (segment) $AEB$ is also equal to $C$.",
+    "assertion": "angle in segment AEB equals C",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the (angle) in (segment) $AEB$ is also equal to $C$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, a segment $AEB$ of a circle, accepting an angle equal to $C$, has again been drawn on $AB$.",
+    "assertion": "segment AEB accepting angle equal to C has been drawn on AB (case 2: right-angle)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "a segment $AEB$ of a circle, accepting an angle equal to $C$, has again been drawn on $AB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "wts",
+    "text": "And so let (angle) $C$ be obtuse."
+  },
+  {
+    "role": "construction",
+    "text": "And let (angle) $BAD$, equal to ($C$), be constructed on the straight-line $AB$, at the point $A$ (on it) [Prop.~1.23], as in the third diagram (from the left).",
+    "construction_cite": "1.23",
+    "objects_introduced": ["$BAD$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AE$ be drawn, at right-angles to $AD$ [Prop.~1.11].",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$AE$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AB$ again be cut in half at $F$ [Prop.~1.10].",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $FG$ be drawn, at right-angles to $AB$ [Prop.~1.10].",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$G$", "$FG$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $GB$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$GB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And again, since $AF$ is equal to $FB$, and $FG$ (is) common, the two (straight-lines) $AF$, $FG$ are equal to the two (straight-lines) $BF$, $FG$ (respectively).",
+    "assertion": "AF,FG equal BF,FG respectively (case 3)",
+    "spans": [
+      { "label": "glue",       "text": "And again, since " },
+      { "label": "assumption", "text": "$AF$ is equal to $FB$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$FG$ (is) common" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the two (straight-lines) $AF$, $FG$ are equal to the two (straight-lines) $BF$, $FG$ (respectively)" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $AFG$ (is) equal to angle $BFG$.",
+    "assertion": "angle AFG equals angle BFG",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "angle $AFG$ (is) equal to angle $BFG$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $AG$ is equal to the base $BG$ [Prop.~1.4].",
+    "assertion": "base AG equals base BG (case 3)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "base $AG$ is equal to the base $BG$" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, a circle of center $G$, and radius $GA$, being drawn, will also go through $B$ (as well as $A$).",
+    "assertion": "circle with center G radius GA passes through both A and B (case 3)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "a circle of center $G$, and radius $GA$, being drawn, will also go through $B$ (as well as $A$)" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let it go like $AEB$ (in the third diagram from the left).",
+    "construction_cite": null,
+    "objects_introduced": ["$AEB$", "$H$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $AD$ is at right-angles to the diameter $AE$, at its extremity, $AD$ thus touches circle $AEB$ [Prop.~3.16~corr.].",
+    "assertion": "AD touches circle AEB (case 3)",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$AD$ is at right-angles to the diameter $AE$, at its extremity" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$AD$ thus touches circle $AEB$" },
+      { "label": "glue",       "text": " [Prop.~3.16~corr.]." }
+    ],
+    "proof_cite": "3.16"
+  },
+  {
+    "role": "deduction",
+    "text": "And $AB$ has been drawn across (the circle) from the point of contact $A$. Thus, angle $BAD$ is equal to the angle constructed in the alternate segment $AHB$ of the circle [Prop.~3.32].",
+    "assertion": "angle BAD equals angle in alternate segment AHB",
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assumption", "text": "$AB$ has been drawn across (the circle) from the point of contact $A$" },
+      { "label": "glue",       "text": ". Thus, " },
+      { "label": "assertion",  "text": "angle $BAD$ is equal to the angle constructed in the alternate segment $AHB$ of the circle" },
+      { "label": "glue",       "text": " [Prop.~3.32]." }
+    ],
+    "proof_cite": "3.32"
+  },
+  {
+    "role": "deduction",
+    "text": "But, angle $BAD$ is equal to $C$.",
+    "assertion": "angle BAD equals angle C (case 3)",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "angle $BAD$ is equal to $C$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the angle in segment $AHB$ is also equal to $C$.",
+    "assertion": "angle in segment AHB equals C",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the angle in segment $AHB$ is also equal to $C$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, a segment $AHB$ of a circle, accepting an angle equal to $C$, has been drawn on the given straight-line $AB$.",
+    "assertion": "segment AHB accepting angle equal to C has been drawn on AB (case 3: obtuse)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "a segment $AHB$ of a circle, accepting an angle equal to $C$, has been drawn on the given straight-line $AB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "(Which is) the very thing it was required to do."
+  }
+]

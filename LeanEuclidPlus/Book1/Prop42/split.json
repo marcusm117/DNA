@@ -1,0 +1,115 @@
+[
+  {
+    "role": "intro",
+    "text": "To construct a parallelogram equal to a given triangle in a given rectilinear angle. Let $ABC$ be the given triangle, and $D$ the given rectilinear angle. So it is required to construct a parallelogram equal to triangle $ABC$ in the rectilinear angle $D$."
+  },
+  {
+    "role": "construction",
+    "text": "Let $BC$ have been cut in half at $E$ [Prop.~1.10],",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$E$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $AE$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AE$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let (angle) $CEF$, equal to angle $D$,  have been constructed at the point $E$ on the straight-line $EC$ [Prop.~1.23].",
+    "construction_cite": "1.23",
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AG$ have been drawn through $A$ parallel to $EC$ [Prop.~1.31],",
+    "construction_cite": "1.31",
+    "objects_introduced": ["$G$", "$AG$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $CG$ have been drawn through $C$ parallel to $EF$ [Prop.~1.31].",
+    "construction_cite": "1.31",
+    "objects_introduced": ["$CG$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FECG$ is a parallelogram.",
+    "assertion": "FECG is a parallelogram",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$FECG$ is a parallelogram"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And since $BE$ is equal to $EC$, triangle $ABE$ is also equal to triangle $AEC$. For they are on the equal bases, $BE$ and $EC$, and between the same parallels, $BC$ and $AG$ [Prop.~1.38].",
+    "assertion": "triangle ABE is equal to triangle AEC",
+    "spans": [
+      {"label": "glue",       "text": "And since "},
+      {"label": "assumption", "text": "$BE$ is equal to $EC$"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "triangle $ABE$ is also equal to triangle $AEC$"},
+      {"label": "glue",       "text": ". For they are on "},
+      {"label": "assumption", "text": "the equal bases, $BE$ and $EC$"},
+      {"label": "glue",       "text": ", and between "},
+      {"label": "assumption", "text": "the same parallels, $BC$ and $AG$"},
+      {"label": "glue",       "text": " [Prop.~1.38]."}
+    ],
+    "proof_cite": "1.38"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, triangle $ABC$ is double (the area) of triangle $AEC$.",
+    "assertion": "triangle ABC is double the area of triangle AEC",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "triangle $ABC$ is double (the area) of triangle $AEC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And parallelogram $FECG$ is also double (the area) of triangle $AEC$. For it has the same base as ($AEC$), and is between the same parallels  as ($AEC$) [Prop.~1.41].",
+    "assertion": "parallelogram FECG is double the area of triangle AEC",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "parallelogram $FECG$ is also double (the area) of triangle $AEC$"},
+      {"label": "glue",      "text": ". For it has "},
+      {"label": "assumption", "text": "the same base as ($AEC$)"},
+      {"label": "glue",      "text": ", and is between "},
+      {"label": "assumption", "text": "the same parallels  as ($AEC$)"},
+      {"label": "glue",      "text": " [Prop.~1.41]."}
+    ],
+    "proof_cite": "1.41"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, parallelogram $FECG$ is equal to triangle $ABC$. ",
+    "assertion": "parallelogram FECG is equal to triangle ABC",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "parallelogram $FECG$ is equal to triangle $ABC$"},
+      {"label": "glue",      "text": ". "}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "($FECG$) also has the angle $CEF$ equal to the given (angle) $D$.",
+    "assertion": "FECG has angle CEF equal to the given angle D",
+    "spans": [
+      {"label": "assertion", "text": "($FECG$) also has the angle $CEF$ equal to the given (angle) $D$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, parallelogram $FECG$,  equal to the given triangle $ABC$, has been constructed in the angle $CEF$, which is equal to $D$. (Which is) the very thing it was required to do."
+  }
+]

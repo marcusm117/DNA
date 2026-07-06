@@ -290,7 +290,7 @@ def check_source(path: str) -> int:
     anns = []
     for m in PAT.finditer(src):
         ln = src.count("\n", 0, m.start()) + 1
-        anns.append({'loc': m.group(2), 'text': m.group(3).replace('\\"', '"'),
+        anns.append({'loc': m.group(2), 'text': m.group(3).replace('\\"', '"').replace('\\\\', '\\'),
                      'kind': m.group(1), 'start': m.start(), 'end': m.end(),
                      'ref': f"{path}:{ln}"})
     print(f"=== {os.path.basename(path)} — MODE: source/regex (no build) ===")

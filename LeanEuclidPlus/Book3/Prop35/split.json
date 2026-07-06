@@ -1,0 +1,202 @@
+[
+  {
+    "role": "intro",
+    "text": "If two straight-lines in a circle cut one another, (then) the rectangle contained by the pieces of one is equal to the rectangle contained by the pieces of the other. For let the two straight-lines $AC$ and $BD$, in the circle $ABCD$, cut one another at point $E$. I say that the rectangle contained by $AE$ and $EC$ is equal to the rectangle contained by $DE$ and $EB$."
+  },
+  {
+    "role": "deduction",
+    "text": "In fact, if $AC$ and $BD$ are through the center (as in the first diagram from the left), so that $E$ is the center of circle $ABCD$, (then it is) clear that, $AE$, $EC$, $DE$, and $EB$ being equal, the rectangle contained by $AE$ and $EC$ is also equal to the rectangle contained by $DE$ and $EB$.",
+    "assertion": "rectangle AE*EC equals rectangle DE*EB when both chords pass through center (AE, EC, DE, EB all equal as radii)",
+    "spans": [
+      { "label": "glue",       "text": "In fact, if " },
+      { "label": "assumption", "text": "$AC$ and $BD$ are through the center (as in the first diagram from the left), so that $E$ is the center of circle $ABCD$" },
+      { "label": "glue",       "text": ", (then it is) clear that, " },
+      { "label": "assumption", "text": "$AE$, $EC$, $DE$, and $EB$ being equal" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the rectangle contained by $AE$ and $EC$ is also equal to the rectangle contained by $DE$ and $EB$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "So let $AC$ and $DB$ not be though the center (as in the second diagram from the left), and let the center of $ABCD$ be found [Prop.~3.1], and let it be (at) $F$.",
+    "construction_cite": "3.1",
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $FG$ and $FH$ be drawn from $F$, perpendicular to the straight-lines $AC$ and $DB$ (respectively) [Prop.~1.12].",
+    "construction_cite": "1.12",
+    "objects_introduced": ["$FG$", "$FH$", "$G$", "$H$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $FB$, $FC$, and $FE$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$FB$", "$FC$", "$FE$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since some straight-line, $GF$, through the center, cuts at right-angles some (other) straight-line, $AC$, not through the center, (then) it also cuts it in half [Prop.~3.3].",
+    "assertion": "GF bisects AC (cuts it in half)",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "some straight-line, $GF$, through the center, cuts at right-angles some (other) straight-line, $AC$, not through the center" },
+      { "label": "glue",       "text": ", (then) " },
+      { "label": "assertion",  "text": "it also cuts it in half" },
+      { "label": "glue",       "text": " [Prop.~3.3]." }
+    ],
+    "proof_cite": "3.3"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AG$ (is) equal to $GC$.",
+    "assertion": "AG equals GC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AG$ (is) equal to $GC$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since the straight-line $AC$ is cut equally at $G$, and unequally at $E$, the rectangle contained by $AE$ and $EC$ plus the square on $EG$ is thus equal to the (square) on $GC$ [Prop.~2.5].",
+    "assertion": "rectangle AE*EC + square EG = square GC",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "the straight-line $AC$ is cut equally at $G$, and unequally at $E$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the rectangle contained by $AE$ and $EC$ plus the square on $EG$ is thus equal to the (square) on $GC$" },
+      { "label": "glue",       "text": " [Prop.~2.5]." }
+    ],
+    "proof_cite": "2.5"
+  },
+  {
+    "role": "construction",
+    "text": "Let the (square) on $GF$ be added [to both].",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AE$ and $EC$ plus the (sum of the squares) on $GE$ and $GF$ is equal to the (sum of the squares) on $CG$ and $GF$.",
+    "assertion": "rectangle AE*EC + square GE + square GF = square CG + square GF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the (rectangle contained) by $AE$ and $EC$ plus the (sum of the squares) on $GE$ and $GF$ is equal to the (sum of the squares) on $CG$ and $GF$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, the (square) on $FE$ is equal to the (sum of the squares) on $EG$ and $GF$ [Prop.~1.47],",
+    "assertion": "square FE = square EG + square GF",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "the (square) on $FE$ is equal to the (sum of the squares) on $EG$ and $GF$" },
+      { "label": "glue",      "text": " [Prop.~1.47]," }
+    ],
+    "proof_cite": "1.47"
+  },
+  {
+    "role": "deduction",
+    "text": "and the (square) on $FC$ is equal to the (sum of the squares) on $CG$ and $GF$ [Prop.~1.47].",
+    "assertion": "square FC = square CG + square GF",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "the (square) on $FC$ is equal to the (sum of the squares) on $CG$ and $GF$" },
+      { "label": "glue",      "text": " [Prop.~1.47]." }
+    ],
+    "proof_cite": "1.47"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AE$ and $EC$ plus the (square) on $FE$ is equal to the (square) on $FC$.",
+    "assertion": "rectangle AE*EC + square FE = square FC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the (rectangle contained) by $AE$ and $EC$ plus the (square) on $FE$ is equal to the (square) on $FC$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $FC$ (is) equal to $FB$.",
+    "assertion": "FC equals FB (both radii of circle ABCD)",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$FC$ (is) equal to $FB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AE$ and $EC$ plus the (square) on $FE$ is equal to the (square) on $FB$.",
+    "assertion": "rectangle AE*EC + square FE = square FB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the (rectangle contained) by $AE$ and $EC$ plus the (square) on $FE$ is equal to the (square) on $FB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), the (rectangle contained) by $DE$ and $EB$ plus the (square) on $FE$ is equal to the (square) on $FB$.",
+    "assertion": "rectangle DE*EB + square FE = square FB (by same argument as for AC)",
+    "spans": [
+      { "label": "glue",      "text": "So, for the same (reasons), " },
+      { "label": "assertion", "text": "the (rectangle contained) by $DE$ and $EB$ plus the (square) on $FE$ is equal to the (square) on $FB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the (rectangle contained) by $AE$ and $EC$ plus the (square) on $FE$ was also shown (to be) equal to the (square) on $FB$.",
+    "assertion": "rectangle AE*EC + square FE was shown equal to square FB (recall of earlier step)",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "the (rectangle contained) by $AE$ and $EC$ plus the (square) on $FE$ was also shown (to be) equal to the (square) on $FB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AE$ and $EC$ plus the (square) on $FE$ is equal to the (rectangle contained) by $DE$ and $EB$ plus the (square) on $FE$.",
+    "assertion": "rectangle AE*EC + square FE = rectangle DE*EB + square FE",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the (rectangle contained) by $AE$ and $EC$ plus the (square) on $FE$ is equal to the (rectangle contained) by $DE$ and $EB$ plus the (square) on $FE$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let the (square) on $FE$ be taken from both.",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining rectangle contained by $AE$ and $EC$ is equal to the rectangle contained by $DE$ and $EB$.",
+    "assertion": "rectangle AE*EC = rectangle DE*EB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remaining rectangle contained by $AE$ and $EC$ is equal to the rectangle contained by $DE$ and $EB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if two straight-lines in a circle cut one another, (then) the rectangle contained by the pieces of one is equal to the rectangle contained by the pieces of the other. (Which is) the very thing it was required to show."
+  }
+]

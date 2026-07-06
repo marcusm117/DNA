@@ -1,0 +1,111 @@
+[
+  {
+    "role": "intro",
+    "text": "If two circles cut one another, (then) they will not have the same center. For let the two circles $ABC$ and $CDG$ cut one another at points $B$ and $C$. I say that they will not have the same center."
+  },
+  {
+    "role": "deduction",
+    "text": "For, if possible, let $E$ be (the common center),",
+    "assertion": "E is the common center",
+    "frame": {
+      "kind": "reductio_open",
+      "supposition": "point $E$ is the (common) center of the circles $ABC$ and $CDG$"
+    },
+    "spans": [
+      { "label": "glue",      "text": "For, if possible, let " },
+      { "label": "assertion", "text": "$E$ be (the common center)" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "and let $EC$ be joined,",
+    "construction_cite": null,
+    "objects_introduced": ["$EC$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $EFG$ be drawn through (the two circles), at random.",
+    "construction_cite": null,
+    "objects_introduced": ["$EFG$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since point $E$ is the center of the circle $ABC$, $EC$ is equal to $EF$.",
+    "assertion": "EC is equal to EF",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "point $E$ is the center of the circle $ABC$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$EC$ is equal to $EF$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since point $E$ is the center of the circle $CDG$, $EC$ is equal to $EG$.",
+    "assertion": "EC is equal to EG",
+    "spans": [
+      { "label": "glue",       "text": "Again, since " },
+      { "label": "assumption", "text": "point $E$ is the center of the circle $CDG$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$EC$ is equal to $EG$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But $EC$ was also shown (to be) equal to $EF$.",
+    "assertion": "EC is equal to EF (recalled)",
+    "spans": [
+      { "label": "glue",      "text": "But " },
+      { "label": "assertion", "text": "$EC$ was also shown (to be) equal to $EF$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $EF$ is also equal to $EG$, the lesser to the greater.",
+    "assertion": "EF is equal to EG (the lesser to the greater)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$EF$ is also equal to $EG$, the lesser to the greater" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible.",
+    "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, point $E$ is not the (common) center of the circles $ABC$ and $CDG$.",
+    "assertion": "point E is not the common center of circles ABC and CDG",
+    "frame": {
+      "kind": "reductio_close",
+      "closes": "point $E$ is the (common) center of the circles $ABC$ and $CDG$"
+    },
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "point $E$ is not the (common) center of the circles $ABC$ and $CDG$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if two circles cut one another, (then) they will not have the same center. (Which is) the very thing it was required to show."
+  }
+]

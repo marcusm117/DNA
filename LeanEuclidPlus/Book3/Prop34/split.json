@@ -1,0 +1,59 @@
+[
+  {
+    "role": "intro",
+    "text": "To cut off a segment, accepting an angle equal to a given rectilinear angle, from a given circle. Let $ABC$ be the given circle, and $D$ the given rectilinear angle. So it is required to cut off a segment, accepting an angle equal to the given rectilinear angle $D$, from the given circle $ABC$."
+  },
+  {
+    "role": "construction",
+    "text": "Let $EF$ be drawn touching $ABC$ at point $B$.$^\\dag$",
+    "construction_cite": null,
+    "objects_introduced": ["$EF$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let (angle) $FBC$, equal to angle $D$, be constructed on the straight-line $FB$, at the point $B$ on it [Prop.~1.23].",
+    "construction_cite": "1.23",
+    "objects_introduced": []
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since some straight-line $EF$ touches the circle $ABC$, and $BC$ has been drawn across (the circle) from the point of contact $B$, angle $FBC$ is thus equal to the angle constructed in the alternate segment $BAC$ [Prop.~1.32].",
+    "assertion": "angle FBC equals the angle in the alternate segment BAC",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "some straight-line $EF$ touches the circle $ABC$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$BC$ has been drawn across (the circle) from the point of contact $B$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "angle $FBC$ is thus equal to the angle constructed in the alternate segment $BAC$" },
+      { "label": "glue",       "text": " [Prop.~1.32]." }
+    ],
+    "proof_cite": "1.32"
+  },
+  {
+    "role": "deduction",
+    "text": "But, $FBC$ is equal to $D$.",
+    "assertion": "angle FBC equals D",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "$FBC$ is equal to $D$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (angle) in the segment $BAC$ is also equal to [angle] $D$.",
+    "assertion": "the angle in segment BAC equals D",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the (angle) in the segment $BAC$ is also equal to [angle] $D$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, the segment $BAC$, accepting an angle equal to the given rectilinear angle $D$, has been cut off from the given circle $ABC$. (Which is) the very thing it was required to do."
+  }
+]

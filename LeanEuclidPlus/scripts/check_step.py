@@ -16,6 +16,10 @@ USAGE  (run from LeanEuclidPlus/):
   python3 scripts/check_step.py <propdir> --provable            (NO node) build Main, tolerate sorry —
                                                                   the Phase-A skeleton-elaborates check
                                                                   (Main has no parent, so no SF/SP).
+  python3 scripts/check_step.py <propdir> --signature           (NO node) build a bare `theorem … := by
+                                                                  sorry` STUB — stage-0 signature compile
+                                                                  check (no split/map yet; skips the
+                                                                  stray-sorry gate `--provable` enforces).
   python3 scripts/check_step.py <propdir> --smell <node>   SM SMELL (run it BEFORE you decide to
                                                           decompose): fire the node's BARE claim at
                                                           euclid_finish with a SHORT solver cap. "closes"
@@ -843,6 +847,26 @@ def mode_build_main(propdir):
     return 0
 
 
+def mode_signature(propdir):
+    """`--signature` (no node) = Phase-A stage-0 SIGNATURE compile check, for a prop whose Main is still
+    a bare `theorem proposition_N … := by sorry` STUB (no split/map yet — the Book-3 signature stage).
+    Builds Main, tolerating the lone body `sorry`, to confirm the STATEMENT elaborates (predicates,
+    notation, and identifiers all resolve). Unlike `--provable`, it does NOT run the stray-sorry gate:
+    a signature stub's `:= by sorry` body IS a lone unaccounted sorry by design, before any
+    `euclid_sentence` scaffold exists. This is the compile check the signature agent runs on itself;
+    once the map is written, switch to `--provable`/`--all`."""
+    mf = L.main_file(propdir)
+    print(f"[check_step --signature] building {os.path.relpath(mf, L.BOOK_ROOT)} (bare signature stub; "
+          f"tolerating the lone sorry)…")
+    ok, out = L.lake_build(L.target_of(mf), wall=L.main_wall(propdir))
+    if not ok:
+        print("FAIL: the signature did not elaborate (or hit the cap).\n")
+        print(_fail_output(out))
+        return 1
+    print("OK: the signature elaborates. The theorem statement type-checks.")
+    return 0
+
+
 def _run_dependency(propdir):
     """Run the PHASE-B source-regex criterion-3 dependency check (both arms). Print problems; return ok.
     NUMBER-ONLY by design — book authentication is the HUMAN's gate-C olean check (`check_faithful.sh`).
@@ -1186,6 +1210,8 @@ def main(argv):
                 return mode_drive(propdir)
             if rest == ["--provable"]:               # no node = Phase-A: build Main, tolerate sorry
                 return mode_build_main(propdir)
+            if rest == ["--signature"]:              # no node = stage-0: build the bare signature stub
+                return mode_signature(propdir)
             if len(rest) == 2 and rest[0] == "--subtree":
                 return 2 if reject_main_as_node(rest[1]) else mode_subtree(propdir, as_node(rest[1]))
             if len(rest) == 2 and rest[0] == "--context":

@@ -1,0 +1,156 @@
+[
+  {
+    "role": "intro",
+    "text": "In a circle, a diameter (is) the greatest (straight-line), and for the others, a (straight-line) nearer to the center is always greater than one further away. Let $ABCD$ be a circle, and let $AD$ be its diameter, and $E$ (its) center. And let $BC$ be nearer to the diameter $AD$,$^\\dag$ and $FG$ further away. I say that $AD$ is the greatest (straight-line), and $BC$ (is) greater than $FG$."
+  },
+  {
+    "role": "construction",
+    "text": "For let $EH$ and $EK$ be drawn from the center $E$, at right-angles to $BC$ and $FG$ (respectively) [Prop.~1.12].",
+    "construction_cite": "1.12",
+    "objects_introduced": ["$EH$", "$EK$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $BC$ is nearer to the center, and $FG$ further away, $EK$ (is) thus greater than $EH$ [Def.~3.5].",
+    "assertion": "EK is greater than EH",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$BC$ is nearer to the center, and $FG$ further away" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$EK$ (is) thus greater than $EH$" },
+      { "label": "glue",       "text": " [Def.~3.5]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let $EL$ be made equal to $EH$ [Prop.~1.3].",
+    "construction_cite": "1.3",
+    "objects_introduced": ["$EL$"]
+  },
+  {
+    "role": "construction",
+    "text": "And $LM$ being drawn through $L$, at right-angles to $EK$ [Prop.~1.11], let it be drawn through to $N$.",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$LM$", "$N$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $ME$, $EN$, $FE$, and $EG$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$ME$", "$EN$", "$FE$", "$EG$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $EH$ is equal to $EL$, $BC$ is also equal to $MN$ [Prop.~3.14].",
+    "assertion": "BC equals MN",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$EH$ is equal to $EL$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$BC$ is also equal to $MN$" },
+      { "label": "glue",       "text": " [Prop.~3.14]." }
+    ],
+    "proof_cite": "3.14"
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since $AE$ is equal to $EM$, and $ED$ to $EN$, $AD$ is thus equal to $ME$ and $EN$.",
+    "assertion": "AD equals ME plus EN",
+    "spans": [
+      { "label": "glue",       "text": "Again, since " },
+      { "label": "assumption", "text": "$AE$ is equal to $EM$, and $ED$ to $EN$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$AD$ is thus equal to $ME$ and $EN$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, $ME$ and $EN$ is greater than $MN$ [Prop.~1.20] [also $AD$ is greater than $MN$],",
+    "assertion": "ME plus EN is greater than MN (and hence AD is greater than MN)",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "$ME$ and $EN$ is greater than $MN$" },
+      { "label": "glue",      "text": " [Prop.~1.20] [also $AD$ is greater than $MN$]," }
+    ],
+    "proof_cite": "1.20"
+  },
+  {
+    "role": "deduction",
+    "text": "and $MN$ (is) equal to $BC$.",
+    "assertion": "MN equals BC",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "$MN$ (is) equal to $BC$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AD$ is greater than $BC$.",
+    "assertion": "AD is greater than BC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AD$ is greater than $BC$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And since the two (straight-lines) $ME$, $EN$ are equal to the two (straight-lines) $FE$, $EG$ (respectively), and angle $MEN$ [is] greater than angle $FEG$,$^\\ddag$ the base $MN$ is thus greater than the base $FG$ [Prop.~1.24].",
+    "assertion": "base MN is greater than base FG",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "the two (straight-lines) $ME$, $EN$ are equal to the two (straight-lines) $FE$, $EG$ (respectively)" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "angle $MEN$ [is] greater than angle $FEG$" },
+      { "label": "glue",       "text": ",$^\\ddag$ " },
+      { "label": "assertion",  "text": "the base $MN$ is thus greater than the base $FG$" },
+      { "label": "glue",       "text": " [Prop.~1.24]." }
+    ],
+    "proof_cite": "1.24"
+  },
+  {
+    "role": "deduction",
+    "text": "But, $MN$ was shown (to be) equal to $BC$ [(so) $BC$ is also greater than $FG$].",
+    "assertion": "BC is also greater than FG",
+    "spans": [
+      { "label": "glue",       "text": "But, " },
+      { "label": "assumption", "text": "$MN$ was shown (to be) equal to $BC$" },
+      { "label": "glue",       "text": " [(so) " },
+      { "label": "assertion",  "text": "$BC$ is also greater than $FG$" },
+      { "label": "glue",       "text": "]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the diameter $AD$ (is) the greatest (straight-line),",
+    "assertion": "AD is the greatest straight-line",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the diameter $AD$ (is) the greatest (straight-line)" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $BC$ (is) greater than $FG$.",
+    "assertion": "BC is greater than FG",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "$BC$ (is) greater than $FG$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in a circle, a diameter (is) the greatest (straight-line), and for the others, a (straight-line) nearer to the center is always greater than one further away. (Which is) the very thing it was required to show."
+  }
+]

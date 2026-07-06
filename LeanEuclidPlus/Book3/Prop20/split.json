@@ -1,0 +1,129 @@
+[
+  {
+    "role": "intro",
+    "text": "In a circle, the angle at the center is double that at the circumference, when the angles have the same circumference base. Let $ABC$ be a circle, and let $BEC$ be an angle at its center, and $BAC$ (one) at (its) circumference. And let them have the same circumference base $BC$. I say that angle $BEC$ is double (angle) $BAC$."
+  },
+  {
+    "role": "construction",
+    "text": "For being joined, let $AE$ be drawn through to $F$.",
+    "construction_cite": null,
+    "objects_introduced": ["$F$", "$AE$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since $EA$ is equal to $EB$, angle $EAB$ (is) also equal to $EBA$ [Prop.~1.5].",
+    "assertion": "angle EAB equals angle EBA",
+    "spans": [
+      {"label": "glue",       "text": "Therefore, since "},
+      {"label": "assumption", "text": "$EA$ is equal to $EB$"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "angle $EAB$ (is) also equal to $EBA$"},
+      {"label": "glue",       "text": " [Prop.~1.5]."}
+    ],
+    "proof_cite": "1.5"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $EAB$ and $EBA$ is double (angle) $EAB$.",
+    "assertion": "the sum of angles EAB and EBA is double angle EAB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "angle $EAB$ and $EBA$ is double (angle) $EAB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $BEF$ (is) equal to $EAB$ and $EBA$ [Prop.~1.32].",
+    "assertion": "angle BEF equals angle EAB plus angle EBA",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$BEF$ (is) equal to $EAB$ and $EBA$"},
+      {"label": "glue",      "text": " [Prop.~1.32]."}
+    ],
+    "proof_cite": "1.32"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $BEF$ is also double $EAB$.",
+    "assertion": "angle BEF is double angle EAB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$BEF$ is also double $EAB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), $FEC$ is also double $EAC$.",
+    "assertion": "angle FEC is double angle EAC",
+    "spans": [
+      {"label": "glue",      "text": "So, for the same (reasons), "},
+      {"label": "assertion", "text": "$FEC$ is also double $EAC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the whole (angle) $BEC$ is double the whole (angle) $BAC$.",
+    "assertion": "angle BEC is double angle BAC (case 1)",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the whole (angle) $BEC$ is double the whole (angle) $BAC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "So let another (straight-line) be inflected, and let there be another angle, $BDC$.",
+    "construction_cite": null,
+    "objects_introduced": ["$D$", "$BDC$"]
+  },
+  {
+    "role": "construction",
+    "text": "And $DE$ being joined, let it be produced to $G$.",
+    "construction_cite": null,
+    "objects_introduced": ["$G$"]
+  },
+  {
+    "role": "deduction",
+    "text": "So, similarly, we can show that angle $GEC$ is double $EDC$,",
+    "assertion": "angle GEC is double angle EDC",
+    "spans": [
+      {"label": "glue",      "text": "So, similarly, we can show that "},
+      {"label": "assertion", "text": "angle $GEC$ is double $EDC$"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "of which $GEB$ is double $EDB$.",
+    "assertion": "angle GEB is double angle EDB",
+    "spans": [
+      {"label": "glue",      "text": "of which "},
+      {"label": "assertion", "text": "$GEB$ is double $EDB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining (angle) $BEC$ is double the (remaining angle) $BDC$.",
+    "assertion": "angle BEC is double angle BDC (case 2)",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "the remaining (angle) $BEC$ is double the (remaining angle) $BDC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in a circle, the angle at the center is double that at the circumference, when [the angles] have the same circumference base. (Which is) the very thing it was required to show."
+  }
+]

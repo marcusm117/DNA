@@ -1,0 +1,81 @@
+[
+  {
+    "role": "intro",
+    "text": "In equal circles, equal straight-lines subtend equal circumferences. Let $ABC$ and $DEF$ be equal circles, and within them let the equal circumferences $BGC$ and $EHF$ be cut off. And let the straight-lines $BC$ and $EF$ be joined. I say that $BC$ is equal to $EF$."
+  },
+  {
+    "role": "construction",
+    "text": "For let the centers of the circles be found [Prop.~3.1], and let them be (at) $K$ and $L$.",
+    "construction_cite": "3.1",
+    "objects_introduced": ["$K$", "$L$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $BK$, $KC$, $EL$, and $LF$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$BK$", "$KC$", "$EL$", "$LF$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since the circumference $BGC$ is equal to the circumference $EHF$, the angle $BKC$ is also equal to (angle) $ELF$ [Prop.~3.27].",
+    "assertion": "angle BKC equals angle ELF",
+    "proof_cite": "3.27",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "the circumference $BGC$ is equal to the circumference $EHF$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the angle $BKC$ is also equal to (angle) $ELF$" },
+      { "label": "glue",       "text": " [Prop.~3.27]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And since the circles $ABC$ and $DEF$ are equal, their radii are also equal [Def.~3.1].",
+    "assertion": "the radii of circles ABC and DEF are equal",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "the circles $ABC$ and $DEF$ are equal" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "their radii are also equal" },
+      { "label": "glue",       "text": " [Def.~3.1]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So the two (straight-lines) $BK$, $KC$ are equal to the two (straight-lines) $EL$, $LF$ (respectively).",
+    "assertion": "BK and KC equal EL and LF respectively",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "So " },
+      { "label": "assertion", "text": "the two (straight-lines) $BK$, $KC$ are equal to the two (straight-lines) $EL$, $LF$ (respectively)" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And they contain equal angles.",
+    "assertion": "BK,KC and EL,LF contain equal angles",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "they contain equal angles" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $BC$ is equal to the base $EF$ [Prop.~1.4].",
+    "assertion": "base BC equals base EF",
+    "proof_cite": "1.4",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the base $BC$ is equal to the base $EF$" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in equal circles, equal straight-lines subtend equal circumferences. (Which is) the very thing it was required to show."
+  }
+]

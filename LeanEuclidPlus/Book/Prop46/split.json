@@ -1,0 +1,122 @@
+[
+  { "role": "intro", "text": "To describe a square on a given straight-line. Let $AB$ be the given straight-line. So it is required to describe a square on the straight-line $AB$. " },
+
+  { "role": "construction", "text": "Let $AC$ have been drawn at right-angles to the straight-line $AB$ from the point $A$ on it [Prop.~1.11],", "construction_cite": "1.11", "objects_introduced": ["$AC$"] },
+
+  { "role": "construction", "text": "and let $AD$ have been made equal to $AB$ [Prop.~1.3].", "construction_cite": "1.3", "objects_introduced": ["$AD$"] },
+
+  { "role": "construction", "text": "And let $DE$ have been drawn through point $D$ parallel to $AB$ [Prop.~1.31],", "construction_cite": "1.31", "objects_introduced": ["$DE$"] },
+
+  { "role": "construction", "text": "and let $BE$ have been drawn through point $B$ parallel to $AD$ [Prop.~1.31].", "construction_cite": "1.31", "objects_introduced": ["$BE$"] },
+
+  { "role": "deduction", "text": "Thus, $ADEB$ is a parallelogram.", "assertion": "ADEB is a parallelogram",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "$ADEB$ is a parallelogram" },
+      { "label": "glue", "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction", "text": "Therefore, $AB$ is equal to $DE$,", "assertion": "AB is equal to DE",
+    "spans": [
+      { "label": "glue", "text": "Therefore, " },
+      { "label": "assertion", "text": "$AB$ is equal to $DE$" },
+      { "label": "glue", "text": "," } ],
+    "proof_cite": "1.34" },
+
+  { "role": "deduction", "text": "and $AD$ to $BE$ [Prop.~1.34].", "assertion": "AD is equal to BE",
+    "spans": [
+      { "label": "glue", "text": "and " },
+      { "label": "assertion", "text": "$AD$ to $BE$" },
+      { "label": "glue", "text": " [Prop.~1.34]." } ],
+    "proof_cite": "1.34" },
+
+  { "role": "deduction", "text": "But, $AB$ is equal to $AD$.", "assertion": "AB is equal to AD",
+    "spans": [
+      { "label": "glue", "text": "But, " },
+      { "label": "assertion", "text": "$AB$ is equal to $AD$" },
+      { "label": "glue", "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction", "text": "Thus, the four (sides) $BA$, $AD$, $DE$, and $EB$ are equal to one another.", "assertion": "the four sides BA, AD, DE, EB are equal to one another",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "the four (sides) $BA$, $AD$, $DE$, and $EB$ are equal to one another" },
+      { "label": "glue", "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction", "text": "Thus, the parallelogram $ADEB$ is equilateral.", "assertion": "the parallelogram ADEB is equilateral",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "the parallelogram $ADEB$ is equilateral" },
+      { "label": "glue", "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "wts", "text": "So I say that (it is) also right-angled." },
+
+  { "role": "deduction", "text": "For since the straight-line $AD$ falls across the parallels $AB$ and $DE$, the (sum of the) angles $BAD$ and $ADE$ is equal to two right-angles [Prop.~1.29].", "assertion": "sum of angles BAD and ADE equals two right-angles",
+    "spans": [
+      { "label": "glue", "text": "For since " },
+      { "label": "assumption", "text": "the straight-line $AD$ falls across the parallels $AB$ and $DE$" },
+      { "label": "glue", "text": ", the " },
+      { "label": "assertion", "text": "(sum of the) angles $BAD$ and $ADE$ is equal to two right-angles" },
+      { "label": "glue", "text": " [Prop.~1.29]." } ],
+    "proof_cite": "1.29" },
+
+  { "role": "deduction", "text": "But $BAD$ (is a) right-angle.", "assertion": "angle BAD is a right-angle",
+    "spans": [
+      { "label": "glue", "text": "But " },
+      { "label": "assertion", "text": "$BAD$ (is a) right-angle" },
+      { "label": "glue", "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction", "text": "Thus, $ADE$ (is) also a right-angle.", "assertion": "angle ADE is a right-angle",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "$ADE$ (is) also a right-angle" },
+      { "label": "glue", "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction", "text": "And for parallelogrammic figures, the opposite sides and angles are equal to one another [Prop.~1.34].", "assertion": "in parallelograms opposite sides and angles are equal to one another",
+    "spans": [
+      { "label": "glue", "text": "And " },
+      { "label": "assertion", "text": "for parallelogrammic figures, the opposite sides and angles are equal to one another" },
+      { "label": "glue", "text": " [Prop.~1.34]." } ],
+    "proof_cite": "1.34" },
+
+  { "role": "deduction", "text": "Thus, each of the opposite angles $ABE$ and $BED$ (are) also right-angles.", "assertion": "opposite angles ABE and BED are each right-angles",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "each of the opposite angles $ABE$ and $BED$ (are) also right-angles" },
+      { "label": "glue", "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction", "text": "Thus, $ADEB$ is right-angled.", "assertion": "ADEB is right-angled",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "$ADEB$ is right-angled" },
+      { "label": "glue", "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction", "text": "And it was also shown (to be) equilateral.  ", "assertion": "ADEB was also shown to be equilateral",
+    "spans": [
+      { "label": "glue", "text": "And " },
+      { "label": "assertion", "text": "it was also shown (to be) equilateral" },
+      { "label": "glue", "text": ".  " } ],
+    "proof_cite": null },
+
+  { "role": "deduction", "text": "Thus, ($ADEB$) is a square [Def.~1.22].", "assertion": "ADEB is a square",
+    "spans": [
+      { "label": "glue", "text": "Thus, " },
+      { "label": "assertion", "text": "($ADEB$) is a square" },
+      { "label": "glue", "text": " [Def.~1.22]." } ],
+    "proof_cite": null },
+
+  { "role": "deduction", "text": "And it is described on the straight-line $AB$.", "assertion": "the square is described on AB",
+    "spans": [
+      { "label": "glue", "text": "And " },
+      { "label": "assertion", "text": "it is described on the straight-line $AB$" },
+      { "label": "glue", "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "conclusion", "text": "(Which is) the very thing it was required to do." }
+]

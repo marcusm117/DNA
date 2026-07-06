@@ -21,6 +21,9 @@ lean_lib Book1 {
 lean_lib Book2 {
 }
 
+lean_lib Book3 {
+}
+
 lean_lib E3 {
 }
 

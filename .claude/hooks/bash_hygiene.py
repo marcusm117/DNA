@@ -38,9 +38,21 @@ BLOCKED = {
 
 # Read-only inspection binaries — ALLOWED to run bare. The dedicated Grep/Glob tools are NOT available
 # in this deployment, so these ARE how the agent searches/reads via bash; settings.json also allows them
-# so they never prompt. CAVEAT (accepted): shell redirection (`grep x > out`) or `find … -delete/-exec`
-# can still mutate — treated as read-only here; git is the human's safety net for those edge cases.
+# so they never prompt. CAVEAT (accepted): a shell redirection (`grep x > out`) can still mutate —
+# treated as read-only here; git is the human's safety net. `find … -exec/-delete` is the exception:
+# it's gated below (the harness would prompt on it) — see _find_gated.
 READONLY_OK = {"cat", "head", "tail", "wc", "find", "grep", "egrep", "fgrep", "rg", "ls"}
+
+# `find` is the one READONLY_OK binary the harness will PROMPT on (and that can mutate): any
+# -exec/-execdir/-ok/-okdir runs a child command, and -delete/-fprint*/-fls write. The harness refuses
+# to prefix-auto-allow ANY `find … -exec`/-delete — it can't tell a read-only `-exec grep` from a
+# mutating `-exec rm`, so it pops a prompt regardless. So `find` carrying any of these is routed to
+# gate() → mode=deny blocks it SILENTLY (never a prompt); the agent falls back to `grep -rl …` / Edit / rm.
+_FIND_GATED_FLAGS = {"-exec", "-execdir", "-ok", "-okdir", "-delete", "-fprint", "-fprintf", "-fls"}
+
+def _find_gated(args):
+    """True if a find invocation carries an action flag the harness would prompt on (or that mutates)."""
+    return any(a in _FIND_GATED_FLAGS for a in args)
 
 # The positive allowlist, echoed in every deny message so the agent learns the boundary once.
 ALLOWED_SUMMARY = ("Bash here is reserved for: read-only git (status/diff/log/show/branch/blame/"
@@ -162,6 +174,12 @@ def main():
 
         # Read-only inspection binaries run bare (Grep/Glob tools don't exist here — this is search).
         if base in READONLY_OK:
+            if base == "find" and _find_gated(toks[i + 1:]):
+                gate("`find` with -exec/-execdir/-ok/-delete/-fprint* is blocked: the harness can't "
+                     "prefix-auto-allow it (any -exec runs a child command), so it would PROMPT. Use a "
+                     "bare read-only search instead — `grep -rl PATTERN PATH --include='*.lean'` replaces "
+                     "`find … -exec grep -l …`; use the Edit tool to change a file, or "
+                     "`rm Book<N>/Prop<NN>/…` to delete inside a prop folder. " + ALLOWED_SUMMARY)
             continue
 
         # Genuine in-place transformers still get a specific "use this tool instead" message.
@@ -255,6 +273,12 @@ def main():
         # one of the path helpers, not a read-only git/lake/pipeline-script invocation.
         gate(f"`{base}` is not on the Bash allowlist here. {ALLOWED_SUMMARY}")
 
+    # Passed the allowlist: stay SILENT (no permissionDecision) so we DEFER to settings.json — this
+    # preserves the settings `deny` rules (lake build, git mutations, Write/Edit of the signature/tags
+    # JSON) which a hook `allow` would wrongly override. A normal allowlisted read (`grep …`, bare
+    # `find …`) is matched by its settings allow-prefix and runs without a prompt. The only commands the
+    # hook must ACTIVELY catch are those it passes but the harness would still PROMPT on (find -exec/…) —
+    # handled at the READONLY_OK branch above, so nothing ever surfaces a prompt in mode=deny.
     sys.exit(0)
 
 if __name__ == "__main__":

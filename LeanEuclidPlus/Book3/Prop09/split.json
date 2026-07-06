@@ -1,0 +1,138 @@
+[
+  {
+    "role": "intro",
+    "text": "If some point is taken inside a circle, and more than two equal straight-lines radiate from the point towards the (circumference of the) circle, (then) the point taken is the center of the circle. Let $ABC$ be a circle, and $D$ a point inside it, and let more than two equal straight-lines, $DA$, $DB$, and $DC$, radiate from $D$ towards (the circumference of) circle $ABC$. I say that point $D$ is the center of circle $ABC$."
+  },
+  {
+    "role": "construction",
+    "text": "For let $AB$ and $BC$ be joined, and (then) be cut in half at points $E$ and $F$ (respectively) [Prop.~1.10].",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$AB$", "$BC$", "$E$", "$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "And $ED$ and $FD$ being joined, let them be drawn through to points $G$, $K$, $H$, and $L$.",
+    "construction_cite": null,
+    "objects_introduced": ["$G$", "$K$", "$H$", "$L$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since $AE$ is equal to $EB$, and $ED$ (is) common, the two (straight-lines) $AE$, $ED$ are equal to the two (straight-lines) $BE$, $ED$ (respectively).",
+    "assertion": "AE, ED equal BE, ED respectively",
+    "spans": [
+      {"label": "glue",       "text": "Therefore, since "},
+      {"label": "assumption", "text": "$AE$ is equal to $EB$"},
+      {"label": "glue",       "text": ", and "},
+      {"label": "assumption", "text": "$ED$ (is) common"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "the two (straight-lines) $AE$, $ED$ are equal to the two (straight-lines) $BE$, $ED$ (respectively)"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the base $DA$ (is) equal to the base $DB$.",
+    "assertion": "base DA equals base DB",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "the base $DA$ (is) equal to the base $DB$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $AED$ is equal to angle $BED$ [Prop.~1.8].",
+    "assertion": "angle AED equals angle BED",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "angle $AED$ is equal to angle $BED$"},
+      {"label": "glue",      "text": " [Prop.~1.8]."}
+    ],
+    "proof_cite": "1.8"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angles $AED$ and $BED$ (are) each right-angles [Def.~1.10].",
+    "assertion": "angles AED and BED are each right-angles",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "angles $AED$ and $BED$ (are) each right-angles"},
+      {"label": "glue",      "text": " [Def.~1.10]."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $GK$ cuts $AB$ in half,",
+    "assertion": "GK bisects AB",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$GK$ cuts $AB$ in half"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and at right-angles.",
+    "assertion": "GK meets AB at right-angles",
+    "spans": [
+      {"label": "glue",      "text": "and "},
+      {"label": "assertion", "text": "at right-angles"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And since, if some straight-line in a circle cuts some (other) straight-line in half, and at right-angles, (then) the center of the circle is on the former (straight-line) [Prop.~3.1~corr.], the center of the circle is thus on $GK$.",
+    "assertion": "center of circle is on GK",
+    "spans": [
+      {"label": "glue",       "text": "And since, "},
+      {"label": "assumption", "text": "if some straight-line in a circle cuts some (other) straight-line in half, and at right-angles, (then) the center of the circle is on the former (straight-line)"},
+      {"label": "glue",       "text": " [Prop.~3.1~corr.], "},
+      {"label": "assertion",  "text": "the center of the circle is thus on $GK$"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": "3.1 corr."
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), the center of circle $ABC$ is also on $HL$.",
+    "assertion": "center of circle ABC is also on HL",
+    "spans": [
+      {"label": "glue",      "text": "So, for the same (reasons), "},
+      {"label": "assertion", "text": "the center of circle $ABC$ is also on $HL$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the straight-lines $GK$ and $HL$ have no common (point) other than point $D$.",
+    "assertion": "GK and HL have no common point other than D",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "the straight-lines $GK$ and $HL$ have no common (point) other than point $D$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, point $D$ is the center of circle $ABC$.",
+    "assertion": "point D is the center of circle ABC",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "point $D$ is the center of circle $ABC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if some point is taken inside a circle, and more than two equal straight-lines radiate from the point towards the (circumference of the) circle, (then) the point taken is the center of the circle. (Which is) the very thing it was required to show."
+  }
+]

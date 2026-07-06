@@ -1,0 +1,105 @@
+[
+  {
+    "role": "intro",
+    "text": "To cut a given circumference in half. Let $ADB$ be the given circumference. So it is required to cut circumference $ADB$ in half."
+  },
+  {
+    "role": "construction",
+    "text": "Let $AB$ be joined,",
+    "construction_cite": null,
+    "objects_introduced": ["$AB$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let it be cut in half at (point) $C$ [Prop.~1.10].",
+    "construction_cite": "1.10",
+    "objects_introduced": ["$C$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $CD$ be drawn from point $C$, at right-angles to $AB$ [Prop.~1.11].",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$CD$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AD$, and $DB$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AD$", "$DB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $AC$ is equal to $CB$, and $CD$ (is) common, the two (straight-lines) $AC$, $CD$ are equal to the two (straight-lines) $BC$, $CD$ (respectively).",
+    "assertion": "the two straight-lines AC, CD equal the two straight-lines BC, CD respectively",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$AC$ is equal to $CB$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$CD$ (is) common" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the two (straight-lines) $AC$, $CD$ are equal to the two (straight-lines) $BC$, $CD$ (respectively)" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And angle $ACD$ (is) equal to angle $BCD$. For (they are) each right-angles.",
+    "assertion": "angle ACD equals angle BCD",
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assertion",  "text": "angle $ACD$ (is) equal to angle $BCD$" },
+      { "label": "glue",       "text": ". " },
+      { "label": "assumption", "text": "For (they are) each right-angles." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $AD$ is equal to the base $DB$ [Prop.~1.4].",
+    "assertion": "base AD equals base DB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the base $AD$ is equal to the base $DB$" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": "And equal straight-lines cut off equal circumferences, the greater (circumference being equal) to the greater, and the lesser to the lesser [Prop.~1.28].",
+    "assertion": "equal straight-lines cut off equal circumferences, greater to greater and lesser to lesser",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "equal straight-lines cut off equal circumferences, the greater (circumference being equal) to the greater, and the lesser to the lesser" },
+      { "label": "glue",      "text": " [Prop.~1.28]." }
+    ],
+    "proof_cite": "1.28"
+  },
+  {
+    "role": "deduction",
+    "text": "And the circumferences $AD$ and $DB$ are each less than a semi-circle.",
+    "assertion": "circumferences AD and DB are each less than a semi-circle",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "the circumferences $AD$ and $DB$ are each less than a semi-circle" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, circumference $AD$ (is) equal to circumference $DB$.",
+    "assertion": "circumference AD equals circumference DB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "circumference $AD$ (is) equal to circumference $DB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, the given circumference has been cut in half at point $D$. (Which is) the very thing it was required to do."
+  }
+]

@@ -1,0 +1,108 @@
+[
+  {
+    "role": "intro",
+    "text": "If some straight-line touches a circle, and a straight-line is drawn from the point of contact, at right-[angles] to the tangent, (then) the center (of the circle) will be on the (straight-line) so drawn. For let some straight-line $DE$ touch the circle $ABC$ at point $C$. And let $CA$ be drawn from $C$, at right-angles to $DE$ [Prop.~1.11]. I say that the center of the circle is on $AC$."
+  },
+  {
+    "role": "deduction",
+    "text": "For (if) not, if possible, let $F$ be (the center of the circle),",
+    "assertion": "F is (supposed to be) the center of circle ABC",
+    "frame": { "kind": "reductio_open", "supposition": "$F$ is the center of circle $ABC$" },
+    "objects_introduced": ["$F$"],
+    "spans": [
+      { "label": "glue",      "text": "For (if) not, if possible, " },
+      { "label": "assertion", "text": "let $F$ be (the center of the circle)" },
+      { "label": "glue",      "text": "," }
+    ]
+  },
+  {
+    "role": "construction",
+    "text": "and let $CF$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$CF$"]
+  },
+  {
+    "role": "deduction",
+    "text": "[Therefore], since some straight-line $DE$ touches the circle $ABC$, and $FC$ has been joined from the center to the point of contact, $FC$ is thus perpendicular to $DE$ [Prop.~3.18].",
+    "assertion": "FC is perpendicular to DE",
+    "proof_cite": "3.18",
+    "spans": [
+      { "label": "glue",       "text": "[Therefore], since " },
+      { "label": "assumption", "text": "some straight-line $DE$ touches the circle $ABC$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$FC$ has been joined from the center to the point of contact" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$FC$ is thus perpendicular to $DE$" },
+      { "label": "glue",       "text": " [Prop.~3.18]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FCE$ is a right-angle.",
+    "assertion": "angle FCE is a right angle",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$FCE$ is a right-angle" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $ACE$ is also a right-angle.",
+    "assertion": "angle ACE is a right angle",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$ACE$ is also a right-angle" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FCE$ is equal to $ACE$, the lesser to the greater.",
+    "assertion": "angle FCE equals angle ACE (the lesser equals the greater — absurd)",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$FCE$ is equal to $ACE$, the lesser to the greater" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible.",
+    "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $F$ is not the center of circle $ABC$.",
+    "assertion": "F is not the center of circle ABC",
+    "frame": { "kind": "reductio_close", "closes": "$F$ is the center of circle $ABC$" },
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$F$ is not the center of circle $ABC$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So, similarly, we can show that neither is any (point) other (than one) on $AC$.",
+    "assertion": "no point other than one on AC is the center of circle ABC",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "So, similarly, we can show that " },
+      { "label": "assertion", "text": "neither is any (point) other (than one) on $AC$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if some straight-line touches a circle, and a straight-line is drawn from the point of contact, at right-angles to the tangent, (then) the center (of the circle) will be on the (straight-line) so drawn. (Which is) the very thing it was required to show."
+  }
+]

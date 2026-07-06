@@ -53,12 +53,33 @@ each slice must stay a **clean contiguous span that tiles** (RULE 2), and you ne
 sentence boundary (RULE 4). If two facts are truly interleaved in one clause (no contiguous cut), only
 then keep them in one entry.
 
-**RULE 4 — NEVER MERGE ACROSS SENTENCES.** A period boundary (end of sentence) is ALWAYS at least
-an entry boundary. Two sentences never become one entry.
+**RULE 4 — ENTRY BOUNDARIES ARE ASSERTION BOUNDARIES, NOT PERIOD BOUNDARIES.** A period does NOT
+automatically create a new entry. The test is: does the next sentence assert a NEW geometric fact,
+or does it explain WHY the preceding claim holds? Euclid's punctuation (periods, commas) is a
+formatting artifact — faithfulness is to what he ASSERTED, not where he put periods.
+  - **Two genuine assertions always get separate entries** — but a "For…" / "For it is…" sentence
+    that IMMEDIATELY follows a claim and gives its conditions/reason is NOT a new assertion. It stays
+    in the SAME entry as the claim it justifies (Rule 5 takes precedence).
+  - **The practical test**: if removing the "For…" sentence would leave the claim unproven-but-stated,
+    and the "For…" sentence supplies the conditions under which the claim follows (the Prop citation,
+    the equal-base/same-parallel conditions), then it's a justification — same entry.
+  - **A new assertion:** "Thus, X is Y." / "And Z is W." — makes a claim that stands on its own.
+    Always a new entry regardless of the preceding sentence.
 
-**RULE 5 — TRAILING JUSTIFICATIONS STAY.** A "For..." or "since..." or "for it is..." clause that
-gives the REASON for a claim stays in the same entry as that claim. It's the justification, not a
-new assertion.
+**RULE 5 — JUSTIFICATIONS STAY WITH THEIR CLAIM — including across a period.** A "For..." or
+"since..." or "for it is..." passage that gives the REASON for a claim stays in the same entry as
+that claim. It is the justification, not a new assertion — regardless of whether Euclid put a period
+before it. Mark the justification substrings as `assumption` spans within the merged entry.
+  - **⚠ A "since X [Prop.~B.N]" clause is STILL a since-clause (an `assumption`) even when it carries
+    its OWN proposition citation — the citation does NOT promote it to a standalone assertion.** The
+    citation only records HOW that premise gets discharged downstream (an `@assumption` gap that Phase B
+    proves via `[Prop.~B.N]`); it stays in the same entry as the "thus …" conclusion it feeds. So
+    "since A [Prop.~1.34], but also B [Prop.~1.34], **thus** C [Prop.~1.30]" is **ONE deduction** — the
+    single assertion is **C**, with A and B as two `assumption` spans (each keeping its `[Prop]` in the
+    adjacent `glue`). Do NOT split it into three entries just because each clause is separately cited
+    (real miss: I.45 "$FK$ equal+parallel $HG$ [1.34], but also $HG$ to $ML$ [1.34], $KF$ thus
+    equal+parallel $ML$ [1.30]" — the two "since"/"but also" facts are the premises for the one "thus",
+    exactly the two `proposition_34'` applies feeding the one `proposition_30` in the proof).
 
 **RULE 6 — SEPARATE ASSERTION FROM ASSUMPTION; SPLIT COMPOUND ASSERTIONS (deductions).** Partition each
 deduction's text into ordered `spans`, each labelled `assertion` (the ONE new fact — becomes the Lean

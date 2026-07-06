@@ -1,0 +1,168 @@
+[
+  {
+    "role": "intro",
+    "text": "If some straight-line touches a circle, and some (other) straight-line is drawn across, from the point of contact into the circle, cutting the circle (in two), (then) those angles the (straight-line) makes with the tangent will be equal to the angles in the alternate segments of the circle. For let some straight-line $EF$ touch the circle $ABCD$ at the point $B$, and let some (other) straight-line $BD$ be drawn from point $B$ into the circle $ABCD$, cutting it (in two). I say that the angles $BD$ makes with the tangent $EF$ will be equal to the angles in the alternate segments of the circle. That is to say, that angle $FBD$ is equal to the angle constructed in segment $BAD$, and angle $EBD$ is equal to the angle constructed in segment $DCB$."
+  },
+  {
+    "role": "construction",
+    "text": "For let $BA$ be drawn from $B$, at right-angles to $EF$ [Prop.~1.11].",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$BA$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let the point $C$ be taken at random on the circumference $BD$.",
+    "construction_cite": null,
+    "objects_introduced": ["$C$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $AD$, $DC$, and $CB$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AD$", "$DC$", "$CB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since some straight-line $EF$ touches the circle $ABCD$ at point $B$, and $BA$ has been drawn from the point of contact, at right-angles to the tangent, the center of circle $ABCD$ is thus on $BA$ [Prop.~3.19].",
+    "assertion": "center of circle ABCD is on BA",
+    "spans": [
+      { "label": "glue",      "text": "And since " },
+      { "label": "assumption","text": "some straight-line $EF$ touches the circle $ABCD$ at point $B$" },
+      { "label": "glue",      "text": ", and " },
+      { "label": "assumption","text": "$BA$ has been drawn from the point of contact, at right-angles to the tangent" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "the center of circle $ABCD$ is thus on $BA$" },
+      { "label": "glue",      "text": " [Prop.~3.19]." }
+    ],
+    "proof_cite": "3.19"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $BA$ is a diameter of circle $ABCD$.",
+    "assertion": "BA is a diameter of circle ABCD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$BA$ is a diameter of circle $ABCD$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $ADB$, being in a semi-circle, is a right-angle [Prop.~3.31].",
+    "assertion": "angle ADB is a right-angle",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "angle $ADB$, being in a semi-circle, is a right-angle" },
+      { "label": "glue",      "text": " [Prop.~3.31]." }
+    ],
+    "proof_cite": "3.31"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining angles (of triangle $ADB$) $BAD$ and $ABD$ are equal to one right-angle [Prop.~1.32].",
+    "assertion": "angles BAD and ABD sum to one right-angle",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remaining angles (of triangle $ADB$) $BAD$ and $ABD$ are equal to one right-angle" },
+      { "label": "glue",      "text": " [Prop.~1.32]." }
+    ],
+    "proof_cite": "1.32"
+  },
+  {
+    "role": "deduction",
+    "text": "And $ABF$ is also a right-angle.",
+    "assertion": "angle ABF is a right-angle",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$ABF$ is also a right-angle" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $ABF$ is equal to $BAD$ and $ABD$.",
+    "assertion": "ABF = BAD + ABD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$ABF$ is equal to $BAD$ and $ABD$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Let $ABD$ be subtracted from both.",
+    "assertion": "ABD subtracted from both",
+    "spans": [
+      { "label": "glue",      "text": "Let " },
+      { "label": "assertion", "text": "$ABD$ be subtracted from both" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining angle $DBF$ is equal to the angle $BAD$ in the alternate segment of the circle.",
+    "assertion": "angle DBF = angle BAD in alternate segment",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remaining angle $DBF$ is equal to the angle $BAD$ in the alternate segment of the circle" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And since $ABCD$ is a quadrilateral in a circle, (the sum of) its opposite angles is equal to two right-angles [Prop.~3.22].",
+    "assertion": "opposite angles of cyclic quadrilateral ABCD sum to two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "And since " },
+      { "label": "assumption","text": "$ABCD$ is a quadrilateral in a circle" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "(the sum of) its opposite angles is equal to two right-angles" },
+      { "label": "glue",      "text": " [Prop.~3.22]." }
+    ],
+    "proof_cite": "3.22"
+  },
+  {
+    "role": "deduction",
+    "text": "And $DBF$ and $DBE$ is also equal to two right-angles [Prop.~1.13].",
+    "assertion": "DBF + DBE = two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$DBF$ and $DBE$ is also equal to two right-angles" },
+      { "label": "glue",      "text": " [Prop.~1.13]." }
+    ],
+    "proof_cite": "1.13"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $DBF$ and $DBE$ is equal to $BAD$ and $BCD$, of which $BAD$ was shown (to be) equal to $DBF$.",
+    "assertion": "DBF + DBE = BAD + BCD",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$DBF$ and $DBE$ is equal to $BAD$ and $BCD$" },
+      { "label": "glue",      "text": ", of which " },
+      { "label": "assumption","text": "$BAD$ was shown (to be) equal to $DBF$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining (angle) $DBE$ is equal to the angle $DCB$ in the alternate segment $DCB$ of the circle.",
+    "assertion": "angle DBE = angle DCB in alternate segment DCB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remaining (angle) $DBE$ is equal to the angle $DCB$ in the alternate segment $DCB$ of the circle" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if some straight-line touches a circle, and some (other) straight-line is drawn across, from the point of contact into the circle, cutting the circle (in two), (then) those angles the (straight-line) makes with the tangent will be equal to the angles in the alternate segments of the circle. (Which is) the very thing it was required to show."
+  }
+]

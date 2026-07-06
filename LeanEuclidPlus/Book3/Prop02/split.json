@@ -1,0 +1,173 @@
+[
+  {
+    "role": "intro",
+    "text": "If two points are taken at random on the circumference of a circle, (then) the straight-line joining the points will fall inside the circle. Let $ABC$ be a circle, and let two points $A$ and $B$ be taken at random on its circumference. I say that the straight-line joining $A$ to $B$ will fall inside the circle."
+  },
+  {
+    "role": "deduction",
+    "text": "For (if) not (then), if possible, let it fall outside (the circle), like $AEB$ (in the figure).",
+    "assertion": "the straight-line joining A to B falls outside the circle, like AEB",
+    "frame": {
+      "kind": "reductio_open",
+      "supposition": "the straight-line joining $A$ to $B$ falls outside the circle"
+    },
+    "spans": [
+      { "label": "glue",      "text": "For (if) not (then), if possible, " },
+      { "label": "assertion", "text": "let it fall outside (the circle), like $AEB$ (in the figure)" },
+      { "label": "glue",      "text": "." }
+    ],
+    "objects_introduced": ["$E$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let the center of the circle $ABC$ be found [Prop.~3.1], and let it be (at point) $D$.",
+    "construction_cite": "3.1",
+    "objects_introduced": ["$D$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $DA$ and $DB$ be joined,",
+    "construction_cite": null,
+    "objects_introduced": ["$DA$", "$DB$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $DFE$ be drawn through.",
+    "construction_cite": null,
+    "objects_introduced": ["$DFE$", "$F$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since $DA$ is equal to $DB$, the angle $DAE$ (is) thus also equal to $DBE$ [Prop.~1.5].",
+    "assertion": "angle DAE equals angle DBE",
+    "proof_cite": "1.5",
+    "spans": [
+      { "label": "glue",      "text": "Therefore, since " },
+      { "label": "assumption","text": "$DA$ is equal to $DB$" },
+      { "label": "glue",      "text": ", the angle " },
+      { "label": "assertion", "text": "$DAE$ (is) thus also equal to $DBE$ [Prop.~1.5]" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And since in triangle $DAE$ the one side, $AEB$, has been produced, angle $DEB$ (is) thus greater than $DAE$ [Prop.~1.16].",
+    "assertion": "angle DEB is greater than angle DAE",
+    "proof_cite": "1.16",
+    "spans": [
+      { "label": "glue",      "text": "And since " },
+      { "label": "assumption","text": "in triangle $DAE$ the one side, $AEB$, has been produced" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "angle $DEB$ (is) thus greater than $DAE$ [Prop.~1.16]" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $DAE$ (is) equal to $DBE$ [Prop.~1.5].",
+    "assertion": "DAE equals DBE",
+    "proof_cite": "1.5",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$DAE$ (is) equal to $DBE$" },
+      { "label": "glue",      "text": " [Prop.~1.5]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $DEB$ (is) greater than $DBE$.",
+    "assertion": "DEB is greater than DBE",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$DEB$ (is) greater than $DBE$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And the greater angle is subtended by the greater side [Prop.~1.19]. Thus, $DB$ (is) greater than $DE$.",
+    "assertion": "DB is greater than DE",
+    "proof_cite": "1.19",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assumption","text": "the greater angle is subtended by the greater side" },
+      { "label": "glue",      "text": " [Prop.~1.19]. Thus, " },
+      { "label": "assertion", "text": "$DB$ (is) greater than $DE$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $DB$ (is) equal to $DF$.",
+    "assertion": "DB equals DF",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$DB$ (is) equal to $DF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $DF$ (is) greater than $DE$, the lesser than the greater.",
+    "assertion": "DF is greater than DE",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$DF$ (is) greater than $DE$" },
+      { "label": "glue",      "text": ", the lesser than the greater." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible.",
+    "assertion": "contradiction",
+    "proof_cite": null,
+    "frame": { "kind": "contradiction" },
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the straight-line joining $A$ to $B$ will not fall outside the circle.",
+    "assertion": "the straight-line joining A to B will not fall outside the circle",
+    "frame": {
+      "kind": "reductio_close",
+      "closes": "the straight-line joining $A$ to $B$ falls outside the circle"
+    },
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the straight-line joining $A$ to $B$ will not fall outside the circle" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So, similarly, we can show that neither (will it fall) on the circumference itself.",
+    "assertion": "the straight-line will not fall on the circumference itself",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "So, similarly, we can show that " },
+      { "label": "assertion", "text": "neither (will it fall) on the circumference itself" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (it will fall) inside (the circle).",
+    "assertion": "the straight-line joining A to B falls inside the circle",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(it will fall) inside (the circle)" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if two points are taken at random on the circumference of a circle, (then) the straight-line joining the points will fall inside the circle. (Which is) the very thing it was required to show."
+  }
+]

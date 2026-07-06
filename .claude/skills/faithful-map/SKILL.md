@@ -249,12 +249,27 @@ names; new construction points follow the Euclid label (`$E$`→`e`); intermedia
 | "let EA, EB be joined" (construction) | `distinctPointsOnLine e a EA ∧ distinctPointsOnLine e b EB` |
 | "the very thing is impossible" (reductio) | `False` (inside the frame) |
 | "BE is not straight-on to CB" (a negation) | `¬ (between c b e)` |
+| "Let KHG be added to both" (Common Notion 2, applied to a prior equality `∠HKF=∠GHM`) | the RESULTING sum-equality, a PLAIN assertion: `∠ h:k:f + ∠ k:h:g = ∠ g:h:m + ∠ k:h:g`. NOT an implication — see the note below the table |
  \|(b─c)\| = \|(b─g)\| → \|(a─l)\| = \|(b─c)\|` |
 
 A trivially-valid claim like this last row is FAITHFUL — not a RULE-2 vacuity violation — precisely
 *because Euclid states it as a sentence*. The sentence IS the claim; when Euclid invokes a Common
 Notion ("things equal to the same thing…") as its own step, translate it as the implication he asserts,
 not as `True`.
+
+**⛔ BUT do NOT reach for an implication when a Common Notion is APPLIED to an already-established
+prior fact — assert its CONCLUSION, and consume the prior fact as a prior step / `@assumption`.** The
+canonical trap is **"Let KHG be added to both"** (Common Notion 2, applied to a prior equality
+`∠HKF=∠GHM`): its faithful claim is the **resulting sum-equality** `∠HKF+∠KHG = ∠GHM+∠KHG` (a plain
+assertion). Do NOT render it as `(∠HKF=∠GHM) → (∠HKF+∠KHG = ∠GHM+∠KHG)`. That conditional is an
+*arithmetic tautology* — true no matter what the figure looks like — so it carries **none** of the
+sentence's geometric content; its only purpose is to dodge the (harmless, RULE-3-permitted) redundancy
+with the following "Thus, (sum) = (sum)" sentence. Redundancy is FINE; the tautology-dodge is not. The
+prior equality it adds to is a PRIOR SENTENCE already in context (or, if stated *inside* this same
+sentence as a "since …" clause, an `@assumption`), never folded into the claim as an antecedent. (The
+implication form in the row above is reserved for the *narrow* C.N.1 "equal to the same thing" step where
+the premises live inside that very sentence and there is no separately-assertible conclusion; when in
+doubt, prefer the plain conclusion + `@assumption`. Same law for "let X be subtracted from both".)
 
 ### Figural language stays figural — translate the FIGURE Euclid NAMES, not the consequence it implies
 Congruence / base-angle props (I.4–I.8, I.26 …) keep tripping this. The mistake is substituting the

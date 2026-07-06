@@ -1,0 +1,72 @@
+[
+  {
+    "role": "intro",
+    "text": "Two similar and unequal segments of circles cannot be constructed on the same side of the same straight-line."
+  },
+  {
+    "role": "deduction",
+    "text": "For, if possible, let the two similar and unequal segments of circles, $ACB$ and $ADB$, be constructed on the same side of the same straight-line $AB$.",
+    "assertion": "two similar and unequal segments ACB and ADB exist on the same side of AB",
+    "frame": {
+      "kind": "reductio_open",
+      "supposition": "two similar and unequal segments of circles, $ACB$ and $ADB$, can be constructed on the same side of the same straight-line $AB$"
+    },
+    "spans": [
+      {"label": "glue",      "text": "For, if possible, let "},
+      {"label": "assertion", "text": "the two similar and unequal segments of circles, $ACB$ and $ADB$, be constructed on the same side of the same straight-line $AB$"},
+      {"label": "glue",      "text": "."}
+    ]
+  },
+  {
+    "role": "construction",
+    "text": "And let $ACD$ be drawn through (the segments),",
+    "construction_cite": null,
+    "objects_introduced": ["$ACD$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $CB$ and $DB$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$CB$", "$DB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since segment $ACB$ is similar to segment $ADB$, and similar segments of circles are those accepting equal angles [Def.~3.11], angle $ACB$ is thus equal to $ADB$, the external to the internal.",
+    "assertion": "angle ACB equals angle ADB (the external to the internal)",
+    "spans": [
+      {"label": "glue",       "text": "Therefore, since "},
+      {"label": "assumption", "text": "segment $ACB$ is similar to segment $ADB$"},
+      {"label": "glue",       "text": ", and "},
+      {"label": "assumption", "text": "similar segments of circles are those accepting equal angles [Def.~3.11]"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "angle $ACB$ is thus equal to $ADB$, the external to the internal"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible [Prop.~1.16].",
+    "assertion": "contradiction",
+    "frame": {"kind": "contradiction"},
+    "spans": [
+      {"label": "assertion", "text": "The very thing is impossible"},
+      {"label": "glue",      "text": " [Prop.~1.16]."}
+    ],
+    "proof_cite": "1.16"
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, two similar and unequal segments of circles cannot be constructed on the same side of the same straight-line.",
+    "assertion": "two similar and unequal segments cannot be on the same side of the same chord",
+    "frame": {
+      "kind": "reductio_close",
+      "closes": "two similar and unequal segments of circles, $ACB$ and $ADB$, can be constructed on the same side of the same straight-line $AB$"
+    },
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "two similar and unequal segments of circles cannot be constructed on the same side of the same straight-line"},
+      {"label": "glue",      "text": "."}
+    ]
+  }
+]

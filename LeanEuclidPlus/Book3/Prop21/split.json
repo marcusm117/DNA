@@ -1,0 +1,61 @@
+[
+  {
+    "role": "intro",
+    "text": "In a circle, angles in the same segment are equal to one another. Let $ABCD$ be a circle, and let $BAD$ and $BED$ be angles in the same segment $BAED$. I say that angles $BAD$ and $BED$ are equal to one another."
+  },
+  {
+    "role": "construction",
+    "text": "For let the center of circle $ABCD$ be found [Prop.~3.1], and let it be (at point) $F$.",
+    "construction_cite": "3.1",
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $BF$ and $FD$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$BF$", "$FD$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since angle $BFD$ is at the center, and $BAD$ at the circumference, and they have the same circumference base $BCD$, angle $BFD$ is thus double $BAD$ [Prop.~3.20].",
+    "assertion": "angle BFD is double angle BAD",
+    "proof_cite": "3.20",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "angle $BFD$ is at the center" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$BAD$ at the circumference" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "they have the same circumference base $BCD$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "angle $BFD$ is thus double $BAD$" },
+      { "label": "glue",       "text": " [Prop.~3.20]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), $BFD$ is also double $BED$.",
+    "assertion": "BFD is double BED",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "So, for the same (reasons), " },
+      { "label": "assertion", "text": "$BFD$ is also double $BED$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $BAD$ (is) equal to $BED$.",
+    "assertion": "angle BAD equals angle BED",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$BAD$ (is) equal to $BED$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in a circle, angles in the same segment are equal to one another. (Which is) the very thing it was required to show."
+  }
+]

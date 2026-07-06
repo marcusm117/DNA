@@ -1,0 +1,144 @@
+[
+  {
+    "role": "intro",
+    "text": "A circle does not cut a(nother) circle at more than two points."
+  },
+  {
+    "role": "deduction",
+    "text": "For, if possible, let the circle $ABC$ cut the circle $DEF$ at more than two points, $B$, $G$, $F$, and $H$.",
+    "assertion": "circle ABC cuts circle DEF at more than two points, at B, G, F, H",
+    "frame": {
+      "kind": "reductio_open",
+      "supposition": "the circle $ABC$ cut the circle $DEF$ at more than two points, $B$, $G$, $F$, and $H$"
+    },
+    "spans": [
+      { "label": "glue",      "text": "For, if possible, let " },
+      { "label": "assertion", "text": "the circle $ABC$ cut the circle $DEF$ at more than two points, $B$, $G$, $F$, and $H$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "construction",
+    "text": "And $BH$ and $BG$ being joined, let them (then) be cut in half at points $K$ and $L$ (respectively).",
+    "construction_cite": null,
+    "objects_introduced": ["$K$", "$L$"]
+  },
+  {
+    "role": "construction",
+    "text": "And $KC$ and $LM$ being drawn at right-angles to $BH$ and $BG$ from $K$ and $L$ (respectively) [Prop.~1.11], let them (then) be drawn through to points $A$ and $E$ (respectively).",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$KC$", "$LM$", "$A$", "$E$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since in circle $ABC$ some straight-line $AC$ cuts some (other) straight-line $BH$ in half, and at right-angles, the center of circle $ABC$ is thus on $AC$ [Prop.~3.1~corr.].",
+    "assertion": "center of circle ABC is on AC",
+    "proof_cite": "3.1~corr.",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "in circle $ABC$ some straight-line $AC$ cuts some (other) straight-line $BH$ in half, and at right-angles" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the center of circle $ABC$ is thus on $AC$" },
+      { "label": "glue",       "text": " [Prop.~3.1~corr.]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since in the same circle $ABC$ some straight-line $NO$ cuts some (other straight-line) $BG$ in half, and at right-angles, the center of circle $ABC$ is thus on $NO$ [Prop.~3.1~corr.].",
+    "assertion": "center of circle ABC is also on NO",
+    "proof_cite": "3.1~corr.",
+    "spans": [
+      { "label": "glue",       "text": "Again, since " },
+      { "label": "assumption", "text": "in the same circle $ABC$ some straight-line $NO$ cuts some (other straight-line) $BG$ in half, and at right-angles" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the center of circle $ABC$ is thus on $NO$" },
+      { "label": "glue",       "text": " [Prop.~3.1~corr.]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And it was also shown (to be) on $AC$.",
+    "assertion": "center of circle ABC was also shown to be on AC",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "it was also shown (to be) on $AC$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And the straight-lines $AC$ and $NO$ meet at no other (point) than $P$.",
+    "assertion": "AC and NO meet at no point other than P",
+    "proof_cite": null,
+    "objects_introduced": ["$P$"],
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "the straight-lines $AC$ and $NO$ meet at no other (point) than $P$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, point $P$ is the center of circle $ABC$.",
+    "assertion": "P is the center of circle ABC",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "point $P$ is the center of circle $ABC$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "So, similarly, we can show that $P$ is also the center of circle $DEF$.",
+    "assertion": "P is also the center of circle DEF",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "So, similarly, we can show that " },
+      { "label": "assertion", "text": "$P$ is also the center of circle $DEF$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, two circles cutting one another, $ABC$ and $DEF$, have the same center $P$.",
+    "assertion": "circles ABC and DEF have the same center P",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "two circles cutting one another, $ABC$ and $DEF$, have the same center $P$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible [Prop.~3.5].",
+    "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
+    "proof_cite": "3.5",
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": " [Prop.~3.5]." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, a circle does not cut a(nother) circle at more than two points.",
+    "assertion": "a circle does not cut another circle at more than two points",
+    "frame": {
+      "kind": "reductio_close",
+      "closes": "the circle $ABC$ cut the circle $DEF$ at more than two points, $B$, $G$, $F$, and $H$"
+    },
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "a circle does not cut a(nother) circle at more than two points" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "(Which is) the very thing it was required to show."
+  }
+]

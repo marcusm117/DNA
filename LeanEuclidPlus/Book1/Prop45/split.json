@@ -1,0 +1,192 @@
+[
+  { "role": "intro",
+    "text": "To construct a parallelogram equal to a given rectilinear figure in a given rectilinear angle.  Let $ABCD$ be the given rectilinear figure, and $E$ the given rectilinear angle. So it is required to construct a parallelogram equal to the rectilinear figure $ABCD$ in the given angle $E$. " },
+
+  { "role": "construction",
+    "text": "Let $DB$ have been joined,",
+    "construction_cite": null,
+    "objects_introduced": ["$DB$"] },
+
+  { "role": "construction",
+    "text": "and let the parallelogram $FH$, equal to the triangle $ABD$, have been constructed in the angle $HKF$, which is equal to $E$ [Prop.~1.42].",
+    "construction_cite": "1.42",
+    "objects_introduced": ["$FH$"] },
+
+  { "role": "construction",
+    "text": "And let the parallelogram $GM$, equal to the triangle $DBC$, have been applied to the straight-line $GH$ in the angle $GHM$, which is equal to $E$ [Prop.~1.44].",
+    "construction_cite": "1.44",
+    "objects_introduced": ["$GM$"] },
+
+  { "role": "deduction",
+    "text": "And since angle $E$ is equal to each of (angles) $HKF$ and $GHM$,  (angle) $HKF$ is thus also equal to $GHM$. ",
+    "assertion": "angle HKF is equal to angle GHM",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "angle $E$ is equal to each of (angles) $HKF$ and $GHM$" },
+      { "label": "glue",       "text": ",  (angle) " },
+      { "label": "assertion",  "text": "$HKF$ is thus also equal to $GHM$" },
+      { "label": "glue",       "text": ". " } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Let $KHG$ have been added to both.",
+    "assertion": "adding KHG to both of HKF=GHM: sum FKH+KHG equals sum GHM+KHG",
+    "spans": [
+      { "label": "assertion", "text": "Let $KHG$ have been added to both." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, (the sum of) $FKH$ and $KHG$ is equal to (the sum of) $KHG$ and $GHM$.",
+    "assertion": "sum of angles FKH and KHG equals sum of KHG and GHM",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(the sum of) $FKH$ and $KHG$ is equal to (the sum of) $KHG$ and $GHM$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "But, (the sum of) $FKH$ and $KHG$ is equal to two right-angles [Prop.~1.29].",
+    "assertion": "sum of angles FKH and KHG equals two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "(the sum of) $FKH$ and $KHG$ is equal to two right-angles" },
+      { "label": "glue",      "text": " [Prop.~1.29]." } ],
+    "proof_cite": "1.29" },
+
+  { "role": "deduction",
+    "text": "Thus, (the sum of) $KHG$ and $GHM$ is also equal to two right-angles.",
+    "assertion": "sum of angles KHG and GHM equals two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(the sum of) $KHG$ and $GHM$ is also equal to two right-angles" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "So two straight-lines, $KH$ and $HM$, not lying on the same side, make  adjacent angles with some straight-line $GH$,  at the point $H$ on it, (whose sum is) equal to two right-angles.",
+    "assertion": "KH and HM on opposite sides make adjacent angles with GH at H whose sum is two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "So " },
+      { "label": "assertion", "text": "two straight-lines, $KH$ and $HM$, not lying on the same side, make  adjacent angles with some straight-line $GH$,  at the point $H$ on it, (whose sum is) equal to two right-angles" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, $KH$ is straight-on to $HM$ [Prop.~1.14].",
+    "assertion": "KH is straight-on to HM",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$KH$ is straight-on to $HM$" },
+      { "label": "glue",      "text": " [Prop.~1.14]." } ],
+    "proof_cite": "1.14" },
+
+  { "role": "deduction",
+    "text": "And since the straight-line $HG$ falls across the parallels $KM$ and $FG$, the alternate angles $MHG$ and $HGF$ are equal to one another [Prop.~1.29].",
+    "assertion": "alternate angles MHG and HGF are equal",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "the straight-line $HG$ falls across the parallels $KM$ and $FG$" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "alternate angles $MHG$ and $HGF$ are equal to one another" },
+      { "label": "glue",       "text": " [Prop.~1.29]." } ],
+    "proof_cite": "1.29" },
+
+  { "role": "deduction",
+    "text": "Let $HGL$ have been added to both.",
+    "assertion": "adding HGL to both of MHG=HGF: sum MHG+HGL equals sum HGF+HGL",
+    "spans": [
+      { "label": "assertion", "text": "Let $HGL$ have been added to both." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, (the sum of) $MHG$ and $HGL$ is equal to  (the sum of) $HGF$ and $HGL$.",
+    "assertion": "sum of angles MHG and HGL equals sum of HGF and HGL",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(the sum of) $MHG$ and $HGL$ is equal to  (the sum of) $HGF$ and $HGL$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "But, (the sum of) $MHG$ and $HGL$ is equal to two right-angles [Prop.~1.29].",
+    "assertion": "sum of angles MHG and HGL equals two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "(the sum of) $MHG$ and $HGL$ is equal to two right-angles" },
+      { "label": "glue",      "text": " [Prop.~1.29]." } ],
+    "proof_cite": "1.29" },
+
+  { "role": "deduction",
+    "text": "Thus, (the sum of) $HGF$ and $HGL$ is also equal to two right-angles.",
+    "assertion": "sum of angles HGF and HGL equals two right-angles",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(the sum of) $HGF$ and $HGL$ is also equal to two right-angles" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, $FG$ is straight-on to $GL$ [Prop.~1.14].",
+    "assertion": "FG is straight-on to GL",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$FG$ is straight-on to $GL$" },
+      { "label": "glue",      "text": " [Prop.~1.14]." } ],
+    "proof_cite": "1.14" },
+
+  { "role": "deduction",
+    "text": "And since $FK$ is equal and parallel to $HG$ [Prop.~1.34], but also $HG$ to $ML$ [Prop.~1.34], $KF$ is thus also equal and parallel to $ML$ [Prop.~1.30].",
+    "assertion": "KF is equal and parallel to ML",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$FK$ is equal and parallel to $HG$" },
+      { "label": "glue",       "text": " [Prop.~1.34], but also " },
+      { "label": "assumption", "text": "$HG$ to $ML$" },
+      { "label": "glue",       "text": " [Prop.~1.34], " },
+      { "label": "assertion",  "text": "$KF$ is thus also equal and parallel to $ML$" },
+      { "label": "glue",       "text": " [Prop.~1.30]." } ],
+    "proof_cite": "1.30" },
+
+  { "role": "deduction",
+    "text": "And the straight-lines $KM$ and $FL$ join them.",
+    "assertion": "the straight-lines KM and FL join FK and ML",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "the straight-lines $KM$ and $FL$ join them" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, $KM$ and $FL$ are equal and parallel as well [Prop.~1.33].",
+    "assertion": "KM and FL are equal and parallel",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$KM$ and $FL$ are equal and parallel as well" },
+      { "label": "glue",      "text": " [Prop.~1.33]." } ],
+    "proof_cite": "1.33" },
+
+  { "role": "deduction",
+    "text": "Thus, $KFLM$ is a parallelogram.",
+    "assertion": "KFLM is a parallelogram",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$KFLM$ is a parallelogram" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "And since triangle $ABD$ is equal to parallelogram $FH$, and $DBC$ to $GM$, the whole rectilinear figure $ABCD$ is thus equal to the whole parallelogram $KFLM$.",
+    "assertion": "the whole rectilinear figure ABCD is equal to the whole parallelogram KFLM",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "triangle $ABD$ is equal to parallelogram $FH$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$DBC$ to $GM$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the whole rectilinear figure $ABCD$ is thus equal to the whole parallelogram $KFLM$" },
+      { "label": "glue",       "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "conclusion",
+    "text": "Thus, the parallelogram $KFLM$, equal to the given rectilinear figure $ABCD$, has been constructed in the angle $FKM$, which is equal to the given (angle) $E$. (Which is) the very thing it was required to do." }
+]

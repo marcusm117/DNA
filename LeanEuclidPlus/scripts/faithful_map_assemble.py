@@ -120,7 +120,11 @@ def assemble_main(translate_json: list, split_text: dict, main_path: Path, book:
         if idx not in split_text:
             sys.exit(f"ERROR: split.json has no entry index {idx} — split.json/translate.json are out "
                      f"of sync. Re-run /faithful-split then /faithful-translate.")
-        return split_text[idx]
+        # Escape for Lean string-literal emission: a lone backslash (LaTeX artifacts like \dag / \kern
+        # in the Fitzpatrick text) is an invalid Lean escape, and a raw " would close the string. The
+        # source-mode check_faithful decodes these back before comparing to the canonical text, and the
+        # olean mode sees the compiler-decoded string — so the canonical .txt stays pristine.
+        return split_text[idx].replace("\\", "\\\\").replace('"', '\\"')
 
     # Extract existing signature (everything up to and including `:= by`)
     # We need to preserve the theorem signature byte-for-byte

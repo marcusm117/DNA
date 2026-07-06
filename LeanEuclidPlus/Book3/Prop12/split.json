@@ -1,0 +1,126 @@
+[
+  {
+    "role": "intro",
+    "text": "If two circles touch one another externally, (then) the (straight-line) joining their centers will go through the point of union. For let two circles, $ABC$ and $ADE$, touch one another externally at point $A$, and let the center $F$ of $ABC$ be found [Prop.~3.1], and (the center) $G$ of $ADE$ [Prop.~3.1]. I say that the straight-line joining $F$ to $G$ will go through the point of union at $A$."
+  },
+  {
+    "role": "deduction",
+    "text": "For (if) not (then), if possible, let it go like $FCDG$ (in the figure),",
+    "assertion": "the straight-line from F to G goes like FCDG (not through A)",
+    "frame": {
+      "kind": "reductio_open",
+      "supposition": "the straight-line joining $F$ to $G$ does not go through the point of union at $A$"
+    },
+    "spans": [
+      { "label": "glue",      "text": "For (if) not (then), if possible, " },
+      { "label": "assertion", "text": "let it go like $FCDG$ (in the figure)" },
+      { "label": "glue",      "text": "," }
+    ]
+  },
+  {
+    "role": "construction",
+    "text": "and let $AF$ and $AG$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AF$", "$AG$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since point $F$ is the center of circle $ABC$, $FA$ is equal to $FC$.",
+    "assertion": "FA equals FC",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "point $F$ is the center of circle $ABC$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$FA$ is equal to $FC$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since point $G$ is the center of circle $ADE$, $GA$ is equal to $GD$.",
+    "assertion": "GA equals GD",
+    "spans": [
+      { "label": "glue",       "text": "Again, since " },
+      { "label": "assumption", "text": "point $G$ is the center of circle $ADE$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$GA$ is equal to $GD$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $FA$ was also shown (to be) equal to $FC$. Thus, the (straight-lines) $FA$ and $AG$ are equal to the (straight-lines) $FC$ and $GD$.",
+    "assertion": "FA + AG equals FC + GD",
+    "spans": [
+      { "label": "glue",       "text": "And " },
+      { "label": "assumption", "text": "$FA$ was also shown (to be) equal to $FC$" },
+      { "label": "glue",       "text": ". Thus, the (straight-lines) " },
+      { "label": "assertion",  "text": "$FA$ and $AG$ are equal to the (straight-lines) $FC$ and $GD$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So the whole of $FG$ is greater than $FA$ and $AG$.",
+    "assertion": "FG is greater than FA + AG",
+    "spans": [
+      { "label": "glue",      "text": "So " },
+      { "label": "assertion", "text": "the whole of $FG$ is greater than $FA$ and $AG$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But, (it is) also less [Prop.~1.20].",
+    "assertion": "FG is also less than FA + AG (by triangle inequality)",
+    "spans": [
+      { "label": "glue",      "text": "But, " },
+      { "label": "assertion", "text": "(it is) also less" },
+      { "label": "glue",      "text": " [Prop.~1.20]." }
+    ],
+    "proof_cite": "1.20"
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible.",
+    "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the straight-line joining $F$ to $G$ cannot not go through the point of union at $A$.",
+    "assertion": "the straight-line joining F to G does go through the point of union at A",
+    "frame": {
+      "kind": "reductio_close",
+      "closes": "the straight-line joining $F$ to $G$ does not go through the point of union at $A$"
+    },
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the straight-line joining $F$ to $G$ cannot not go through the point of union at $A$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (it will go) through it.",
+    "assertion": "the straight-line FG goes through point A",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "(it will go) through it" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if two circles touch one another externally, (then) the [straight-line] joining their centers will go through the point of union. (Which is) the very thing it was required to show."
+  }
+]

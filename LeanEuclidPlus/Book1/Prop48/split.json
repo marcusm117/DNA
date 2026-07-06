@@ -1,0 +1,138 @@
+[
+  { "role": "intro",
+    "text": "For let the square on one of the sides, $BC$, of triangle $ABC$ be equal to the (sum of the) squares on the sides $BA$ and $AC$. I say that angle $BAC$ is a right-angle. " },
+
+  { "role": "construction",
+    "text": "For let $AD$ have been drawn from point $A$ at right-angles to the straight-line $AC$ [Prop.~1.11],",
+    "construction_cite": "1.11",
+    "objects_introduced": ["$AD$"] },
+
+  { "role": "construction",
+    "text": "and let $AD$ have been made equal to $BA$ [Prop.~1.3],",
+    "construction_cite": "1.3",
+    "objects_introduced": [] },
+
+  { "role": "construction",
+    "text": "and let $DC$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$DC$"] },
+
+  { "role": "deduction",
+    "text": "Since $DA$ is equal to $AB$, the square on $DA$ is thus also equal to the square on $AB$.",
+    "assertion": "the square on DA equals the square on AB",
+    "spans": [
+      { "label": "glue",       "text": "Since " },
+      { "label": "assumption", "text": "$DA$ is equal to $AB$" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "square on $DA$ is thus also equal to the square on $AB$" },
+      { "label": "glue",       "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Let the square on $AC$ have been added to both.",
+    "assertion": "the square on AC is added to both sides",
+    "spans": [
+      { "label": "assertion", "text": "Let the square on $AC$ have been added to both." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, the (sum of the) squares on $DA$ and $AC$ is equal to the (sum of the) squares on $BA$ and $AC$.",
+    "assertion": "DA^2 + AC^2 equals BA^2 + AC^2",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "(sum of the) squares on $DA$ and $AC$ is equal to the (sum of the) squares on $BA$ and $AC$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "But, the (square) on $DC$  is equal to the (sum of the squares) on $DA$ and $AC$. For angle $DAC$ is a right-angle [Prop.~1.47].",
+    "assertion": "the square on DC equals DA^2 + AC^2",
+    "spans": [
+      { "label": "glue",       "text": "But, the " },
+      { "label": "assertion",  "text": "(square) on $DC$  is equal to the (sum of the squares) on $DA$ and $AC$" },
+      { "label": "glue",       "text": ". For " },
+      { "label": "assumption", "text": "angle $DAC$ is a right-angle" },
+      { "label": "glue",       "text": " [Prop.~1.47]." } ],
+    "proof_cite": "1.47" },
+
+  { "role": "deduction",
+    "text": "But, the  (square) on $BC$ is equal to (sum of the squares) on $BA$ and $AC$. For (that) was assumed.",
+    "assertion": "the square on BC equals BA^2 + AC^2 (the given hypothesis)",
+    "spans": [
+      { "label": "glue",       "text": "But, the  " },
+      { "label": "assertion",  "text": "(square) on $BC$ is equal to (sum of the squares) on $BA$ and $AC$" },
+      { "label": "glue",       "text": ". For " },
+      { "label": "assumption", "text": "(that) was assumed" },
+      { "label": "glue",       "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, the square on $DC$ is equal to the square on $BC$.",
+    "assertion": "the square on DC equals the square on BC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, the " },
+      { "label": "assertion", "text": "square on $DC$ is equal to the square on $BC$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "So  side $DC$ is also equal to (side) $BC$.",
+    "assertion": "side DC equals side BC",
+    "spans": [
+      { "label": "glue",      "text": "So  " },
+      { "label": "assertion", "text": "side $DC$ is also equal to (side) $BC$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "And since $DA$ is equal to $AB$, and $AC$ (is) common, the two (straight-lines) $DA$, $AC$ are equal to the two (straight-lines) $BA$, $AC$.",
+    "assertion": "the two sides DA, AC equal the two sides BA, AC",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "$DA$ is equal to $AB$" },
+      { "label": "glue",       "text": ", and " },
+      { "label": "assumption", "text": "$AC$ (is) common" },
+      { "label": "glue",       "text": ", the " },
+      { "label": "assertion",  "text": "two (straight-lines) $DA$, $AC$ are equal to the two (straight-lines) $BA$, $AC$" },
+      { "label": "glue",       "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "And the base $DC$ is equal to the base $BC$.",
+    "assertion": "base DC equals base BC",
+    "spans": [
+      { "label": "glue",      "text": "And the " },
+      { "label": "assertion", "text": "base $DC$ is equal to the base $BC$" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, angle $DAC$ [is] equal to angle $BAC$ [Prop.~1.8]. ",
+    "assertion": "angle DAC equals angle BAC",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "angle $DAC$ [is] equal to angle $BAC$" },
+      { "label": "glue",      "text": " [Prop.~1.8]. " } ],
+    "proof_cite": "1.8" },
+
+  { "role": "deduction",
+    "text": "But $DAC$ is a right-angle.",
+    "assertion": "DAC is a right-angle",
+    "spans": [
+      { "label": "glue",      "text": "But " },
+      { "label": "assertion", "text": "$DAC$ is a right-angle" },
+      { "label": "glue",      "text": "." } ],
+    "proof_cite": null },
+
+  { "role": "deduction",
+    "text": "Thus, $BAC$ is also a right-angle. ",
+    "assertion": "BAC is a right-angle",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$BAC$ is also a right-angle" },
+      { "label": "glue",      "text": ". " } ],
+    "proof_cite": null },
+
+  { "role": "conclusion",
+    "text": "Thus, if the square on one of the sides of a triangle is equal to the (sum of the) squares on the remaining two sides of the triangle then the angle contained by the remaining two sides of the triangle is a right-angle. (Which is) the very thing it was required to show." }
+]

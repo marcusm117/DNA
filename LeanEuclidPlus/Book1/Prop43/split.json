@@ -1,0 +1,82 @@
+[
+  {
+    "role": "intro",
+    "text": "For any parallelogram, the complements of the parallelograms about the diagonal are equal to one another. Let $ABCD$ be a parallelogram, and $AC$ its diagonal. And let $EH$ and $FG$ be the parallelograms about  $AC$, and $BK$ and $KD$ the so-called complements (about $AC$). I say that the complement $BK$ is equal to the complement $KD$. "
+  },
+  {
+    "role": "deduction",
+    "text": "For since $ABCD$ is a parallelogram, and $AC$ its diagonal,  triangle $ABC$ is equal to triangle $ACD$ [Prop.~1.34].",
+    "assertion": "triangle ABC equals triangle ACD",
+    "spans": [
+      {"label": "glue",       "text": "For since "},
+      {"label": "assumption", "text": "$ABCD$ is a parallelogram, and $AC$ its diagonal"},
+      {"label": "glue",       "text": ",  "},
+      {"label": "assertion",  "text": "triangle $ABC$ is equal to triangle $ACD$"},
+      {"label": "glue",       "text": " [Prop.~1.34]."}
+    ],
+    "proof_cite": "1.34"
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since $EH$ is a parallelogram, and $AK$ is its diagonal, triangle $AEK$ is equal to triangle $AHK$ [Prop.~1.34].",
+    "assertion": "triangle AEK equals triangle AHK",
+    "spans": [
+      {"label": "glue",       "text": "Again, since "},
+      {"label": "assumption", "text": "$EH$ is a parallelogram, and $AK$ is its diagonal"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "triangle $AEK$ is equal to triangle $AHK$"},
+      {"label": "glue",       "text": " [Prop.~1.34]."}
+    ],
+    "proof_cite": "1.34"
+  },
+  {
+    "role": "deduction",
+    "text": "So, for the same (reasons), triangle $KFC$ is also equal to (triangle) $KGC$.",
+    "assertion": "triangle KFC equals triangle KGC",
+    "spans": [
+      {"label": "glue",      "text": "So, for the same (reasons), "},
+      {"label": "assertion", "text": "triangle $KFC$ is also equal to (triangle) $KGC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since triangle $AEK$ is equal to triangle $AHK$, and $KFC$ to $KGC$, triangle $AEK$ plus $KGC$ is equal to triangle $AHK$ plus $KFC$.",
+    "assertion": "triangle AEK + triangle KGC equals triangle AHK + triangle KFC",
+    "spans": [
+      {"label": "glue",       "text": "Therefore, since "},
+      {"label": "assumption", "text": "triangle $AEK$ is equal to triangle $AHK$, and $KFC$ to $KGC$"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "triangle $AEK$ plus $KGC$ is equal to triangle $AHK$ plus $KFC$"},
+      {"label": "glue",       "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the whole triangle $ABC$ is also equal to the whole (triangle) $ADC$.",
+    "assertion": "triangle ABC equals triangle ADC",
+    "spans": [
+      {"label": "glue",      "text": "And the whole "},
+      {"label": "assertion", "text": "triangle $ABC$ is also equal to the whole (triangle) $ADC$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining complement $BK$ is equal to the remaining complement $KD$. ",
+    "assertion": "complement BK equals complement KD",
+    "spans": [
+      {"label": "glue",      "text": "Thus, the remaining "},
+      {"label": "assertion", "text": "complement $BK$ is equal to the remaining complement $KD$"},
+      {"label": "glue",      "text": ". "}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, for any parallelogramic figure, the complements of the parallelograms about the diagonal are equal to one another. (Which is) the very thing it was required to show."
+  }
+]

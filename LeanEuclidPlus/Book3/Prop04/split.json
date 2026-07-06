@@ -1,0 +1,134 @@
+[
+  {
+    "role": "intro",
+    "text": "In a circle, if two straight-lines, which are not through the center, cut one another, (then) they do not cut one another in half. Let $ABCD$ be a circle, and within it, let two straight-lines, $AC$ and $BD$, which are not through the center, cut one another at (point) $E$. I say that they do not cut one another in half."
+  },
+  {
+    "role": "deduction",
+    "text": "For, if possible, let them cut one another in half, such that $AE$ is equal to $EC$,",
+    "assertion": "AE equals EC",
+    "frame": {
+      "kind": "reductio_open",
+      "supposition": "they cut one another in half, such that $AE$ is equal to $EC$, and $BE$ to $ED$"
+    },
+    "spans": [
+      { "label": "glue",      "text": "For, if possible, let them cut one another in half, such that " },
+      { "label": "assertion", "text": "$AE$ is equal to $EC$" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $BE$ to $ED$.",
+    "assertion": "BE equals ED",
+    "spans": [
+      { "label": "glue",      "text": "and " },
+      { "label": "assertion", "text": "$BE$ to $ED$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "And let the center of the circle $ABCD$ be found [Prop.~3.1], and let it be (at point) $F$,",
+    "construction_cite": "3.1",
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $FE$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$FE$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since some straight-line through the center, $FE$, cuts in half some straight-line not through the center, $AC$, it also cuts it at right-angles [Prop.~3.3].",
+    "assertion": "FE cuts AC at right-angles",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "some straight-line through the center, $FE$, cuts in half some straight-line not through the center, $AC$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "it also cuts it at right-angles" },
+      { "label": "glue",       "text": " [Prop.~3.3]." }
+    ],
+    "proof_cite": "3.3"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FEA$ is a right-angle.",
+    "assertion": "angle FEA is a right-angle",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$FEA$ is a right-angle" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since some straight-line $FE$ cuts in half some straight-line $BD$, it also cuts it at right-angles [Prop.~3.3].",
+    "assertion": "FE cuts BD at right-angles",
+    "spans": [
+      { "label": "glue",       "text": "Again, since " },
+      { "label": "assumption", "text": "some straight-line $FE$ cuts in half some straight-line $BD$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "it also cuts it at right-angles" },
+      { "label": "glue",       "text": " [Prop.~3.3]." }
+    ],
+    "proof_cite": "3.3"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $FEB$ (is) a right-angle.",
+    "assertion": "angle FEB is a right-angle",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$FEB$ (is) a right-angle" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But $FEA$ was also shown (to be) a right-angle. Thus, $FEA$ (is) equal to $FEB$, the lesser to the greater.",
+    "assertion": "FEA equals FEB, the lesser to the greater",
+    "spans": [
+      { "label": "assumption", "text": "But $FEA$ was also shown (to be) a right-angle" },
+      { "label": "glue",      "text": ". Thus, " },
+      { "label": "assertion", "text": "$FEA$ (is) equal to $FEB$, the lesser to the greater" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible.",
+    "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AC$ and $BD$ do not cut one another in half.",
+    "assertion": "AC and BD do not cut one another in half",
+    "frame": {
+      "kind": "reductio_close",
+      "closes": "they cut one another in half, such that $AE$ is equal to $EC$, and $BE$ to $ED$"
+    },
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AC$ and $BD$ do not cut one another in half" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in a circle, if two straight-lines, which are not through the center, cut one another, (then) they do not cut one another in half. (Which is) the very thing it was required to show."
+  }
+]

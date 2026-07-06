@@ -1,0 +1,308 @@
+[
+  {
+    "role": "intro",
+    "text": "If some point is taken outside a circle, and two straight-lines radiate from it towards the circle, and (one) of them cuts the circle, and the (other) touches (it), (then) the (rectangle contained) by the whole (straight-line) cutting (the circle), and the (part of it) cut off outside (the circle), between the point and the convex circumference, will be equal to the square on the tangent (line). For let some point $D$ be taken outside circle $ABC$, and let two straight-lines, $DC[A]$ and $DB$, radiate from $D$ towards circle $ABC$. And let $DCA$ cut circle $ABC$, and let $BD$ touch (it). I say that the rectangle contained by $AD$ and $DC$ is equal to the square on $DB$."
+  },
+  {
+    "role": "deduction",
+    "text": "$[D]CA$ is surely either through the center, or not.",
+    "assertion": "DCA is either through the center or not (case split)",
+    "spans": [
+      {"label": "assertion", "text": "$[D]CA$ is surely either through the center, or not."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let it first of all be through the center, and let $F$ be the center of circle $ABC$, and let $FB$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$F$", "$FB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (angle) $FBD$ is a right-angle [Prop.~3.18].",
+    "assertion": "angle FBD is a right-angle",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "(angle) $FBD$ is a right-angle"},
+      {"label": "glue", "text": " [Prop.~3.18]."}
+    ],
+    "proof_cite": "3.18"
+  },
+  {
+    "role": "construction",
+    "text": "And since straight-line $AC$ is cut in half at $F$, let $CD$ be added to it.",
+    "construction_cite": null,
+    "objects_introduced": [],
+    "justifications": [
+      {"substring": "straight-line $AC$ is cut in half at $F$", "kind": "prior_fact"}
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AD$ and $DC$ plus the (square) on $FC$ is equal to the (square) on $FD$ [Prop.~2.6].",
+    "assertion": "AD·DC + FC² = FD²",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ plus the (square) on $FC$ is equal to the (square) on $FD$"},
+      {"label": "glue", "text": " [Prop.~2.6]."}
+    ],
+    "proof_cite": "2.6"
+  },
+  {
+    "role": "deduction",
+    "text": "And $FC$ (is) equal to $FB$.",
+    "assertion": "FC equals FB (both radii)",
+    "spans": [
+      {"label": "glue", "text": "And "},
+      {"label": "assertion", "text": "$FC$ (is) equal to $FB$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AD$ and $DC$ plus the (square) on $FB$ is equal to the (square) on $FD$.",
+    "assertion": "AD·DC + FB² = FD² (substituting FC = FB)",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ plus the (square) on $FB$ is equal to the (square) on $FD$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the (square) on $FD$ is equal to the (sum of the squares) on $FB$ and $BD$ [Prop.~1.47].",
+    "assertion": "FD² = FB² + BD²",
+    "spans": [
+      {"label": "glue", "text": "And "},
+      {"label": "assertion", "text": "the (square) on $FD$ is equal to the (sum of the squares) on $FB$ and $BD$"},
+      {"label": "glue", "text": " [Prop.~1.47]."}
+    ],
+    "proof_cite": "1.47"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AD$ and $DC$ plus the (square) on $FB$ is equal to the (sum of the squares) on $FB$ and $BD$.",
+    "assertion": "AD·DC + FB² = FB² + BD²",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ plus the (square) on $FB$ is equal to the (sum of the squares) on $FB$ and $BD$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let the (square) on $FB$ be subtracted from both.",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining (rectangle contained) by $AD$ and $DC$ is equal to the (square) on the tangent $DB$.",
+    "assertion": "AD·DC = DB² (Case 1 conclusion)",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the remaining (rectangle contained) by $AD$ and $DC$ is equal to the (square) on the tangent $DB$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "wts",
+    "text": "And so let $DCA$ not be through the center of circle $ABC$,"
+  },
+  {
+    "role": "construction",
+    "text": "and let the center $E$ be found,",
+    "construction_cite": null,
+    "objects_introduced": ["$E$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $EF$ be drawn from $E$, perpendicular to $AC$ [Prop.~1.12].",
+    "construction_cite": "1.12",
+    "objects_introduced": ["$EF$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $EB$, $EC$, and $ED$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$EB$", "$EC$", "$ED$"]
+  },
+  {
+    "role": "deduction",
+    "text": "(Angle) $EBD$ (is) thus a right-angle [Prop.~3.18].",
+    "assertion": "angle EBD is a right-angle",
+    "spans": [
+      {"label": "assertion", "text": "(Angle) $EBD$ (is) thus a right-angle"},
+      {"label": "glue", "text": " [Prop.~3.18]."}
+    ],
+    "proof_cite": "3.18"
+  },
+  {
+    "role": "deduction",
+    "text": "And since some straight-line, $EF$, through the center, cuts some (other) straight-line, $AC$, not through the center, at right-angles, it also cuts it in half [Prop.~3.3].",
+    "assertion": "EF cuts AC in half",
+    "spans": [
+      {"label": "glue", "text": "And since "},
+      {"label": "assumption", "text": "some straight-line, $EF$, through the center, cuts some (other) straight-line, $AC$, not through the center, at right-angles"},
+      {"label": "glue", "text": ", it also "},
+      {"label": "assertion", "text": "cuts it in half"},
+      {"label": "glue", "text": " [Prop.~3.3]."}
+    ],
+    "proof_cite": "3.3"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AF$ is equal to $FC$.",
+    "assertion": "AF equals FC",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "$AF$ is equal to $FC$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "And since the straight-line $AC$ is cut in half at point $F$, let $CD$ be added to it.",
+    "construction_cite": null,
+    "objects_introduced": [],
+    "justifications": [
+      {"substring": "the straight-line $AC$ is cut in half at point $F$", "kind": "prior_fact"}
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AD$ and $DC$ plus the (square) on $FC$ is equal to the (square) on $FD$ [Prop.~2.6].",
+    "assertion": "AD·DC + FC² = FD²",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ plus the (square) on $FC$ is equal to the (square) on $FD$"},
+      {"label": "glue", "text": " [Prop.~2.6]."}
+    ],
+    "proof_cite": "2.6"
+  },
+  {
+    "role": "construction",
+    "text": "Let the (square) on $FE$ be added to both.",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AD$ and $DC$ plus the (sum of the squares) on $CF$ and $FE$ is equal to the (sum of the squares) on $FD$ and $FE$.",
+    "assertion": "AD·DC + CF² + FE² = FD² + FE²",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ plus the (sum of the squares) on $CF$ and $FE$ is equal to the (sum of the squares) on $FD$ and $FE$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But the (square) on $EC$ is equal to the (sum of the squares) on $CF$ and $FE$. For [angle] $EFC$ [is] a right-angle [Prop.~1.47].",
+    "assertion": "EC² = CF² + FE²",
+    "spans": [
+      {"label": "glue", "text": "But "},
+      {"label": "assertion", "text": "the (square) on $EC$ is equal to the (sum of the squares) on $CF$ and $FE$"},
+      {"label": "glue", "text": ". For [angle] "},
+      {"label": "assumption", "text": "$EFC$ [is] a right-angle"},
+      {"label": "glue", "text": " [Prop.~1.47]."}
+    ],
+    "proof_cite": "1.47"
+  },
+  {
+    "role": "deduction",
+    "text": "And the (square) on $ED$ is equal to the (sum of the squares) on $DF$ and $FE$ [Prop.~1.47].",
+    "assertion": "ED² = DF² + FE²",
+    "spans": [
+      {"label": "glue", "text": "And "},
+      {"label": "assertion", "text": "the (square) on $ED$ is equal to the (sum of the squares) on $DF$ and $FE$"},
+      {"label": "glue", "text": " [Prop.~1.47]."}
+    ],
+    "proof_cite": "1.47"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AD$ and $DC$ plus the (square) on $EC$ is equal to the (square) on $ED$.",
+    "assertion": "AD·DC + EC² = ED²",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ plus the (square) on $EC$ is equal to the (square) on $ED$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $EC$ (is) equal to $EB$.",
+    "assertion": "EC equals EB (both radii)",
+    "spans": [
+      {"label": "glue", "text": "And "},
+      {"label": "assertion", "text": "$EC$ (is) equal to $EB$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AD$ and $DC$ plus the (square) on $EB$ is equal to the (square) on $ED$.",
+    "assertion": "AD·DC + EB² = ED² (substituting EC = EB)",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ plus the (square) on $EB$ is equal to the (square) on $ED$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the (sum of the squares) on $EB$ and $BD$ is equal to the (square) on $ED$. For $EBD$ (is) a right-angle [Prop.~1.47].",
+    "assertion": "EB² + BD² = ED²",
+    "spans": [
+      {"label": "glue", "text": "And "},
+      {"label": "assertion", "text": "the (sum of the squares) on $EB$ and $BD$ is equal to the (square) on $ED$"},
+      {"label": "glue", "text": ". For "},
+      {"label": "assumption", "text": "$EBD$ (is) a right-angle"},
+      {"label": "glue", "text": " [Prop.~1.47]."}
+    ],
+    "proof_cite": "1.47"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (rectangle contained) by $AD$ and $DC$ plus the (square) on $EB$ is equal to the (sum of the squares) on $EB$ and $BD$.",
+    "assertion": "AD·DC + EB² = EB² + BD²",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the (rectangle contained) by $AD$ and $DC$ plus the (square) on $EB$ is equal to the (sum of the squares) on $EB$ and $BD$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let the (square) on $EB$ be subtracted from both.",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining (rectangle contained) by $AD$ and $DC$ is equal to the (square) on $BD$.",
+    "assertion": "AD·DC = BD² (Case 2 conclusion)",
+    "spans": [
+      {"label": "glue", "text": "Thus, "},
+      {"label": "assertion", "text": "the remaining (rectangle contained) by $AD$ and $DC$ is equal to the (square) on $BD$"},
+      {"label": "glue", "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if some point is taken outside a circle, and two straight-lines radiate from it towards the circle, and (one) of them cuts the circle, and (the other) touches (it), (then) the (rectangle contained) by the whole (straight-line) cutting (the circle), and the (part of it) cut off outside (the circle), between the point and the convex circumference, will be equal to the square on the tangent (line). (Which is) the very thing it was required to show."
+  }
+]

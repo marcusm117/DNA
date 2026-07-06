@@ -1,0 +1,196 @@
+[
+  {
+    "role": "intro",
+    "text": "To apply a parallelogram equal to a given triangle to a given straight-line in a given rectilinear angle. Let $AB$ be the given straight-line,  $C$ the given triangle, and $D$ the given rectilinear angle. So it is required to apply a parallelogram equal to the given triangle $C$ to the given straight-line $AB$ in an angle equal to (angle) $D$. "
+  },
+  {
+    "role": "construction",
+    "text": "Let the parallelogram $BEFG$, equal to the triangle $C$, have been constructed in the angle $EBG$, which is equal to $D$ [Prop.~1.42].",
+    "construction_cite": "1.42",
+    "objects_introduced": ["$BEFG$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let it have been placed so that $BE$ is straight-on to $AB$. ",
+    "construction_cite": null,
+    "objects_introduced": []
+  },
+  {
+    "role": "construction",
+    "text": "And let $FG$ have been drawn through to $H$,",
+    "construction_cite": null,
+    "objects_introduced": ["$H$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $AH$ have been drawn through A parallel to either of $BG$ or $EF$ [Prop.~1.31],",
+    "construction_cite": "1.31",
+    "objects_introduced": ["$AH$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $HB$ have been joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$HB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since the straight-line $HF$ falls across the parallels $AH$ and $EF$, the (sum of the) angles $AHF$ and $HFE$ is thus equal to two right-angles [Prop.~1.29].",
+    "assertion": "the sum of angles AHF and HFE equals two right-angles",
+    "spans": [
+      {"label": "glue",       "text": "And since "},
+      {"label": "assumption", "text": "the straight-line $HF$ falls across the parallels $AH$ and $EF$"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "the (sum of the) angles $AHF$ and $HFE$ is thus equal to two right-angles"},
+      {"label": "glue",       "text": " [Prop.~1.29]."}
+    ],
+    "proof_cite": "1.29"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, (the sum of) $BHG$ and $GFE$ is less than two right-angles.",
+    "assertion": "the sum of angles BHG and GFE is less than two right-angles",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "(the sum of) $BHG$ and $GFE$ is less than two right-angles"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And (straight-lines) produced to infinity from (internal angles whose sum is) less than two right-angles meet together [Post.~5].",
+    "assertion": "straight-lines from angles summing to less than two right-angles meet when produced",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "(straight-lines) produced to infinity from (internal angles whose sum is) less than two right-angles meet together"},
+      {"label": "glue",      "text": " [Post.~5]."}
+    ],
+    "proof_cite": "Post.5"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, being produced, $HB$ and $FE$ will meet together.",
+    "assertion": "HB and FE, when produced, meet",
+    "spans": [
+      {"label": "glue",      "text": "Thus, being produced, "},
+      {"label": "assertion", "text": "$HB$ and $FE$ will meet together"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "construction",
+    "text": "Let them have been produced, and let them meet together at $K$.",
+    "construction_cite": null,
+    "objects_introduced": ["$K$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $KL$ have been drawn through point $K$ parallel to either of $EA$ or $FH$ [Prop.~1.31].",
+    "construction_cite": "1.31",
+    "objects_introduced": ["$L$"]
+  },
+  {
+    "role": "construction",
+    "text": "And let $HA$ and $GB$ have been produced to points $L$ and $M$ (respectively).",
+    "construction_cite": null,
+    "objects_introduced": ["$M$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $HLKF$ is a parallelogram,",
+    "assertion": "HLKF is a parallelogram",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$HLKF$ is a parallelogram"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $HK$ its diagonal.",
+    "assertion": "HK is the diagonal of HLKF",
+    "spans": [
+      {"label": "glue",      "text": "and "},
+      {"label": "assertion", "text": "$HK$ its diagonal"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And $AG$ and $ME$ (are) parallelograms,",
+    "assertion": "AG and ME are parallelograms",
+    "spans": [
+      {"label": "glue",      "text": "And "},
+      {"label": "assertion", "text": "$AG$ and $ME$ (are) parallelograms"},
+      {"label": "glue",      "text": ","}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "and $LB$ and $BF$ the so-called complements, about $HK$.",
+    "assertion": "LB and BF are the complements about HK",
+    "spans": [
+      {"label": "glue",      "text": "and "},
+      {"label": "assertion", "text": "$LB$ and $BF$ the so-called complements, about $HK$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $LB$ is equal to $BF$ [Prop.~1.43].",
+    "assertion": "LB equals BF",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$LB$ is equal to $BF$"},
+      {"label": "glue",      "text": " [Prop.~1.43]."}
+    ],
+    "proof_cite": "1.43"
+  },
+  {
+    "role": "deduction",
+    "text": "But, $BF$ is equal to triangle $C$.",
+    "assertion": "BF equals triangle C",
+    "spans": [
+      {"label": "glue",      "text": "But, "},
+      {"label": "assertion", "text": "$BF$ is equal to triangle $C$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $LB$ is also equal to $C$.",
+    "assertion": "LB equals triangle C",
+    "spans": [
+      {"label": "glue",      "text": "Thus, "},
+      {"label": "assertion", "text": "$LB$ is also equal to $C$"},
+      {"label": "glue",      "text": "."}
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Also, since angle $GBE$ is equal to $ABM$ [Prop.~1.15], but $GBE$ is equal to $D$, $ABM$ is thus also equal to angle $D$. ",
+    "assertion": "ABM equals angle D",
+    "spans": [
+      {"label": "glue",       "text": "Also, since "},
+      {"label": "assumption", "text": "angle $GBE$ is equal to $ABM$"},
+      {"label": "glue",       "text": " [Prop.~1.15], but "},
+      {"label": "assumption", "text": "$GBE$ is equal to $D$"},
+      {"label": "glue",       "text": ", "},
+      {"label": "assertion",  "text": "$ABM$ is thus also equal to angle $D$"},
+      {"label": "glue",       "text": ". "}
+    ],
+    "proof_cite": "1.15"
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, the parallelogram $LB$, equal to the given triangle $C$, has been applied to the given straight-line $AB$ in the angle $ABM$, which is equal to $D$. (Which is) the very thing it was required to do."
+  }
+]

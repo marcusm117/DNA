@@ -1,0 +1,147 @@
+[
+  {
+    "role": "intro",
+    "text": "In a circle, if any straight-line through the center cuts in half any straight-line not through the center, (then) it also cuts it at right-angles. And (conversely) if it cuts it at right-angles, (then) it also cuts it in half. Let $ABC$ be a circle, and, within it, let some straight-line through the center, $CD$, cut in half some straight-line not through the center, $AB$, at the point $F$. I say that ($CD$) also cuts ($AB$) at right-angles."
+  },
+  {
+    "role": "construction",
+    "text": "For let the center of the circle $ABC$ be found [Prop.~3.1], and let it be (at point) $E$, and let $EA$ and $EB$ be joined.",
+    "construction_cite": "3.1",
+    "objects_introduced": ["$E$", "$EA$", "$EB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since $AF$ is equal to $FB$, and $FE$ (is) common, two (sides of triangle $AFE$) [are] equal to two (sides of triangle $BFE$).",
+    "assertion": "two sides of triangle AFE equal two sides of triangle BFE",
+    "spans": [
+      { "label": "glue",      "text": "And since " },
+      { "label": "assumption","text": "$AF$ is equal to $FB$" },
+      { "label": "glue",      "text": ", and " },
+      { "label": "assumption","text": "$FE$ (is) common" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "two (sides of triangle $AFE$) [are] equal to two (sides of triangle $BFE$)" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the base $EA$ (is) equal to the base $EB$.",
+    "assertion": "base EA equals base EB",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "the base $EA$ (is) equal to the base $EB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, angle $AFE$ is equal to angle $BFE$ [Prop.~1.8].",
+    "assertion": "angle AFE equals angle BFE",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "angle $AFE$ is equal to angle $BFE$" },
+      { "label": "glue",      "text": " [Prop.~1.8]." }
+    ],
+    "proof_cite": "1.8"
+  },
+  {
+    "role": "deduction",
+    "text": "And when a straight-line stood upon (another) straight-line makes adjacent angles (which are) equal to one another, each of the equal angles is a right-angle [Def.~1.10].",
+    "assertion": "adjacent equal angles made by a line standing on another line are each right-angles",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "when a straight-line stood upon (another) straight-line makes adjacent angles (which are) equal to one another, each of the equal angles is a right-angle" },
+      { "label": "glue",      "text": " [Def.~1.10]." }
+    ],
+    "proof_cite": "Def.1.10"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AFE$ and $BFE$ are each right-angles.",
+    "assertion": "angles AFE and BFE are each right-angles",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AFE$ and $BFE$ are each right-angles" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the (straight-line) $CD$, which is through the center and cuts in half the (straight-line) $AB$, which is not through the center, also cuts ($AB$) at right-angles.",
+    "assertion": "CD also cuts AB at right-angles (first direction concluded)",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the (straight-line) $CD$, which is through the center and cuts in half the (straight-line) $AB$, which is not through the center, also cuts ($AB$) at right-angles" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "wts",
+    "text": "And so let $CD$ cut $AB$ at right-angles. I say that it also cuts ($AB$) in half. That is to say, that $AF$ is equal to $FB$."
+  },
+  {
+    "role": "deduction",
+    "text": "For, with the same construction, since $EA$ is equal to $EB$, angle $EAF$ is also equal to $EBF$ [Prop.~1.5].",
+    "assertion": "angle EAF equals angle EBF",
+    "spans": [
+      { "label": "glue",      "text": "For, with the same construction, since " },
+      { "label": "assumption","text": "$EA$ is equal to $EB$" },
+      { "label": "glue",      "text": ", " },
+      { "label": "assertion", "text": "angle $EAF$ is also equal to $EBF$" },
+      { "label": "glue",      "text": " [Prop.~1.5]." }
+    ],
+    "proof_cite": "1.5"
+  },
+  {
+    "role": "deduction",
+    "text": "And the right-angle $AFE$ is also equal to the right-angle $BFE$.",
+    "assertion": "right-angle AFE equals right-angle BFE",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "the right-angle $AFE$ is also equal to the right-angle $BFE$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $EAF$ and $EFB$ are two triangles having two angles equal to two angles, and one side equal to one side---(namely), their common (side) $EF$, subtending one of the equal angles.",
+    "assertion": "EAF and EFB are two triangles with two angles equal to two angles and one side (EF) equal to one side",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$EAF$ and $EFB$ are two triangles having two angles equal to two angles, and one side equal to one side---(namely), their common (side) $EF$, subtending one of the equal angles" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, they will also have the remaining sides equal to the (corresponding) remaining sides [Prop.~1.26].",
+    "assertion": "the remaining sides of EAF and EFB are equal to the corresponding remaining sides",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "they will also have the remaining sides equal to the (corresponding) remaining sides" },
+      { "label": "glue",      "text": " [Prop.~1.26]." }
+    ],
+    "proof_cite": "1.26"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $AF$ (is) equal to $FB$.",
+    "assertion": "AF equals FB",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$AF$ (is) equal to $FB$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in a circle, if any straight-line through the center cuts in half any straight-line not through the center, (then) it also cuts it at right-angles. And (conversely) if it cuts it at right-angles, (then) it also cuts it in half. (Which is) the very thing it was required to show."
+  }
+]

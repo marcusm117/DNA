@@ -1,0 +1,130 @@
+[
+  {
+    "role": "intro",
+    "text": "In equal circles, equal angles stand upon equal circumferences whether they are standing at the center or at the circumference. Let $ABC$ and $DEF$ be equal circles, and within them let $BGC$ and $EHF$ be equal angles at the center, and $BAC$ and $EDF$ (equal angles) at the circumference. I say that circumference $BKC$ is equal to circumference $ELF$."
+  },
+  {
+    "role": "construction",
+    "text": "For let $BC$ and $EF$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$BC$", "$EF$"]
+  },
+  {
+    "role": "deduction",
+    "text": "And since circles $ABC$ and $DEF$ are equal, their radii are equal.",
+    "assertion": "radii of circles ABC and DEF are equal",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "circles $ABC$ and $DEF$ are equal" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "their radii are equal" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "So the two (straight-lines) $BG$, $GC$ (are) equal to the two (straight-lines) $EH$, $HF$ (respectively).",
+    "assertion": "BG equals EH and GC equals HF (as radii of equal circles)",
+    "spans": [
+      { "label": "glue",      "text": "So " },
+      { "label": "assertion", "text": "the two (straight-lines) $BG$, $GC$ (are) equal to the two (straight-lines) $EH$, $HF$ (respectively)" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the angle at $G$ (is) equal to the angle at $H$.",
+    "assertion": "angle BGC equals angle EHF",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "the angle at $G$ (is) equal to the angle at $H$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the base $BC$ is equal to the base $EF$ [Prop.~1.4].",
+    "assertion": "BC equals EF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the base $BC$ is equal to the base $EF$" },
+      { "label": "glue",      "text": " [Prop.~1.4]." }
+    ],
+    "proof_cite": "1.4"
+  },
+  {
+    "role": "deduction",
+    "text": "And since the angle at $A$ is equal to the (angle) at $D$, the segment $BAC$ is thus similar to the segment $EDF$ [Def.~3.11].",
+    "assertion": "segment BAC is similar to segment EDF",
+    "spans": [
+      { "label": "glue",       "text": "And since " },
+      { "label": "assumption", "text": "the angle at $A$ is equal to the (angle) at $D$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "the segment $BAC$ is thus similar to the segment $EDF$" },
+      { "label": "glue",       "text": " [Def.~3.11]." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And they are on equal straight-lines [$BC$ and $EF$].",
+    "assertion": "segments BAC and EDF are on equal straight-lines BC and EF",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "they are on equal straight-lines [$BC$ and $EF$]" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And similar segments of circles on equal straight-lines are equal to one another [Prop.~3.24].",
+    "assertion": "similar segments on equal straight-lines are equal to one another",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "similar segments of circles on equal straight-lines are equal to one another" },
+      { "label": "glue",      "text": " [Prop.~3.24]." }
+    ],
+    "proof_cite": "3.24"
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, segment $BAC$ is equal to (segment) $EDF$.",
+    "assertion": "segment BAC equals segment EDF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "segment $BAC$ is equal to (segment) $EDF$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "And the whole circle $ABC$ is also equal to the whole circle $DEF$.",
+    "assertion": "circle ABC equals circle DEF",
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "the whole circle $ABC$ is also equal to the whole circle $DEF$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remaining circumference $BKC$ is equal to the (remaining) circumference $ELF$.",
+    "assertion": "circumference BKC equals circumference ELF",
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remaining circumference $BKC$ is equal to the (remaining) circumference $ELF$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, in equal circles, equal angles stand upon equal circumferences, whether they are standing at the center or at the circumference. (Which is) the very thing which it was required to show."
+  }
+]

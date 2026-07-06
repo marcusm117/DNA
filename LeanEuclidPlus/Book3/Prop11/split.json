@@ -1,0 +1,112 @@
+[
+  {
+    "role": "intro",
+    "text": "If two circles touch one another internally, and their centers are found, (then) the straight-line joining their centers, being produced, will fall upon the point of union of the circles. For let two circles, $ABC$ and $ADE$, touch one another internally at point $A$, and let the center $F$ of circle $ABC$ be found [Prop.~3.1], and (the center) $G$ of (circle) $ADE$ [Prop.~3.1]. I say that the straight-line joining $G$ to $F$, being produced, will fall on $A$."
+  },
+  {
+    "role": "deduction",
+    "text": "For (if) not (then), if possible, let it fall like $FGH$ (in the figure),",
+    "assertion": "the straight-line falls like FGH (not on A)",
+    "frame": {
+      "kind": "reductio_open",
+      "supposition": "the straight-line joining $G$ to $F$ produced falls outside, like $FGH$"
+    },
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "For (if) not (then), if possible, " },
+      { "label": "assertion", "text": "let it fall like $FGH$ (in the figure)" },
+      { "label": "glue",      "text": "," }
+    ]
+  },
+  {
+    "role": "construction",
+    "text": "and let $AF$ and $AG$ be joined.",
+    "construction_cite": null,
+    "objects_introduced": ["$AF$", "$AG$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since $AG$ and $GF$ is greater than $FA$, that is to say $FH$ [Prop.~1.20], let $FG$ be taken from both.",
+    "assertion": "AG and GF is greater than FA (that is, FH)",
+    "proof_cite": "1.20",
+    "spans": [
+      { "label": "glue",      "text": "Therefore, since " },
+      { "label": "assertion", "text": "$AG$ and $GF$ is greater than $FA$, that is to say $FH$" },
+      { "label": "glue",      "text": " [Prop.~1.20], let $FG$ be taken from both." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the remainder $AG$ is greater than the remainder $GH$.",
+    "assertion": "remainder AG is greater than remainder GH",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the remainder $AG$ is greater than the remainder $GH$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "And $AG$ (is) equal to $GD$.",
+    "assertion": "AG equals GD",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "And " },
+      { "label": "assertion", "text": "$AG$ (is) equal to $GD$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, $GD$ is also greater than $GH$, the lesser than the greater.",
+    "assertion": "GD is greater than GH (the lesser than the greater)",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "$GD$ is also greater than $GH$, the lesser than the greater" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible.",
+    "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
+    "proof_cite": null,
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, the straight-line joining $F$ to $G$ will not fall outside (one circle but inside the other).",
+    "assertion": "the straight-line joining F to G will not fall outside",
+    "frame": {
+      "kind": "reductio_close",
+      "closes": "the straight-line joining $G$ to $F$ produced falls outside, like $FGH$"
+    },
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "the straight-line joining $F$ to $G$ will not fall outside (one circle but inside the other)" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, it will fall upon the point of union (of the circles) at point $A$.",
+    "assertion": "the straight-line falls upon the point of union at A",
+    "proof_cite": null,
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "it will fall upon the point of union (of the circles) at point $A$" },
+      { "label": "glue",      "text": "." }
+    ]
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if two circles touch one another internally, [and their centers are found], (then) the straight-line joining their centers, [being produced], will fall upon the point of union of the circles. (Which is) the very thing it was required to show."
+  }
+]

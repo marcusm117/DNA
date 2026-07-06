@@ -1,0 +1,97 @@
+[
+  {
+    "role": "intro",
+    "text": "If two circles touch one another, (then) they will not have the same center. For let the two circles $ABC$ and $CDE$ touch one another at point $C$. I say that they will not have the same center."
+  },
+  {
+    "role": "deduction",
+    "text": "For, if possible, let $F$ be (the common center),",
+    "assertion": "F is (supposed to be) the common center",
+    "frame": { "kind": "reductio_open", "supposition": "point $F$ is the (common) center of the circles $ABC$ and $CDE$" },
+    "spans": [
+      { "label": "glue",      "text": "For, if possible, " },
+      { "label": "assertion", "text": "let $F$ be (the common center)" },
+      { "label": "glue",      "text": "," }
+    ],
+    "proof_cite": null,
+    "objects_introduced": ["$F$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $FC$ be joined,",
+    "construction_cite": null,
+    "objects_introduced": ["$FC$"]
+  },
+  {
+    "role": "construction",
+    "text": "and let $FEB$ be drawn through (the two circles), at random.",
+    "construction_cite": null,
+    "objects_introduced": ["$FEB$"]
+  },
+  {
+    "role": "deduction",
+    "text": "Therefore, since point $F$ is the center of the circle $ABC$, $FC$ is equal to $FB$.",
+    "assertion": "FC is equal to FB",
+    "spans": [
+      { "label": "glue",       "text": "Therefore, since " },
+      { "label": "assumption", "text": "point $F$ is the center of the circle $ABC$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$FC$ is equal to $FB$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Again, since point $F$ is the center of the circle $CDE$, $FC$ is equal to $FE$.",
+    "assertion": "FC is equal to FE",
+    "spans": [
+      { "label": "glue",       "text": "Again, since " },
+      { "label": "assumption", "text": "point $F$ is the center of the circle $CDE$" },
+      { "label": "glue",       "text": ", " },
+      { "label": "assertion",  "text": "$FC$ is equal to $FE$" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "But $FC$ was shown (to be) equal to $FB$. Thus, $FE$ is also equal to $FB$, the lesser to the greater.",
+    "assertion": "FE is equal to FB (the lesser to the greater)",
+    "spans": [
+      { "label": "glue",       "text": "But " },
+      { "label": "assumption", "text": "$FC$ was shown (to be) equal to $FB$" },
+      { "label": "glue",       "text": ". Thus, " },
+      { "label": "assertion",  "text": "$FE$ is also equal to $FB$, the lesser to the greater" },
+      { "label": "glue",       "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "The very thing is impossible.",
+    "assertion": "contradiction",
+    "frame": { "kind": "contradiction" },
+    "spans": [
+      { "label": "assertion", "text": "The very thing is impossible" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "deduction",
+    "text": "Thus, point $F$ is not the (common) center of the circles $ABC$ and $CDE$.",
+    "assertion": "point F is not the (common) center of the circles ABC and CDE",
+    "frame": { "kind": "reductio_close", "closes": "point $F$ is the (common) center of the circles $ABC$ and $CDE$" },
+    "spans": [
+      { "label": "glue",      "text": "Thus, " },
+      { "label": "assertion", "text": "point $F$ is not the (common) center of the circles $ABC$ and $CDE$" },
+      { "label": "glue",      "text": "." }
+    ],
+    "proof_cite": null
+  },
+  {
+    "role": "conclusion",
+    "text": "Thus, if two circles touch one another, (then) they will not have the same center. (Which is) the very thing it was required to show."
+  }
+]
