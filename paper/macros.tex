@@ -9,6 +9,10 @@
 
 % faithfulness necessary conditions
 \newcommand{\faithfulcriteria}{six necessary conditions\xspace}  
+\newcommand{\NL}{\ifmmode \text{NL}\else NL\xspace\fi}
+\newcommand{\Formal}{\ifmmode \text{Lean}\else Lean\xspace\fi}
+\newcommand{\NLtoFormal}[1]{f_{\text{formal}}(#1)}
+\newcommand{\NLProof}{P_\text{NL}}
 
 \newcommand{\coverage}{\textsc{Coverage}\xspace}
 \newcommand{\totality}{\textsc{Totality}\xspace}
@@ -16,6 +20,10 @@
 \newcommand{\grounding}{\textsc{Grounding}\xspace}
 \newcommand{\constructibility}{\textsc{Constructibility}\xspace}
 \newcommand{\locality}{\textsc{Locality}\xspace}
+
+\newcommand{\assert}[1]{\operatorname{assert}(#1)}   % assertion of a sentence
+\newcommand{\reason}[1]{\operatorname{reasons}(#1)}   % its reasoning part
+\newcommand{\citations}[1]{\operatorname{citations}(#1)}
 
 \newcommand{\numproofs}{99\xspace}
 

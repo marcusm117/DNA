@@ -90,6 +90,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{xspace}
+\usepackage{cleveref}   % \cref / \Cref auto-naming (no hyperref -> no links, AAAI-safe)
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 \newtheorem{definition}{Definition}
@@ -98,7 +99,7 @@
 % =========================================================================================
 
 % Title -- mixed case (capitalize verbs/nouns/adjectives; lowercase articles/prepositions)
-\title{TODO: Paper Title}
+\title{Faithful Proofs in Euclidian Geometry}
 
 % Anonymous submission: "Anonymous Submission" as sole author, empty affiliations (AAAI rule).
 \author{Anonymous Submission}
@@ -142,24 +143,23 @@ We introduce a set of \faithfulcriteria a faithful proof must satisfy, developpe
 % \caption{Motivating example.}
 % \label{fig:motivating}
 % \end{figure}
-\section{Faithfulness Criteria}
 \section{Methodology}
-% The pipeline / System E encoding / faithfulness criteria. Reference Figure~\ref{fig:pipeline}.
+\subsection{Conditions we guarantee}
+We are given a proof $\NLProof \in \NL$ which is just a string, and list properties a faithful formalization must have that our methodology 
 
-% \begin{figure}[t]
-% \centering
-% \includegraphics[width=0.9\columnwidth]{Figures/figure2}
-% \caption{Method overview.}
-% \label{fig:pipeline}
-% \end{figure}
+We say that \emph{for a proof to be faithful, it must be that} $\exists s_1, ..., s_n \in \NL$ such that all of the following conditions hold, where in conditions~2 onward $s$ ranges over every sentence $s \in \{s_1,\ldots,s_n\}$:
 
-% \begin{algorithm}[t]
-% \caption{Faithful proof synthesis}
-% \label{alg:synth}
-% \begin{algorithmic}[1]
-% \STATE \dots
-% \end{algorithmic}
-% \end{algorithm}
+\begin{enumerate}
+    \item $s_\text{intro}\circ s_1 \circ s_2\circ ... \circ s_n \circ s_\text{conclude}=P_\text{NL}$. \textbf{Script}
+    \item $\assert{s}\in \NL$ and $\reason{s} \subseteq \NL$ are correct. \textbf{Oracle} 
+    \item $\NLtoFormal{\assert{s}}$ and $ \NLtoFormal{\reason{s}}$ are correct . \textbf{Oracle}
+    \item $\forall c \in \citations{s}$, $c$ is a citation of a formal statement in $F$.
+\end{enumerate}
+
+
+\subsection{Mapping Phase}
+\subsection{Sorry-Filling Phase}
+\subsection{Wiring Phase}
 
 \section{Evaluation}
 % ~2.5 columns. Frame around the research questions below.
