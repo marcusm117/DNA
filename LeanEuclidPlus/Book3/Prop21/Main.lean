@@ -1,4 +1,5 @@
 import SystemE
+import Book3.Prop01.Main
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -17,10 +18,12 @@ by
   euclid_intro_sentence "3.21.0"
     "In a circle, angles in the same segment are equal to one another. Let $ABCD$ be a circle, and let $BAD$ and $BED$ be angles in the same segment $BAED$. I say that angles $BAD$ and $BED$ are equal to one another."
 
-  -- orchestrator-note: F is already given in the signature; claim nonetheless states what the sentence asserts.
+  -- Faithful "find the centre [3.1]": construct the located centre f' via proposition_1, then
+  -- identify it with the given centre f (centre_unique) — honors the III.1 construction.
+  euclid_apply (proposition_1 ABCD) as f'
   euclid_sentence "3.21.1"
     "For let the center of circle $ABCD$ be found [Prop.~3.1], and let it be (at point) $F$."
-    (step1 : f.isCentre ABCD) := by sorry
+    (step1 : f'.isCentre ABCD ∧ f' = f) := by sorry
 
   euclid_apply (line_from_points b f) as BF
   euclid_apply (line_from_points f d) as FD

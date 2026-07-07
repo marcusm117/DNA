@@ -33,7 +33,7 @@ lake exe faithful_export "$MOD" > "$JSON"
 # (`set -e` is disabled around it so a FAIL doesn't abort before we can print the --keep note, and so
 # the script's final exit code is the checker's, not that of the trailing `[[ ]]` test.)
 set +e
-python3 scripts/check_faithful.py --olean "$JSON"
+python3 scripts/check_faithful.py --olean "$JSON" --focus "$MOD"
 rc=$?
 set -e
 [[ -n "$KEEP" ]] && echo "  (extracted JSON kept at: $KEEP)"

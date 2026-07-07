@@ -16,17 +16,18 @@ by
   euclid_intro_sentence "3.18.0"
     "If some straight-line touches a circle, and some (other) straight-line is joined from the center (of the circle) to the point of contact, (then) the (straight-line) so joined will be perpendicular to the tangent. For let some straight-line $DE$ touch the circle $ABC$ at point $C$, and let the center $F$ of circle $ABC$ be found [Prop.~3.1], and let $FC$ be joined from $F$ to $C$. I say that $FC$ is perpendicular to $DE$."
 
-  -- Reductio: suppose the perpendicular from F to DE is not FC (i.e. ∠f:c:d ≠ ∟).
-  -- Derive a contradiction via the foot G of the actual perpendicular, then conclude.
+  -- Reductio: suppose ∠f:c:d ≠ ∟ (FC is not perpendicular to DE); derive False.
+  -- Construct G = foot of perpendicular from F to DE (Prop.~1.12) inside the frame.
+  -- Then FC > FG (right ∠FGC, acute ∠FCG, Prop.~1.19) and FC = FB (radii),
+  -- so FB > FG; but G is outside the circle, so FG > FB — contradiction.
   have habsurd1 : ¬(∠ f:c:d ≠ ∟) := by
     intro hsuppose1
     -- bridge haves for proposition_12 preconditions
     have hcdDE : distinctPointsOnLine c d DE := by sorry
     have hfoff : ¬f.onLine DE := by sorry
-    -- construct G, the foot of the perpendicular from F to DE [Prop. 1.12]
+    -- construct G, the foot of the perpendicular from F to DE [Prop.~1.12]
     euclid_apply (proposition_12 c d f DE) as g
     euclid_apply (line_from_points f g) as FG
-    -- @assumption ("$FG$ is perpendicular to $DE$", ∠ f:c:d ≠ ∟)
     euclid_sentence "3.18.1"
       "For if not, let $FG$ be drawn from $F$, perpendicular to $DE$ [Prop.~1.12]."
       (step1 : g.onLine DE ∧ f.onLine FG ∧ g.onLine FG ∧ (∠ c:g:f = ∟ ∨ ∠ d:g:f = ∟)) := by sorry
@@ -41,7 +42,7 @@ by
       "And the greater angle is subtended by the greater side [Prop.~1.19]. Thus, $FC$ (is) greater than $FG$."
       (step3 : |(f─c)| > |(f─g)|) := by sorry
 
-    -- introduce b : another point on circle ABC (needed for the radius equality FC = FB)
+    -- introduce b : a second radius-endpoint on circle ABC (for FC = FB)
     have hb : ∃ b : Point, b.onCircle ABC ∧ b ≠ c := by sorry
     obtain ⟨b, hbcircle, hbc⟩ := hb
     euclid_sentence "3.18.4"
@@ -57,13 +58,23 @@ by
       (step6 : False) := by sorry
     exact step6
 
-  -- "Thus FG is not perpendicular to DE" and "similarly no other except FC":
-  -- these are structural post-reductio sentences (same pattern as Prop.~1.14 / Prop.~1.40);
-  -- the contradiction already closed the argument; no further System-E claim is provable here.
-  euclid_conclude_sentence "3.18.7"
+  -- step7: "FG is not perpendicular to DE" — in the formal proof this is the consequence of habsurd1:
+  -- the supposed alternative perpendicular from F to DE (namely FG at G ≠ C) cannot exist.
+  -- The claim wraps habsurd1 (¬(∠f:c:d ≠ ∟) = FC is in fact perpendicular to DE in that direction).
+  -- orchestrator-note: step7 formally restates habsurd1; g is out of scope here so the claim is
+  -- expressed as the negation of the reductio hypothesis.
+  euclid_sentence "3.18.7"
     "Thus, $FG$ is not perpendicular to $DE$."
-  euclid_conclude_sentence "3.18.8"
+    (step7 : ¬(∠ f:c:d ≠ ∟)) := by sorry
+
+  -- step8: "neither is any other straight-line (except FC)" — generalized claim:
+  -- for every g' on DE with g' ≠ c, any line through f and g' is not perpendicular to DE.
+  euclid_sentence "3.18.8"
     "So, similarly, we can show that neither (is) any other (straight-line) except $FC$."
+    (step8 : ∀ (g' : Point) (L : Line),
+      g'.onLine DE → g' ≠ c → f.onLine L → g'.onLine L →
+      ¬(∠ c:g':f = ∟ ∨ ∠ d:g':f = ∟)) := by sorry
+
   euclid_sentence "3.18.9"
     "Thus, $FC$ is perpendicular to $DE$."
     (step9 : ∠ f:c:d = ∟) := by sorry

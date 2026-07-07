@@ -1162,5 +1162,177 @@
       "type": "|(b\u2500c)| * |(b\u2500c)| = |(b\u2500a)| * |(b\u2500a)| + |(a\u2500c)| * |(a\u2500c)|",
       "verdict": "closes"
     }
+  },
+  "Book3/Prop01": {
+    "step10_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "For (they are both) radii",
+      "type": "g.isCentre ABC \u2227 a.onCircle ABC \u2227 b.onCircle ABC",
+      "verdict": "closes"
+    },
+    "step12_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "a straight-line stood upon (another) straight-line make adjacent angles (which are) equal to one another",
+      "type": "\u2220 a:d:g = \u2220 g:d:b",
+      "verdict": "closes"
+    },
+    "step9_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AD$ is equal to $DB$",
+      "type": "|(a\u2500d)| = |(d\u2500b)|",
+      "verdict": "closes"
+    },
+    "step9_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$DG$ (is) common",
+      "type": "|(d\u2500g)| = |(d\u2500g)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop02": {
+    "step5_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$DA$ is equal to $DB$",
+      "type": "|(d\u2500a)| = |(d\u2500b)|",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "in triangle $DAE$ the one side, $AEB$, has been produced",
+      "type": "between a p b",
+      "verdict": "closes"
+    },
+    "step9_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the greater angle is subtended by the greater side",
+      "type": "\u2220 d:p:b > \u2220 d:b:p",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop03": {
+    "step10_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the right-angle $AFE$",
+      "type": "\u2220 a:f:e = \u221f",
+      "verdict": "closes"
+    },
+    "step2_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AF$ is equal to $FB$",
+      "type": "|(a\u2500f)| = |(f\u2500b)|",
+      "verdict": "closes"
+    },
+    "step2_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$FE$ (is) common",
+      "type": "|(f\u2500e)| = |(f\u2500e)|",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "when a straight-line stood upon (another) straight-line makes adjacent angles (which are) equal to one another",
+      "type": "\u2220 a:f:e = \u2220 b:f:e",
+      "verdict": "closes"
+    },
+    "step9_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$EA$ is equal to $EB$",
+      "type": "|(e\u2500a)| = |(e\u2500b)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop04": {
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "some straight-line through the center, $FE$, cuts in half some straight-line not through the center, $AC$",
+      "type": "|(a\u2500e)| = |(e\u2500c)|",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "some straight-line $FE$ cuts in half some straight-line $BD$",
+      "type": "|(b\u2500e)| = |(e\u2500d)|",
+      "verdict": "closes"
+    },
+    "step9_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "But $FEA$ was also shown (to be) a right-angle",
+      "type": "\u2220 f:e:a = \u221f",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop05": {
+    "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $E$ is the center of the circle $ABC$",
+      "type": "e.isCentre ABC",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $E$ is the center of the circle $CDG$",
+      "type": "e.isCentre CDG",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop06": {
+    "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $F$ is the center of the circle $ABC$",
+      "type": "f.isCentre ABC",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $F$ is the center of the circle $CDE$",
+      "type": "f.isCentre CDE",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$FC$ was shown (to be) equal to $FB$",
+      "type": "|(f\u2500c)| = |(f\u2500b)|",
+      "verdict": "closes"
+    }
   }
 }

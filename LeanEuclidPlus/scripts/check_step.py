@@ -872,6 +872,8 @@ def _run_dependency(propdir):
     NUMBER-ONLY by design — book authentication is the HUMAN's gate-C olean check (`check_faithful.sh`).
     A citation fails iff satisfied by NEITHER the construction arm (`… as …` in Main) NOR the helper-cone
     proof arm. (Phase A — no helpers yet — uses `check_faithful.py` source mode, construction arm only.)"""
+    for loc, reason in L.suppressed_dep_locs(propdir).items():
+        print(f"  (waived by @suppress_deps_check) sentence {loc}: {reason}")
     problems = L.dependency_problems(propdir)
     if problems:
         print(f"FAIL (dependency / criterion-3): {len(problems)} cited [Prop.~B.N] not satisfied in "

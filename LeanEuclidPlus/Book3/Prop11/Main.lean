@@ -32,9 +32,10 @@ by
       "and let $AF$ and $AG$ be joined."
       (step2 : distinctPointsOnLine a f AF ∧ distinctPointsOnLine a g AG) := by sorry
     -- @assumption ("that is to say $FH$", |(f─a)| = |(f─h)|)
+    -- @assumption ("since $AG$ and $GF$ is greater than $FA$, that is to say $FH$ [Prop.~1.20]", |(a─g)| + |(g─f)| > |(f─h)|)
     euclid_sentence "3.11.3"
       "Therefore, since $AG$ and $GF$ is greater than $FA$, that is to say $FH$ [Prop.~1.20], let $FG$ be taken from both."
-      (step3 : |(a─g)| + |(g─f)| > |(f─h)|) := by sorry
+      (step3 : |(a─g)| > |(f─h)| - |(g─f)|) := by sorry
     euclid_sentence "3.11.4"
       "Thus, the remainder $AG$ is greater than the remainder $GH$."
       (step4 : |(a─g)| > |(g─h)|) := by sorry

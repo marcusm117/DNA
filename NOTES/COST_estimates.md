@@ -3,7 +3,7 @@
 # My personal Notes
 
 # aside. copy paste text to proofs:
-/faithful-prove /LeanEuclidPlus/Book1/Prop47. Please note that the same nearly identical proof exists at Book/ just this one is more faithful so you SHOULD use that existing one to help you prove things and no reinvent the patterns if you ever struggle with something. Note you are in DNA. cd to LeanEuclidPlus ONCE. then stop cd every time.
+/faithful-prove /LeanEuclidPlus/Book3/Prop02. Note you are in DNA. cd to LeanEuclidPlus ONCE. Do not keep cd once you are already in this folder.
 
 # map copy paste
 

@@ -1,0 +1,1 @@
+- Added circles have a center axiom. Needed since euclid has this as an axiom (def 1.16) and needed for prop1 of book 3, where he deduces that this point must be the center since no other point is. so he is relying on the fact of existence.

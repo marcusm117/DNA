@@ -1,4 +1,5 @@
 import SystemE
+import Book3.Prop01.Main
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -39,12 +40,12 @@ by
   euclid_intro_sentence "3.8.0"
     "If some point is taken outside a circle, and some straight-lines are drawn from the point to the (circumference of the) circle, one of which (passes) through the center, the remainder (being) random, (then) for the straight-lines radiating towards the concave (part of the) circumference, the greatest is that (passing) through the center. For the others, a (straight-line) nearer$^\\dag$ to the (straight-line) through the center is always greater than one further away. For the straight-lines radiating towards the convex (part of the) circumference, the least is that between the point and the diameter. For the others, a (straight-line) nearer to the least (straight-line) is always less than one further away. And only two equal (straight-lines) will radiate from the point towards the (circumference of the) circle, (one) on each (side) of the least (straight-line). Let $ABC$ be a circle, and let some point $D$ be taken outside $ABC$, and from it let some straight-lines, $DA$, $DE$, $DF$, and $DC$, be drawn through (the circle), and let $DA$ be through the center. I say that for the straight-lines radiating towards the concave (part of the) circumference, $AEFC$, the greatest is the one (passing) through the center, (namely) $AD$, and (that) $DE$ (is) greater than $DF$, and $DF$ than $DC$. For the straight-lines radiating towards the convex (part of the) circumference, $HLKG$, the least is the one between the point and the diameter $AG$, (namely) $DG$, and a (straight-line) nearer to the least (straight-line) $DG$ is always less than one farther away, (so that) $DK$ (is less) than $DL$, and $DL$ than than $DH$."
 
-  -- orchestrator-note: M is already a theorem parameter with m.isCentre ABC as hypothesis;
-  -- step1 names the center as M (the construction sentence establishes m.isCentre ABC).
-  -- This structurally restates a given but has no other System-E content — flagged for gate-A review.
+  -- Faithful "find the centre [3.1]": construct the located centre m' via proposition_1, then
+  -- identify it with the given centre m (centre_unique) — honors the III.1 construction.
+  euclid_apply (proposition_1 ABC) as m'
   euclid_sentence "3.8.1"
     "For let the center of the circle be found [Prop.~3.1], and let it be (at point) $M$ [Prop.~3.1]."
-    (step1 : m.isCentre ABC) := by sorry
+    (step1 : m'.isCentre ABC ∧ m' = m) := by sorry
 
   euclid_apply (line_from_points m e) as ME
   euclid_apply (line_from_points m f) as MF

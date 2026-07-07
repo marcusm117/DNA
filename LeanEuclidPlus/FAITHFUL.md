@@ -93,7 +93,7 @@ itself was mid-compile at the kill — which warm deps prevent.
    human-checked — no machine fully verifies faithfulness; use `Book2/data/diagrams/4.png` to resolve
    labels.) When happy:
    ```
-   python3 scripts/check_steps.py --save Book1/Prop04/Main.lean
+   python3 scripts/check_steps.py --save Book3/Prop04/Main.lean
    ```
    This freezes the claim TYPES **hard** and records the `@assumption` types. Under the Assumption
    Phase (next), assumptions are first-class PROVEN obligations — frozen HARD like claims: Phase B may
@@ -101,7 +101,7 @@ itself was mid-compile at the kill — which warm deps prevent.
 
 **▶ then the Assumption Phase (mechanical; YOU run it — NO LLM — between gate A and Phase B):**
    ```
-   python3 scripts/assumptions.py Book1/Prop04            # --dry-run first to preview
+   python3 scripts/assumptions.py Book3/Prop04            # --dry-run first to preview
    ```
    For every `-- @assumption` it materializes a `have stepK_assumptionN : type := by sorry`, then
    classifies each by a **LADDER** (cheapest/most-trivial first), PERSISTING the FIRST tactic that closes it:
@@ -129,7 +129,7 @@ itself was mid-compile at the kill — which warm deps prevent.
    **The sweep (no LLM).** Once every prop is mapped + gate-A `--save`'d, run the ladder over all of them in
    a plain loop — no agent needed, since it auto-closes the trivial premises:
    ```
-   for p in 01 02 03 04 05 07 08 09 10; do python3 scripts/assumptions.py Book1/Prop$p; done
+   for p in 01 02 03 04 05 07 08 09 10; do python3 scripts/assumptions.py Book3/Prop$p; done
    ```
    `gap`s are EXPECTED (Phase B proves them) — they are NOT failures. Only these need you+LLM: a prop that
    **exits 1** (STEP-A frame break or the final-build stop) or reports a **`sat`** (false premise / map
@@ -156,13 +156,13 @@ itself was mid-compile at the kill — which warm deps prevent.
 **5. Phase C — wire + verify (mechanical; YOU run it, not a skill):**
    **One command does all four (stops at the first failure):**
    ```
-   scripts/phase_c.sh Book1/Prop04                  # = the four steps below, in order
+   scripts/phase_c.sh Book3/Prop04                  # = the four steps below, in order
    ```
    (or run them by hand — note the THREE different argument shapes, the slash-vs-dot footgun:)
    ```
-   python3 scripts/wire_main.py Book1/PropNN        # commits the wiring, strips 30s caps, builds once
-   scripts/check_faithful.sh Book1.PropNN.Main            # text (crit.1) + deps (crit.3), book-aware
-   python3 scripts/check_steps.py Book1/PropNN/Main.lean   # claims unchanged since gate A
+   python3 scripts/wire_main.py Book3/PropNN        # commits the wiring, strips 30s caps, builds once
+   scripts/check_faithful.sh Book3.PropNN.Main            # text (crit.1) + deps (crit.3), book-aware
+   python3 scripts/check_steps.py Book3/PropNN/Main.lean   # claims unchanged since gate A
    python3 scripts/check_signatures.py              # no proposition statement was altered
    ```
    **▶ Gate C:** `wire_main` build green + zero sorry + all three checks PASS ⟹ Prop04 is faithful.

@@ -1,0 +1,1 @@
+- 3.1 cites ` let ($AB$) be cut in half at point $D$ [Prop.~1.9]`. AB is a line though, so it should be citing Prop~1.10 so this is a translation typo. Prop 9 is about angles not lines.

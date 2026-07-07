@@ -120,6 +120,28 @@ needing the earlier fact `b'=e` and `a≠b`) need the context: `⟨by simp (conf
 step_cf⟩`, or split + `assumption` on the earlier coincidence steps (NOT `simp_all` — it can loop). See the
 `euclid-superposition-img-simp-zetadelta` memory.
 
+## PATTERN: Common-Notion "let X be added to / taken (subtracted) from both"  (C.N.2 / C.N.3)
+**Tells:** an imperative operating on the PRIOR sentence's (in)equality — "Let $ABC$ be added to both.",
+"Let $EF$ be taken from both.", "Let the (square) on $FE$ be subtracted from both." Usually followed by a
+"Thus, the remainder …" sentence.
+**Exemplars:** ADD → `Book3/Prop22` (`3.22.6`); SUBTRACT → `Book3/Prop07` (`3.7.11`), `Book3/Prop32` (`3.32.10`).
+**Handling — the claim is the OPERATION APPLIED to the prior relation, literally:**
+- **ADD** `t` to both sides of `X = Y` → `t + X = t + Y` (the term genuinely appears on both sides — that
+  IS adding). Prop22 `3.22.6`.
+- **SUBTRACT** `t` from both sides → the term must be **REMOVED via real `-`**, never appended: `X > Z` with
+  the `t` summand on the left collapsing → `X' > Z - t` (Prop07 `3.7.11`: `|(g─f)| > |(e─d)| - |(e─f)|`);
+  `X = Y + t` → `X - t = Y` (Prop32 `3.32.10`: `∠ a:b:f - ∠ a:b:d = ∠ b:a:d`). The following "remainder"
+  sentence then NAMES the remainder (substitutes `Z - t = <named seg/angle>` via betweenness / angle-addition).
+- **⛔ Do NOT** render a subtraction as a betweenness/decomposition identity (`ED = EF + FD`) or as the
+  addition-style term-on-both-sides (`f:b:d + a:b:d = b:a:d + a:b:d`) — those drop or invert the operation.
+  If the "since …[1.20]" premise and the "take from both" share one compound sentence, the premise inequality
+  is an `@assumption` and the **claim is the subtraction** (Prop11 Book3 `3.11.3`).
+**Exact-cancellation is the ONE case with no `-`:** `X + t = Y + t` minus `t` → state `X = Y` directly
+(no residue; Prop35 `3.35.18`, Prop36, Book2 Prop14 `2.14.15`). The trailing "remainder" sentence repeats it.
+**Proving (Phase B):** lengths/angles are `ℝ`, so `-` is a valid term, but **euclid_finish's translator has
+no `HSub`/`Neg` case** (`Translator.lean` handles only `+ * /`). Close these nodes with `linarith`/`nlinarith`,
+NOT `euclid_finish`, and keep a `-`-typed step out of any downstream `euclid_finish` context.
+
 ---
 
 ## APPENDING A NEW PATTERN (agents: do this when you hit one not above)

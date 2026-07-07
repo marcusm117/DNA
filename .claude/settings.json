@@ -99,8 +99,12 @@
       "Edit(LeanEuclidPlus/OldBook1.lean)",
       "Write(LeanEuclidPlus/OldBook1.lean)",
       "Edit(LeanEuclidPlus/OldBook1Variants.lean)",
-      "Write(LeanEuclidPlus/OldBook1Variants.lean)"
-    ]
+      "Write(LeanEuclidPlus/OldBook1Variants.lean)",
+
+      "Edit(LeanEuclidPlus/SystemE/**)",
+      "Write(LeanEuclidPlus/SystemE/**)"
+    ],
+    "ask": []
   },
   "hooks": {
     "PreToolUse": [

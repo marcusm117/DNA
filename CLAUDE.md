@@ -122,6 +122,52 @@ Correctness/suppliability are mechanical (Lean); only the claim-matches-the-Engl
 human. **Caps are uniformly 30s during dev** (SMT `set_option` + a 30s wall in `check_step`); exceed
 either ⟹ DECOMPOSE into more backing files, never raise a cap.
 
+## Euclid gaps — mark them `@euclid_gap` (a PROOF gap, ≠ an assumption gap)
+
+Sometimes a step Euclid writes is NOT entailed by his hypotheses + prior sentences — he reads a
+**generic-position fact off the figure** and never states it ("this chord is not a diameter" ⟹ a
+midpoint/foot ≠ the centre; "G is off to the side" ⟹ `g ≠ d`). Formalised flatly, that fact is **false
+in an admissible degenerate model** (diameter, collinear, coincident points), so its `sorry` can NEVER
+be discharged. That is a **Euclid PROOF GAP** — his theorem is still true (the degenerate case is
+usually vacuous/trivial) and it is NOT our unfaithfulness. Fill it with the case Euclid left implicit
+(`by_cases`/`wlog`; the degenerate branch is usually trivial), and **mark the site with a
+`-- @euclid_gap: <why>` comment** so it greps (`grep -rn @euclid_gap`). These are more general than an
+`@assumption_gap` (a consumed premise that Phase B simply proves).
+
+**BE GENEROUS about what is NOT a gap.** Ordinary **System-E plumbing is not a Euclid gap** — an
+entailed distinctness (`x ≠ y` where x is on the circle and y is the centre, or two distinct
+intersection points), a forced betweenness, an `L.intersectsCircle α` from an interior point — these are
+all TRUE and Phase B just proves them; leave them a plain `:= by sorry`, do NOT mark them. Only mark a
+fact that is genuinely **false in some admissible configuration** (its sorry is unprovable-by-design
+until a case split is added). And if the false fact was something the MAP invented (a made-up
+order/betweenness) or a mis-built construction (a point placed off the circle when Euclid's is on it),
+that is **our unfaithfulness — FIX it, do not mark it.** (Worked: `Book3/Prop09`, `Book3/Prop14` are
+real `@euclid_gap`s [diameter degeneracy]; `Book3/Prop01` [off-circle C] and `Book3/Prop05`,`Prop06`
+[added betweenness] were unfaithfulness, fixed not marked.)
+
+## Wrong SOURCE citation — waive it with `@suppress_deps_check` (a CITATION-metadata bug, ≠ a proof gap)
+
+Sometimes the source EDITION cites the wrong proposition — a `[Prop.~B.N]` bracket that points at a prop
+doing the wrong thing, so no faithful Lean can satisfy criterion-3 for it. (Fitzpatrick's **III.1** brackets
+the segment-bisection "let $AB$ be cut in half" as `[Prop.~1.9]`, but his 1.9 is *angle*-bisection; cutting a
+straight-line is **I.10**, so the faithful construction is `proposition_10` — proven by the same edition's
+own correct use of `[Prop.~1.8]` for SSS, which only holds under standard numbering. The bracket is an
+editorial typo, not in Euclid's Greek at all.) This is **NOT our bug and NOT a proof gap** — it is a
+metadata error in the outside source.
+- **The agent must STOP and REPORT such a citation, never silently "fix" it** (never edit the canonical
+  text, swap in the wrongly-cited prop, or restate a claim to pass the number-only regex). Outside-source
+  bugs are the human's call — see the skills' "OUTSIDE-SOURCE BUG" rule.
+- **The fix (human-authorised) is a `-- @suppress_deps_check "reason"` line on its OWN line directly above
+  the offending `euclid_sentence`.** It waives criterion-3 for that ONE sentence's cited `[Prop.~B.N]`s in
+  ALL three enforcement points — `check_step --dependency`, `--all`, and gate-C `check_faithful` (source +
+  olean) — while the source text stays byte-for-byte verbatim and the correct `proposition_*` construction
+  is untouched. The **reason is MANDATORY** (empty/malformed/orphan tag ⟹ hard `FaithfulError`), so it can
+  never silently mute a real missing dependency; it greps (`grep -rn @suppress_deps_check`) like `@euclid_gap`.
+  It waives ONLY the reference check — it is NOT for a legitimately-cited prop you merely haven't
+  `euclid_apply`'d yet (that is a real gap you must actually cite). Worked example: `Book3/Prop01` steps
+  3.1.2 / 3.1.5 (both `[Prop.~1.9]`→`proposition_10`). (`_assumptions_above`/`_next_sentence_loc` tolerate the
+  tag interleaved with `@assumption`/`@args` lines; put it as the top line of the annotation block.)
+
 **Layout: one folder per Book-2 proposition** — `Book2/PropNN/Main.lean` (the proposition + its
 `euclid_sentence`s) and `Book2/PropNN/stepN.lean` (one backing file per sentence, theorem
 `helper_<book>_<prop>_stepN`; a hard step adds sub-files, same naming law `node ≡ file ≡ helper_<book>_<prop>_node`).

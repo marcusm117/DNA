@@ -12,12 +12,12 @@ that independently of any agent.
   DIFF (run AFTER agents finish — exits non-zero on any change):
       python3 scripts/check_signatures.py
 
-It scans `Book/Prop*.lean` (Book 1, flat) and `Book2/Prop*/Main.lean` (Book 2, foldered) for
-`theorem proposition_<name> : <type> :=`,
+It scans `Book/Prop*.lean` (Book 1, flat) plus the foldered layouts `Book1/Prop*/Main.lean`,
+`Book2/Prop*/Main.lean`, and `Book3/Prop*/Main.lean` for `theorem proposition_<name> : <type> :=`,
 extracts <type> (whitespace-normalized), and stores `{key: {file, line, sig}}` keyed by
 `<relfile>::proposition_<name>` (primes and per-file identity unambiguous). All such decls are
 `theorem`s that split cleanly on the first top-level `:=` (no `:=` inside the type, no `where`, no
-same-line `:= by`) — verified across the 63 declaring files.
+same-line `:= by`) — comments (incl. mid-signature `--` notes, as in Book3) are blanked first.
 
 Helper lemmas (`helper_*`) are intentionally NOT tracked — they are allowed to change.
 """
@@ -58,10 +58,14 @@ def norm(s: str) -> str:
 def _prop_files():
     """Every proposition source file, flat OR folder layout, relative to BOOK_ROOT:
       Book 1 (flat):    Book/Prop*.lean
+      Book 1 (folders): Book1/Prop*/Main.lean
       Book 2 (folders): Book2/Prop*/Main.lean   (post-refactor)
       Book 2 (flat):    Book2/Prop*.lean         (any not-yet-migrated, for safety)
+      Book 3 (folders): Book3/Prop*/Main.lean
     De-duplicated, sorted."""
-    pats = ["Book/Prop*.lean", "Book1/Prop*/Main.lean", "Book2/Prop*/Main.lean", "Book2/Prop*.lean"]
+    pats = ["Book/Prop*.lean", "Book1/Prop*/Main.lean",
+            "Book2/Prop*/Main.lean", "Book2/Prop*.lean",
+            "Book3/Prop*/Main.lean"]
     rels = []
     for pat in pats:
         for path in glob.glob(os.path.join(BOOK_ROOT, pat)):

@@ -39,7 +39,7 @@ TWO MODES:
 
 Neither mode verifies that the proof compiles — that is the *correctness* axis (`lake build`).
 """
-import re, sys, os, json
+import re, sys, os, json, io, contextlib
 # Cone machinery (cone_names / propdir_of / prop_prefix) reused from the Phase-B lib so olean mode's
 # notion of "the citing sentence's helper cone" is byte-identical to the number-only check.
 import faithful_lib as fl
@@ -325,8 +325,14 @@ def check_source(path: str) -> int:
     constr_nums = {int(n) for n in re.findall(r'euclid_apply\s*\((.*?)\)\s*as\b', src, re.DOTALL)
                    for n in re.findall(r'proposition_(\d+)', n)}
     by_src = sorted(anns, key=lambda a: a['start'])
+    try:                                   # validate @suppress_deps_check tags early; drop waived from deferred
+        suppressed = fl.suppressed_dep_locs_in_src(raw)   # RAW: strip_comments blanks the `--` tag line
+    except fl.FaithfulError as e:
+        return report("every @suppress_deps_check tag is well-formed", False, [str(e)])
     deferred_counts, n_cites = {}, 0       # {(book,num): times cited proof-internally} — for a 1-line summary
     for a in by_src:
+        if a['loc'] in suppressed:
+            continue                                       # criterion-3 waived by @suppress_deps_check
         for book, num in CITE.findall(a['text']):
             n_cites += 1
             if int(num) in constr_nums:
@@ -433,7 +439,7 @@ def check_source(path: str) -> int:
 # MODE 2 — --olean (certain, book-aware) over faithful_export JSON
 # ─────────────────────────────────────────────────────────────────────────────
 
-def check_olean(json_path: str) -> int:
+def check_olean(json_path: str, focus=None) -> int:
     data = json.load(open(json_path, encoding="utf-8"))
     sentences = data.get("sentences", [])
     applied   = data.get("applied", [])
@@ -454,83 +460,127 @@ def check_olean(json_path: str) -> int:
         groups.setdefault((parts[0], parts[1]), []).append(s)
 
     rc = 0
+    bg_pass, bg_fails = 0, []
     for (book, prop), sents in sorted(groups.items(),
                                       key=lambda kv: loc_key(f"{kv[0][0]}.{kv[0][1]}")):
-        print(f"--- Book{book} Prop {prop} ---")
-        for s in sents:
-            s['ref'] = f"{s['mod']}:{s['line']}"
+        is_focus = focus is None or (book == focus[0] and prop == focus[1])
+        buf = io.StringIO() if not is_focus else None
+        group_rc = 0
+        with contextlib.redirect_stdout(buf) if buf is not None else contextlib.nullcontext():
+            print(f"--- Book{book} Prop {prop} ---")
+            for s in sents:
+                s['ref'] = f"{s['mod']}:{s['line']}"
 
-        dg = report_dup_and_gap(sents, lambda it: it['ref'])
-        rc |= report("sentence locators are contiguous with no duplicates", not dg,
-                     ["see message above"] if dg else [f"{len(sents)} sentences"])
+            dg = report_dup_and_gap(sents, lambda it: it['ref'])
+            group_rc |= report("sentence locators are contiguous with no duplicates", not dg,
+                         ["see message above"] if dg else [f"{len(sents)} sentences"])
 
-        # CRITERION 3 (book-aware, TWO-ARM — construction vs. proof). A cited [Prop.~B.N] is satisfied
-        # iff some applied constant matches Book B's prop N (by RESOLVED identity — `name_matches`, the
-        # book-aware gate) in EITHER arm:
-        #   • construction arm — applied `… as …` ANYWHERE in this prop's `…Main` module. Whole-Main, NOT
-        #     block-scoped: figure objects are routinely hoisted EARLIER than the citing sentence (the
-        #     vetted Prop03 `proposition_31 as AF` case). Every Main proposition-apply is an `as`
-        #     construction (verified invariant), so "applied in the Main module" IS the construction arm.
-        #   • proof arm — applied (no `as`) INSIDE the citing sentence's helper CONE (its stepN backing
-        #     file + transitive sub-files). Scoped STRICTLY to that cone: the post-relocation layout puts
-        #     each step in its own module, so a proof-internal cite lives outside Main.
-        # The cone is the `have`-containment cone (`fl.cone_names`), identical to the Phase-B number-only
-        # `dependency_problems` — so the two gates can't disagree on structure; only the name-match
-        # granularity differs (book-aware here, number-only there). The export's per-`euclid_apply`
-        # `appliedExt` record (the `applied` array, keyed by module) is the reliable source: the `deps`
-        # transitive closure is empty for SMT-discharged applies (the prop never lands in the term), so
-        # it is NOT used. Criterion 3 is a REFERENCE check (Euclid writes "by [Prop X]").
-        main_mod = sents[0]['mod']
-        propdir = None
-        if main_mod.endswith(".Main"):
-            try:                                                      # Book2.Prop05.Main -> Book2/Prop05
-                propdir = fl.propdir_of(main_mod[:-len(".Main")].replace(".", os.sep))
+            # CRITERION 3 (book-aware, TWO-ARM — construction vs. proof). A cited [Prop.~B.N] is satisfied
+            # iff some applied constant matches Book B's prop N (by RESOLVED identity — `name_matches`, the
+            # book-aware gate) in EITHER arm:
+            #   • construction arm — applied `… as …` ANYWHERE in this prop's `…Main` module. Whole-Main, NOT
+            #     block-scoped: figure objects are routinely hoisted EARLIER than the citing sentence (the
+            #     vetted Prop03 `proposition_31 as AF` case). Every Main proposition-apply is an `as`
+            #     construction (verified invariant), so "applied in the Main module" IS the construction arm.
+            #   • proof arm — applied (no `as`) INSIDE the citing sentence's helper CONE (its stepN backing
+            #     file + transitive sub-files). Scoped STRICTLY to that cone: the post-relocation layout puts
+            #     each step in its own module, so a proof-internal cite lives outside Main.
+            # The cone is the `have`-containment cone (`fl.cone_names`), identical to the Phase-B number-only
+            # `dependency_problems` — so the two gates can't disagree on structure; only the name-match
+            # granularity differs (book-aware here, number-only there). The export's per-`euclid_apply`
+            # `appliedExt` record (the `applied` array, keyed by module) is the reliable source: the `deps`
+            # transitive closure is empty for SMT-discharged applies (the prop never lands in the term), but
+            # IS populated for direct term-level calls — so the deps fallback (below) catches those.
+            # Criterion 3 is a REFERENCE check (Euclid writes "by [Prop X]").
+            main_mod = sents[0]['mod']
+            propdir = None
+            if main_mod.endswith(".Main"):
+                try:                                                      # Book2.Prop05.Main -> Book2/Prop05
+                    propdir = fl.propdir_of(main_mod[:-len(".Main")].replace(".", os.sep))
+                except fl.FaithfulError:
+                    propdir = None                                        # no folder on disk → construction arm only
+            mod_prefix = fl.prop_prefix(propdir) if propdir else None     # e.g. "Book2.Prop05"
+            # locator → node name (authoritative map from the parsed `have`/sentence tree, not a name guess).
+            try:
+                occ = fl.parse_occurrences(propdir) if propdir else {}
             except fl.FaithfulError:
-                propdir = None                                        # no folder on disk → construction arm only
-        mod_prefix = fl.prop_prefix(propdir) if propdir else None     # e.g. "Book2.Prop05"
-        # locator → node name (authoritative map from the parsed `have`/sentence tree, not a name guess).
-        try:
-            occ = fl.parse_occurrences(propdir) if propdir else {}
-        except fl.FaithfulError:
-            occ = {}
-        node_by_loc = {nd.loc: nm for nm, nds in occ.items() for nd in nds
-                       if nd.kind == "sentence" and nd.loc is not None}
-        construction = applied_by_mod.get(main_mod, [])               # whole-Main `as` constructions
-        dep_lines, n_cites = [], 0
-        for s in sents:
-            if s.get('kind') == 'structural':
-                continue                                              # intro/conclude/wts: background citations, not proof steps
-            for cbook, num in CITE.findall(s['text']):
-                n_cites += 1
-                if any(name_matches(ap['name'], cbook, num) for ap in construction):
-                    continue                                          # construction arm
-                # proof arm: search the citing sentence's cone modules (if it has a node + we found the dir).
-                cone_hit = False
-                node = node_by_loc.get(s['loc'])
-                if node is not None and propdir is not None:
-                    try:
-                        cone = fl.cone_names(propdir, node)
-                    except fl.FaithfulError:
-                        cone = set()
-                    cone_mods = {f"{mod_prefix}.{n}" for n in cone}
-                    cone_hit = any(name_matches(ap['name'], cbook, num)
-                                   for m in cone_mods for ap in applied_by_mod.get(m, []))
-                if cone_hit:
+                occ = {}
+            node_by_loc = {nd.loc: nm for nm, nds in occ.items() for nd in nds
+                           if nd.kind == "sentence" and nd.loc is not None}
+            try:                                                          # @suppress_deps_check waivers (loc → reason)
+                suppressed = fl.suppressed_dep_locs(propdir) if propdir else {}
+            except fl.FaithfulError as e:
+                suppressed = {}
+                group_rc |= report("every @suppress_deps_check tag is well-formed", False, [str(e)])
+            construction = applied_by_mod.get(main_mod, [])               # whole-Main `as` constructions
+            dep_lines, waived, n_cites = [], [], 0
+            for s in sents:
+                if s.get('kind') == 'structural':
+                    continue                                              # intro/conclude/wts: background citations, not proof steps
+                if s['loc'] in suppressed:                                # criterion-3 waived (documented reason)
+                    waived.append(f"{s['loc']}: {suppressed[s['loc']]}")
                     continue
-                where = f"its helper cone (node `{node}`)" if node else \
-                        "any helper cone (structural sentence — must be a Main construction)"
-                dep_lines.append(f"{s['loc']} ({s['ref']}) cites [Prop.~{cbook}.{num}] but no "
-                                 f"`proposition_{num}` of Book {cbook} is applied `… as …` in {main_mod} "
-                                 f"(construction) nor inside {where}")
-        rc |= report("every cited [Prop.~B.M] is referenced in the prop (book-aware: Main construction or sentence's cone)",
-                     not dep_lines,
-                     dep_lines or [f"all {n_cites} citation(s) resolve to the cited book+number"])
+                for cbook, num in CITE.findall(s['text']):
+                    n_cites += 1
+                    if any(name_matches(ap['name'], cbook, num) for ap in construction):
+                        continue                                          # construction arm
+                    # proof arm: search the citing sentence's cone modules (if it has a node + we found the dir).
+                    cone_hit = False
+                    node = node_by_loc.get(s['loc'])
+                    if node is not None and propdir is not None:
+                        try:
+                            cone = fl.cone_names(propdir, node)
+                        except fl.FaithfulError:
+                            cone = set()
+                        cone_mods = {f"{mod_prefix}.{n}" for n in cone}
+                        cone_hit = any(name_matches(ap['name'], cbook, num)
+                                       for m in cone_mods for ap in applied_by_mod.get(m, []))
+                        if not cone_hit and cone:
+                            # Fallback: check transitive deps of Main-applied helpers whose name
+                            # corresponds to a cone node. Catches direct term-level proposition calls
+                            # inside a helper (not via euclid_apply) — the prop appears in the
+                            # propClosure deps attached to the Main apply entry, not in the step module's
+                            # applied_by_mod, so the direct check above misses it.
+                            pfx = f"helper_{book}_{prop}_"
+                            for ap in applied_by_mod.get(main_mod, []):
+                                local = ap['name'].rsplit('.', 1)[-1] if '.' in ap['name'] else ap['name']
+                                if local.startswith(pfx) and local[len(pfx):] in cone:
+                                    if any(name_matches(dep, cbook, num) for dep in ap.get('deps', [])):
+                                        cone_hit = True
+                                        break
+                    if cone_hit:
+                        continue
+                    where = f"its helper cone (node `{node}`)" if node else \
+                            "any helper cone (structural sentence — must be a Main construction)"
+                    dep_lines.append(f"{s['loc']} ({s['ref']}) cites [Prop.~{cbook}.{num}] but no "
+                                     f"`proposition_{num}` of Book {cbook} is applied `… as …` in {main_mod} "
+                                     f"(construction) nor inside {where}")
+            ok_lines = dep_lines or [f"all {n_cites} citation(s) resolve to the cited book+number"]
+            if waived:
+                ok_lines = ok_lines + [f"{len(waived)} sentence(s) waived by @suppress_deps_check:"] \
+                           + [f"    {w}" for w in waived]
+            group_rc |= report("every cited [Prop.~B.M] is referenced in the prop (book-aware: Main construction or sentence's cone)",
+                         not dep_lines, ok_lines)
 
-        canon_rel, canon_path = canon_path_for(book, prop)
-        ok1, lines1 = criterion1_exact(sents, canon_rel, canon_path)
-        rc |= report("all sentences present + concatenation reproduces the original text exactly",
-                     ok1, lines1)
+            canon_rel, canon_path = canon_path_for(book, prop)
+            ok1, lines1 = criterion1_exact(sents, canon_rel, canon_path)
+            group_rc |= report("all sentences present + concatenation reproduces the original text exactly",
+                         ok1, lines1)
 
+        rc |= group_rc
+        if not is_focus:
+            if group_rc != 0:
+                if buf is not None:
+                    sys.stdout.write(buf.getvalue())
+                bg_fails.append(f"Book{book} Prop {prop}")
+            else:
+                bg_pass += 1
+
+    if focus is not None:
+        if bg_fails:
+            print(f"  [WARN] {len(bg_fails)} background prop(s) also FAILED: {', '.join(bg_fails)}")
+        elif bg_pass > 0:
+            print(f"  [also checked {bg_pass} background prop(s): all pass]")
     # Reminder: that each step's TYPE honestly captures its sentence is HUMAN-checked — not here.
     print("  [note] not machine-checked: that each step's type honestly captures its sentence (review by hand)")
     print(f"  => {'ALL PASS' if rc == 0 else 'FAILED'} (--olean mode, authoritative)")
@@ -648,8 +698,14 @@ def check_split(propdir: str) -> int:
     return rc
 
 def main(argv) -> int:
-    if len(argv) == 2 and argv[0] == "--olean":
-        return check_olean(argv[1])
+    if len(argv) >= 2 and argv[0] == "--olean":
+        json_path = argv[1]
+        focus = None
+        if len(argv) == 4 and argv[2] == "--focus":
+            m = re.search(r'Book(\d+)\.Prop0*(\d+)', argv[3])
+            if m:
+                focus = (m.group(1), m.group(2))
+        return check_olean(json_path, focus=focus)
     if len(argv) == 2 and argv[0] == "--split":
         return check_split(argv[1])
     if len(argv) == 1 and not argv[0].startswith("--"):

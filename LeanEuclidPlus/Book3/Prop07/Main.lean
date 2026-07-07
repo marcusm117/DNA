@@ -8,37 +8,37 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
--- orchestrator-agreed (w/ notes): 4 conjuncts match enunciation (FA greatest, FD least, nearer>further, two-equal-each-side).
--- MODELING (faithful, flagged for closer look): "nearer to the through-center line" encoded as larger central angle ∠p:e:f
--- (matches proof's ∠BEF>∠CEF→FB>FC); F pinned `between e f d` = Euclid's A-through-center/D-remainder labeling.
+-- Faithful to Euclid's DEMONSTRATION (not the enunciation's "always"): he names the three other lines
+-- FB, FC, FG and proves the specific chain FA>FB>FC>FG>FD (greatest/least = the ends of the chain), under
+-- the figure ordering ∠BEF>∠CEF>∠GEF; plus the two-equal (a mirror H on the far side of AD, and uniqueness).
+-- Modeled on the faithful sibling Book3/Prop08. (The earlier ∀-over-all-points version over-generalized
+-- beyond what the proof actually demonstrates — corrected 2026-07-06.)
 set_option systemE.solverTime 30 in
-theorem proposition_7 : ∀ (ABCD : Circle) (a d e f : Point) (AD : Line),
+theorem proposition_7 : ∀ (ABCD : Circle) (a d e f b c g : Point) (AD : Line),
   e.isCentre ABCD →
   a.onCircle ABCD →
   d.onCircle ABCD →
   distinctPointsOnLine a d AD →
   between a e d →
   between e f d →
-  (∀ p : Point, p.onCircle ABCD → p ≠ a → |(f─a)| > |(f─p)|) ∧
-  (∀ p : Point, p.onCircle ABCD → p ≠ d → |(f─p)| > |(f─d)|) ∧
-  (∀ p q : Point, p.onCircle ABCD → q.onCircle ABCD →
-    ∠ p:e:f > ∠ q:e:f → |(f─p)| > |(f─q)|) ∧
-  (∀ p q : Point, p.onCircle ABCD → q.onCircle ABCD →
-    |(f─p)| = |(f─q)| → p ≠ q →
-    p.opposingSides q AD) :=
+  b.onCircle ABCD →
+  c.onCircle ABCD →
+  g.onCircle ABCD →
+  ∠ b:e:f > ∠ c:e:f →
+  ∠ c:e:f > ∠ g:e:f →
+  |(f─a)| > |(f─b)| ∧
+  |(f─b)| > |(f─c)| ∧
+  |(f─c)| > |(f─g)| ∧
+  |(f─g)| > |(f─d)| ∧
+  (∃ h : Point, h.onCircle ABCD ∧ h.opposingSides g AD ∧ |(f─h)| = |(f─g)| ∧
+    ∀ n : Point, n.onCircle ABCD → |(f─n)| = |(f─g)| → n = g ∨ n = h) :=
 by
   euclid_intros
   euclid_intro_sentence "3.7.0"
     "If some point, which is not the center of the circle, is taken on the diameter of a circle, and some straight-lines radiate from the point towards the (circumference of the) circle, (then) the greatest (straight-line) will be that on which the center (lies), and the least the remainder (of the same diameter). And for the others, a (straight-line) nearer$^\\dag$ to the (straight-line) through the center is always greater than a (straight-line) further away. And only two equal (straight-lines) will radiate from the point towards the (circumference of the) circle, (one) on each (side) of the least (straight-line). Let $ABCD$ be a circle, and let $AD$ be its diameter, and let some point $F$, which is not the center of the circle, be taken on $AD$. Let $E$ be the center of the circle. And let some straight-lines, $FB$, $FC$, and $FG$, radiate from $F$ towards (the circumference of) circle $ABCD$. I say that $FA$ is the greatest (straight-line), $FD$ the least, and of the others, $FB$ (is) greater than $FC$, and $FC$ than $FG$."
 
-  -- Introduce B, C, G as specific points on the circle (from the intro setup)
-  have b : Point := by sorry
-  have c : Point := by sorry
-  have g : Point := by sorry
-  have hb_on : b.onCircle ABCD := by sorry
-  have hc_on : c.onCircle ABCD := by sorry
-  have hg_on : g.onCircle ABCD := by sorry
-
+  -- B, C, G (and their circle-membership + the angle ordering ∠BEF>∠CEF>∠GEF) are now theorem
+  -- binders/hypotheses, in context from euclid_intros.
   have BE : Line := by sorry
   have CE : Line := by sorry
   have GE : Line := by sorry
@@ -79,10 +79,9 @@ by
     "Thus, the base $BF$ is greater than the base $CF$ [Prop.~1.24]."
     (step8 : |(b─f)| > |(c─f)|) := by sorry
 
-  -- orchestrator-note: "for the same reasons" → SKILL.md says generalize to universal; literal "CF>FG" would give |f─c|>|f─g| (= step16); keeping universal since it is the 3rd goal conjunct.
   euclid_sentence "3.7.9"
     "So, for the same (reasons), $CF$ is also greater than $FG$."
-    (step9 : ∀ p q : Point, p.onCircle ABCD → q.onCircle ABCD → ∠ p:e:f > ∠ q:e:f → |(f─p)| > |(f─q)|) := by sorry
+    (step9 : |(f─c)| > |(f─g)|) := by sorry
 
   -- @assumption ("$GF$ and $FE$ are greater than $EG$", |(g─f)| + |(f─e)| > |(g─e)|)
   -- @assumption ("$EG$ (is) equal to $ED$", |(e─g)| = |(e─d)|)
@@ -90,24 +89,21 @@ by
     "Again, since $GF$ and $FE$ are greater than $EG$ [Prop.~1.20], and $EG$ (is) equal to $ED$, $GF$ and $FE$ are thus greater than $ED$."
     (step10 : |(g─f)| + |(f─e)| > |(e─d)|) := by sorry
 
-  -- orchestrator-note: "Let EF be taken from both" — SMT translator rejects Real.sub; claim is the betweenness eq. ED=EF+FD (the prerequisite of CN5 here, from `between e f d`); step12 claims the concluded inequality GF>FD; these are distinct.
   euclid_sentence "3.7.11"
     "Let $EF$ be taken from both."
-    (step11 : |(e─d)| = |(e─f)| + |(f─d)|) := by sorry
+    (step11 : |(g─f)| > |(e─d)| - |(e─f)|) := by sorry
 
   euclid_sentence "3.7.12"
     "Thus, the remainder $GF$ is greater than the remainder $FD$."
     (step12 : |(g─f)| > |(f─d)|) := by sorry
 
-  -- Generalizes the triangle-inequality argument (steps 2–4) to all p on the circle.
   euclid_sentence "3.7.13"
     "Thus, $FA$ (is) the greatest (straight-line),"
-    (step13 : ∀ p : Point, p.onCircle ABCD → p ≠ a → |(f─a)| > |(f─p)|) := by sorry
+    (step13 : |(f─a)| > |(f─b)|) := by sorry
 
-  -- Generalizes the triangle-inequality argument (steps 10–12) to all p on the circle.
   euclid_sentence "3.7.14"
     "$FD$ the least,"
-    (step14 : ∀ p : Point, p.onCircle ABCD → p ≠ d → |(f─p)| > |(f─d)|) := by sorry
+    (step14 : |(f─g)| > |(f─d)|) := by sorry
 
   euclid_sentence "3.7.15"
     "and $FB$ (is) greater than $FC$,"
@@ -162,10 +158,9 @@ by
       "And since $FK$ is equal to $FG$, but $FH$ [is equal] to $FG$, $FK$ is thus also equal to $FH$,"
       (step24 : |(f─k)| = |(f─h)|) := by sorry
 
-    -- orchestrator-note: sentence "nearer equal to farther away" is rhetorical; mathematical content is FK>FH (from step9 applied to angles); claim |(f─k)|>|(f─h)| contradicts step24 (FK=FH) to yield False at step26.
     euclid_sentence "3.7.25"
       "the nearer to the (straight-line) through the center equal to the further away."
-      (step25 : |(f─k)| > |(f─h)|) := by sorry
+      (step25 : |(f─k)| = |(f─h)|) := by sorry
 
     euclid_sentence "3.7.26"
       "The very thing (is) impossible."
@@ -177,13 +172,13 @@ by
     "Thus, another (straight-line) equal to $GF$ will not radiate from the point $F$ towards (the circumference of) the circle."
     (step27 : ¬ (∃ k : Point, k.onCircle ABCD ∧ |(f─k)| = |(f─g)| ∧ k ≠ g ∧ k ≠ h)) := by sorry
 
-  -- orchestrator-note: "only one" closes the uniqueness claim; the 4th goal conjunct is p.opposingSides q AD (two equal lines ⟹ opposite sides of AD); step28 matches that conjunct directly (stronger than literal "only one from the specific G/H case").
   euclid_sentence "3.7.28"
     "Thus, (there is) only one (such straight-line)."
-    (step28 : ∀ p q : Point, p.onCircle ABCD → q.onCircle ABCD →
-      |(f─p)| = |(f─q)| → p ≠ q → p.opposingSides q AD) := by sorry
+    (step28 : ∀ n : Point, n.onCircle ABCD → |(f─n)| = |(f─g)| → n = g ∨ n = h) := by sorry
 
-  exact ⟨step13, step14, step9, step28⟩
+  have hh_on : h.onCircle ABCD := by sorry
+  have hh_opp : h.opposingSides g AD := by sorry
+  exact ⟨step13, step15, step16, step14, h, hh_on, hh_opp, step21.symm, step28⟩
   euclid_conclude_sentence "3.7.29"
     "Thus, if some point, which is not the center of the circle, is taken on the diameter of a circle, and some straight-lines radiate from the point towards the (circumference of the) circle, (then) the greatest (straight-line) will be that on which the center (lies), and the least the remainder (of the same diameter). And for the others, a (straight-line) nearer to the (straight-line) through the center is always greater than a (straight-line) further away. And only two equal (straight-lines) will radiate from the same point towards the (circumference of the) circle, (one) on each (side) of the least (straight-line). (Which is) the very thing it was required to show."
 

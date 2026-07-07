@@ -1,4 +1,5 @@
 import SystemE
+import Book3.Prop01.Main
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -19,18 +20,27 @@ by
   euclid_intro_sentence "3.14.0"
     "In a circle, equal straight-lines are equally far from the center, and (straight-lines) which are equally far from the center are equal to one another. Let $ABDC$$^{\\,\\dag}$ be a circle, and let $AB$ and $CD$ be equal straight-lines within it. I say that $AB$ and $CD$ are equally far from the center."
 
-  -- Shared constructions: introduce line objects EF, EG, AE, EC
-  -- Distinctness haves so euclid_apply can discharge e≠f, e≠g, a≠e, e≠c quickly
-  have hef : e ≠ f := by sorry
-  have heg : e ≠ g := by sorry
+  -- Shared constructions: introduce line objects EF, EG, AE, EC.
+  -- a≠e, e≠c are ENTAILED (centre inside, A/C on the circle) → sound, provable in Phase B.
+  -- @euclid_gap (generic-position — NOT unfaithful, NOT a bug): e≠f and e≠g are FALSE when the
+  -- chord AB (resp CD) is a DIAMETER, because the perpendicular foot from the centre then IS the
+  -- centre (E=F, E=G). Euclid reads E≠F off the figure. Since AB=CD, both are diameters together;
+  -- that degenerate case (distances 0, chords equal) makes the biconditional trivially true.
+  -- FIX (pending): wrap the whole proof in `by_cases h_ef : e = f` exactly as Book3/Prop09 does —
+  -- degenerate branch proves the biconditional directly (both sides trivial), generic branch (e≠f,
+  -- e≠g) is Euclid's argument below. Until then these two `sorry`s are UNPROVABLE by design.
+  have hef : e ≠ f := by sorry -- @euclid_gap (diameter case: E=F)
+  have heg : e ≠ g := by sorry -- @euclid_gap (diameter case: E=G)
   have hae : a ≠ e := by sorry
   have hec : e ≠ c := by sorry
   euclid_apply (line_from_points e f) as EF
   euclid_apply (line_from_points e g) as EG
-  -- orchestrator-note: step1 names the pre-given center E; claim = hypothesis since E is already in signature
+  -- Faithful "find the centre [3.1]": construct the located centre e' via proposition_1, then
+  -- identify it with the given centre e (centre_unique) — honors the III.1 construction.
+  euclid_apply (proposition_1 ABDC) as e'
   euclid_sentence "3.14.1"
     "For let the center of circle $ABDC$ be found [Prop.~3.1], and let it be (at) $E$."
-    (step1 : e.isCentre ABDC) := by sorry
+    (step1 : e'.isCentre ABDC ∧ e' = e) := by sorry
 
   euclid_sentence "3.14.2"
     "And let $EF$ and $EG$ be drawn from (point) $E$, perpendicular to $AB$ and $CD$ (respectively) [Prop.~1.12]."

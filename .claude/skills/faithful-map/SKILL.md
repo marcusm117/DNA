@@ -83,6 +83,23 @@ Batching all claims in one pass is what produces the claim + dependency mistakes
 - **Comments are ONE line.** If a claim seems to need a bulleted/multi-line comment, that is the signal to
   SPLIT the sentence into atomic ones (re-split) — not to write a long comment.
 
+## ⛔ OUTSIDE-SOURCE BUG → STOP AND TELL THE HUMAN (do NOT silently "fix" it)
+A discrepancy you hit while mapping is one of THREE things — only the first is yours to fix outright:
+- **OUR bug → fix it, quietly.** The map is unfaithful: an invented order/betweenness, a claim that
+  restates a given, a construction that puts a point where Euclid's isn't. Re-derive from the sentence.
+- **A Euclid generic-position PROOF gap → fill it + mark `@euclid_gap`.** Euclid reads a true-in-general
+  fact off the figure that a degenerate admissible model violates; his theorem still holds. Add the
+  implicit case (`by_cases`/`wlog`) and mark the site (CLAUDE.md's `@euclid_gap`). Expected, not a bug.
+- **A genuine OUTSIDE-SOURCE bug (NOT ours, NOT a mere implicit case) → STOP + REPORT.** A real error in
+  the source: Euclid's own mistake, a translation/text error (the English asserts something inconsistent
+  or absent from the Greek), or a wrong editorial citation (a `[Prop.~B.N]` bracket that points at the
+  wrong proposition — e.g. III.1 brackets segment-bisection as `[Prop.~1.9]`, but 1.9 is angle-bisection;
+  it is I.10). **Do NOT paper over it:** never edit the canonical text, never swap the Lean to chase a
+  wrong bracket, never invent a claim/workaround to go green. TELL the human with the evidence and let
+  THEM decide — correct the source, accept a documented gap, or (for a wrong citation) add
+  `-- @suppress_deps_check "reason"` on its own line directly above the sentence, which waives criterion-3
+  for that sentence while the text still tiles byte-for-byte. "Bug" = an outside-source error, never ours.
+
 ## READING POLICY (you may read anything — but prefer the translation)
 You are NOT restricted: you MAY read the diagram, `SystemE/**`, `Book/PropNN.lean` originals, done Book-2
 props, and use `python3 scripts/find.py …`. **But default to the VOCABULARY below + a direct reading of

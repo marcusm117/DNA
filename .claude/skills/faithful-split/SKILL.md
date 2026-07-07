@@ -42,6 +42,13 @@ ONE space, so extra whitespace is YOUR responsibility:
   Never normalize, collapse, or invent whitespace — reproduce exactly what the file has. A dropped
   boundary space is the #1 cause of a tiling FAIL.
 
+⚠ **A BUG IN THE SOURCE STAYS IN YOUR SLICES — tile it verbatim and FLAG it, never correct it.** If the
+text has an obvious typo, an internally-inconsistent statement, or a wrong editorial citation (a
+`[Prop.~B.N]` that names the wrong proposition — e.g. III.1's `[Prop.~1.9]` for a segment-bisection that
+is really I.10), you STILL reproduce it character-for-character (RULE 2 is absolute), and you TELL the
+human about it — you do NOT silently fix the text. Correcting an outside-source error is the human's call,
+not the splitter's. "Bug" here means the source is wrong, never that your split is wrong.
+
 **RULE 3 — ONE ATOMIC CLAIM PER ENTRY. A long/compound sentence becomes MULTIPLE entries.** Each entry
 asserts ONE thing: one equality, one angle fact, one figure property, one construction action, one
 "if X then Y" consequence, one contradiction. **Do NOT keep a multi-idea sentence as a single entry just

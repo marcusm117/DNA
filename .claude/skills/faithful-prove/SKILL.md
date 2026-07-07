@@ -557,6 +557,18 @@ depth, by compiler identity. The script wires each sentence as `euclid_apply (he
 …)`, and the olean checker follows the closure INTO `stepN.lean` (and its sub-files). This is why the
 proof arm works: a prop cited via `euclid_apply` inside your backing file counts.
 
+**⛔ When criterion-3 fails because the SOURCE CITATION is wrong — STOP, don't game it.** If `--dependency`
+flags a `[Prop.~B.M]` that no faithful proof can satisfy because the bracket itself is wrong (the edition
+cites the wrong proposition — e.g. III.1 brackets a segment-bisection as `[Prop.~1.9]`, but 1.9 is
+angle-bisection; the construction is I.10 = `proposition_10`), that is an OUTSIDE-SOURCE bug, NOT yours.
+Do NOT `euclid_apply` the wrong prop, swap the Main construction, or restate the claim to make the regex
+pass — that would falsify the record. TELL the human. With their OK, the fix is a
+`-- @suppress_deps_check "reason"` line on its own directly above that `euclid_sentence`: it waives
+criterion-3 for that one sentence (in `--dependency`, `--all`, AND gate C) with a mandatory, greppable
+reason, while the source text and the correct `proposition_*` construction stay untouched. Reserve it for
+a genuinely-wrong citation you've verified against the real Euclid numbering — never to silence a real
+gap (a legitimately-cited prop you simply haven't `euclid_apply`'d yet — that one you must actually cite).
+
 ---
 
 ## THE FILE STRUCTURE (where backing/sub files go)
