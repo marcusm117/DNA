@@ -55,17 +55,24 @@ by
       obtain ⟨l, hl_on_circle, hl_on_HL, hl_ne_h⟩ := hl_ex
       euclid_sentence "3.9.2"
         "And $ED$ and $FD$ being joined, let them be drawn through to points $G$, $K$, $H$, and $L$."
-        (step2 : e.onLine GK ∧ d.onLine GK ∧ f.onLine HL ∧ d.onLine HL ∧
-                 g.onCircle ABC ∧ k.onCircle ABC ∧ g.onLine GK ∧ k.onLine GK ∧
-                 h.onCircle ABC ∧ l.onCircle ABC ∧ h.onLine HL ∧ l.onLine HL) := by sorry
+        (step2 :
+          -- ED joined (E, D on line GK), produced through to G, K on the circle:
+          (e.onLine GK ∧ d.onLine GK) ∧
+          (g.onCircle ABC ∧ g.onLine GK) ∧ (k.onCircle ABC ∧ k.onLine GK) ∧
+          -- FD joined (F, D on line HL), produced through to H, L on the circle:
+          (f.onLine HL ∧ d.onLine HL) ∧
+          (h.onCircle ABC ∧ h.onLine HL) ∧ (l.onCircle ABC ∧ l.onLine HL)) := by sorry
 
+      -- @assumption_valid
+      have step3_assumption1 : |(a─e)| = |(e─b)| := by assumption
+      -- @assumption_valid
+      have step3_assumption2 : |(e─d)| = |(e─d)| := by rfl
       -- @assumption ("$AE$ is equal to $EB$", |(a─e)| = |(e─b)|)
       -- @assumption ("$ED$ (is) common", |(e─d)| = |(e─d)|)
       euclid_sentence "3.9.3"
         "Therefore, since $AE$ is equal to $EB$, and $ED$ (is) common, the two (straight-lines) $AE$, $ED$ are equal to the two (straight-lines) $BE$, $ED$ (respectively)."
         (step3 : |(a─e)| = |(b─e)| ∧ |(e─d)| = |(e─d)|) := by sorry
 
-      -- orchestrator-hypothesis: DA=DB is theorem hypothesis |(d─a)| = |(d─b)|; Euclid cites it explicitly for the I.8 SAS argument; RULE 2 tension acknowledged
       euclid_sentence "3.9.4"
         "And the base $DA$ (is) equal to the base $DB$."
         (step4 : |(d─a)| = |(d─b)|) := by sorry
@@ -86,6 +93,8 @@ by
         "and at right-angles."
         (step8 : ∠ a:e:d = ∟) := by sorry
 
+      -- @assumption_gap
+      have step9_assumption1 : e.onLine GK ∧ between a e b ∧ |(a─e)| = |(e─b)| ∧ ∠ a:e:d = ∟ → ∀ o : Point, o.isCentre ABC → o.onLine GK := by sorry
       -- @assumption ("if some straight-line in a circle cuts some (other) straight-line in half, and at right-angles, (then) the center of the circle is on the former (straight-line)", e.onLine GK ∧ between a e b ∧ |(a─e)| = |(e─b)| ∧ ∠ a:e:d = ∟ → ∀ o : Point, o.isCentre ABC → o.onLine GK)
       euclid_sentence "3.9.9"
         "And since, if some straight-line in a circle cuts some (other) straight-line in half, and at right-angles, (then) the center of the circle is on the former (straight-line) [Prop.~3.1~corr.], the center of the circle is thus on $GK$."

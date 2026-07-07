@@ -1,5 +1,6 @@
 import SystemE
 import Book3.Prop01.Main
+import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -40,8 +41,6 @@ by
   euclid_intro_sentence "3.8.0"
     "If some point is taken outside a circle, and some straight-lines are drawn from the point to the (circumference of the) circle, one of which (passes) through the center, the remainder (being) random, (then) for the straight-lines radiating towards the concave (part of the) circumference, the greatest is that (passing) through the center. For the others, a (straight-line) nearer$^\\dag$ to the (straight-line) through the center is always greater than one further away. For the straight-lines radiating towards the convex (part of the) circumference, the least is that between the point and the diameter. For the others, a (straight-line) nearer to the least (straight-line) is always less than one further away. And only two equal (straight-lines) will radiate from the point towards the (circumference of the) circle, (one) on each (side) of the least (straight-line). Let $ABC$ be a circle, and let some point $D$ be taken outside $ABC$, and from it let some straight-lines, $DA$, $DE$, $DF$, and $DC$, be drawn through (the circle), and let $DA$ be through the center. I say that for the straight-lines radiating towards the concave (part of the) circumference, $AEFC$, the greatest is the one (passing) through the center, (namely) $AD$, and (that) $DE$ (is) greater than $DF$, and $DF$ than $DC$. For the straight-lines radiating towards the convex (part of the) circumference, $HLKG$, the least is the one between the point and the diameter $AG$, (namely) $DG$, and a (straight-line) nearer to the least (straight-line) $DG$ is always less than one farther away, (so that) $DK$ (is less) than $DL$, and $DL$ than than $DH$."
 
-  -- Faithful "find the centre [3.1]": construct the located centre m' via proposition_1, then
-  -- identify it with the given centre m (centre_unique) — honors the III.1 construction.
   euclid_apply (proposition_1 ABC) as m'
   euclid_sentence "3.8.1"
     "For let the center of the circle be found [Prop.~3.1], and let it be (at point) $M$ [Prop.~3.1]."
@@ -58,6 +57,8 @@ by
     (step2 : distinctPointsOnLine m e ME ∧ distinctPointsOnLine m f MF ∧ distinctPointsOnLine m c MC ∧
              distinctPointsOnLine m k MK ∧ distinctPointsOnLine m l ML ∧ distinctPointsOnLine m h MH) := by sorry
 
+  -- @assumption_valid
+  have step3_assumption1 : |(m─a)| = |(m─e)| := by euclid_finish
   -- @assumption ("$AM$ is equal to $EM$", |(m─a)| = |(m─e)|)
   euclid_sentence "3.8.3"
     "And since $AM$ is equal to $EM$, let $MD$ be added to both."
@@ -67,19 +68,23 @@ by
     "Thus, $AD$ is equal to $EM$ and $MD$."
     (step4 : |(d─a)| = |(e─m)| + |(m─d)|) := by sorry
 
+  -- @assumption_gap
+  have step5_assumption1 : |(e─m)| + |(m─d)| > |(e─d)| := by sorry
   -- @assumption ("$EM$ and $MD$ is greater than $ED$", |(e─m)| + |(m─d)| > |(e─d)|)
   euclid_sentence "3.8.5"
     "But, $EM$ and $MD$ is greater than $ED$ [Prop.~1.20]. Thus, $AD$ is also greater than $ED$."
     (step5 : |(d─a)| > |(d─e)|) := by sorry
 
+  -- @assumption_valid
+  have step6_assumption1 : |(m─e)| = |(m─f)| := by euclid_finish
+  -- @assumption_valid
+  have step6_assumption2 : |(m─d)| = |(m─d)| := by rfl
   -- @assumption ("$ME$ is equal to $MF$", |(m─e)| = |(m─f)|)
   -- @assumption ("$MD$ (is) common", |(m─d)| = |(m─d)|)
   euclid_sentence "3.8.6"
     "Again, since $ME$ is equal to $MF$, and $MD$ (is) common, the (straight-lines) $EM$, $MD$ are thus equal to $FM$, $MD$."
     (step6 : |(e─m)| + |(m─d)| = |(f─m)| + |(m─d)|) := by sorry
 
-  -- orchestrator-note: ∠ e:m:d > ∠ f:m:d is a theorem hypothesis; sentence states it as a figure fact
-  -- (the dagger footnote signals it requires geometric argument — flagged for gate-A review).
   euclid_sentence "3.8.7"
     "And angle $EMD$ is greater than angle $FMD$.$^\\ddag$"
     (step7 : ∠ e:m:d > ∠ f:m:d) := by sorry
@@ -88,12 +93,10 @@ by
     "Thus, the base $ED$ is greater than the base $FD$ [Prop.~1.24]."
     (step8 : |(d─e)| > |(d─f)|) := by sorry
 
-  -- orchestrator-note: "similarly" = real claim, body stays sorry (Phase B proves it analogously)
   euclid_sentence "3.8.9"
     "So, similarly, we can show that $FD$ is also greater than $CD$."
     (step9 : |(d─f)| > |(d─c)|) := by sorry
 
-  -- Summary of concave block (steps 10–12 map to the three conjuncts of the concave goal)
   euclid_sentence "3.8.10"
     "Thus, $AD$ (is) the greatest (straight-line),"
     (step10 : |(d─a)| > |(d─e)|) := by sorry
@@ -106,6 +109,10 @@ by
     "and $DF$ than $DC$."
     (step12 : |(d─f)| > |(d─c)|) := by sorry
 
+  -- @assumption_gap
+  have step13_assumption1 : |(m─k)| + |(k─d)| > |(m─d)| := by sorry
+  -- @assumption_valid
+  have step13_assumption2 : |(m─g)| = |(m─k)| := by euclid_finish
   -- @assumption ("$MK$ and $KD$ is greater than $MD$", |(m─k)| + |(k─d)| > |(m─d)|)
   -- @assumption ("$MG$ (is) equal to $MK$", |(m─g)| = |(m─k)|)
   euclid_sentence "3.8.13"
@@ -117,6 +124,8 @@ by
     (step14 : |(d─g)| < |(d─k)|) := by sorry
 
   euclid_apply (line_from_points l d) as LD
+  -- @assumption_gap
+  have step15_assumption1 : formTriangle m l d ML LD AG ∧ m.sameSide k LD ∧ d.sameSide k ML ∧ l.sameSide k AG := by sorry
   -- @assumption ("in triangle $MLD$, the two internal straight-lines $MK$ and $KD$ were constructed on one of the sides, $MD$", formTriangle m l d ML LD AG ∧ m.sameSide k LD ∧ d.sameSide k ML ∧ l.sameSide k AG)
   euclid_sentence "3.8.15"
     "And since in triangle $MLD$, the two internal straight-lines $MK$ and $KD$ were constructed on one of the sides, $MD$, (then) $MK$ and $KD$ are thus less than $ML$ and $LD$ [Prop.~1.21]."
@@ -130,12 +139,10 @@ by
     "Thus, the remainder $DK$ is less than the remainder $DL$."
     (step17 : |(d─k)| < |(d─l)|) := by sorry
 
-  -- orchestrator-note: "similarly" = real claim, body stays sorry
   euclid_sentence "3.8.18"
     "So, similarly, we can show that $DL$ is also less than $DH$."
     (step18 : |(d─l)| < |(d─h)|) := by sorry
 
-  -- Summary of convex block (steps 19–21 map to the three conjuncts of the convex goal)
   euclid_sentence "3.8.19"
     "Thus, $DG$ (is) the least (straight-line),"
     (step19 : |(d─g)| < |(d─k)|) := by sorry
@@ -151,9 +158,6 @@ by
   euclid_wts "3.8.22"
     "I also say that only two equal (straight-lines) will radiate from point $D$ towards (the circumference of) the circle, (one) on each (side) on the least (straight-line), $DG$."
 
-  -- Construct B: angle DMB = angle KMD at M on line MD (= AG), on the side of AG opposite K.
-  -- B is the intersection of the angle-ray from M with the circle on the opposite side from K.
-  -- In Phase A we introduce B via an existential; Phase B will use proposition_23 + circle intersection.
   have hb0_exist : ∃ b0 : Point, b0.onCircle ABC ∧ b0.opposingSides k AG ∧ ∠ d:m:b0 = ∠ k:m:d := by sorry
   obtain ⟨b0, hb0_circ, hb0_opp, hb0_ang⟩ := hb0_exist
   euclid_apply (line_from_points d b0) as DB
@@ -161,6 +165,10 @@ by
     "Let the angle $DMB$, equal to angle $KMD$, be constructed on the straight-line $MD$, at the point $M$ on it [Prop.~1.23], and let $DB$ be joined."
     (step23 : b0.onCircle ABC ∧ b0.opposingSides k AG ∧ ∠ d:m:b0 = ∠ k:m:d ∧ distinctPointsOnLine d b0 DB) := by sorry
 
+  -- @assumption_valid
+  have step24_assumption1 : |(m─k)| = |(m─b0)| := by euclid_finish
+  -- @assumption_valid
+  have step24_assumption2 : |(m─d)| = |(m─d)| := by rfl
   -- @assumption ("$MK$ is equal to $MB$", |(m─k)| = |(m─b0)|)
   -- @assumption ("$MD$ (is) common", |(m─d)| = |(m─d)|)
   euclid_sentence "3.8.24"
@@ -186,14 +194,16 @@ by
       "For, if possible, let (such a straight-line) radiate, and let it be $DN$."
       (step28 : n.onCircle ABC ∧ |(d─n)| = |(d─k)|) := by sorry
 
+    -- @assumption_valid
+    have step29_assumption1 : |(d─k)| = |(d─n)| := by linarith
+    -- @assumption_valid
+    have step29_assumption2 : |(d─k)| = |(d─b0)| := by assumption
     -- @assumption ("$DK$ is equal to $DN$", |(d─k)| = |(d─n)|)
     -- @assumption ("$DK$ is equal to $DB$", |(d─k)| = |(d─b0)|)
     euclid_sentence "3.8.29"
       "Therefore, since $DK$ is equal to $DN$, but $DK$ is equal to $DB$, (then) $DB$ is thus also equal to $DN$,"
       (step29 : |(d─b0)| = |(d─n)|) := by sorry
 
-    -- orchestrator-note: "nearer equals further" = the equal-distance ordering violation;
-    -- in System E terms this is the same equality step29 from the ordering perspective.
     euclid_sentence "3.8.30"
       "(so that) a (straight-line) nearer to the least (straight-line) $DG$ [is] equal to one further away."
       (step30 : |(d─b0)| = |(d─n)|) := by sorry

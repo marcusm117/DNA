@@ -3,6 +3,7 @@ import Book1.Prop04.Main
 import Book1.Prop20.Main
 import Book1.Prop23.Main
 import Book1.Prop24.Main
+import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -47,11 +48,15 @@ by
     (step1 : distinctPointsOnLine b e BE ∧ distinctPointsOnLine c e CE ∧ distinctPointsOnLine g e GE) := by sorry
 
   have BF : Line := by sorry
+  -- @assumption_gap
+  have step2_assumption1 : formTriangle e b f BE BF AD := by sorry
   -- @assumption ("for every triangle (any) two sides are greater than the remaining (side)", formTriangle e b f BE BF AD)
   euclid_sentence "3.7.2"
     "And since for every triangle (any) two sides are greater than the remaining (side) [Prop.~1.20], $EB$ and $EF$ is thus greater than $BF$."
     (step2 : |(e─b)| + |(e─f)| > |(b─f)|) := by sorry
 
+  -- @assumption_valid
+  have step3_assumption1 : |(a─e)| = |(e─b)| := by euclid_finish
   -- @assumption ("$AE$ (is) equal to $BE$", |(a─e)| = |(e─b)|)
   euclid_sentence "3.7.3"
     "And $AE$ (is) equal to $BE$ [thus, $BE$ and $EF$ is equal to $AF$]."
@@ -61,6 +66,10 @@ by
     "Thus, $AF$ (is) greater than $BF$."
     (step4 : |(f─a)| > |(f─b)|) := by sorry
 
+  -- @assumption_valid
+  have step5_assumption1 : |(e─b)| = |(e─c)| := by euclid_finish
+  -- @assumption_valid
+  have step5_assumption2 : |(f─e)| = |(f─e)| := by rfl
   -- @assumption ("$BE$ is equal to $CE$", |(e─b)| = |(e─c)|)
   -- @assumption ("$FE$ (is) common", |(f─e)| = |(f─e)|)
   euclid_sentence "3.7.5"
@@ -83,6 +92,10 @@ by
     "So, for the same (reasons), $CF$ is also greater than $FG$."
     (step9 : |(f─c)| > |(f─g)|) := by sorry
 
+  -- @assumption_gap
+  have step10_assumption1 : |(g─f)| + |(f─e)| > |(g─e)| := by sorry
+  -- @assumption_valid
+  have step10_assumption2 : |(e─g)| = |(e─d)| := by euclid_finish
   -- @assumption ("$GF$ and $FE$ are greater than $EG$", |(g─f)| + |(f─e)| > |(g─e)|)
   -- @assumption ("$EG$ (is) equal to $ED$", |(e─g)| = |(e─d)|)
   euclid_sentence "3.7.10"
@@ -124,6 +137,10 @@ by
     "For let the (angle) $FEH$, equal to angle $GEF$, be constructed on the straight-line $EF$, at the point $E$ on it [Prop.~1.23], and let $FH$ be joined."
     (step18 : ∠ f:e:h = ∠ g:e:f ∧ distinctPointsOnLine f h FH) := by sorry
 
+  -- @assumption_gap
+  have step19_assumption1 : |(e─g)| = |(e─h)| := by sorry
+  -- @assumption_valid
+  have step19_assumption2 : |(e─f)| = |(e─f)| := by rfl
   -- @assumption ("$GE$ is equal to $EH$", |(e─g)| = |(e─h)|)
   -- @assumption ("$EF$ (is) common", |(e─f)| = |(e─f)|)
   euclid_sentence "3.7.19"
@@ -152,6 +169,10 @@ by
       "For, if possible, let $FK$ (so) radiate."
       (step23 : k.onCircle ABCD ∧ |(f─k)| = |(f─g)|) := by sorry
 
+    -- @assumption_valid
+    have step24_assumption1 : |(f─k)| = |(f─g)| := by assumption
+    -- @assumption_valid
+    have step24_assumption2 : |(f─h)| = |(f─g)| := by linarith
     -- @assumption ("$FK$ is equal to $FG$", |(f─k)| = |(f─g)|)
     -- @assumption ("$FH$ [is equal] to $FG$", |(f─h)| = |(f─g)|)
     euclid_sentence "3.7.24"

@@ -1334,5 +1334,203 @@
       "type": "|(f\u2500c)| = |(f\u2500b)|",
       "verdict": "closes"
     }
+  },
+  "Book3/Prop07": {
+    "step10_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$GF$ and $FE$ are greater than $EG$",
+      "type": "|(g\u2500f)| + |(f\u2500e)| > |(g\u2500e)|",
+      "verdict": "hard"
+    },
+    "step10_assumption2": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$EG$ (is) equal to $ED$",
+      "type": "|(e\u2500g)| = |(e\u2500d)|",
+      "verdict": "closes"
+    },
+    "step19_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$GE$ is equal to $EH$",
+      "type": "|(e\u2500g)| = |(e\u2500h)|",
+      "verdict": "error"
+    },
+    "step19_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$EF$ (is) common",
+      "type": "|(e\u2500f)| = |(e\u2500f)|",
+      "verdict": "closes"
+    },
+    "step24_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$FK$ is equal to $FG$",
+      "type": "|(f\u2500k)| = |(f\u2500g)|",
+      "verdict": "closes"
+    },
+    "step24_assumption2": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "$FH$ [is equal] to $FG$",
+      "type": "|(f\u2500h)| = |(f\u2500g)|",
+      "verdict": "closes"
+    },
+    "step2_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "for every triangle (any) two sides are greater than the remaining (side)",
+      "type": "formTriangle e b f BE BF AD",
+      "verdict": "wall"
+    },
+    "step3_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$AE$ (is) equal to $BE$",
+      "type": "|(a\u2500e)| = |(e\u2500b)|",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$BE$ is equal to $CE$",
+      "type": "|(e\u2500b)| = |(e\u2500c)|",
+      "verdict": "closes"
+    },
+    "step5_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$FE$ (is) common",
+      "type": "|(f\u2500e)| = |(f\u2500e)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop08": {
+    "step13_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$MK$ and $KD$ is greater than $MD$",
+      "type": "|(m\u2500k)| + |(k\u2500d)| > |(m\u2500d)|",
+      "verdict": "hard"
+    },
+    "step13_assumption2": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$MG$ (is) equal to $MK$",
+      "type": "|(m\u2500g)| = |(m\u2500k)|",
+      "verdict": "closes"
+    },
+    "step15_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "in triangle $MLD$, the two internal straight-lines $MK$ and $KD$ were constructed on one of the sides, $MD$",
+      "type": "formTriangle m l d ML LD AG \u2227 m.sameSide k LD \u2227 d.sameSide k ML \u2227 l.sameSide k AG",
+      "verdict": "wall"
+    },
+    "step24_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$MK$ is equal to $MB$",
+      "type": "|(m\u2500k)| = |(m\u2500b0)|",
+      "verdict": "closes"
+    },
+    "step24_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$MD$ (is) common",
+      "type": "|(m\u2500d)| = |(m\u2500d)|",
+      "verdict": "closes"
+    },
+    "step29_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "$DK$ is equal to $DN$",
+      "type": "|(d\u2500k)| = |(d\u2500n)|",
+      "verdict": "closes"
+    },
+    "step29_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$DK$ is equal to $DB$",
+      "type": "|(d\u2500k)| = |(d\u2500b0)|",
+      "verdict": "closes"
+    },
+    "step3_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$AM$ is equal to $EM$",
+      "type": "|(m\u2500a)| = |(m\u2500e)|",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$EM$ and $MD$ is greater than $ED$",
+      "type": "|(e\u2500m)| + |(m\u2500d)| > |(e\u2500d)|",
+      "verdict": "hard"
+    },
+    "step6_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$ME$ is equal to $MF$",
+      "type": "|(m\u2500e)| = |(m\u2500f)|",
+      "verdict": "closes"
+    },
+    "step6_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$MD$ (is) common",
+      "type": "|(m\u2500d)| = |(m\u2500d)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop09": {
+    "step3_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AE$ is equal to $EB$",
+      "type": "|(a\u2500e)| = |(e\u2500b)|",
+      "verdict": "closes"
+    },
+    "step3_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$ED$ (is) common",
+      "type": "|(e\u2500d)| = |(e\u2500d)|",
+      "verdict": "closes"
+    },
+    "step9_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "if some straight-line in a circle cuts some (other) straight-line in half, and at right-angles, (then) the center of the circle is on the former (straight-line)",
+      "type": "e.onLine GK \u2227 between a e b \u2227 |(a\u2500e)| = |(e\u2500b)| \u2227 \u2220 a:e:d = \u221f \u2192 \u2200 o : Point, o.isCentre ABC \u2192 o.onLine GK",
+      "verdict": "hard"
+    }
   }
 }
