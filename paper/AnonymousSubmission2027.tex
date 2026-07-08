@@ -150,11 +150,7 @@ We ran our methodology through Books 1, 2, and 3, generating \numproofs faithful
 % \end{figure}
 \section{Methodology}
 
-The goal of our methodology is to generate formal (Lean) proofs \emph{guaranteed} to satisfy \cref{tab:conditions} with minimal oracle\footnote{We use human experts for this, but it could be a very capable LLM for example} and LLM reliance, since oracle time is the most expensive, while LLM usage also costs money.
-
-Of the conditions in \cref{tab:conditions}, \methodname only requires the oracle the task of \emph{reviewing} \atomicity, and \atomicfaithfulness. The overall methodology is the LLM first splits up the NL proof into what it thinks are sentences satisfying \atomicity. A script checks \coverage is satisfied, and if not, the LLM is automatically prompted to fix the issue. Once the LLM is done with this, it is tasked with \atomicfaithfulness, the task of translating each NL assertion/assumption into formal lean. Then the LLM runs a script that \textit{partially} checks \citcond. Partially because some citations are intended to be used to proove this sentence's assertion, but at this point we only translate sentences, not prove them, so they are left with \texttt{sorry}. Finally, the oracle reviews this, ensuring \atomicity and \atomicfaithfulness are satisfied. If not, the oracle provides feedback to the LLM, which is prompted to fix the issue. This process continues until the oracle is satisfied, and concludes the \mapstage.
-
-Once the \mapstage is complete, we save the sentence, the split of assertion/assumption of this sentence, and its mapping to Lean in a file the LLM is not allowed to write to. This frozen mapping is the contract the \fillstage must satisfy without being able to weaken it: fill in the \texttt{sorry}'s left in the \mapstage (ensuring \soundness) and prove each citing the correct propositions (ensuring \citcond), entirely using LLM and scripts.
+Our goal is to generate Lean proofs \emph{guaranteed} to satisfy the \faithfulcriteria and \soundness (\cref{tab:conditions}) with minimal \oracle\footnote{We use human experts, but a capable \llm could serve.} and \llm{} reliance, since the \oracle is the most expensive resource and \llm{} calls cost money. Everything else is a \script: a deterministic procedure that uses no \llm. As \cref{tab:conditions} shows, every condition is checked by a \script or by Lean except \atomicity and \atomicfaithfulness, which the \oracle only \emph{reviews}. \methodname runs in two stages: a \mapstage that translates the NL proof sentence by sentence, and a \fillstage that proves each sentence.
 
 
 \begin{table*}[t]
@@ -177,26 +173,33 @@ Name & Condition & Checked by \\
 \end{tabular}
 \end{table*}
 
-% \begin{figure*}[t]
-% \centering
-% \includegraphics[width=\textwidth]{Figures/methodology.png}
-% \caption{Methodology.}
-% \label{fig:methodology}
-% \end{figure*}
+\subsection{\mapstage}
+The \llm splits the NL proof into sentences it judges atomic (\atomicity). A \script checks \coverage, that the sentences concatenate to the original proof, and re-prompts the \llm on any gap. The \llm then translates each sentence's assertion and assumptions into Lean (\atomicfaithfulness), and a \script \emph{partially} checks \citcond: partially, because citations meant to \emph{prove} a sentence are still \texttt{sorry} at this stage. The \oracle reviews \atomicity and \atomicfaithfulness and returns feedback until satisfied. The result is frozen into a file the \llm cannot edit, the contract the \fillstage must satisfy without weakening it.
 
 \subsection{\fillstage}
-Naively, one hands the mapped file --- Lean with one \texttt{sorry} per sentence --- to an LLM and asks it to fill them in. In many domains this local gap-filling works. Here it fails structurally: a \texttt{sorry} is not a gap but an independent theorem. Euclid reasons informally; our logic is System E, which he never used. A sentence like ``therefore $AB=CD$ [Prop.~I.4]'' is not one tactic call --- discharging it in System E requires re-establishing figure facts Euclid reads off the diagram and never states (betweenness, side-of-line, distinctness), which the SMT backend needs as explicit hypotheses. Each sentence is thus its own multi-step proof. Worse, the checker gives no signal on failure: \texttt{euclid\_finish} closes a \emph{small} explicit step by SMT but times out on anything larger, returning neither counterexample nor partial progress, so restate-and-rerun thrashes.
+Naively, one hands this file, Lean with one \texttt{sorry} per sentence, to the \llm to fill in. For a fully formal NL proof this local gap-filling works. Euclid's is not fully formal: he relies on diagrammatic reasoning, so a sentence like ``therefore $AB=CD$ [Prop.~I.4]'' is rarely one tactic call. Proving it in System E, a logic Euclid never used, means re-establishing the figure facts he read off the diagram, such as betweenness, side-of-line, and distinctness, as explicit hypotheses for the SMT backend, which again is why Book 1 \citep{murphy_autoformalizing_2024} had long compiling time issues. The backend also may give no signal on failure: \texttt{euclid\_finish} closes a small explicit step but times out on anything larger, with no counterexample and no partial progress, so blind retrying may not converge.
 
-These two facts --- every \texttt{sorry} is a theorem, the verifier is a timeout oracle --- force three constraints the \fillstage is built around. \textbf{Isolation:} each sentence is proved as a standalone lemma in its own file, importing only System E and the propositions it cites, so editing sentence $k$ never recompiles $1..k{-}1$. \textbf{Bounded decomposition:} every SMT query must close under a fixed cap; a step that exceeds it is recursively split into sub-lemmas until each leaf closes --- caps are never raised, work is subdivided. \textbf{Seeding:} to start a stuck goal we give the LLM a database of System-E facts indexed by what they conclude and consume, and it drives a fixed sequence of scripts that certify each lemma's proof cone in isolation, so a wrong path is cheap to discard. Throughout, the mapped sentences stay \texttt{sorry}; a final mechanical wiring step substitutes the proven lemmas, and by construction the wired proof compiles.
+\methodname instead builds the proof as a rooted, directed acyclic graph (\cref{alg:prove}). A \emph{node} is a claim to prove, and an \emph{edge} runs from a node to a child claim used in its proof; the root is the main body defined in the \mapstage, so the entire proof is \textsc{Prove}(root). At a node, \textsc{Prove} first attempts a direct proof; on a timeout or dead end it creates children whose conjunction closes the node and recurses on each. Two \script checks gate the children before any proof effort: \emph{sufficiency} (SF), that they close the node, and \emph{suppliability} (SP), that each child's hypotheses are available where it is used. Only the proof attempts and the choice of children come from the \llm. A child that recurs across nodes is proved once and reused, so the structure is a graph rather than a tree.
+
+Every node but the one being proved stays \texttt{sorry}. Because a \texttt{sorry} contributes its claim to the context exactly as a finished proof would, each node is proved in isolation yet the results compose: once all nodes pass, the assembled proof compiles with no further solver call, giving \soundness.
 
 \begin{algorithm}[t]
-\caption{\textsc{Fill}(node $n$) — recursive; every other node stays \texttt{sorry}.}
+\caption{\textsc{Prove}(node $C$): prove $C$, leaving every other node \texttt{sorry}. The whole proof is \textsc{Prove}(root).}
+\label{alg:prove}
 \begin{algorithmic}[1]
-\IF{SF($n$) fails}      \STATE fix claim \COMMENT{$n$ is the wrong thing to prove}
-\ELSIF{SP($n$) fails}   \STATE fix signature \COMMENT{a hypothesis isn't suppliable}
-\ELSIF{P($n) \le 30$s}  \STATE mark $n$ proved
-\ELSE                    \STATE split $n$ into sub-nodes; \textsc{Fill} each \COMMENT{timeout}
+\STATE attempt a direct proof of $C$ and compile it
+\IF{it compiles}
+  \STATE \textbf{return}
+\ELSIF{the error is readable}
+  \STATE fix it; \textbf{return} \textsc{Prove}($C$)
 \ENDIF
+\REPEAT
+  \STATE decompose $C$ into children $N_1,\dots,N_n$
+\UNTIL{SF and SP hold for all $N_i$}
+\FOR{$i = 1$ to $n$}
+  \STATE \textsc{Prove}($N_i$), or re-decompose $C$ if the split was wrong
+\ENDFOR
+\STATE \textbf{return}
 \end{algorithmic}
 \end{algorithm}
 
