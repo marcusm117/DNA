@@ -156,68 +156,74 @@ Our goal is to generate Lean proofs \emph{guaranteed} to satisfy the \faithfulcr
 
 \begin{table*}[t]
 \centering
-\caption{Conditions our methodology guarantees. An NL proof is a sequence of sentences (substrings of the NL proof), each asserting a mathematical statement, and some with justifying information we refer to as assumptions for this sentence. Script checks are automated with no LLM use, while oracle is checked through human experts.}
+\caption{Conditions \methodname guarantees. An NL proof splits into sentences $s_1,\dots,s_n$; the \mapstage maps each $s_i$ to a claim $C_i$ and assumptions $\Gamma_i$, which become hypotheses of $C_i$'s proof. \script checks are automated (no \llm); \oracle checks are by human experts.}
 \label{tab:conditions}
 \begin{tabular}{@{}l p{0.62\textwidth} l@{}}
 \toprule
 Name & Condition & Checked by \\
 \midrule
 \multicolumn{3}{@{}l}{\emph{Faithfulness}}\\
-\coverage           & The sentences concatenate, in order, to the entire proof & Script \\
-\atomicity          & Each sentence makes one assertion with the assumptions it uses (``since $S_1$ and $S_2$, therefore $A$'' has assumptions $S_1, S_2$ and assertion $A$) & Oracle \\
-\atomicfaithfulness & Each assertion and assumption is translated to a Lean statement asserting the same thing, in sentence order & Oracle \\
-\citcond            & Every proposition Euclid cites is also cited in the Lean proof, in the right place & Script \\
+\coverage           & $s_1,\dots,s_n$ concatenate, in order, to the NL proof & Script \\
+\atomicity          & Each $s_i$ asserts \emph{one} claim $C_i$ with assumptions $\Gamma_i$ (``since $P$ and $Q$, therefore $R$'': $\Gamma_i = \{P, Q\}$, assertion $R$) & Oracle \\
+\atomicfaithfulness & $C_i$ and each $\gamma \in \Gamma_i$ state the same as their text in $s_i$ & Oracle \\
+\citcond            & Every proposition $s_i$ cites is called somewhere in the proof & Script \\
 \midrule
 \multicolumn{3}{@{}l}{\emph{Soundness}}\\
-\soundness          & The Lean proof compiles with no \texttt{sorry} & Lean \\
+\soundness          & The assembled proof compiles with no \texttt{sorry} & Lean \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 \subsection{\mapstage}
-The \llm splits the NL proof into sentences it judges atomic (\atomicity). A \script checks \coverage, that the sentences concatenate to the original proof, and the \llm revises until it passes. The \llm then translates each sentence's assertion and assumptions into Lean (\atomicfaithfulness), and a \script \emph{partially} checks \citcond: partially, because citations meant to \emph{prove} a sentence are still \texttt{sorry} at this stage. The \oracle reviews \atomicity and \atomicfaithfulness and returns feedback until satisfied. The result is frozen into a file the \llm cannot edit, the contract the \fillstage must satisfy without weakening it.
+The \llm splits the NL proof into sentences it judges atomic (\atomicity). A \script checks \coverage, that the sentences concatenate to the original proof, and the \llm revises until it passes. The \llm then maps each sentence $s_i$ to its claim $C_i$ and assumptions $\Gamma_i$ (\atomicfaithfulness), and a \script \emph{partially} checks \citcond: partially, because citations meant to \emph{prove} a sentence are still \texttt{sorry} at this stage. The \oracle reviews \atomicity and \atomicfaithfulness and returns feedback until satisfied. The result is frozen into a file the \llm cannot edit, the contract the \fillstage must satisfy without weakening it.
 
 \subsection{\fillstage}
 Naively, one hands this file, Lean with one \texttt{sorry} per sentence, to the \llm to fill in. For a fully formal NL proof this local gap-filling works. Euclid's is not fully formal: he relies on diagrammatic reasoning, so a sentence like ``therefore $AB=CD$ [Prop.~I.4]'' is rarely one tactic call. Proving it in System E \citep{avigad_formal_2009}, an axiom system for diagram-based Euclidean geometry that Euclid never used, means re-establishing the figure facts he read off the diagram, such as betweenness, side-of-line, and distinctness, as explicit hypotheses for the SMT backend, which again is why Book 1 \citep{murphy_autoformalizing_2024} had long compiling time issues. The backend also may give no signal on failure: \texttt{euclid\_finish} closes a small explicit step but times out on anything larger, with no counterexample and no partial progress, so blind retrying may not converge.
 
-\methodname builds the proof as a rooted DAG (\cref{fig:dag}) and proves it with \cref{alg:prove}. Each \emph{node} is a single Lean lemma, and an \emph{edge} is a \texttt{have} in the parent that invokes a child. The root is the proposition; the \mapstage fixes its sentence-children, \textsc{Prove} discovers the rest, and a shared node is proved once even when several parents use it. Before a node's children are proved, two type-level \script checks gate them: \emph{sufficiency} (SF), that assuming the children's statements lets the node type-check, and \emph{suppliability} (SP), that each child's hypotheses are already present in the parent. To pick an axiom, the \llm queries a \script that indexes the System-E facts by what they conclude and consume.
+We model the proof functionally. In a proof assistant a proof of a statement $S$ is a term of type $S$, a lemma ``from $H$ prove $C$'' is proved by a function $H \to C$, and a \texttt{sorry} is a term of \emph{any} type, a placeholder proof.
 
-In Lean a \texttt{sorry} is a term of any type, so a lemma with \texttt{sorry} sub-claims still type-checks; a node therefore compiles without its children, which keeps every compile small and independent. This composes into a sound proof: each leaf is proved outright, each internal node is valid given its children's statements (which SF and SP make it use correctly), and a \script checks that every \texttt{sorry} is discharged by another node, down to the leaves, so the assembled proof has no gaps. Cost is thus bounded by decomposition: splitting deeper shrinks each node's own work until it compiles within a fixed budget, 30 seconds, however large the proof.
+\begin{definition}
+A \emph{node} is a function $f\colon H \to C$ with domain $\operatorname{dom} f = H$ and codomain $\operatorname{cod} f = C$. The proof of the proposition is the root node $f_{\mathrm{main}}\colon A \to G$. Every node $f$ is an ordered sequence of child nodes $f_1,\dots,f_k$ that its body invokes in turn, each $f_i$ recursing the same way; a \emph{leaf} ($k=0$) is proved directly. An \emph{edge} $f \to g$ means $f$ invokes $g$, so the nodes form a rooted DAG (\cref{fig:dag}) --- a node invoked by several parents is shared. The order bounds each child: the $i$-th child's \emph{context} is its parent's hypotheses together with the codomains of its earlier siblings, $\operatorname{ctx}(f_i) = H \cup \{\operatorname{cod} f_1,\dots,\operatorname{cod} f_{i-1}\}$, and $\operatorname{dom} f_i \subseteq \operatorname{ctx}(f_i)$.
+\end{definition}
+
+To prove a node $f\colon H \to C$ (\cref{alg:prove}), the \llm attempts it directly. If the solver stalls, it decomposes: the \llm adds a child $g\colon H' \to D$, writing both the codomain $D$ (a fact $f$ needs) and the domain $H'$ it should follow from. Assuming $D$ costs nothing --- a \texttt{sorry} of type $D$ stands in, so $f$ compiles before $g$ is built. Two \script checks gate the child first: \emph{suppliability} (SP), that $H' \subseteq \operatorname{ctx}(g)$ (its inputs are available), and \emph{sufficiency} (SF), that the children's codomains let $f$ produce $C$. Each child is then built by recursion; to find the rule giving $D$, the \llm queries a \script indexing the System-E facts by what they conclude and consume.
+
+Because each \texttt{sorry} stands in for an unproved child, $f$ compiles without its children, keeping every compile small and independent. The finished proof is $f_{\mathrm{main}}$ with every edge's child substituted by its proof, down to leaves, which have no children and are proved directly by a tactic drawing on their context; it is a complete proof of $G$ exactly when no \texttt{sorry} remains, every leaf proved and every edge discharged. Cost is thus bounded by decomposition: splitting deeper shrinks each node's own work until it compiles within a fixed budget, 30 seconds, however large the proof.
 
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[
-  nd/.style={draw, rounded corners, inner sep=2pt, font=\small}]
-\node[nd] (root) at (0,2) {proposition};
-\node[nd] (s1) at (-1.9,1) {$AB \parallel CD$};
-\node[nd] (s2) at (1.9,1) {$\angle ABC = \angle BCD$};
-\node[nd] (l1) at (-3,0) {$C$ off $AB$};
-\node[nd] (l2) at (-0.6,0) {$AB \neq CD$};
-\node[nd] (l3) at (1.9,0) {$\dots$};
+  nd/.style={draw, rounded corners, inner sep=2pt, align=center, font=\small}]
+\node[nd] (root) at (0,2.1) {$f_{\mathrm{main}}$\\$G$};
+\node[nd] (s1) at (-2.1,1.05) {$f_1$\\$AB \parallel CD$};
+\node[nd] (s2) at (2.1,1.05) {$f_2$\\$\angle ABC {=} \angle BCD$};
+\node[nd] (l1) at (-3.3,0) {$f_{1,1}$\\$C$ off $AB$};
+\node[nd] (g)  at (-0.6,0) {$g$\\$AB \neq CD$};
+\node[nd] (l3) at (2.1,0) {$f_{2,2}$\\$\dots$};
 \draw[->] (root) -- (s1); \draw[->] (root) -- (s2);
-\draw[->] (s1) -- (l1);   \draw[->] (s1) -- (l2);
-\draw[->] (s2) -- (l2);   \draw[->] (s2) -- (l3);
+\draw[->] (s1) -- (l1);   \draw[->] (s1) -- (g);
+\draw[->] (s2) -- (g);    \draw[->] (s2) -- (l3);
 \end{tikzpicture}
-\caption{The proof as a rooted DAG. Each \emph{node} is a claim; an \emph{edge} points to a child it depends on, left \texttt{sorry} while the node is proved so it compiles on its own. The root is the proposition; the leaves depend on nothing. A child shared by two parents ($AB \neq CD$) makes it a DAG rather than a tree.}
+\caption{The proof as a rooted DAG of \emph{functions} (codomain under each name). A node is a function $f\colon H \to C$; an edge $f \to g$ means $f$ invokes $g$; the root is $f_{\mathrm{main}}\colon A \to G$ and a leaf has no children. The function $g$ ($AB \neq CD$), invoked by both $f_1$ and $f_2$, is shared --- hence a DAG, not a tree.}
 \label{fig:dag}
 \end{figure}
 
 \begin{algorithm}[t]
-\caption{\textsc{Prove}(node $C$): prove $C$, leaving every other node \texttt{sorry}. The whole proof is \textsc{Prove}(root).}
+\caption{\textsc{Prove}(node $f\colon H \to C$), leaving every other node \texttt{sorry}. The whole proof is \textsc{Prove}($f_{\mathrm{main}}$).}
 \label{alg:prove}
 \begin{algorithmic}[1]
-\STATE attempt a direct proof of $C$ and compile it \COMMENT{\llm}
+\STATE attempt a direct proof of $C$ from $H$; compile it \COMMENT{\llm}
 \IF{it compiles}
   \STATE \textbf{return}
 \ELSIF{the error is readable}
-  \STATE fix it; \textbf{return} \textsc{Prove}($C$) \COMMENT{\llm}
+  \STATE fix it; \textbf{return} \textsc{Prove}($f$) \COMMENT{\llm}
 \ENDIF
 \REPEAT
-  \STATE split $C$ into children $N_1,\dots,N_n$ \COMMENT{\llm}
-  \STATE check SF and SP on the children \COMMENT{\script}
+  \STATE add children $g_j\colon H'_j \to D_j$ meant to close $C$ \COMMENT{\llm}
+  \STATE check SF (the $D_j$ close $C$) and SP ($H'_j$ in context) \COMMENT{\script}
 \UNTIL{both hold}
-\FOR{$i = 1$ to $n$}
-  \STATE \textsc{Prove}($N_i$), or re-split $C$ if it was wrong \COMMENT{\llm}
+\FOR{each child $g_j$}
+  \STATE \textsc{Prove}($g_j$), or revise the children if $C$ still fails \COMMENT{\llm}
 \ENDFOR
 \STATE \textbf{return}
 \end{algorithmic}
