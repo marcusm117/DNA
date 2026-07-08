@@ -91,6 +91,7 @@
 \usepackage{amsthm}
 \usepackage{xspace}
 \usepackage{cleveref}   % \cref / \Cref auto-naming (no hyperref -> no links, AAAI-safe)
+\usepackage{tikz}
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 \newtheorem{definition}{Definition}
@@ -162,9 +163,9 @@ Our goal is to generate Lean proofs \emph{guaranteed} to satisfy the \faithfulcr
 Name & Condition & Checked by \\
 \midrule
 \multicolumn{3}{@{}l}{\emph{Faithfulness}}\\
-\coverage           & The sentences concatenate to the entire proof & Script \\
-\atomicity          & Each sentence has exactly one assertion and all assumptions it needs & Oracle \\
-\atomicfaithfulness & Every assertion and assumption is faithfully formalized, in text order & Oracle \\
+\coverage           & The sentences concatenate, in order, to the entire proof & Script \\
+\atomicity          & Each sentence makes one assertion with the assumptions it uses (``since $S_1$ and $S_2$, therefore $A$'' has assumptions $S_1, S_2$ and assertion $A$) & Oracle \\
+\atomicfaithfulness & Each assertion and assumption is translated to a Lean statement asserting the same thing, in sentence order & Oracle \\
 \citcond            & Every proposition Euclid cites is also cited in the Lean proof, in the right place & Script \\
 \midrule
 \multicolumn{3}{@{}l}{\emph{Soundness}}\\
@@ -174,30 +175,49 @@ Name & Condition & Checked by \\
 \end{table*}
 
 \subsection{\mapstage}
-The \llm splits the NL proof into sentences it judges atomic (\atomicity). A \script checks \coverage, that the sentences concatenate to the original proof, and re-prompts the \llm on any gap. The \llm then translates each sentence's assertion and assumptions into Lean (\atomicfaithfulness), and a \script \emph{partially} checks \citcond: partially, because citations meant to \emph{prove} a sentence are still \texttt{sorry} at this stage. The \oracle reviews \atomicity and \atomicfaithfulness and returns feedback until satisfied. The result is frozen into a file the \llm cannot edit, the contract the \fillstage must satisfy without weakening it.
+The \llm splits the NL proof into sentences it judges atomic (\atomicity). A \script checks \coverage, that the sentences concatenate to the original proof, and the \llm revises until it passes. The \llm then translates each sentence's assertion and assumptions into Lean (\atomicfaithfulness), and a \script \emph{partially} checks \citcond: partially, because citations meant to \emph{prove} a sentence are still \texttt{sorry} at this stage. The \oracle reviews \atomicity and \atomicfaithfulness and returns feedback until satisfied. The result is frozen into a file the \llm cannot edit, the contract the \fillstage must satisfy without weakening it.
 
 \subsection{\fillstage}
-Naively, one hands this file, Lean with one \texttt{sorry} per sentence, to the \llm to fill in. For a fully formal NL proof this local gap-filling works. Euclid's is not fully formal: he relies on diagrammatic reasoning, so a sentence like ``therefore $AB=CD$ [Prop.~I.4]'' is rarely one tactic call. Proving it in System E, a logic Euclid never used, means re-establishing the figure facts he read off the diagram, such as betweenness, side-of-line, and distinctness, as explicit hypotheses for the SMT backend, which again is why Book 1 \citep{murphy_autoformalizing_2024} had long compiling time issues. The backend also may give no signal on failure: \texttt{euclid\_finish} closes a small explicit step but times out on anything larger, with no counterexample and no partial progress, so blind retrying may not converge.
+Naively, one hands this file, Lean with one \texttt{sorry} per sentence, to the \llm to fill in. For a fully formal NL proof this local gap-filling works. Euclid's is not fully formal: he relies on diagrammatic reasoning, so a sentence like ``therefore $AB=CD$ [Prop.~I.4]'' is rarely one tactic call. Proving it in System E \citep{avigad_formal_2009}, an axiom system for diagram-based Euclidean geometry that Euclid never used, means re-establishing the figure facts he read off the diagram, such as betweenness, side-of-line, and distinctness, as explicit hypotheses for the SMT backend, which again is why Book 1 \citep{murphy_autoformalizing_2024} had long compiling time issues. The backend also may give no signal on failure: \texttt{euclid\_finish} closes a small explicit step but times out on anything larger, with no counterexample and no partial progress, so blind retrying may not converge.
 
-\methodname instead builds the proof as a rooted, directed acyclic graph (\cref{alg:prove}). A \emph{node} is a claim to prove, and an \emph{edge} runs from a node to a child claim used in its proof; the root is the main body defined in the \mapstage, so the entire proof is \textsc{Prove}(root). At a node, \textsc{Prove} first attempts a direct proof; on a timeout or dead end it creates children whose conjunction closes the node and recurses on each. Two \script checks gate the children before any proof effort: \emph{sufficiency} (SF), that they close the node, and \emph{suppliability} (SP), that each child's hypotheses are available where it is used. Only the proof attempts and the choice of children come from the \llm. A child that recurs across nodes is proved once and reused, so the structure is a graph rather than a tree.
+\methodname builds the proof as a rooted DAG (\cref{fig:dag}) and proves it with \cref{alg:prove}. Each \emph{node} is a single Lean lemma, and an \emph{edge} is a \texttt{have} in the parent that invokes a child. The root is the proposition; the \mapstage fixes its sentence-children, \textsc{Prove} discovers the rest, and a shared node is proved once even when several parents use it. Before a node's children are proved, two type-level \script checks gate them: \emph{sufficiency} (SF), that assuming the children's statements lets the node type-check, and \emph{suppliability} (SP), that each child's hypotheses are already present in the parent. To pick an axiom, the \llm queries a \script that indexes the System-E facts by what they conclude and consume.
 
-Every node but the one being proved stays \texttt{sorry}. Because a \texttt{sorry} contributes its claim to the context exactly as a finished proof would, each node is proved in isolation yet the results compose: once all nodes pass, the assembled proof compiles with no further solver call, giving \soundness.
+In Lean a \texttt{sorry} is a term of any type, so a lemma with \texttt{sorry} sub-claims still type-checks; a node therefore compiles without its children, which keeps every compile small and independent. This composes into a sound proof: each leaf is proved outright, each internal node is valid given its children's statements (which SF and SP make it use correctly), and a \script checks that every \texttt{sorry} is discharged by another node, down to the leaves, so the assembled proof has no gaps. Cost is thus bounded by decomposition: splitting deeper shrinks each node's own work until it compiles within a fixed budget, 30 seconds, however large the proof.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  nd/.style={draw, rounded corners, inner sep=2pt, font=\small}]
+\node[nd] (root) at (0,2) {proposition};
+\node[nd] (s1) at (-1.9,1) {$AB \parallel CD$};
+\node[nd] (s2) at (1.9,1) {$\angle ABC = \angle BCD$};
+\node[nd] (l1) at (-3,0) {$C$ off $AB$};
+\node[nd] (l2) at (-0.6,0) {$AB \neq CD$};
+\node[nd] (l3) at (1.9,0) {$\dots$};
+\draw[->] (root) -- (s1); \draw[->] (root) -- (s2);
+\draw[->] (s1) -- (l1);   \draw[->] (s1) -- (l2);
+\draw[->] (s2) -- (l2);   \draw[->] (s2) -- (l3);
+\end{tikzpicture}
+\caption{The proof as a rooted DAG. Each \emph{node} is a claim; an \emph{edge} points to a child it depends on, left \texttt{sorry} while the node is proved so it compiles on its own. The root is the proposition; the leaves depend on nothing. A child shared by two parents ($AB \neq CD$) makes it a DAG rather than a tree.}
+\label{fig:dag}
+\end{figure}
 
 \begin{algorithm}[t]
 \caption{\textsc{Prove}(node $C$): prove $C$, leaving every other node \texttt{sorry}. The whole proof is \textsc{Prove}(root).}
 \label{alg:prove}
 \begin{algorithmic}[1]
-\STATE attempt a direct proof of $C$ and compile it
+\STATE attempt a direct proof of $C$ and compile it \COMMENT{\llm}
 \IF{it compiles}
   \STATE \textbf{return}
 \ELSIF{the error is readable}
-  \STATE fix it; \textbf{return} \textsc{Prove}($C$)
+  \STATE fix it; \textbf{return} \textsc{Prove}($C$) \COMMENT{\llm}
 \ENDIF
 \REPEAT
-  \STATE decompose $C$ into children $N_1,\dots,N_n$
-\UNTIL{SF and SP hold for all $N_i$}
+  \STATE split $C$ into children $N_1,\dots,N_n$ \COMMENT{\llm}
+  \STATE check SF and SP on the children \COMMENT{\script}
+\UNTIL{both hold}
 \FOR{$i = 1$ to $n$}
-  \STATE \textsc{Prove}($N_i$), or re-decompose $C$ if the split was wrong
+  \STATE \textsc{Prove}($N_i$), or re-split $C$ if it was wrong \COMMENT{\llm}
 \ENDFOR
 \STATE \textbf{return}
 \end{algorithmic}
