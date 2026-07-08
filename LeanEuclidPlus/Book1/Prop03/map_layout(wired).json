@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "main-col": [
+      0,
+      0
+    ],
+    "card-step1": [
+      -5,
+      14
+    ],
+    "card-step2": [
+      0,
+      76
+    ],
+    "card-step3": [
+      0,
+      85
+    ],
+    "card-step4": [
+      7,
+      173
+    ],
+    "card-step5": [
+      7,
+      173
+    ],
+    "card-step6": [
+      7,
+      173
+    ]
+  },
+  "lod": {
+    "main-col": "full",
+    "card-step1": "full",
+    "card-step2": "compact",
+    "card-step3": "full",
+    "card-step4": "minimal",
+    "card-step5": "minimal",
+    "card-step6": "minimal"
+  },
+  "sliders": {
+    "tsz": 11,
+    "sz": 12.5,
+    "lh": 1.2,
+    "gap": 50,
+    "mw": 400
+  },
+  "sentLod": {
+    "1.3.0": "number",
+    "step2": "number",
+    "step4": "number",
+    "step5": "number",
+    "step6": "number",
+    "1.3.7": "number"
+  },
+  "hideComments": true,
+  "noSpaces": true,
+  "sorryMode": false
+}

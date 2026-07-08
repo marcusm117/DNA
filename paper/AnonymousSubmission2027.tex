@@ -130,9 +130,14 @@
 \section{Introduction}
 % - What problem: faithful formalization of Euclid proofs; gap vs prior (LeanEuclid).
 % - Our idea in 2-3 sentences. Contributions as a bulleted list.
-Given a natural language (NL) proof, a faithful formalization has many applications; it can be used to check the reasoning of an AI, it can be used to help expert mathematicians verify a large proof, and it is a necessary step to complete textbook level autoformalization. However, the notion of what a faithful proof even is, is not well addressed, nor how we can general faithful proofs.
+Given a natural language (NL) proof, a faithful formalization has many applications; it can be used to check the reasoning of an AI, it can be used to help expert mathematicians verify a large proof, and it is a necessary step to complete textbook level autoformalization. However, the notion of what a faithful proof even is, is not well addressed, nor how we can general faithful proofs. In order to address this, we give a set of \faithfulcriteria a proof must have, that any faithful methodology must ensure, and developped an algorithm \methodname, that guarantees these criteria are satisfied.
 
-We introduce a set of \faithfulcriteria a faithful proof must satisfy, developped \methodname, a methodology that guarantees the generated proofs saitisfy the \faithfulcriteria, and demonstrate this methodology on Euclid's Elements; generating faithful proofs that augmenting the work of \citep{murphy_autoformalizing_2024} to be more faithful, and extending the dataset to include Books 2 and 3 on top of the already existing Book 1 formalization by \citet{murphy_autoformalizing_2024}. We call this new dataset \dataset, which contains \numproofs proofs in total.
+The focus of our study was on Euclidian geometry, which is considered formal, so being faithful should not introduce many soundness issues, and an existing system exists \citep{murphy_autoformalizing_2024} and \citep{avigad_formal_2009} helping us get started.
+
+Thus we build off of the Book 1 proofs done by \citet{murphy_autoformalizing_2024}. We address two issues with this work. The first, is that we believe these proofs are not faithful. They do not satisfy our proposed \faithfulcriteria. The second, is that the work of \citet{murphy_autoformalizing_2024} takes very long to compile the formal proof and sometimes may not even compile. \citet{min_divide_2026} had to comment out 10 propositions because of this, and we were unable to compile some of the proofs in under 20 minutes. So we also ensure our methodology generates proofs that compile much faster.
+
+We ran our methodology through Books 1, 2, and 3, generating \numproofs faithful proofs of Euclid's Elements.
+
 
 \section{Motivating Example}
 % One concrete Euclid proposition: show an unfaithful vs faithful proof, motivate the method.
@@ -144,23 +149,52 @@ We introduce a set of \faithfulcriteria a faithful proof must satisfy, developpe
 % \label{fig:motivating}
 % \end{figure}
 \section{Methodology}
-\subsection{Conditions we guarantee}
-We are given a proof $\NLProof \in \NL$ which is just a string, and list properties a faithful formalization must have that our methodology 
 
-We say that \emph{for a proof to be faithful, it must be that} $\exists s_1, ..., s_n \in \NL$ such that all of the following conditions hold, where in conditions~2 onward $s$ ranges over every sentence $s \in \{s_1,\ldots,s_n\}$:
+The goal of our methodology is to generate formal (Lean) proofs satisfying \cref{tab:conditions} with minimal oracle \footnote{We use human experts for this, but it could be a very capable LLM for example} intervention. So the contribution here, is not that we eliminate the oracle, but reduce the oracle's effort, while still guaranteeing \faithfulcriteria and ensuring soundness.
 
+To do this, we have 3 phases (\cref{fig:methodology}). The first is the mapping phase where the oracle (with the help of LLM), must ensure that the overall structure is faithful, and each atomic sentence (defined in \cref{tab:conditions}) is faithful. This stage does not try and prove anything, and fills things with \texttt{sorry}. Then, we have the sorry-filling stage, which uses LLM+Scripts. This stage is very non-trivial. Following exactly what Euclid said is not enough to get Lean to compile, as shown by how some proofs done by \citet{murphy_autoformalizing_2024} take very long to compile. The compile time is because they relied too much on SMT solvers. Instead, we need to fill in the formal gaps caused by the using System E \citep{avigad_formal_2009}, and provide more facts to so it is easier on the SMT solver. Finally, we have the wiring phase, which replaces sorries and wires the lemmas together with the main file.
+
+
+\begin{table*}[t]
+\centering
+\caption{Conditions our methodology guarantees. An NL proof is a sequence of sentences (substrings of the NL proof), each asserting a mathematical statement, and some with justifying information we refer to as assumptions for this sentence. Script checks are automated with no LLM use, while oracle is checked through human experts.}
+\label{tab:conditions}
+\begin{tabular}{@{}l p{0.62\textwidth} l@{}}
+\toprule
+Name & Condition & Checked by \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Faithfulness}}\\
+\coverage           & The sentences concatenate to the entire proof & Script \\
+\atomicity          & Each sentence has exactly one assertion and all assumptions it needs & Oracle \\
+\atomicfaithfulness & Every assertion and assumption is faithfully formalized, in text order & Oracle \\
+\citcond            & Every proposition Euclid cites is also cited in the Lean proof, in the right place & Script \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Soundness}}\\
+\soundness          & The Lean proof compiles with no \texttt{sorry} & Lean \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% \begin{figure*}[t]
+% \centering
+% \includegraphics[width=\textwidth]{Figures/methodology.png}
+% \caption{Methodology.}
+% \label{fig:methodology}
+% \end{figure*}
+
+\subsection{Proving Phase}
+While the other two phases are straight forward, this phase is tricky because compile times are long. Some issues are for example
 \begin{enumerate}
-    \item $s_\text{intro}\circ s_1 \circ s_2\circ ... \circ s_n \circ s_\text{conclude}=P_\text{NL}$. \textbf{Script}
-    \item $\assert{s}\in \NL$ and $\reason{s} \subseteq \NL$ are correct. \textbf{Oracle} 
-    \item $\NLtoFormal{\assert{s}}$ and $ \NLtoFormal{\reason{s}}$ are correct . \textbf{Oracle}
-    \item $\forall c \in \citations{s}$, $c$ is a citation of a formal statement in $F$.
+	\item If we have many sentences, and each takes a while to compile, then editing a later sentence will require all previous steps to recompile, accumulating massive amounts of wall time (sometimes hours or days)
+	\item If the current subgoal cannot be closed due to SMT-timeout, where do we even begin?
+	\item Assuming we had some idea of what where to begin a proof, how do we know this path is correct without compiling other parts of the proof to save wall time?
 \end{enumerate}
 
+To address item 1, we do two things. First, we subgoals into various lemmas, and these lemmas into other sub-lemmas. Second, we leave as much as we can as \texttt{sorry}, and only filling these \texttt{sorry}'s in when necessary, so that compile times are fast. Only at the end, in the wiring phase do we know that replace the \texttt{sorry} with actual lemma calls (though at this stage we are certain this wiring must be correct).
 
-\subsection{Mapping Phase}
-\subsection{Sorry-Filling Phase}
-\subsection{Wiring Phase}
+To address item 2, we introduce a database with various search features to help the LLM get started.
 
+To address item 3, we have a very structured set of scripts that the LLM calls in a specific order. create the graph here.
 \section{Evaluation}
 % ~2.5 columns. Frame around the research questions below.
 

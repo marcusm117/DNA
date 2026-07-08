@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Proof map — Prop01</title>
+<style>
+:root {
+  --bg:        #0d0f18;
+  --panel:     #13151f;
+  --border:    #232636;
+  --font:      "JetBrains Mono","Fira Code","Cascadia Code","Menlo",monospace;
+  --sz:        12px;
+  --lh:        1.65;
+  --c-sent:    #52e3c2;
+  --c-have:    #f5a623;
+  --c-thm:     #7eb6ff;
+  --c-plain:   #cdd6f4;
+  --c-dimmed:  #454a68;
+  --c-bg-sent: rgba(82,227,194,.075);
+  --c-bg-have: rgba(245,166,35,.075);
+  --c-bg-thm:  rgba(126,182,255,.055);
+  --title-sz:  11px;
+  --conn-gap:  88px;
+  --card-gap:  8px;
+  --max-line-w: 9999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); }
+body {
+  color: var(--c-plain);
+  font-family: var(--font);
+  font-size: var(--sz);
+  line-height: var(--lh);
+  padding-bottom: 80px;
+  /* page scrolls natively — no overflow constraints */
+}
+
+/* ── fixed toolbar (stays in view during both X and Y scroll) ── */
+.toolbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: #0c0e17;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 20px;
+  display: flex; gap: 28px; align-items: center; flex-wrap: wrap;
+}
+.toolbar h1 {
+  font-size: 13px; font-weight: 600; color: var(--c-thm);
+  white-space: nowrap; margin-right: 8px;
+}
+.ctrl { display: flex; align-items: center; gap: 7px; }
+.ctrl label { font-size: 10px; color: var(--c-dimmed); white-space: nowrap; }
+.ctrl input[type=range] {
+  width: 110px; accent-color: var(--c-sent); cursor: pointer;
+}
+.ctrl .val {
+  font-size: 10.5px; color: #9aa0c0; min-width: 36px;
+}
+.legend {
+  display: flex; gap: 14px; margin-left: auto; flex-wrap: wrap; align-items: center;
+}
+.leg { display:flex; align-items:center; gap:5px; font-size:9.5px; color:var(--c-dimmed); }
+.leg-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+
+/* ── page body — top padding clears the fixed toolbar ── */
+.page { padding: 60px 48px 80px; padding-top: 72px; }
+
+/* ── outer (SVG anchor) ── */
+.outer {
+  display: flex; gap: 0;
+  align-items: flex-start;
+  position: relative;
+  /* top / bottom / left margin around the graph */
+  padding: 40px 0 60px 40px;
+}
+#svg-layer {
+  position: absolute; top: 0; left: 0;
+  pointer-events: none; overflow: visible; z-index: 10;
+}
+
+/* ── Lean syntax colours ── */
+.kw-def    { color: #c792ea; font-weight: 600; }  /* theorem/lemma/def/import */
+.kw-by     { color: #89ddff; font-weight: 600; }  /* by */
+.kw-have   { color: #f5a623; font-weight: 600; }  /* have/let */
+.kw-tac    { color: #82aaff; }                     /* exact/apply/rw/simp/linarith … */
+.kw-euclid { color: #21c7a8; font-weight: 600; }  /* euclid_apply/finish/intros */
+.kw-sent   { color: #52e3c2; font-weight: 600; }  /* euclid_sentence */
+.kw-quant  { color: #c792ea; }                     /* ∀/∃/fun/match */
+.kw-bool   { color: #f78c6c; }                     /* true/false */
+.kw-sorry  { color: #ff5370; font-weight: 700; background: rgba(255,83,112,.12);
+             padding: 0 2px; border-radius: 2px; }
+.op-assign { color: #89ddff; }   /* := */
+.op-arrow  { color: #89ddff; }   /* → ← ↔ => */
+.op-logic  { color: #c792ea; }   /* ∧ ∨ ¬ */
+.op-rel    { color: #89ddff; }   /* = ≠ ≤ ≥ */
+.op-colon  { color: #89ddff; }   /* : */
+.op-special{ color: #ffcb6b; }   /* ∟ △ ─ ∠ */
+.t-str     { color: #c3e88d; }   /* "string literals" */
+.t-num     { color: #f78c6c; }   /* numbers */
+.t-id      { color: var(--c-plain); }
+.t-brk-o   { color: #ffcb6b; }   /* ( [ { ⟨ */
+.t-brk-c   { color: #ffcb6b; }   /* ) ] } ⟩ */
+
+/* ── column header ── */
+.col-header {
+  background: #181a27;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--title-sz); color: #8090b8;
+  font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  white-space: nowrap;
+  /* 3-zone grid: left-zone | center | right-zone */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: calc(var(--title-sz) * 2.4);
+}
+
+/* ── Main.lean panel ── */
+.main-col {
+  flex: 0 0 auto;
+  width: max-content;
+  min-width: 200px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;       /* clip to card edges cleanly */
+  align-self: flex-start;
+}
+.code-body { padding: 6px 0; }
+
+/* ── code lines ── */
+.code-line {
+  display: flex;
+  align-items: baseline;
+  padding: 0 10px;
+}
+/* .lc = line content: one flex child that owns all text + wrapping */
+.lc {
+  white-space: pre;          /* never wrap by default */
+  flex: 1;
+  min-width: 0;
+}
+/* wrap mode: only .lc wraps, never at span boundaries */
+html.wrap-lines .lc {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;   /* break long tokens, not at span edges */
+  word-break: normal;
+  max-width: var(--max-line-w);
+}
+html.wrap-lines .main-col,
+html.wrap-lines .card { width: var(--max-line-w); max-width: var(--max-line-w); }
+
+.code-line.plain     { color: var(--c-plain); }
+.code-line.collapsed { color: var(--c-dimmed); font-style: italic; }
+.code-line.collapsed .lc { white-space: pre-wrap; }
+/* theorem/sentence/have: background tint only — syntax spans control text color */
+.code-line.theorem  { background: var(--c-bg-thm); }
+.code-line.sentence { background: var(--c-bg-sent); }
+.code-line.have     { background: var(--c-bg-have); }
+.ln {
+  flex-shrink: 0; width: 24px;
+  color: var(--c-dimmed); font-size: 9px;
+  text-align: right; padding-right: 7px;
+  user-select: none;
+}
+
+/* ── assumption toggle ── */
+.hyp-btn {
+  display: inline;
+  background: #1e2236; border: 1px solid #353b56;
+  border-radius: 3px; color: #7a88bb;
+  font: var(--sz)/1 var(--font);
+  font-size: calc(var(--sz) * 0.83);
+  padding: 0 4px; margin-left: 4px;
+  cursor: pointer; vertical-align: baseline; white-space: nowrap;
+  transition: background .1s, color .1s;
+}
+.hyp-btn:hover { background: #272d48; color: #aab8e8; }
+.hyp-body { color: #9aa0c0; }
+
+/* ── depth columns ── */
+.depth-cols { display: flex; gap: 0; align-items: flex-start; padding-right: 60px; }
+.depth-col {
+  flex: 0 0 auto;
+  width: max-content;
+  display: flex; flex-direction: column; gap: var(--card-gap);
+  padding-left: var(--conn-gap);
+}
+
+/* ── cards ── */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;          /* clip cleanly; content sets width via max-content */
+  width: max-content;
+  min-width: 180px;
+}
+.card.sent-card { border-color: rgba(82,227,194,.20); }
+.card.have-card { border-color: rgba(245,166,35,.16); }
+.card-header {
+  background: #181a27;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--title-sz); color: #8090b8;
+  white-space: nowrap;
+  /* 3-zone grid: left-zone | center | right-zone */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: calc(var(--title-sz) * 2.4);
+}
+/* center zone: click to cycle LOD */
+.hdr-center {
+  display: flex; gap: 5px; align-items: center; justify-content: center;
+  padding: calc(var(--title-sz) * 0.35) 6px;
+  cursor: pointer;
+  flex: 1;
+}
+.hdr-center:hover { background: rgba(255,255,255,.04); }
+.cname   { font-weight: 700; font-size: var(--title-sz); }
+.cname.s { color: #6ef5d8; }   /* brighter teal for step files */
+.cname.h { color: #ffc04d; }   /* brighter orange for sub-step files */
+.depth-badge { display: none; }
+/* left and right click zones */
+.hdr-left, .hdr-right {
+  display: flex; align-items: center;
+  padding: 4px 6px;
+  height: 100%;
+  user-select: none;
+  transition: background .12s, color .12s;
+}
+.hdr-left  { justify-content: flex-start; cursor: w-resize; }
+.hdr-right { justify-content: flex-end;   cursor: e-resize; }
+.hdr-left:hover  { background: rgba(180,140,255,.10); color: rgba(180,140,255,.80); }
+.hdr-right:hover { background: rgba(82,227,194,.08);  color: rgba(82,227,194,.70); }
+.hdr-arrow {
+  font-size: 9px; opacity: 0.35;
+  transition: opacity .12s, transform .12s;
+}
+.hdr-left:hover  .hdr-arrow { opacity: 0.85; transform: scale(1.2); }
+.hdr-right:hover .hdr-arrow { opacity: 0.85; transform: scale(1.2); }
+/* selected state tints */
+.selected .hdr-left  { color: rgba(180,140,255,.65); }
+.selected .hdr-right { color: rgba(82,227,194,.65); }
+/* card body: NO scroll, NO height cap — show everything */
+.card-body { padding: 5px 0; }
+.card-body .code-line { font-size: calc(var(--sz) * 0.95); }
+
+/* ── selection: card glow — colour depends on card type ── */
+.card.sent-card.selected, .main-col.selected {
+  box-shadow: 0 0 0 2px rgba(82,227,194,.90), 0 0 20px rgba(82,227,194,.22);
+  z-index: 20;
+}
+.card.have-card.selected {
+  box-shadow: 0 0 0 2px rgba(245,166,35,.90), 0 0 20px rgba(245,166,35,.22);
+  z-index: 20;
+}
+.card.sent-card.selected .card-header, .main-col.selected .col-header {
+  background: rgba(82,227,194,.10);
+}
+.card.have-card.selected .card-header {
+  background: rgba(245,166,35,.10);
+}
+
+/* ── child-highlight: target card of a selected connection ── */
+.card.sent-card.child-highlight {
+  box-shadow: 0 0 0 1.5px rgba(82,227,194,.55), 0 0 10px rgba(82,227,194,.12);
+}
+.card.have-card.child-highlight {
+  box-shadow: 0 0 0 1.5px rgba(245,166,35,.55), 0 0 10px rgba(245,166,35,.12);
+}
+/* ── parent-highlight: source card of an incoming connection ── */
+.card.parent-highlight, .main-col.parent-highlight {
+  box-shadow: 0 0 0 1.5px rgba(180,140,255,.60), 0 0 10px rgba(180,140,255,.14);
+}
+/* ── parent source lines (incoming edges to selected card) ── */
+.code-line.sel-parent-line {
+  background: rgba(180,140,255,.12) !important;
+  outline: 1px solid rgba(180,140,255,.40);
+  cursor: pointer;
+}
+/* left/right halves of header show appropriate cursor hints */
+.card-header { cursor: grab; }
+.col-header  { cursor: grab; }
+
+/* ── sel-line: a [data-connects] line that is currently selected ── */
+.code-line.sel-line {
+  background: rgba(255,230,80,.11) !important;
+  outline: 1px solid rgba(255,230,80,.38);
+  cursor: pointer;
+}
+/* have/sentence lines are clickable (left = who uses me, right = what I use) */
+.code-line.have:hover, .code-line.sentence:hover {
+  background: rgba(255,255,255,.04) !important;
+  cursor: pointer;
+}
+
+/* ── type-reference highlight (purple = "who uses me") ── */
+.code-line.type-ref-highlight {
+  background: rgba(180,140,255,.12) !important;
+  outline: 1px solid rgba(180,140,255,.50);
+}
+.code-line.type-ref-source {
+  background: rgba(82,227,194,.15) !important;
+  outline: 2px solid rgba(82,227,194,.80);
+}
+
+/* ── Per-card LOD via data-lod attribute ── */
+
+/* compact: hide tactic body lines, show signature */
+[data-lod="compact"] .code-line[data-role="body"] { display: none; }
+[data-lod="compact"].card-body { padding-bottom: 2px; }
+
+/* minimal: just the header pill, no body at all */
+[data-lod="minimal"] .card-body  { display: none; }
+[data-lod="minimal"].card {
+  background: none; border-color: transparent; border-radius: 0;
+}
+[data-lod="minimal"] .card-header {
+  background: #1e2236; border: 1px solid #353b56;
+  border-radius: 5px; padding: 3px 9px;
+}
+[data-lod="minimal"] .depth-badge { display: none; }
+/* Main col in minimal/compact: same rules */
+.main-col[data-lod="compact"] .code-line[data-role="body"] { display: none; }
+.main-col[data-lod="minimal"] .code-body { display: none; }
+
+/* suppress text selection while dragging */
+body.dragging { user-select: none; }
+
+/* ── rubber-band selection rect ── */
+#rband {
+  position: fixed;
+  border: 1px solid rgba(82,227,194,.7);
+  background: rgba(82,227,194,.07);
+  pointer-events: none;
+  display: none;
+  z-index: 100;
+}
+
+/* ── layout controls ── */
+.export-group {
+  display: flex; gap: 8px; align-items: center;
+  border-left: 1px solid var(--border);
+  padding-left: 16px; margin-left: 4px;
+}
+.save-btn {
+  background: #1e2a1e; border: 1px solid rgba(82,227,194,.35);
+  border-radius: 4px; color: var(--c-sent);
+  font: 10px/1 var(--font); padding: 4px 10px; cursor: pointer;
+  white-space: nowrap; transition: background .1s;
+}
+.save-btn:hover { background: #253225; }
+.reset-btn {
+  background: #221a1a; border: 1px solid rgba(200,80,80,.30);
+  border-radius: 4px; color: #c87070;
+  font: 10px/1 var(--font); padding: 4px 10px; cursor: pointer;
+  white-space: nowrap; transition: background .1s;
+}
+.reset-btn:hover { background: #2e1a1a; }
+
+/* ── LOD global buttons ── */
+.lod-group { display: flex; gap: 3px; }
+.lod-btn {
+  background: #1a1d2e; border: 1px solid #353b56;
+  border-radius: 4px; color: #5a6080; font: 10px/1 var(--font);
+  padding: 3px 8px; cursor: pointer; white-space: nowrap;
+  transition: background .1s, color .1s, border-color .1s;
+}
+.lod-btn:hover  { background: #242840; color: #9aa0c0; }
+.lod-btn.active {
+  background: #272d48; border-color: var(--c-sent);
+  color: var(--c-sent);
+}
+/* ── per-card cycle button ── */
+/* colour center zone text to reflect current LOD state */
+[data-lod="full"]    .hdr-center .cname { opacity: 1; }
+[data-lod="compact"] .hdr-center .cname { opacity: 0.7; }
+[data-lod="minimal"] .hdr-center .cname { opacity: 0.5; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <h1>Proof map — Prop01</h1>
+  <div class="ctrl">
+    <label for="tsz-slider">Title</label>
+    <input type="range" id="tsz-slider" min="9" max="32" step="0.5" value="11">
+    <span class="val" id="tsz-val">11px</span>
+  </div>
+  <div class="ctrl">
+    <label for="sz-slider">Font</label>
+    <input type="range" id="sz-slider" min="9" max="20" step="0.5" value="12">
+    <span class="val" id="sz-val">12px</span>
+  </div>
+  <div class="ctrl">
+    <label for="lh-slider">Row&nbsp;height</label>
+    <input type="range" id="lh-slider" min="1.0" max="3.2" step="0.1" value="1.65">
+    <span class="val" id="lh-val">1.7×</span>
+  </div>
+  <div class="ctrl">
+    <label for="gap-slider">Node&nbsp;gap</label>
+    <input type="range" id="gap-slider" min="40" max="400" step="10" value="88">
+    <span class="val" id="gap-val">88px</span>
+  </div>
+  <div class="ctrl">
+    <label for="mw-slider">Max&nbsp;width</label>
+    <input type="range" id="mw-slider" min="200" max="2000" step="50" value="2000">
+    <span class="val" id="mw-val">&#8734;</span>
+  </div>
+  <div class="lod-group">
+    <button class="lod-btn"        data-lod="full"    onclick="setAllLod('full')">Full</button>
+    <button class="lod-btn"        data-lod="compact" onclick="setAllLod('compact')">Compact</button>
+    <button class="lod-btn active" data-lod="minimal" onclick="setAllLod('minimal')">Minimal</button>
+  </div>
+  <div class="export-group">
+    <button id="save-btn" class="save-btn" onclick="saveLayout()">Save layout</button>
+    <button class="save-btn" onclick="importLayout()">Import layout</button>
+    <input type="file" id="import-file" accept=".json" style="display:none">
+    <button class="reset-btn" onclick="resetLayout()">Reset</button>
+  </div>
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#7eb6ff"></div>theorem</div>
+    <div class="leg"><div class="leg-dot" style="background:#52e3c2"></div>euclid_sentence</div>
+    <div class="leg"><div class="leg-dot" style="background:#f5a623"></div>have node (dashed)</div>
+    <div class="leg" style="color:#7a88bb">Shift+click = multi-select</div>
+  </div>
+</div>
+<div id="rband"></div>
+<div class="page">
+<div class="outer">
+  <svg id="svg-layer"></svg>
+  <div class="main-col" data-lod="full">
+<div class="col-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level">Main.lean</span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+<div class="code-body">
+<div class="code-line collapsed" data-role="sig"><span class="ln"></span><span class="lc">-- (16 import / namespace lines)</span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> proposition_1 <span class="op-colon">:</span> <span class="op-special">∀</span> <span class="t-brk-o">(</span>a b <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>AB <span class="op-colon">:</span> Line<span class="t-brk-c">)</span>,</span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">  distinctPointsOnLine a b AB <span class="op-assign">→</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">  <span class="op-special">∃</span> c <span class="op-colon">:</span> Point, |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-euclid">euclid_intros</span></span></div>
+<div class="code-line sentence" data-role="body"   data-kind="sentence"><span class="ln">5</span><span class="lc">  <span class="kw-sent">euclid_intro_sentence</span> <span class="t-str">&quot;1.1.0&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span><span class="lc">    <span class="t-str">&quot;To construct an equilateral triangle on a given finite straight-line. Let $AB$ be the given finite straight-line. So it is required to construct an equilateral triangle on the straight-line $AB$.&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">7</span><span class="lc">  <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>circle_from_points a b<span class="t-brk-c">)</span> as BCD</span></div>
+<div class="code-line sentence" data-role="body" id="step1" data-connects="step1" data-kind="sentence"><span class="ln">8</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.1&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">9</span><span class="lc">    <span class="t-str">&quot;Let the circle $BCD$ with center $A$ and radius $AB$ have been drawn [Post.~3],&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">10</span><span class="lc">    <span class="t-brk-o">(</span>step1 <span class="op-colon">:</span> a.isCentre BCD <span class="op-logic">∧</span> b.onCircle BCD<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step1 a b BCD<button class="hyp-btn" data-uid="1" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb1" style="display:none"><span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> a.isCentre BCD; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> b.onCircle BCD; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">11</span><span class="lc">  -- note that the weird <span class="t-str">&quot;And&quot;</span> is an artifact that the original text says <span class="t-str">&quot;[Post.~].And&quot;</span> with no space.</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span><span class="lc">  <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>circle_from_points b a<span class="t-brk-c">)</span> as ACE</span></div>
+<div class="code-line sentence" data-role="body" id="step2" data-connects="step2" data-kind="sentence"><span class="ln">13</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.2&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">14</span><span class="lc">    <span class="t-str">&quot;and again let the circle $ACE$ with center $B$ and radius $BA$ have been drawn [Post.~3].And&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">15</span><span class="lc">    <span class="t-brk-o">(</span>step2 <span class="op-colon">:</span> b.isCentre ACE <span class="op-logic">∧</span> a.onCircle ACE<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step2 a b ACE<button class="hyp-btn" data-uid="2" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb2" style="display:none"><span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> b.isCentre ACE; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> a.onCircle ACE; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">16</span><span class="lc">  <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>intersection_circles BCD ACE<span class="t-brk-c">)</span> as c</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">17</span><span class="lc">  <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>line_from_points c a<span class="t-brk-c">)</span> as CA</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">18</span><span class="lc">  <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>line_from_points c b<span class="t-brk-c">)</span> as CB</span></div>
+<div class="code-line sentence" data-role="body" id="step3" data-connects="step3" data-kind="sentence"><span class="ln">19</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.3&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">20</span><span class="lc">    <span class="t-str">&quot;let the straight-lines $CA$ and $CB$ have been joined from the point $C$, where the circles cut one another, to the points $A$ and $B$ (respectively) [Post.~1].And&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">21</span><span class="lc">    <span class="t-brk-o">(</span>step3 <span class="op-colon">:</span> distinctPointsOnLine c a CA <span class="op-logic">∧</span> distinctPointsOnLine c b CB<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step3 a b c CA CB BCD ACE<button class="hyp-btn" data-uid="3" data-n="8" data-noun="hyps" onclick="toggleHyp(this)" title="8 assumption(s)">[8&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb3" style="display:none"><span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> c.onLine CA; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> a.onLine CA; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> c.onLine CB; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> b.onLine CB; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> a.isCentre BCD; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> c.onCircle BCD; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> b.isCentre ACE; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> c.onCircle ACE; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">22</span><span class="lc">  -- @assumption_valid</span></div>
+<div class="code-line have" data-role="body" id="step4_assumption1"  data-kind="have"><span class="ln">23</span><span class="lc">  <span class="kw-have">have</span> step4_assumption1 <span class="op-colon">:</span> a.isCentre BCD <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-tac">assumption</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">24</span><span class="lc">  -- @<span class="kw-tac">assumption</span> <span class="t-brk-o">(</span><span class="t-str">&quot;the point $A$ is the center of the circle $CDB$&quot;</span>, a.isCentre BCD<span class="t-brk-c">)</span></span></div>
+<div class="code-line sentence" data-role="body" id="step4" data-connects="step4" data-kind="sentence"><span class="ln">25</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.4&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">26</span><span class="lc">    <span class="t-str">&quot;since the point $A$ is the center of the circle $CDB$, $AC$ is equal to $AB$ [Def.~1.15].&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">27</span><span class="lc">    <span class="t-brk-o">(</span>step4 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step4 a b c BCD<button class="hyp-btn" data-uid="4" data-n="3" data-noun="hyps" onclick="toggleHyp(this)" title="3 assumption(s)">[3&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb4" style="display:none"><span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;the point $A$ is the center of the circle $CDB$&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> a.isCentre BCD; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> b.onCircle BCD; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> c.onCircle BCD; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">28</span><span class="lc">  -- @assumption_valid</span></div>
+<div class="code-line have" data-role="body" id="step5_assumption1"  data-kind="have"><span class="ln">29</span><span class="lc">  <span class="kw-have">have</span> step5_assumption1 <span class="op-colon">:</span> b.isCentre ACE <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-tac">assumption</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">30</span><span class="lc">  -- @<span class="kw-tac">assumption</span> <span class="t-brk-o">(</span><span class="t-str">&quot;the point $B$ is the center of the circle $CAE$&quot;</span>, b.isCentre ACE<span class="t-brk-c">)</span></span></div>
+<div class="code-line sentence" data-role="body" id="step5" data-connects="step5" data-kind="sentence"><span class="ln">31</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.5&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">32</span><span class="lc">    <span class="t-str">&quot;Again,since the point $B$ is the center of the circle $CAE$, $BC$ is equal to $BA$ [Def.~1.15].&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">33</span><span class="lc">    <span class="t-brk-o">(</span>step5 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>a<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step5 a b c ACE<button class="hyp-btn" data-uid="5" data-n="3" data-noun="hyps" onclick="toggleHyp(this)" title="3 assumption(s)">[3&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb5" style="display:none"><span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;the point $B$ is the center of the circle $CAE$&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> b.isCentre ACE; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> a.onCircle ACE; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> c.onCircle ACE; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line sentence" data-role="body" id="step6" data-connects="step6" data-kind="sentence"><span class="ln">34</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.6&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">35</span><span class="lc">    <span class="t-str">&quot;But $CA$ was also shown (to be) equal to $AB$.&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">36</span><span class="lc">    <span class="t-brk-o">(</span>step6 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step6 a b c<button class="hyp-btn" data-uid="6" data-n="1" data-noun="hyp" onclick="toggleHyp(this)" title="1 assumption(s)">[1&nbsp;hyp&nbsp;&#9658;]</button><span class="hyp-body" id="hb6" style="display:none"><span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line sentence" data-role="body" id="step7" data-connects="step7" data-kind="sentence"><span class="ln">37</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.7&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">38</span><span class="lc">    <span class="t-str">&quot;Thus, $CA$ and $CB$ are each equal to $AB$.&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">39</span><span class="lc">    <span class="t-brk-o">(</span>step7 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step7 a b c<button class="hyp-btn" data-uid="7" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb7" style="display:none"><span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>a<span class="t-brk-c">)</span>|; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line sentence" data-role="body" id="step8" data-connects="step8" data-kind="sentence"><span class="ln">40</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.8&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">41</span><span class="lc">    <span class="t-str">&quot;But things equal to the same thing are also equal to one another [C.N.~1].&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">42</span><span class="lc">    <span class="t-brk-o">(</span>step8 <span class="op-colon">:</span> <span class="t-brk-o">(</span>|<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">→</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step8 a b c<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line sentence" data-role="body" id="step9" data-connects="step9" data-kind="sentence"><span class="ln">43</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.9&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">44</span><span class="lc">    <span class="t-str">&quot;Thus, $CA$ is also equal to $CB$.&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">45</span><span class="lc">    <span class="t-brk-o">(</span>step9 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step9 a b c<button class="hyp-btn" data-uid="8" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb8" style="display:none"><span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> <span class="t-brk-o">(</span>|<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">→</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>|; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line sentence" data-role="body" id="step10" data-connects="step10" data-kind="sentence"><span class="ln">46</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.1.10&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">47</span><span class="lc">    <span class="t-str">&quot;Thus, the three (straight-lines) $CA$, $AB$, and $BC$ are equal to one another.Thus,&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">48</span><span class="lc">    <span class="t-brk-o">(</span>step10 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>c<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">:=</span> <span class="kw-by">by</span> <span class="kw-euclid">euclid_apply</span> <span class="t-brk-o">(</span>helper_1_1_step10 a b c<button class="hyp-btn" data-uid="9" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb9" style="display:none"><span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-by">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span><span class="kw-tac">show</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>a<span class="t-brk-c">)</span>|; <span class="kw-tac">assumption</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">49</span><span class="lc">  <span class="kw-tac">exact</span> <span class="t-brk-o">⟨</span>c, step7<span class="t-brk-c">⟩</span></span></div>
+<div class="code-line sentence" data-role="body"   data-kind="sentence"><span class="ln">50</span><span class="lc">  <span class="kw-sent">euclid_conclude_sentence</span> <span class="t-str">&quot;1.1.11&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">51</span><span class="lc">    <span class="t-str">&quot;the triangle $ABC$ is equilateral, and has been constructed on the given finite straight-line $AB$. (Which is) the very thing it was required to do.&quot;</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">52</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+</div></div>
+
+  <div class="depth-cols">
+<div class="depth-col">
+<div class="col-header">Step files</div>
+<div class="card sent-card" id="card-step1" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step1.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step1 <span class="t-brk-o">(</span>a b <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>BCD <span class="op-colon">:</span> Circle<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>hc <span class="op-colon">:</span> a.isCentre BCD<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>hb <span class="op-colon">:</span> b.onCircle BCD<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    a.isCentre BCD <span class="op-logic">∧</span> b.onCircle BCD <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-tac">exact</span> <span class="t-brk-o">⟨</span>hc, hb<span class="t-brk-c">⟩</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step2" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step2.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step2 <span class="t-brk-o">(</span>a b <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>ACE <span class="op-colon">:</span> Circle<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>hc <span class="op-colon">:</span> b.isCentre ACE<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>ha <span class="op-colon">:</span> a.onCircle ACE<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    b.isCentre ACE <span class="op-logic">∧</span> a.onCircle ACE <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-tac">exact</span> <span class="t-brk-o">⟨</span>hc, ha<span class="t-brk-c">⟩</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step3" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step3.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step3 <span class="t-brk-o">(</span>a b c <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>CA CB <span class="op-colon">:</span> Line<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>BCD ACE <span class="op-colon">:</span> Circle<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>h1 <span class="op-colon">:</span> c.onLine CA<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h2 <span class="op-colon">:</span> a.onLine CA<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    <span class="t-brk-o">(</span>h3 <span class="op-colon">:</span> c.onLine CB<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h4 <span class="op-colon">:</span> b.onLine CB<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span><span class="lc">    <span class="t-brk-o">(</span>h5 <span class="op-colon">:</span> a.isCentre BCD<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h6 <span class="op-colon">:</span> c.onCircle BCD<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">5</span><span class="lc">    <span class="t-brk-o">(</span>h7 <span class="op-colon">:</span> b.isCentre ACE<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h8 <span class="op-colon">:</span> c.onCircle ACE<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">6</span><span class="lc">    distinctPointsOnLine c a CA <span class="op-logic">∧</span> distinctPointsOnLine c b CB <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">7</span><span class="lc">  <span class="kw-euclid">euclid_finish</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">8</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step4" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step4.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step4 <span class="t-brk-o">(</span>a b c <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>BCD <span class="op-colon">:</span> Circle<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>h1 <span class="op-colon">:</span> a.isCentre BCD<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h2 <span class="op-colon">:</span> b.onCircle BCD<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h3 <span class="op-colon">:</span> c.onCircle BCD<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    |<span class="t-brk-o">(</span>a<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-tac">exact</span> point_on_circle_onlyif a b c BCD <span class="t-brk-o">⟨</span>h1, h2, h3<span class="t-brk-c">⟩</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step5" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step5.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step5 <span class="t-brk-o">(</span>a b c <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>ACE <span class="op-colon">:</span> Circle<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>h1 <span class="op-colon">:</span> b.isCentre ACE<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h2 <span class="op-colon">:</span> a.onCircle ACE<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h3 <span class="op-colon">:</span> c.onCircle ACE<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    |<span class="t-brk-o">(</span>b<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-tac">exact</span> point_on_circle_onlyif b a c ACE <span class="t-brk-o">⟨</span>h1, h2, h3<span class="t-brk-c">⟩</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step6" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step6.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step6 <span class="t-brk-o">(</span>a b c <span class="op-colon">:</span> Point<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>h <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-tac">rw</span> <span class="t-brk-o">[</span>segment_symmetric c a<span class="t-brk-c">]</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span><span class="lc">  <span class="kw-tac">exact</span> h</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step7" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step7.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step7 <span class="t-brk-o">(</span>a b c <span class="op-colon">:</span> Point<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>h1 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h2 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>a<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-tac">refine</span> <span class="t-brk-o">⟨</span>h1, ?_<span class="t-brk-c">⟩</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span><span class="lc">  <span class="kw-tac">exact</span> <span class="t-brk-o">(</span>segment_symmetric c b<span class="t-brk-c">)</span>.trans <span class="t-brk-o">(</span>h2.trans <span class="t-brk-o">(</span>segment_symmetric b a<span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step8" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step8.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step8 <span class="t-brk-o">(</span>a b c <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>|<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">→</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">3</span><span class="lc">  rintro <span class="t-brk-o">⟨</span>h1, h2<span class="t-brk-c">⟩</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-tac">exact</span> h1.trans h2.symm</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step9" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step9.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step9 <span class="t-brk-o">(</span>a b c <span class="op-colon">:</span> Point<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>h7 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    <span class="t-brk-o">(</span>h8 <span class="op-colon">:</span> <span class="t-brk-o">(</span>|<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-assign">→</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">4</span><span class="lc">    |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span><span class="lc">  <span class="kw-tac">exact</span> h8 h7</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step10" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step10.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_1_step10 <span class="t-brk-o">(</span>a b c <span class="op-colon">:</span> Point<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>h6 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>h5 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>a<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    |<span class="t-brk-o">(</span>c<span class="op-special">─</span>a<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>a<span class="op-special">─</span>b<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>b<span class="op-special">─</span>c<span class="t-brk-c">)</span>| <span class="op-assign">:=</span> <span class="kw-by">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-tac">refine</span> <span class="t-brk-o">⟨</span>h6, ?_<span class="t-brk-c">⟩</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">5</span><span class="lc">  <span class="kw-tac">exact</span> <span class="t-brk-o">(</span>segment_symmetric a b<span class="t-brk-c">)</span>.trans h5.symm</span></div>
+<div class="code-line plain" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">6</span><span class="lc"><span class="kw-def">end</span> Elements.Book1</span></div>
+  </div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+<script>
+
+const root  = document.documentElement;
+const svg   = document.getElementById("svg-layer");
+const outer = document.querySelector(".outer");
+
+// ── selection state ──────────────────────────────────────────────────────────
+// selCards: Map<element, mode>  where mode = "children" | "parents"
+const selCards = new Map();
+const selLines = new Set();  // selected [data-connects] line elements
+let suppressNextClear = false;  // set after rubber-band to block the trailing click
+
+// Outgoing lines from a card → child cards
+function getLinesFrom(card) {
+  return Array.from(card.querySelectorAll("[data-connects]"));
+}
+function getChildCards(card) {
+  return getLinesFrom(card).map(l => document.getElementById("card-" + l.dataset.connects)).filter(Boolean);
+}
+
+// All [data-connects] lines anywhere on the page that point TO this card
+function getParentLines(card) {
+  const key = card.id.replace(/^card-/, "");
+  return key ? Array.from(document.querySelectorAll(`[data-connects="${key}"]`)) : [];
+}
+function getParentCards(card) {
+  return getParentLines(card)
+    .map(l => l.closest(".card, .main-col"))
+    .filter((c, i, a) => c && a.indexOf(c) === i);
+}
+
+function applyCardHighlights(card, mode, add) {
+  const fn = add ? "add" : "remove";
+  card.classList[fn]("selected");
+  if (mode === "children") {
+    getChildCards(card).forEach(c => c.classList[fn]("child-highlight"));
+  } else {
+    getParentCards(card).forEach(c => c.classList[fn]("parent-highlight"));
+    getParentLines(card).forEach(l => l.classList[fn]("sel-parent-line"));
+  }
+}
+
+function clearSelection() {
+  selCards.forEach((mode, card) => applyCardHighlights(card, mode, false));
+  selCards.clear();
+  selLines.forEach(l => {
+    l.classList.remove("sel-line");
+    const t = document.getElementById("card-" + l.dataset.connects);
+    if (t) t.classList.remove("child-highlight");
+  });
+  selLines.clear();
+  drawConnectors();
+}
+
+function selectCard(card, mode, additive) {
+  if (!additive) {
+    // normal click: clear all, then select just this one
+    // but if it's the only selected card with same mode, toggle off
+    if (selCards.size === 1 && selCards.get(card) === mode) {
+      clearSelection(); return;
+    }
+    clearSelection();
+  } else {
+    // shift-click: toggle this card
+    if (selCards.has(card) && selCards.get(card) === mode) {
+      applyCardHighlights(card, mode, false);
+      selCards.delete(card);
+      drawConnectors(); return;
+    }
+    // if already selected in other mode, remove old highlights first
+    if (selCards.has(card)) {
+      applyCardHighlights(card, selCards.get(card), false);
+      selCards.delete(card);
+    }
+    // line selections stay when additively selecting cards
+  }
+  selCards.set(card, mode);
+  applyCardHighlights(card, mode, true);
+  drawConnectors();
+}
+
+function selectLine(lineEl, additive) {
+  if (!additive) {
+    if (selLines.size === 1 && selLines.has(lineEl) && selCards.size === 0) {
+      clearSelection(); return;  // toggle off single
+    }
+    clearSelection();
+  }
+  if (additive && selLines.has(lineEl)) {
+    // toggle this line out
+    lineEl.classList.remove("sel-line");
+    const t = document.getElementById("card-" + lineEl.dataset.connects);
+    if (t) t.classList.remove("child-highlight");
+    selLines.delete(lineEl);
+    drawConnectors(); return;
+  }
+  selLines.add(lineEl);
+  lineEl.classList.add("sel-line");
+  const target = document.getElementById("card-" + lineEl.dataset.connects);
+  if (target) target.classList.add("child-highlight");
+  drawConnectors();
+}
+
+// ── connectors ───────────────────────────────────────────────────────────────
+
+function anchorRight(el) {
+  const OR = outer.getBoundingClientRect();
+  let probe = el;
+  while (probe) {
+    const r = probe.getBoundingClientRect();
+    if (r.height > 0) return { x: r.right - OR.left, y: (r.top + r.bottom) / 2 - OR.top };
+    probe = probe.parentElement?.closest(".card, .main-col") ?? null;
+  }
+  return null;
+}
+
+function drawConnectors() {
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  const OR = outer.getBoundingClientRect();
+
+  document.querySelectorAll("[data-connects]").forEach(src => {
+    const card = document.getElementById("card-" + src.dataset.connects);
+    if (!card) return;
+
+    const p1 = anchorRight(src);
+    if (!p1) return;
+
+    const hdr = card.querySelector(".card-header, .col-header");
+    if (!hdr || hdr.getBoundingClientRect().height === 0) return;
+    const hr = hdr.getBoundingClientRect();
+    const p2 = { x: hr.left - OR.left, y: (hr.top + hr.bottom) / 2 - OR.top };
+
+    // Active if: exact selected line, OR source card selected (children mode),
+    // OR this is an incoming edge to a card selected in parents mode.
+    const isActiveLine = selLines.has(src);
+    const srcCard      = src.closest(".card, .main-col");
+    const srcMode      = srcCard ? selCards.get(srcCard) : undefined;
+    const srcSelected  = srcMode === "children";
+    const tgtMode      = selCards.get(card);
+    const isParentEdge = tgtMode === "parents" && srcCard !== card;
+    const isActive     = isActiveLine || srcSelected || isParentEdge;
+
+    // Colour: parent edges purple, child/line edges teal or orange
+    const sent  = src.dataset.kind === "sentence";
+    let baseC;
+    if (isActive && isParentEdge) baseC = [180, 140, 255];
+    else if (sent)                 baseC = [82,  227, 194];
+    else                           baseC = [245, 166,  35];
+    const alpha = isActive ? 0.95 : 0.32;
+    const color = `rgba(${baseC[0]},${baseC[1]},${baseC[2]},${alpha})`;
+    const width = isActive ? "2.4" : "1.4";
+
+    const dx = Math.max(16, Math.abs(p2.x - p1.x) * 0.42);
+    const d  = `M${p1.x},${p1.y} C${p1.x+dx},${p1.y} ${p2.x-dx},${p2.y} ${p2.x},${p2.y}`;
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", d);
+    path.setAttribute("stroke", color);
+    path.setAttribute("stroke-width", width);
+    path.setAttribute("fill", "none");
+    if (!sent) path.setAttribute("stroke-dasharray", isActive ? "none" : "5 3");
+    if (isActive) path.setAttribute("filter", `drop-shadow(0 0 4px ${color})`);
+    svg.appendChild(path);
+  });
+
+  const tot = outer.getBoundingClientRect();
+  svg.setAttribute("width",  Math.ceil(tot.width)  + 2);
+  svg.setAttribute("height", Math.ceil(tot.height) + 2);
+}
+
+// ── drag + click on card header ───────────────────────────────────────────────
+const DRAG_THRESHOLD = 5;
+
+function getTranslate(elem) {
+  const t = elem.style.transform;
+  const m = t && t.match(/translate\(\s*([-\d.]+)px,\s*([-\d.]+)px\)/);
+  return m ? [parseFloat(m[1]), parseFloat(m[2])] : [0, 0];
+}
+
+function initDragSelect(el) {
+  const hdr = el.querySelector(".card-header, .col-header");
+  if (!hdr) return;
+
+  let startX, startY, dragging = false;
+  // snapshot of every selected card's translate at drag-start
+  let groupSnaps = null;
+
+  hdr.addEventListener("mousedown", e => {
+    if (e.target.closest("button")) return;
+    startX = e.clientX; startY = e.clientY;
+    dragging = false;
+    const zone = e.target.closest("[data-sel]");
+    const downMode = zone ? zone.dataset.sel : null;
+    const onCenter = !!e.target.closest(".hdr-center");
+
+    function onMove(e) {
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+      if (!dragging && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+        dragging = true;
+        // if this card is selected, snapshot the whole group; else just this card
+        if (selCards.has(el)) {
+          groupSnaps = new Map();
+          selCards.forEach((_, card) => groupSnaps.set(card, getTranslate(card)));
+        } else {
+          groupSnaps = new Map([[el, getTranslate(el)]]);
+        }
+        document.body.classList.add("dragging");
+        groupSnaps.forEach((_, card) => {
+          card.style.position = "relative";
+          card.style.zIndex   = "50";
+        });
+      }
+      if (dragging) {
+        groupSnaps.forEach(([tx, ty], card) => {
+          card.style.transform = `translate(${tx + dx}px,${ty + dy}px)`;
+        });
+        drawConnectors();
+      }
+    }
+
+    function onUp(e) {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup",   onUp);
+      document.body.classList.remove("dragging");
+      if (groupSnaps) groupSnaps.forEach((_, card) => card.style.zIndex = "");
+      groupSnaps = null;
+      if (!dragging && !onCenter) {
+        e.stopPropagation();
+        selectCard(el, downMode || "children", e.ctrlKey || e.metaKey);
+      }
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup",   onUp);
+    e.preventDefault();
+  });
+}
+
+// ── rubber-band selection on empty canvas ─────────────────────────────────────
+function initRubberBand() {
+  const rband = document.getElementById("rband");
+  let rbX, rbY, active = false;
+
+  document.addEventListener("mousedown", e => {
+    // skip card/toolbar interactive elements
+    if (e.target.closest(".card-header, .col-header, .toolbar, button, input, select, label")) return;
+    if (e.button !== 0) return;
+    e.preventDefault();  // block text selection unconditionally
+    rbX = e.clientX; rbY = e.clientY;
+    active = false;
+    e.preventDefault();  // block text selection from the start
+
+    function onMove(e) {
+      const dx = e.clientX - rbX, dy = e.clientY - rbY;
+      if (!active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+        active = true;
+        rband.style.display = "block";
+        document.body.classList.add("dragging");
+      }
+      if (active) {
+        rband.style.left   = Math.min(e.clientX, rbX) + "px";
+        rband.style.top    = Math.min(e.clientY, rbY) + "px";
+        rband.style.width  = Math.abs(dx) + "px";
+        rband.style.height = Math.abs(dy) + "px";
+      }
+    }
+
+    function onUp(e) {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup",   onUp);
+      rband.style.display = "none";
+      document.body.classList.remove("dragging");
+      if (!active) return;
+      suppressNextClear = true;  // prevent the click handler from wiping the selection
+
+      // collect all cards whose headers overlap the rubber-band rect
+      const r1 = {
+        l: Math.min(e.clientX, rbX), r: Math.max(e.clientX, rbX),
+        t: Math.min(e.clientY, rbY), b: Math.max(e.clientY, rbY),
+      };
+      const additive = e.ctrlKey || e.metaKey;
+      if (!additive) clearSelection();
+
+      document.querySelectorAll(".card, .main-col").forEach(card => {
+        const hdr = card.querySelector(".card-header, .col-header");
+        if (!hdr) return;
+        const r2 = hdr.getBoundingClientRect();
+        const overlaps = r1.l < r2.right && r1.r > r2.left &&
+                         r1.t < r2.bottom && r1.b > r2.top;
+        if (overlaps && !selCards.has(card)) {
+          selCards.set(card, "children");
+          applyCardHighlights(card, "children", true);
+        }
+      });
+      drawConnectors();
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup",   onUp);
+  });
+}
+
+// ── assumption toggle ─────────────────────────────────────────────────────────
+function toggleHyp(btn) {
+  const body = document.getElementById("hb" + btn.dataset.uid);
+  const open = body.style.display !== "none";
+  body.style.display = open ? "none" : "inline";
+  btn.innerHTML = open
+    ? `[${btn.dataset.n}&nbsp;${btn.dataset.noun}&nbsp;&#9658;]`
+    : `[${btn.dataset.n}&nbsp;${btn.dataset.noun}&nbsp;&#9660;]`;
+  requestAnimationFrame(drawConnectors);
+}
+
+// ── sliders ───────────────────────────────────────────────────────────────────
+const tszSlider = document.getElementById("tsz-slider");
+const szSlider  = document.getElementById("sz-slider");
+const lhSlider  = document.getElementById("lh-slider");
+const gapSlider = document.getElementById("gap-slider");
+const mwSlider  = document.getElementById("mw-slider");
+const tszVal    = document.getElementById("tsz-val");
+const szVal     = document.getElementById("sz-val");
+const lhVal     = document.getElementById("lh-val");
+const gapVal    = document.getElementById("gap-val");
+const mwVal     = document.getElementById("mw-val");
+
+function applySliders() {
+  const tsz = parseFloat(tszSlider.value);
+  const sz  = parseFloat(szSlider.value);
+  const lh  = parseFloat(lhSlider.value);
+  const gap = parseInt(gapSlider.value);
+  const mw  = parseInt(mwSlider.value);
+
+  root.style.setProperty("--title-sz",  tsz + "px");
+  root.style.setProperty("--sz",        sz  + "px");
+  root.style.setProperty("--lh",        lh);
+  root.style.setProperty("--conn-gap",  gap + "px");
+  root.style.setProperty("--card-gap",  Math.round(gap * 0.12) + "px");
+
+  if (mw >= 2000) {
+    root.classList.remove("wrap-lines");
+    root.style.setProperty("--max-line-w", "9999px");
+    mwVal.textContent = "∞";
+  } else {
+    root.classList.add("wrap-lines");
+    root.style.setProperty("--max-line-w", mw + "px");
+    mwVal.textContent = mw + "px";
+  }
+
+  tszVal.textContent = tsz + "px";
+  szVal.textContent  = sz + "px";
+  lhVal.textContent  = lh.toFixed(1) + "×";
+  gapVal.textContent = gap + "px";
+  requestAnimationFrame(drawConnectors);
+}
+
+tszSlider.addEventListener("input", applySliders);
+szSlider.addEventListener("input",  applySliders);
+lhSlider.addEventListener("input",  applySliders);
+gapSlider.addEventListener("input", applySliders);
+mwSlider.addEventListener("input",  applySliders);
+
+// ── LOD ───────────────────────────────────────────────────────────────────────
+const LOD_CYCLE = ["minimal", "compact", "full"];
+
+function setCardLod(el, level) {
+  el.setAttribute("data-lod", level);
+}
+
+function setAllLod(level) {
+  document.querySelectorAll(".card, .main-col").forEach(c => setCardLod(c, level));
+  document.querySelectorAll(".lod-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.lod === level));
+  requestAnimationFrame(drawConnectors);
+}
+
+function cycleCardLod(btn) {
+  const card = btn.closest(".card, .main-col");
+  const cur  = card.getAttribute("data-lod") || "minimal";
+  const next = LOD_CYCLE[(LOD_CYCLE.indexOf(cur) + 1) % LOD_CYCLE.length];
+  setCardLod(card, next);
+  requestAnimationFrame(drawConnectors);
+}
+
+// ── layout save / load / reset ────────────────────────────────────────────────
+const LAYOUT_KEY = "proof_map_layout_" + document.title.replace(/[^a-zA-Z0-9]/g, "_");
+
+function saveLayout() {
+  const state = { cards: {}, lod: {}, sliders: {} };
+  document.querySelectorAll(".card, .main-col").forEach(el => {
+    const id = el.id || "main-col";
+    state.cards[id] = getTranslate(el);
+    state.lod[id]   = el.getAttribute("data-lod") || "minimal";
+  });
+  state.sliders = {
+    tsz: parseFloat(tszSlider.value),
+    sz:  parseFloat(szSlider.value),
+    lh:  parseFloat(lhSlider.value),
+    gap: parseInt(gapSlider.value),
+    mw:  parseInt(mwSlider.value),
+  };
+  const json = JSON.stringify(state, null, 2);
+  localStorage.setItem(LAYOUT_KEY, json);
+  // Also download as a file so headless export can use it
+  const blob = new Blob([json], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "map_layout.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const btn = document.getElementById("save-btn");
+  const orig = btn.textContent;
+  btn.textContent = "Saved ✓";
+  setTimeout(() => btn.textContent = orig, 1200);
+}
+
+function loadLayout() {
+  let state = window.__LAYOUT__ || null;
+  if (!state) {
+    const raw = localStorage.getItem(LAYOUT_KEY);
+    if (!raw) return;
+    try { state = JSON.parse(raw); } catch { return; }
+  }
+
+  if (state.sliders) {
+    if (state.sliders.tsz != null) tszSlider.value = state.sliders.tsz;
+    if (state.sliders.sz  != null) szSlider.value  = state.sliders.sz;
+    if (state.sliders.lh  != null) lhSlider.value  = state.sliders.lh;
+    if (state.sliders.gap != null) gapSlider.value = state.sliders.gap;
+    if (state.sliders.mw  != null) mwSlider.value  = state.sliders.mw;
+    applySliders();
+  }
+
+  document.querySelectorAll(".card, .main-col").forEach(el => {
+    const id = el.id || "main-col";
+    if (state.cards && state.cards[id]) {
+      const [tx, ty] = state.cards[id];
+      if (tx !== 0 || ty !== 0) {
+        el.style.position  = "relative";
+        el.style.transform = `translate(${tx}px,${ty}px)`;
+      }
+    }
+    if (state.lod && state.lod[id]) {
+      el.setAttribute("data-lod", state.lod[id]);
+    }
+  });
+  drawConnectors();
+}
+
+function resetLayout() {
+  localStorage.removeItem(LAYOUT_KEY);
+  document.querySelectorAll(".card, .main-col").forEach(el => {
+    el.style.transform = "";
+    el.style.position  = "";
+    el.setAttribute("data-lod", el.classList.contains("main-col") ? "full" : "minimal");
+  });
+  tszSlider.value = 11; szSlider.value = 12; lhSlider.value = 1.65; gapSlider.value = 88; mwSlider.value = 2000;
+  applySliders();
+  drawConnectors();
+}
+
+// ── import layout from file ──────────────────────────────────────────────────
+function importLayout() {
+  document.getElementById("import-file").click();
+}
+document.getElementById("import-file").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      window.__LAYOUT__ = JSON.parse(reader.result);
+      loadLayout();
+    } catch (err) { alert("Invalid layout JSON: " + err.message); }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+// ── type-reference highlighting ("who uses me" / left-click) ─────────────────
+let typeHighlights = [];
+let typeRefPaths = [];
+
+function clearTypeRefs() {
+  typeHighlights.forEach(el => {
+    el.classList.remove("type-ref-highlight");
+    el.classList.remove("type-ref-source");
+  });
+  typeHighlights = [];
+  typeRefPaths.forEach(p => p.remove());
+  typeRefPaths = [];
+}
+
+function normalize(s) { return s.replace(/\s+/g, " ").trim(); }
+
+function extractType(lineEl) {
+  const text = lineEl.textContent;
+  const m = text.match(/have\s+\w+\s*:\s*(.*?)\s*:=\s*by/s);
+  if (m) return normalize(m[1]);
+  const m2 = text.match(/\(\w+\s*:\s*(.*?)\)\s*:=\s*by/s);
+  if (m2) return normalize(m2[1]);
+  return null;
+}
+
+function extractName(lineEl) {
+  const text = lineEl.textContent;
+  const m = text.match(/have\s+(\w+)\s*:/);
+  if (m) return m[1];
+  const m2 = text.match(/\((\w+)\s*:/);
+  if (m2) return m2[1];
+  return null;
+}
+
+function drawRefPath(srcPt, tgtPt) {
+  const dx = Math.max(20, Math.abs(tgtPt.x - srcPt.x) * 0.4);
+  const dirSrc = tgtPt.x > srcPt.x ? 1 : -1;
+  const dirTgt = tgtPt.x > srcPt.x ? -1 : 1;
+  const d = `M${srcPt.x},${srcPt.y} C${srcPt.x + dx*dirSrc},${srcPt.y} ${tgtPt.x + dx*dirTgt},${tgtPt.y} ${tgtPt.x},${tgtPt.y}`;
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", d);
+  path.setAttribute("stroke", "rgba(180,140,255,0.90)");
+  path.setAttribute("stroke-width", "2.2");
+  path.setAttribute("fill", "none");
+  path.setAttribute("filter", "drop-shadow(0 0 4px rgba(180,140,255,0.5))");
+  svg.appendChild(path);
+  typeRefPaths.push(path);
+}
+
+function highlightTypeRefs(srcEl) {
+  const typeStr = extractType(srcEl);
+  const nameStr = extractName(srcEl);
+  if (!typeStr && !nameStr) return;
+  clearTypeRefs();
+  clearSelection();
+  srcEl.classList.add("type-ref-source");
+  typeHighlights.push(srcEl);
+
+  const OR = outer.getBoundingClientRect();
+  const srcRect = srcEl.getBoundingClientRect();
+  const srcPt = { x: (srcRect.left + srcRect.right) / 2 - OR.left, y: (srcRect.top + srcRect.bottom) / 2 - OR.top };
+
+  document.querySelectorAll(".code-line .lc").forEach(lc => {
+    const el = lc.parentElement;
+    if (el === srcEl) return;
+    // Skip hidden elements (LOD minimal hides bodies)
+    const elRect = el.getBoundingClientRect();
+    if (elRect.height === 0) return;
+    const text = lc.textContent;
+    let matched = false;
+    // Match by type: show TYPE;
+    if (typeStr) {
+      const showRe = /show\s+(.*?)\s*;/g;
+      let match;
+      while ((match = showRe.exec(text)) !== null) {
+        if (normalize(match[1]) === typeStr) { matched = true; break; }
+      }
+    }
+    // Match by name: the name appears as an identifier reference
+    if (!matched && nameStr) {
+      const nameRe = new RegExp("\\b" + nameStr + "\\b");
+      if (nameRe.test(text)) matched = true;
+    }
+    if (matched) {
+      el.classList.add("type-ref-highlight");
+      typeHighlights.push(el);
+      const tgtPt = { x: (elRect.left + elRect.right) / 2 - OR.left, y: (elRect.top + elRect.bottom) / 2 - OR.top };
+      drawRefPath(srcPt, tgtPt);
+    }
+  });
+}
+
+function handleLineClick(lineEl, e) {
+  if (e.target.closest("button")) return;
+  e.stopPropagation();
+  const rect = lineEl.getBoundingClientRect();
+  const half = (e.clientX - rect.left) / rect.width;
+  if (half < 0.5) {
+    highlightTypeRefs(lineEl);
+  } else {
+    clearTypeRefs();
+    if (lineEl.dataset.connects) {
+      selectLine(lineEl, e.ctrlKey || e.metaKey);
+    }
+  }
+}
+
+// ── init ──────────────────────────────────────────────────────────────────────
+window.addEventListener("load", () => {
+  document.querySelectorAll(".card, .main-col").forEach(initDragSelect);
+
+  // Left/right click on have/sentence lines
+  document.querySelectorAll(".code-line.have, .code-line.sentence").forEach(lineEl => {
+    lineEl.addEventListener("click", e => handleLineClick(lineEl, e));
+  });
+
+  initRubberBand();
+  applySliders();
+  loadLayout();
+  drawConnectors();
+
+  document.addEventListener("click", e => {
+    if (suppressNextClear) { suppressNextClear = false; return; }
+    if (!e.target.closest(".card, .main-col")) {
+      clearSelection();
+      clearTypeRefs();
+    }
+  });
+});
+window.addEventListener("resize", drawConnectors);
+
+</script>
+</body>
+</html>

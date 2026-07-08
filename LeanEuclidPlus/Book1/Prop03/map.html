@@ -1,400 +1,9 @@
-#!/usr/bin/env python3
-"""
-proof_map.py  --  render a LeanEuclidPlus proposition as a multi-level HTML map.
-
-Design principles:
-  • Lines are NEVER wrapped (white-space: pre) — one source line = one screen line.
-  • Cards expand to fit their widest line (width: max-content).  No card scrollbars.
-  • The whole page is one big canvas; scroll the browser to navigate.
-  • Two global sliders in a sticky toolbar:
-      Font size  (9–20 px)  — scales text, making every card wider/taller.
-      Row height (1.0–3.0x) — controls vertical spacing inside cards.
-  • Assumptions folded by default: [N hyps ▸] badge, click to expand.
-  • Bezier connectors redraw automatically after any slider change or toggle.
-
-USAGE (run from LeanEuclidPlus/ or repo root)
-  python3 diagrams/scripts/proof_map.py --prop Book2/Prop02
-  python3 diagrams/scripts/proof_map.py --prop Book2/Prop02 -o out.html
-
-SAVING AS PNG (headless, uses Playwright)
-  1. Open map.html in a browser, arrange cards, then click "Save layout".
-     This downloads map_layout.json — move it into the prop folder:
-       mv ~/Downloads/map_layout.json LeanEuclidPlus/Book2/Prop02/
-  2. Run --png or --all_layouts:
-       python3 diagrams/scripts/proof_map.py --prop Book2/Prop02 --png
-         Reads map_layout.json → writes map.png
-
-       python3 diagrams/scripts/proof_map.py --prop Book2/Prop02 --all_layouts
-         Finds every map_layout*.json in the prop folder and writes one PNG each:
-           map_layout.json         → map.png
-           map_layout_compact.json → map_compact.png
-           map_layout_v2.json      → map_v2.png
-
-       Both accept --scale N (default 2) and --transparent.
-     Install Playwright once: pip install playwright && playwright install chromium
-"""
-
-import argparse, os, re, sys, html as htmllib, subprocess
-
-# ── source parsing ────────────────────────────────────────────────────────────
-
-def strip_block_comments(text):
-    return re.sub(r"/-.*?-/", "", text, flags=re.DOTALL)
-
-def strip_line_comment(line):
-    for i in range(len(line) - 1):
-        if line[i] == "-" and line[i+1] == "-":
-            return line[:i]
-    return line
-
-RE_SENTENCE    = re.compile(r'euclid_\w*sentence\s+"([^"]*)"')
-RE_CLAIM       = re.compile(r'\((\w+)\s*:')
-RE_HAVE        = re.compile(r'^\s*have\s+(\w+)\s*(?::=|:)')
-RE_THEOREM     = re.compile(r'^(?:theorem|lemma)\s+(\w+)')
-
-def classify_line(line):
-    s = line.strip()
-    m = RE_SENTENCE.search(s)
-    if m:
-        cm = RE_CLAIM.search(s)
-        return ("sentence", cm.group(1) if cm else None, m.group(1))
-    m = RE_HAVE.match(line)
-    if m:
-        return ("have", m.group(1), "")
-    m = RE_THEOREM.match(s)
-    if m:
-        return ("theorem", m.group(1), "")
-    return None
-
-_HYPS_MARKER = "(by euclid_assumption"
-
-def fold_assumptions(raw):
-    idx = raw.find(_HYPS_MARKER)
-    if idx < 0:
-        return raw, "", 0
-    count = raw.count(_HYPS_MARKER)
-    return raw[:idx].rstrip(), raw[idx:], count
-
-def parse_main(main_path):
-    with open(main_path, encoding="utf-8") as f:
-        raw = f.read()
-    raw = strip_block_comments(raw)
-    lines = raw.splitlines()
-
-    body_start = 0
-    for i, l in enumerate(lines):
-        if RE_THEOREM.match(l.strip()):
-            body_start = i
-            break
-
-    result = []
-    if body_start > 0:
-        result.append({"line": f"-- ({body_start} import / namespace lines)",
-                       "kind": "collapsed", "key": None, "role": "sig"})
-
-    # Main is always in tactic-body mode; theorem line itself is sig
-    i = body_start
-    in_body = False
-    while i < len(lines):
-        l = lines[i]; i += 1
-        if not in_body and (RE_BY.search(l.rstrip()) or RE_BY_ALONE.match(l)):
-            in_body = True; role = "sig"
-        else:
-            role = "body" if in_body else "sig"
-        if re.match(r'^\s*end\s+Elements\.', l):
-            continue
-        if l.strip().startswith("--"):
-            result.append({"line": l, "kind": "comment", "key": None, "role": role, "sent_text": ""})
-            continue
-        cl = classify_line(l)
-        if cl:
-            kind, key, sent_text = cl
-            if kind == "sentence":
-                # Collect continuation lines: Euclid text string, then lean claim+proof
-                j = i
-                cont_items = []
-                while j < len(lines):
-                    nxt = lines[j]
-                    nxt_s = nxt.strip()
-                    if not nxt_s or classify_line(nxt) is not None:
-                        break
-                    nxt_kind = "sent_cont_text" if nxt_s.startswith('"') else "sent_cont_lean"
-                    cont_items.append({"line": nxt, "kind": nxt_kind, "key": None,
-                                       "role": role, "sent_text": ""})
-                    j += 1
-                    if ":=" in strip_line_comment(nxt):
-                        break
-                if key is None and cont_items:
-                    buf = l + " " + " ".join(
-                        strip_line_comment(c["line"]).rstrip().strip() for c in cont_items)
-                    cm = RE_CLAIM.search(buf)
-                    if cm: key = cm.group(1)
-                cont_id = key if key else sent_text
-                for c in cont_items:
-                    c["key"] = cont_id
-                i = j
-                result.append({"line": l, "kind": kind, "key": key, "role": role,
-                               "sent_text": sent_text, "cont_id": cont_id})
-                result.extend(cont_items)
-            else:
-                result.append({"line": l, "kind": kind, "key": key, "role": role, "sent_text": sent_text})
-        else:
-            result.append({"line": l, "kind": "plain", "key": None, "role": role, "sent_text": ""})
-    return result
-
-RE_BY        = re.compile(r':=\s*by\s*$')
-RE_BY_ALONE  = re.compile(r'^\s*by\s*$')
-
-def parse_step(path):
-    with open(path, encoding="utf-8") as f:
-        raw = f.read()
-    raw = strip_block_comments(raw)
-    lines = raw.splitlines()
-    start = 0
-    for i, l in enumerate(lines):
-        if RE_THEOREM.match(l.strip()):
-            start = i; break
-    result = []
-    in_body = False
-    for l in lines[start:]:
-        # transition to proof body when we hit `:= by` at end of a line
-        if not in_body and (RE_BY.search(l.rstrip()) or RE_BY_ALONE.match(l)):
-            in_body = True
-            role = "sig"
-        else:
-            role = "body" if in_body else "sig"
-        if re.match(r'^\s*end\s+Elements\.', l):
-            continue
-        if l.strip().startswith("--"):
-            result.append({"line": l, "kind": "comment", "key": None, "role": role, "sent_text": ""})
-            continue
-        cl = classify_line(l)
-        if cl:
-            kind, key, sent_text = cl
-            result.append({"line": l, "kind": kind, "key": key, "role": role, "sent_text": sent_text})
-        else:
-            result.append({"line": l, "kind": "plain", "key": None, "role": role, "sent_text": ""})
-    child_keys = [it["key"] for it in result if it["kind"] == "have" and it["key"]]
-    return result, child_keys
-
-# ── card tree ─────────────────────────────────────────────────────────────────
-
-class Card:
-    __slots__ = ("key", "depth", "kind", "lines", "children")
-    def __init__(self, key, depth, kind, lines):
-        self.key = key; self.depth = depth; self.kind = kind
-        self.lines = lines; self.children = []
-
-MAX_FULL_DEPTH = 3
-
-def build_card(key, propdir, depth, kind, visited):
-    path = os.path.join(propdir, key + ".lean")
-    if not os.path.isfile(path): return None
-    absp = os.path.abspath(path)
-    if absp in visited: return None
-    visited.add(absp)
-    lines, child_keys = parse_step(path)
-    card = Card(key, depth, kind, lines)
-    if depth < MAX_FULL_DEPTH:
-        for ck in child_keys:
-            child = build_card(ck, propdir, depth + 1, "have", visited)
-            if child: card.children.append(child)
-    return card
-
-def build_tree(propdir, main_lines):
-    visited = set(); roots = []
-    for item in main_lines:
-        if item["kind"] == "sentence" and item["key"]:
-            card = build_card(item["key"], propdir, 1, "sentence", visited)
-            if card: roots.append(card)
-    return roots
-
-def collect_node_keys(roots):
-    """All step keys that have actual backing files (i.e. are real cards)."""
-    keys = set()
-    def gather(card):
-        keys.add(card.key)
-        for c in card.children: gather(c)
-    for r in roots: gather(r)
-    return keys
-
-# ── Lean syntax highlighter ───────────────────────────────────────────────────
-
-# ── Lean syntax highlighter (single regex pass, runs in C) ───────────────────
-
-_KW_CLASS = {
-    "theorem":"kw-def","lemma":"kw-def","def":"kw-def","abbrev":"kw-def",
-    "instance":"kw-def","namespace":"kw-def","end":"kw-def","open":"kw-def",
-    "import":"kw-def","section":"kw-def","structure":"kw-def","class":"kw-def",
-    "by":"kw-have",
-    "have":"kw-have","let":"kw-have",
-    "exact":"kw-have","apply":"kw-tac","rw":"kw-tac",
-    "simp":"kw-tac","ring":"kw-tac","linarith":"kw-tac",
-    "intro":"kw-tac","intros":"kw-tac","cases":"kw-tac","induction":"kw-tac",
-    "constructor":"kw-tac","refine":"kw-tac","push_neg":"kw-tac",
-    "contrapose":"kw-tac","contradiction":"kw-tac",
-    "euclid_finish":"kw-euclid","euclid_assumption":"kw-euclid",
-    "euclid_sentence":"kw-sent","euclid_intro_sentence":"kw-sent",
-    "euclid_conclude_sentence":"kw-sent",
-    "fun":"kw-quant","match":"kw-quant","if":"kw-quant","then":"kw-quant","else":"kw-quant",
-    "true":"kw-bool","false":"kw-bool","True":"kw-bool","False":"kw-bool",
-    "sorry":"kw-sorry",
-}
-
-# One compiled regex: alternatives are tried left-to-right by the C engine.
-_HL_RE = re.compile(
-    r'("(?:[^"\\]|\\.)*")'           # group 1: string literal
-    r'|(\b(?:' + '|'.join(re.escape(k) for k in sorted(_KW_CLASS, key=len, reverse=True)) + r')\b)'
-                                      # group 2: keyword (longest first)
-    r'|([a-zA-Z_]\w*(?::[a-zA-Z_]\w*)+)'  # group 3: point-colon chain a:b:c (match before bare :)
-    r'|(=>|[→←↔])'                    # group 4: arrow ops
-    r'|([∧∨¬∥⊥])'                    # group 5: logic ops
-    r'|([=≠≤≥])'                      # group 6: relation ops
-    r'|([∟△∠])'                        # group 7: special math
-    r'|(:)'                           # group 8: colon
-    r'|([([{])'                       # group 9: open bracket
-    r'|([\])}])'                      # group 10: close bracket
-    r'|(\b\d[\d.]*\b)'                # group 11: number
-    r'|(:=)'                          # group 12: assignment — plain
-    r'|([⟨⟩])'                       # group 13: angle brackets — plain
-    r'|([─])'                         # group 14: segment dash — orange
-    r'|([∀∃])'                        # group 15: quantifiers — plain
-)
-
-_GRP_CLASS = {
-    1: "t-str",
-    2: None,       # keyword — dict lookup
-    3: "t-id",     # point-colon chain a:b:c — plain identifier
-    4: "op-assign", 5: "op-logic", 6: "op-rel", 7: "op-special",
-    8: "op-colon", 9: "t-brk-o", 10: "t-brk-c", 11: "t-num",
-    12: "t-id",     # := — plain white
-    13: "t-id",     # ⟨⟩ — plain white
-    14: "t-id",     # ─ — plain white
-    15: "t-id",     # ∀∃ — plain white
-}
-
-def lean_highlight(raw):
-    """Return HTML with Lean syntax highlighting — single regex pass."""
-    def repl(m):
-        for g, cls in _GRP_CLASS.items():
-            if m.group(g) is not None:
-                text = htmllib.escape(m.group(g))
-                if g == 2:
-                    cls = _KW_CLASS.get(m.group(g), "t-id")
-                return f'<span class="{cls}">{text}</span>'
-        return htmllib.escape(m.group(0))
-    # escape everything not matched, then apply regex substitution
-    # We do it in one pass: split on matches, escape gaps, wrap matches.
-    result = []
-    last = 0
-    for m in _HL_RE.finditer(raw):
-        if m.start() > last:
-            result.append(htmllib.escape(raw[last:m.start()]))
-        result.append(repl(m))
-        last = m.end()
-    if last < len(raw):
-        result.append(htmllib.escape(raw[last:]))
-    return "".join(result)
-
-# ── HTML rendering ────────────────────────────────────────────────────────────
-
-_uid = [0]
-
-def h(s): return htmllib.escape(str(s))
-
-def render_line_content(raw_line):
-    """Highlight then fold assumptions."""
-    visible, hidden, count = fold_assumptions(raw_line)
-    # highlight both parts
-    vis_html = lean_highlight(visible)
-    if count == 0:
-        return lean_highlight(raw_line)
-    _uid[0] += 1; uid = _uid[0]
-    noun = "hyp" if count == 1 else "hyps"
-    hid_html = lean_highlight(hidden)
-    return (
-        f"{vis_html}"
-        f'<button class="hyp-btn" data-uid="{uid}" data-n="{count}" data-noun="{noun}" '
-        f'onclick="toggleHyp(this)" title="{count} assumption(s)">'
-        f'[{count}&nbsp;{noun}&nbsp;&#9658;]</button>'
-        f'<span class="hyp-body" id="hb{uid}" style="display:none">{hid_html}</span>'
-    )
-
-def render_code_lines(items, id_prefix="", node_keys=None):
-    out = ""; real_ln = 0
-    for item in items:
-        k    = item["kind"]
-        role = item.get("role", "body")
-        if k == "collapsed":
-            out += (f'<div class="code-line collapsed" data-role="sig">'
-                    f'<span class="ln"></span><span class="lc">{h(item["line"])}</span></div>\n')
-            continue
-        if not item["line"].strip():
-            out += (f'<div class="code-line blank" data-role="{role}">'
-                    f'<span class="ln"></span><span class="lc"> </span></div>\n')
-            continue
-        real_ln += 1
-        key = item.get("key")
-        is_node = key and (node_keys is None or key in node_keys)
-        if k in ("sentence", "have"):
-            sid = f'{id_prefix}{key}' if key else ""
-            connects = f'data-connects="{key}"' if is_node else ""
-            id_attr = f'id="{sid}"' if sid else ""
-            lc_content = render_line_content(item["line"])
-            extra = ""
-            hint  = ""
-            if k == "sentence":
-                cont_id = item.get("cont_id") or (key or item.get("sent_text", ""))
-                if cont_id:
-                    extra = f'data-sent-key="{h(cont_id)}"'
-                hint = '<span class="sent-hint">&#9658;</span>'
-            out += (f'<div class="code-line {k}" data-role="{role}" {id_attr} '
-                    f'{connects} data-kind="{k}" {extra}>'
-                    f'<span class="ln">{real_ln}</span><span class="lc">{lc_content}</span>'
-                    f'{hint}</div>\n')
-        elif k in ("sent_cont_text", "sent_cont_lean"):
-            cont_key  = item.get("key", "")
-            cont_role = "text" if k == "sent_cont_text" else "lean"
-            ck_attr   = f'data-sent-cont="{h(cont_key)}"' if cont_key else ""
-            if k == "sent_cont_lean":
-                sorry_line = re.sub(r':=\s*by\s+.*', ':= by sorry', item["line"].rstrip())
-                lc_html = (f'<span class="sorry-off">{render_line_content(item["line"])}</span>'
-                           f'<span class="sorry-on">{render_line_content(sorry_line)}</span>')
-            else:
-                lc_html = render_line_content(item["line"])
-            out += (f'<div class="code-line sent-cont" data-role="{role}" '
-                    f'{ck_attr} data-sent-role="{cont_role}">'
-                    f'<span class="ln">{real_ln}</span><span class="lc">{lc_html}</span></div>\n')
-        elif k == "comment":
-            content = render_line_content(item["line"])
-            out += (f'<div class="code-line comment" data-role="{role}">'
-                    f'<span class="ln">{real_ln}</span><span class="lc">{content}</span></div>\n')
-        else:
-            content = render_line_content(item["line"])
-            out += (f'<div class="code-line plain" data-role="{role}">'
-                    f'<span class="ln">{real_ln}</span><span class="lc">{content}</span></div>\n')
-    return out
-
-def render_card(card, node_keys=None):
-    kc  = "sent-card" if card.kind == "sentence" else "have-card"
-    nc  = "s"         if card.kind == "sentence" else "h"
-    # data-lod starts at "minimal"; JS global buttons override all, per-card button cycles
-    out  = f'<div class="card {kc}" id="card-{card.key}" data-lod="minimal">\n'
-    out += (f'  <div class="card-header">'
-            f'<span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span>'
-            f'<span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level">'
-            f'<span class="cname {nc}">{h(card.key)}.lean</span>'
-            f'</span>'
-            f'<span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span>'
-            f'</div>\n')
-    out += '  <div class="card-body">\n'
-    out += render_code_lines(card.lines, id_prefix=f"c{card.depth}-", node_keys=node_keys)
-    out += '  </div>\n</div>\n'
-    return out
-
-# ── page template ─────────────────────────────────────────────────────────────
-
-CSS = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Proof map — Prop03</title>
+<style>
 :root {
   --bg:        #0d0f18;
   --panel:     #13151f;
@@ -818,9 +427,183 @@ body.sorry-mode .sorry-on  { display: inline; }
 }
 .toggle-btn:hover  { background: #242840; color: #9aa0c0; }
 .toggle-btn.active { background: #272d48; border-color: #f5a623; color: #f5a623; }
-"""
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <h1>Proof map — Prop03</h1>
+  <div class="ctrl">
+    <label for="tsz-slider">Title</label>
+    <input type="range" id="tsz-slider" min="9" max="32" step="0.5" value="11">
+    <span class="val" id="tsz-val">11px</span>
+  </div>
+  <div class="ctrl">
+    <label for="sz-slider">Font</label>
+    <input type="range" id="sz-slider" min="9" max="20" step="0.5" value="12">
+    <span class="val" id="sz-val">12px</span>
+  </div>
+  <div class="ctrl">
+    <label for="lh-slider">Row&nbsp;height</label>
+    <input type="range" id="lh-slider" min="1.0" max="3.2" step="0.1" value="1.65">
+    <span class="val" id="lh-val">1.7×</span>
+  </div>
+  <div class="ctrl">
+    <label for="gap-slider">Node&nbsp;gap</label>
+    <input type="range" id="gap-slider" min="40" max="400" step="10" value="88">
+    <span class="val" id="gap-val">88px</span>
+  </div>
+  <div class="ctrl">
+    <label for="mw-slider">Max&nbsp;width</label>
+    <input type="range" id="mw-slider" min="200" max="2000" step="50" value="2000">
+    <span class="val" id="mw-val">&#8734;</span>
+  </div>
+  <div class="lod-group">
+    <button class="lod-btn"        data-lod="full"    onclick="setAllLod('full')">Full</button>
+    <button class="lod-btn"        data-lod="compact" onclick="setAllLod('compact')">Compact</button>
+    <button class="lod-btn active" data-lod="minimal" onclick="setAllLod('minimal')">Minimal</button>
+  </div>
+  <div class="sent-global-group">
+    <span class="sent-global-label">Sentences:</span>
+    <button class="sent-global-btn" data-sent-global="full"   onclick="setAllSentLod('full')">Full</button>
+    <button class="sent-global-btn" data-sent-global="text"   onclick="setAllSentLod('text')">NL</button>
+    <button class="sent-global-btn" data-sent-global="number" onclick="setAllSentLod('number')">Min</button>
+  </div>
+  <button id="toggle-comments-btn" class="toggle-btn" onclick="toggleComments(this)">Comments</button>
+  <button id="toggle-spaces-btn"  class="toggle-btn" onclick="toggleSpaces(this)">Spaces</button>
+  <button id="toggle-sorry-btn"   class="toggle-btn" onclick="toggleSorry(this)">Sorry</button>
+  <div class="export-group">
+    <button id="save-btn" class="save-btn" onclick="saveLayout()">Save layout</button>
+    <button class="save-btn" onclick="importLayout()">Import layout</button>
+    <input type="file" id="import-file" accept=".json" style="display:none">
+    <button class="reset-btn" onclick="resetLayout()">Reset</button>
+  </div>
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#7eb6ff"></div>theorem</div>
+    <div class="leg"><div class="leg-dot" style="background:#52e3c2"></div>euclid_sentence</div>
+    <div class="leg"><div class="leg-dot" style="background:#f5a623"></div>have node (dashed)</div>
+    <div class="leg" style="color:#7a88bb">Shift+click = multi-select</div>
+    <div class="leg" style="color:#7a88bb">PNG export: "Save layout" → move map_layout.json to prop folder → run with <code style="font-size:10px;color:#c3e88d">--png</code></div>
+  </div>
+</div>
+<div id="rband"></div>
+<div class="page">
+<div class="outer">
+  <svg id="svg-layer"></svg>
+  <div class="main-col" data-lod="full">
+<div class="col-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level">Main.lean</span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+<div class="code-body">
+<div class="code-line collapsed" data-role="sig"><span class="ln"></span><span class="lc">-- (13 import / namespace lines)</span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> proposition_3 <span class="op-colon">:</span> <span class="t-id">∀</span> <span class="t-brk-o">(</span>a b c₀ c₁ <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>AB C <span class="op-colon">:</span> Line<span class="t-brk-c">)</span>,</span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">  distinctPointsOnLine a b AB <span class="op-logic">∧</span> distinctPointsOnLine c₀ c₁ C <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>b<span class="t-brk-c">)</span>| &gt; |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-assign">→</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">  <span class="t-id">∃</span> e <span class="op-colon">:</span> Point, between a e b <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  euclid_intros</span></div>
+<div class="code-line sentence" data-role="body"   data-kind="sentence" data-sent-key="1.3.0"><span class="ln">5</span><span class="lc">  <span class="kw-sent">euclid_intro_sentence</span> <span class="t-str">&quot;1.3.0&quot;</span></span><span class="sent-hint">&#9658;</span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="1.3.0" data-sent-role="text"><span class="ln">6</span><span class="lc">    <span class="t-str">&quot;For two given unequal straight-lines, to cut off from the greater a straight-line equal to the lesser.  Let $AB$ and $C$ be the two given unequal straight-lines, of which let the greater be $AB$. So it is required to cut off a straight-line equal to the lesser $C$ from the greater $AB$. &quot;</span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">7</span><span class="lc">  euclid_apply <span class="t-brk-o">(</span>proposition_2&#x27; a c₀ c₁ C<span class="t-brk-c">)</span> as d</span></div>
+<div class="code-line sentence" data-role="body" id="step1" data-connects="step1" data-kind="sentence" data-sent-key="step1"><span class="ln">8</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.3.1&quot;</span></span><span class="sent-hint">&#9658;</span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step1" data-sent-role="text"><span class="ln">9</span><span class="lc">    <span class="t-str">&quot;Let the line $AD$, equal to the straight-line $C$, have been placed at  point $A$ [Prop.~1.2].&quot;</span></span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step1" data-sent-role="lean"><span class="ln">10</span><span class="lc"><span class="sorry-off">    <span class="t-brk-o">(</span>step1 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> euclid_apply <span class="t-brk-o">(</span>helper_1_3_step1 a d c₀ c₁<button class="hyp-btn" data-uid="1" data-n="1" data-noun="hyp" onclick="toggleHyp(this)" title="1 assumption(s)">[1&nbsp;hyp&nbsp;&#9658;]</button><span class="hyp-body" id="hb1" style="display:none"><span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>|; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span><span class="sorry-on">    <span class="t-brk-o">(</span>step1 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> <span class="kw-sorry">sorry</span></span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">11</span><span class="lc">  euclid_apply <span class="t-brk-o">(</span>circle_from_points a d<span class="t-brk-c">)</span> as DEF</span></div>
+<div class="code-line plain" data-role="body"><span class="ln">12</span><span class="lc">  euclid_apply <span class="t-brk-o">(</span>intersection_circle_line_between_points DEF AB a b<span class="t-brk-c">)</span> as e</span></div>
+<div class="code-line sentence" data-role="body" id="step2" data-connects="step2" data-kind="sentence" data-sent-key="step2"><span class="ln">13</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.3.2&quot;</span></span><span class="sent-hint">&#9658;</span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step2" data-sent-role="text"><span class="ln">14</span><span class="lc">    <span class="t-str">&quot;And let the circle $DEF$ have been drawn with center $A$ and radius $AD$ [Post.~3]. &quot;</span></span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step2" data-sent-role="lean"><span class="ln">15</span><span class="lc"><span class="sorry-off">    <span class="t-brk-o">(</span>step2 <span class="op-colon">:</span> a.isCentre DEF <span class="op-logic">∧</span> d.onCircle DEF<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> euclid_apply <span class="t-brk-o">(</span>helper_1_3_step2 a d DEF<button class="hyp-btn" data-uid="2" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb2" style="display:none"><span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show a.isCentre DEF; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show d.onCircle DEF; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span><span class="sorry-on">    <span class="t-brk-o">(</span>step2 <span class="op-colon">:</span> a.isCentre DEF <span class="op-logic">∧</span> d.onCircle DEF<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> <span class="kw-sorry">sorry</span></span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line comment" data-role="body"><span class="ln">16</span><span class="lc">  -- @assumption_valid</span></div>
+<div class="code-line have" data-role="body" id="step3_assumption1"  data-kind="have" ><span class="ln">17</span><span class="lc">  <span class="kw-have">have</span> step3_assumption1 <span class="op-colon">:</span> a.isCentre DEF <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> assumption</span></div>
+<div class="code-line comment" data-role="body"><span class="ln">18</span><span class="lc">  -- @assumption <span class="t-brk-o">(</span><span class="t-str">&quot;point $A$ is the center of  circle $DEF$&quot;</span>, a.isCentre DEF<span class="t-brk-c">)</span></span></div>
+<div class="code-line sentence" data-role="body" id="step3" data-connects="step3" data-kind="sentence" data-sent-key="step3"><span class="ln">19</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.3.3&quot;</span></span><span class="sent-hint">&#9658;</span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step3" data-sent-role="text"><span class="ln">20</span><span class="lc">    <span class="t-str">&quot;And since  point $A$ is the center of  circle $DEF$, $AE$ is equal to $AD$ [Def.~1.15].&quot;</span></span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step3" data-sent-role="lean"><span class="ln">21</span><span class="lc"><span class="sorry-off">    <span class="t-brk-o">(</span>step3 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> euclid_apply <span class="t-brk-o">(</span>helper_1_3_step3 a d e DEF<button class="hyp-btn" data-uid="3" data-n="3" data-noun="hyps" onclick="toggleHyp(this)" title="3 assumption(s)">[3&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb3" style="display:none"><span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;point $A$ is the center of  circle $DEF$&quot;</span> <span class="t-brk-o">(</span>show a.isCentre DEF; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show d.onCircle DEF; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show e.onCircle DEF; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span><span class="sorry-on">    <span class="t-brk-o">(</span>step3 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> <span class="kw-sorry">sorry</span></span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line sentence" data-role="body" id="step4" data-connects="step4" data-kind="sentence" data-sent-key="step4"><span class="ln">22</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.3.4&quot;</span></span><span class="sent-hint">&#9658;</span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step4" data-sent-role="text"><span class="ln">23</span><span class="lc">    <span class="t-str">&quot;But, $C$ is also equal to $AD$.&quot;</span></span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step4" data-sent-role="lean"><span class="ln">24</span><span class="lc"><span class="sorry-off">    <span class="t-brk-o">(</span>step4 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> euclid_apply <span class="t-brk-o">(</span>helper_1_3_step4 a d c₀ c₁<button class="hyp-btn" data-uid="4" data-n="1" data-noun="hyp" onclick="toggleHyp(this)" title="1 assumption(s)">[1&nbsp;hyp&nbsp;&#9658;]</button><span class="hyp-body" id="hb4" style="display:none"><span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>|; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span><span class="sorry-on">    <span class="t-brk-o">(</span>step4 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> <span class="kw-sorry">sorry</span></span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line sentence" data-role="body" id="step5" data-connects="step5" data-kind="sentence" data-sent-key="step5"><span class="ln">25</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.3.5&quot;</span></span><span class="sent-hint">&#9658;</span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step5" data-sent-role="text"><span class="ln">26</span><span class="lc">    <span class="t-str">&quot;Thus, $AE$ and $C$ are each equal to $AD$.&quot;</span></span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step5" data-sent-role="lean"><span class="ln">27</span><span class="lc"><span class="sorry-off">    <span class="t-brk-o">(</span>step5 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> euclid_apply <span class="t-brk-o">(</span>helper_1_3_step5 a d e c₀ c₁<button class="hyp-btn" data-uid="5" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb5" style="display:none"><span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span><span class="sorry-on">    <span class="t-brk-o">(</span>step5 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> <span class="kw-sorry">sorry</span></span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line sentence" data-role="body" id="step6" data-connects="step6" data-kind="sentence" data-sent-key="step6"><span class="ln">28</span><span class="lc">  <span class="kw-sent">euclid_sentence</span> <span class="t-str">&quot;1.3.6&quot;</span></span><span class="sent-hint">&#9658;</span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step6" data-sent-role="text"><span class="ln">29</span><span class="lc">    <span class="t-str">&quot;So $AE$ is also equal to $C$ [C.N.~1].&quot;</span></span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="step6" data-sent-role="lean"><span class="ln">30</span><span class="lc"><span class="sorry-off">    <span class="t-brk-o">(</span>step6 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> euclid_apply <span class="t-brk-o">(</span>helper_1_3_step6 a d e c₀ c₁<button class="hyp-btn" data-uid="6" data-n="2" data-noun="hyps" onclick="toggleHyp(this)" title="2 assumption(s)">[2&nbsp;hyps&nbsp;&#9658;]</button><span class="hyp-body" id="hb6" style="display:none"><span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span> <span class="t-brk-o">(</span><span class="kw-have">by</span> <span class="kw-euclid">euclid_assumption</span> <span class="t-str">&quot;&quot;</span> <span class="t-brk-o">(</span>show |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|; assumption<span class="t-brk-c">)</span><span class="t-brk-c">)</span><span class="t-brk-c">)</span></span></span><span class="sorry-on">    <span class="t-brk-o">(</span>step6 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span> <span class="kw-sorry">sorry</span></span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+<div class="code-line plain" data-role="body"><span class="ln">31</span><span class="lc">  use e</span></div>
+<div class="code-line sentence" data-role="body"   data-kind="sentence" data-sent-key="1.3.7"><span class="ln">32</span><span class="lc">  <span class="kw-sent">euclid_conclude_sentence</span> <span class="t-str">&quot;1.3.7&quot;</span></span><span class="sent-hint">&#9658;</span></div>
+<div class="code-line sent-cont" data-role="body" data-sent-cont="1.3.7" data-sent-role="text"><span class="ln">33</span><span class="lc">    <span class="t-str">&quot;Thus, for two given unequal straight-lines, $AB$ and $C$, the (straight-line) $AE$, equal to the lesser $C$, has been cut off from the greater $AB$. (Which is) the very thing it was required to do.&quot;</span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+</div></div>
 
-JS = r"""
+  <div class="depth-cols">
+<div class="depth-col">
+<div class="col-header">Step files</div>
+<div class="card sent-card" id="card-step1" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step1.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_3_step1 <span class="t-brk-o">(</span>a d c₀ c₁ <span class="op-colon">:</span> Point<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>had <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">3</span><span class="lc">  <span class="kw-have">exact</span> had</span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step2" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step2.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_3_step2 <span class="t-brk-o">(</span>a d <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>DEF <span class="op-colon">:</span> Circle<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>hc <span class="op-colon">:</span> a.isCentre DEF<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>hd <span class="op-colon">:</span> d.onCircle DEF<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    a.isCentre DEF <span class="op-logic">∧</span> d.onCircle DEF <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-have">exact</span> <span class="t-id">⟨</span>hc, hd<span class="t-id">⟩</span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step3" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step3.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_3_step3 <span class="t-brk-o">(</span>a d e <span class="op-colon">:</span> Point<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>DEF <span class="op-colon">:</span> Circle<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>hc <span class="op-colon">:</span> a.isCentre DEF<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>hd <span class="op-colon">:</span> d.onCircle DEF<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>he <span class="op-colon">:</span> e.onCircle DEF<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-have">exact</span> point_on_circle_onlyif a d e DEF <span class="t-id">⟨</span>hc, hd, he<span class="t-id">⟩</span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step4" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step4.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_3_step4 <span class="t-brk-o">(</span>a d c₀ c₁ <span class="op-colon">:</span> Point<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>hstep1 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">3</span><span class="lc">  <span class="kw-have">exact</span> hstep1.symm</span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step5" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step5.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_3_step5 <span class="t-brk-o">(</span>a d e c₀ c₁ <span class="op-colon">:</span> Point<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>hstep3 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>hstep4 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-logic">∧</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>| <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-have">exact</span> <span class="t-id">⟨</span>hstep3, hstep4<span class="t-id">⟩</span></span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+  </div>
+</div>
+<div class="card sent-card" id="card-step6" data-lod="minimal">
+  <div class="card-header"><span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span><span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level"><span class="cname s">step6.lean</span></span><span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span></div>
+  <div class="card-body">
+<div class="code-line plain" data-role="sig"><span class="ln">1</span><span class="lc"><span class="kw-def">theorem</span> helper_1_3_step6 <span class="t-brk-o">(</span>a d e c₀ c₁ <span class="op-colon">:</span> Point<span class="t-brk-c">)</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">2</span><span class="lc">    <span class="t-brk-o">(</span>hstep3 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="t-brk-o">(</span>hstep4 <span class="op-colon">:</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>a<span class="t-id">─</span>d<span class="t-brk-c">)</span>|<span class="t-brk-c">)</span> <span class="op-colon">:</span></span></div>
+<div class="code-line plain" data-role="sig"><span class="ln">3</span><span class="lc">    |<span class="t-brk-o">(</span>a<span class="t-id">─</span>e<span class="t-brk-c">)</span>| <span class="op-rel">=</span> |<span class="t-brk-o">(</span>c₀<span class="t-id">─</span>c₁<span class="t-brk-c">)</span>| <span class="op-colon">:</span><span class="op-rel">=</span> <span class="kw-have">by</span></span></div>
+<div class="code-line plain" data-role="body"><span class="ln">4</span><span class="lc">  <span class="kw-have">exact</span> hstep3.trans hstep4.symm</span></div>
+<div class="code-line blank" data-role="body"><span class="ln"></span><span class="lc"> </span></div>
+  </div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+<script>
+
 const root  = document.documentElement;
 const svg   = document.getElementById("svg-layer");
 const outer = document.querySelector(".outer");
@@ -1538,220 +1321,7 @@ function toggleSorry(btn) {
   const on = document.body.classList.toggle('sorry-mode');
   btn.classList.toggle('active', on);
 }
-"""
 
-
-def build_html(prop_name, main_lines, roots):
-    node_keys = collect_node_keys(roots)
-
-    cols = {}
-    def gather(card):
-        cols.setdefault(card.depth, []).append(card)
-        for c in card.children: gather(c)
-    for r in roots: gather(r)
-
-    main_html  = '<div class="main-col" data-lod="full">\n'
-    main_html += ('<div class="col-header">'
-                  '<span class="hdr-left"  data-sel="parents"><span class="hdr-arrow">&#9668;</span></span>'
-                  '<span class="hdr-center" onclick="cycleCardLod(this)" title="Toggle detail level">Main.lean</span>'
-                  '<span class="hdr-right" data-sel="children"><span class="hdr-arrow">&#9658;</span></span>'
-                  '</div>\n')
-    main_html += '<div class="code-body">\n'
-    main_html += render_code_lines(main_lines, node_keys=node_keys)
-    main_html += '</div></div>\n'
-
-    dcols = '<div class="depth-cols">\n'
-    for depth in sorted(cols.keys()):
-        lbl = ["","Step files","Sub-step files","Sub-sub-step files"][min(depth, 3)]
-        dcols += '<div class="depth-col">\n'
-        dcols += f'<div class="col-header">{lbl}</div>\n'
-        for card in cols[depth]:
-            dcols += render_card(card, node_keys=node_keys)
-        dcols += '</div>\n'
-    dcols += '</div>\n'
-
-    return f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Proof map — {h(prop_name)}</title>
-<style>{CSS}</style>
-</head>
-<body>
-<div class="toolbar">
-  <h1>Proof map — {h(prop_name)}</h1>
-  <div class="ctrl">
-    <label for="tsz-slider">Title</label>
-    <input type="range" id="tsz-slider" min="9" max="32" step="0.5" value="11">
-    <span class="val" id="tsz-val">11px</span>
-  </div>
-  <div class="ctrl">
-    <label for="sz-slider">Font</label>
-    <input type="range" id="sz-slider" min="9" max="20" step="0.5" value="12">
-    <span class="val" id="sz-val">12px</span>
-  </div>
-  <div class="ctrl">
-    <label for="lh-slider">Row&nbsp;height</label>
-    <input type="range" id="lh-slider" min="1.0" max="3.2" step="0.1" value="1.65">
-    <span class="val" id="lh-val">1.7×</span>
-  </div>
-  <div class="ctrl">
-    <label for="gap-slider">Node&nbsp;gap</label>
-    <input type="range" id="gap-slider" min="40" max="400" step="10" value="88">
-    <span class="val" id="gap-val">88px</span>
-  </div>
-  <div class="ctrl">
-    <label for="mw-slider">Max&nbsp;width</label>
-    <input type="range" id="mw-slider" min="200" max="2000" step="50" value="2000">
-    <span class="val" id="mw-val">&#8734;</span>
-  </div>
-  <div class="lod-group">
-    <button class="lod-btn"        data-lod="full"    onclick="setAllLod('full')">Full</button>
-    <button class="lod-btn"        data-lod="compact" onclick="setAllLod('compact')">Compact</button>
-    <button class="lod-btn active" data-lod="minimal" onclick="setAllLod('minimal')">Minimal</button>
-  </div>
-  <div class="sent-global-group">
-    <span class="sent-global-label">Sentences:</span>
-    <button class="sent-global-btn" data-sent-global="full"   onclick="setAllSentLod('full')">Full</button>
-    <button class="sent-global-btn" data-sent-global="text"   onclick="setAllSentLod('text')">NL</button>
-    <button class="sent-global-btn" data-sent-global="number" onclick="setAllSentLod('number')">Min</button>
-  </div>
-  <button id="toggle-comments-btn" class="toggle-btn" onclick="toggleComments(this)">Comments</button>
-  <button id="toggle-spaces-btn"  class="toggle-btn" onclick="toggleSpaces(this)">Spaces</button>
-  <button id="toggle-sorry-btn"   class="toggle-btn" onclick="toggleSorry(this)">Sorry</button>
-  <div class="export-group">
-    <button id="save-btn" class="save-btn" onclick="saveLayout()">Save layout</button>
-    <button class="save-btn" onclick="importLayout()">Import layout</button>
-    <input type="file" id="import-file" accept=".json" style="display:none">
-    <button class="reset-btn" onclick="resetLayout()">Reset</button>
-  </div>
-  <div class="legend">
-    <div class="leg"><div class="leg-dot" style="background:#7eb6ff"></div>theorem</div>
-    <div class="leg"><div class="leg-dot" style="background:#52e3c2"></div>euclid_sentence</div>
-    <div class="leg"><div class="leg-dot" style="background:#f5a623"></div>have node (dashed)</div>
-    <div class="leg" style="color:#7a88bb">Shift+click = multi-select</div>
-    <div class="leg" style="color:#7a88bb">PNG export: "Save layout" → move map_layout.json to prop folder → run with <code style="font-size:10px;color:#c3e88d">--png</code></div>
-  </div>
-</div>
-<div id="rband"></div>
-<div class="page">
-<div class="outer">
-  <svg id="svg-layer"></svg>
-  {main_html}
-  {dcols}
-</div>
-</div>
-<script>
-{JS}
 </script>
 </body>
 </html>
-"""
-
-# ── CLI ───────────────────────────────────────────────────────────────────────
-
-def export_png(html_path, scale=2, transparent=False, layout_file=None):
-    """Export html_path to PNG.  layout_file overrides the default map_layout.json lookup.
-    The PNG name mirrors the layout file name: map_layout_foo.json → map_foo.png."""
-    from playwright.sync_api import sync_playwright
-
-    propdir = os.path.dirname(html_path)
-    base    = os.path.splitext(os.path.basename(html_path))[0]   # "map"
-
-    if layout_file is None:
-        layout_file = os.path.join(propdir, "map_layout.json")
-
-    # Derive PNG name from layout filename: map_layout_foo.json → map_foo.png
-    lbase   = os.path.splitext(os.path.basename(layout_file))[0]  # "map_layout_foo"
-    suffix  = lbase[len("map_layout"):]                            # "_foo" or ""
-    png_path = os.path.join(propdir, base + suffix + ".png")
-
-    layout_json = None
-    if os.path.isfile(layout_file):
-        with open(layout_file) as f:
-            layout_json = f.read()
-
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page(device_scale_factor=scale)
-        if layout_json:
-            page.add_init_script(f"window.__LAYOUT__ = {layout_json};")
-        page.goto("file://" + os.path.abspath(html_path))
-        page.wait_for_load_state("networkidle")
-        page.evaluate("document.querySelector('.toolbar').style.display = 'none'")
-        page.evaluate("document.querySelector('.page').style.paddingTop = '20px'")
-        if transparent:
-            page.evaluate("document.documentElement.style.background = 'transparent'")
-            page.evaluate("document.body.style.background = 'transparent'")
-        page.evaluate("drawConnectors()")
-        page.wait_for_timeout(100)
-        content_size = page.evaluate("""() => {
-            const o = document.querySelector('.outer');
-            return { width: o.scrollWidth + 100, height: o.scrollHeight + 100 };
-        }""")
-        page.set_viewport_size(content_size)
-        page.evaluate("drawConnectors()")
-        page.wait_for_timeout(50)
-        page.screenshot(path=png_path, full_page=True, omit_background=transparent)
-        browser.close()
-    src = layout_file if layout_json else "defaults"
-    print(f"wrote {png_path} ({scale}x, {os.path.basename(src)})")
-
-def export_pdf(html_path):
-    pdf = os.path.splitext(html_path)[0] + ".pdf"
-    for exe in ("google-chrome","chromium","chromium-browser"):
-        try:
-            subprocess.run([exe,"--headless","--disable-gpu",
-                            f"--print-to-pdf={pdf}","--print-to-pdf-no-header",
-                            "--no-margins", f"file://{os.path.abspath(html_path)}"],
-                           check=True, capture_output=True)
-            print(f"wrote {pdf}"); return
-        except (FileNotFoundError, subprocess.CalledProcessError):
-            continue
-    print("PDF: use Chrome → Print → Save as PDF.")
-
-def main():
-    ap = argparse.ArgumentParser(description=__doc__,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--prop", required=True)
-    ap.add_argument("-o","--out")
-    ap.add_argument("--pdf", action="store_true")
-    ap.add_argument("--png", action="store_true", help="Export PNG via headless browser")
-    ap.add_argument("--all_layouts", action="store_true",
-                    help="Export one PNG per map_layout*.json found in the prop folder")
-    ap.add_argument("--scale", type=int, default=2, help="PNG resolution multiplier (default 2)")
-    ap.add_argument("--transparent", action="store_true", help="Transparent PNG background")
-    args = ap.parse_args()
-
-    propdir = args.prop
-    if not os.path.isdir(propdir):
-        alt = os.path.join("LeanEuclidPlus", propdir)
-        if os.path.isdir(alt): propdir = alt
-        else: sys.exit(f"folder not found: {args.prop}")
-
-    main_path = os.path.join(propdir, "Main.lean")
-    if not os.path.isfile(main_path):
-        sys.exit(f"no Main.lean in {propdir}")
-
-    _uid[0] = 0
-    main_lines = parse_main(main_path)
-    roots      = build_tree(propdir, main_lines)
-    prop_name  = os.path.basename(propdir.rstrip("/\\"))
-
-    out = args.out or os.path.join(propdir, "map.html")
-    with open(out, "w", encoding="utf-8") as f:
-        f.write(build_html(prop_name, main_lines, roots))
-    print(f"wrote {out}")
-    if args.pdf: export_pdf(out)
-    if args.png:
-        export_png(out, scale=args.scale, transparent=args.transparent)
-    if args.all_layouts:
-        import glob
-        layouts = sorted(glob.glob(os.path.join(propdir, "map_layout*.json")))
-        if not layouts:
-            print("no map_layout*.json files found in", propdir)
-        for lf in layouts:
-            export_png(out, scale=args.scale, transparent=args.transparent, layout_file=lf)
-
-if __name__ == "__main__":
-    main()
