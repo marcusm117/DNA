@@ -152,9 +152,9 @@ We ran our methodology through Books 1, 2, and 3, generating \numproofs faithful
 
 The goal of our methodology is to generate formal (Lean) proofs \emph{guaranteed} to satisfy \cref{tab:conditions} with minimal oracle\footnote{We use human experts for this, but it could be a very capable LLM for example} and LLM reliance, since oracle time is the most expensive, while LLM usage also costs money.
 
-Of the conditions in \cref{tab:conditions}, \methodname only requires the oracle the task of \emph{reviewing} \atomicity, and \atomicfaithfulness. The overall methodology is the LLM first splits up the NL proof into what it thinks are sentences satisfying \atomicity. A script checks \coverage is satisfied, and if not, the LLM is automatically prompted to fix the issue. Once the LLM is done with this, it is tasked with \atomicfaithfulness, the task of translating each NL assertion/assumption into formal lean. Then the LLM runs a script that checks \textit{partially} checks \citcond. Partially because some citations are intended to be used to proove this sentence's assertion, but at this point we only translate sentences, not prove them, so they are left with \texttt{sorry}. Finally, the oracle reviews this, ensuring \atomicity and \atomicfaithfulness are satisfied. If not, the oracle provides feedback to the LLM, which is prompted to fix the issue. This process continues until the oracle is satisfied, and concludes the mapping phase.
+Of the conditions in \cref{tab:conditions}, \methodname only requires the oracle the task of \emph{reviewing} \atomicity, and \atomicfaithfulness. The overall methodology is the LLM first splits up the NL proof into what it thinks are sentences satisfying \atomicity. A script checks \coverage is satisfied, and if not, the LLM is automatically prompted to fix the issue. Once the LLM is done with this, it is tasked with \atomicfaithfulness, the task of translating each NL assertion/assumption into formal lean. Then the LLM runs a script that \textit{partially} checks \citcond. Partially because some citations are intended to be used to proove this sentence's assertion, but at this point we only translate sentences, not prove them, so they are left with \texttt{sorry}. Finally, the oracle reviews this, ensuring \atomicity and \atomicfaithfulness are satisfied. If not, the oracle provides feedback to the LLM, which is prompted to fix the issue. This process continues until the oracle is satisfied, and concludes the \mapstage.
 
-Once mapping phase is complete, we save the sentence, the split of assertion/assumption of this sentence, and its mapping to Lean in a file the LLM is not allowed to write to. So now, we need to fill in the \texttt{sorry}'s left in mapping phase (ensuring \soundness), and prove things citing the correct propositinos ensuring \citcond. This process is done entirely using LLM + Scripts. 
+Once the \mapstage is complete, we save the sentence, the split of assertion/assumption of this sentence, and its mapping to Lean in a file the LLM is not allowed to write to. This frozen mapping is the contract the \fillstage must satisfy without being able to weaken it: fill in the \texttt{sorry}'s left in the \mapstage (ensuring \soundness) and prove each citing the correct propositions (ensuring \citcond), entirely using LLM and scripts.
 
 
 \begin{table*}[t]
@@ -184,19 +184,22 @@ Name & Condition & Checked by \\
 % \label{fig:methodology}
 % \end{figure*}
 
-\subsection{Proving Phase}
-While the other two phases are straight forward, this phase is tricky because compile times are long. Some issues are for example
-\begin{enumerate}
-	\item If we have many sentences, and each takes a while to compile, then editing a later sentence will require all previous steps to recompile, accumulating massive amounts of wall time (sometimes hours or days)
-	\item If the current subgoal cannot be closed due to SMT-timeout, where do we even begin?
-	\item Assuming we had some idea of what where to begin a proof, how do we know this path is correct without compiling other parts of the proof to save wall time?
-\end{enumerate}
+\subsection{\fillstage}
+Naively, one hands the mapped file --- Lean with one \texttt{sorry} per sentence --- to an LLM and asks it to fill them in. In many domains this local gap-filling works. Here it fails structurally: a \texttt{sorry} is not a gap but an independent theorem. Euclid reasons informally; our logic is System E, which he never used. A sentence like ``therefore $AB=CD$ [Prop.~I.4]'' is not one tactic call --- discharging it in System E requires re-establishing figure facts Euclid reads off the diagram and never states (betweenness, side-of-line, distinctness), which the SMT backend needs as explicit hypotheses. Each sentence is thus its own multi-step proof. Worse, the checker gives no signal on failure: \texttt{euclid\_finish} closes a \emph{small} explicit step by SMT but times out on anything larger, returning neither counterexample nor partial progress, so restate-and-rerun thrashes.
 
-To address item 1, we do two things. First, we subgoals into various lemmas, and these lemmas into other sub-lemmas. Second, we leave as much as we can as \texttt{sorry}, and only filling these \texttt{sorry}'s in when necessary, so that compile times are fast. Only at the end, in the wiring phase do we know that replace the \texttt{sorry} with actual lemma calls (though at this stage we are certain this wiring must be correct).
+These two facts --- every \texttt{sorry} is a theorem, the verifier is a timeout oracle --- force three constraints the \fillstage is built around. \textbf{Isolation:} each sentence is proved as a standalone lemma in its own file, importing only System E and the propositions it cites, so editing sentence $k$ never recompiles $1..k{-}1$. \textbf{Bounded decomposition:} every SMT query must close under a fixed cap; a step that exceeds it is recursively split into sub-lemmas until each leaf closes --- caps are never raised, work is subdivided. \textbf{Seeding:} to start a stuck goal we give the LLM a database of System-E facts indexed by what they conclude and consume, and it drives a fixed sequence of scripts that certify each lemma's proof cone in isolation, so a wrong path is cheap to discard. Throughout, the mapped sentences stay \texttt{sorry}; a final mechanical wiring step substitutes the proven lemmas, and by construction the wired proof compiles.
 
-To address item 2, we introduce a database with various search features to help the LLM get started.
+\begin{algorithm}[t]
+\caption{\textsc{Fill}(node $n$) — recursive; every other node stays \texttt{sorry}.}
+\begin{algorithmic}[1]
+\IF{SF($n$) fails}      \STATE fix claim \COMMENT{$n$ is the wrong thing to prove}
+\ELSIF{SP($n$) fails}   \STATE fix signature \COMMENT{a hypothesis isn't suppliable}
+\ELSIF{P($n) \le 30$s}  \STATE mark $n$ proved
+\ELSE                    \STATE split $n$ into sub-nodes; \textsc{Fill} each \COMMENT{timeout}
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
 
-To address item 3, we have a very structured set of scripts that the LLM calls in a specific order. create the graph here.
 \section{Evaluation}
 % ~2.5 columns. Frame around the research questions below.
 
