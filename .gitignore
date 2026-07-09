@@ -225,3 +225,6 @@ cython_debug/
 
 *.out
 *.err
+
+# paper/ is a standalone repo synced to Overleaf (its own .git); DNA ignores it
+/paper/
