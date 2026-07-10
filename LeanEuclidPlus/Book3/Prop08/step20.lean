@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book3
 
 -- "DK is less than DL": restates step17.
-set_option systemE.solverTime 30 in
 theorem helper_3_8_step20
     (step17 : |(d─k)| < |(d─l)|) :
     |(d─k)| < |(d─l)| := by

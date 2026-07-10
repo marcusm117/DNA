@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_8_step12 (d f c : Point)
     (hstep9 : |(d─f)| > |(d─c)|) :
     |(d─f)| > |(d─c)| := hstep9

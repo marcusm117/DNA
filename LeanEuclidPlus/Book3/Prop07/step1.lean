@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_7_step1 (ABCD : Circle) (e b c g : Point) (BE CE GE : Line)
     (h_ctr : e.isCentre ABCD)
     (hb : b.onCircle ABCD) (hc : c.onCircle ABCD) (hg : g.onCircle ABCD)

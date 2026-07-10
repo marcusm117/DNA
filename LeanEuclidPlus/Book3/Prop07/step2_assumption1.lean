@@ -7,7 +7,6 @@ namespace Elements.Book3
 
 open Elements
 
-set_option systemE.solverTime 30 in
 theorem helper_3_7_step2_assumption1 (ABCD : Circle) (a d e f b : Point) (AD BE BF : Line)
     (h_ctr : e.isCentre ABCD)
     (ha : a.onCircle ABCD) (hd : d.onCircle ABCD) (hb : b.onCircle ABCD)

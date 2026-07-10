@@ -10,7 +10,6 @@ namespace Elements.Book3
 -- |m─h| = |m─l| (radii), ∠h:m:d > ∠l:m:d → Prop 24 gives |h─d| > |l─d|.
 -- hex_hf packages the far-circle-partner for h as an existential Prop binder (not an object):
 -- SP finds it as the intro'd but undestucted ∃ hf hyp in Main's context.
-set_option systemE.solverTime 30 in
 theorem helper_3_8_step18
     (ABC : Circle) (m k l d h g a : Point) (ML LD MH AG : Line)
     (hm : m.isCentre ABC)

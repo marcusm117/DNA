@@ -12,7 +12,6 @@ namespace Elements.Book3
 --  2. Extend line MF past m to get p; intersection_circle_line_extending_points gives b0
 --     on circle on line MF between b0 and p (so b0 is on the SAME side as f from m).
 --  3. equal_angles gives ∠b0:m:d = ∠f:m:d, same-side pigeon-hole places b0 opposite k.
-set_option systemE.solverTime 30 in
 theorem helper_3_8_hb0_exist
     (ABC : Circle) (m k l d g a : Point) (AG MK : Line)
     (hm : m.isCentre ABC)

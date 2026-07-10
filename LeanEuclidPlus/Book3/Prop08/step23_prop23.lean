@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop23
+import Book1.Prop23.Main
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -7,7 +7,6 @@ namespace Elements.Book3
 
 -- Cites proposition_23 for criterion-3: angle ∠k:m:d can be reproduced at m on AG.
 -- euclid_apply (proposition_23) destructures the existential into w✝, hne, hang in context.
-set_option systemE.solverTime 30 in
 theorem helper_3_8_step23_prop23
     (ABC : Circle) (m d k : Point) (AG MK : Line)
     (hmcenter : m.isCentre ABC) (hdnInside : ¬d.insideCircle ABC)

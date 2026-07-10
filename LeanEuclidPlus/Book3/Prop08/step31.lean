@@ -1,6 +1,6 @@
 import SystemE
-import Book.Prop07
-import Book.Prop20
+import Book1.Prop07.Main
+import Book1.Prop20.Main
 import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
@@ -10,7 +10,6 @@ namespace Elements.Book3
 -- Contradiction: n is a third point on circle equidistant from d as k.
 -- Case 1: n on AG → must be g or a (only circle pts on AG), both give |dn| ≠ |dk|.
 -- Case 2: n off AG → same_side_pigeon_hole → prop_7 (I.7) in each sub-case.
-set_option systemE.solverTime 30 in
 theorem helper_3_8_step31
     (ABC : Circle) (m k d b0 n g a : Point) (AG MK : Line)
     (hm : m.isCentre ABC)

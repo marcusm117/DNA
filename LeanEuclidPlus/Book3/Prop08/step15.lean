@@ -9,7 +9,6 @@ namespace Elements.Book3
 -- |MK| = |ML| (equal radii), ∠KMD < ∠LMD, so by Prop I.24: |KD| < |LD|
 -- Then linarith: |MK| + |KD| < |ML| + |LD|
 -- No by_cases needed — proposition_24 is direct.
-set_option systemE.solverTime 30 in
 theorem helper_3_8_step15
     (ABC : Circle) (m k l d : Point) (MK ML LD AG : Line)
     (hm : m.isCentre ABC)

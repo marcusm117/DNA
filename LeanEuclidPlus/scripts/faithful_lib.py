@@ -1799,6 +1799,17 @@ def integrity_scan(propdir, names=None):
             problems.append(f"{os.path.relpath(path, BOOK_ROOT)} has a STRAY helper import "
                             f"`import {mod}` — only the script may add pipeline imports (transiently "
                             f"when wiring). Remove it; the dev state imports no helper/step file.")
+        # FLAT `Book.PropNN` import guard: the old flat `Book/` directory is DEAD since the Book1
+        # migration (Book/ and Book1/ both declared Elements.Book1.proposition_N, so importing both
+        # under a wired Main causes `environment already contains` collisions). All proposition
+        # citations must use the FOLDERED form: `import Book1.PropNN.Main` (or Book2/Book3).
+        for m in re.finditer(r'^[ \t]*import[ \t]+(Book\.Prop\d+\S*)', src, re.MULTILINE):
+            mod = m.group(1)
+            problems.append(f"{os.path.relpath(path, BOOK_ROOT)} has a FLAT `Book/` proposition import "
+                            f"`import {mod}` — the old flat `Book/` directory is DEAD. Replace with "
+                            f"`import Book1.PropNN.Main` (or Book2/Book3 as appropriate). "
+                            f"This conflicts with the foldered `Book1.*` imports that wire_main adds "
+                            f"transitively, causing `environment already contains` failures at Phase C.")
         # ORPHAN `-- @args:` guard: every @args line must sit DIRECTLY above a node head (`have <n> :`
         # or `euclid_sentence …`); otherwise it's silently ignored (e.g. a blank line crept between).
         # Flag it loudly so the override never silently no-ops.

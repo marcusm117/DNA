@@ -7,7 +7,6 @@ namespace Elements.Book3
 
 open Elements
 
-set_option systemE.solverTime 30 in
 theorem helper_3_7_step9_tri_ecf
     (ABCD : Circle) (a d e f c : Point) (AD CE CF : Line)
     (h_ctr : e.isCentre ABCD)

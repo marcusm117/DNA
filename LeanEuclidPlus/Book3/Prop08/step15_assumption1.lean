@@ -1,11 +1,12 @@
 import SystemE
 import Mathlib.Tactic.Linarith
+import Book3.Prop08.step15_assumption1_hft
+import Book3.Prop08.step15_assumption1_hss_kd
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_8_step15_assumption1 (ABC : Circle) (m k l d g a h : Point)
     (MK ML LD AG : Line)
     (hm : m.isCentre ABC) (hk : k.onCircle ABC) (hl : l.onCircle ABC)
@@ -51,8 +52,8 @@ theorem helper_3_8_step15_assumption1 (ABC : Circle) (m k l d g a h : Point)
     · exact hne_kg rfl
     · exact hne_ka rfl
   have hne_dm : m ≠ d := by euclid_finish
-  have step15_assumption1_hft : formTriangle m l d ML LD AG := by sorry
-  have step15_assumption1_hss_kd : d.sameSide k ML := by sorry
+  have step15_assumption1_hft : formTriangle m l d ML LD AG := by euclid_apply (helper_3_8_step15_assumption1_hft m l d ML LD AG (by euclid_assumption "" (show m.onLine AG; assumption)) (by euclid_assumption "" (show d.onLine AG; assumption)) (by euclid_assumption "" (show m.onLine ML; assumption)) (by euclid_assumption "" (show l.onLine ML; assumption)) (by euclid_assumption "" (show l.onLine LD; assumption)) (by euclid_assumption "" (show d.onLine LD; assumption)) (by euclid_assumption "" (show l ≠ m; assumption)) (by euclid_assumption "" (show l ≠ d; assumption)) (by euclid_assumption "" (show m ≠ d; assumption)) (by euclid_assumption "" (show ¬l.onLine AG; assumption)))
+  have step15_assumption1_hss_kd : d.sameSide k ML := by euclid_apply (helper_3_8_step15_assumption1_hss_kd m k l d g a h MK ML AG (by euclid_assumption "" (show d.onLine AG; assumption)) (by euclid_assumption "" (show a.onLine AG; assumption)) (by euclid_assumption "" (show g.onLine AG; assumption)) (by euclid_assumption "" (show between d g m; assumption)) (by euclid_assumption "" (show between g m a; assumption)) (by euclid_assumption "" (show ∠k:m:d < ∠l:m:d; assumption)) (by euclid_assumption "" (show ∠l:m:d < ∠h:m:d; assumption)) (by euclid_assumption "" (show m.onLine MK; assumption)) (by euclid_assumption "" (show k.onLine MK; assumption)) (by euclid_assumption "" (show m.onLine ML; assumption)) (by euclid_assumption "" (show l.onLine ML; assumption)) (by euclid_assumption "" (show m.onLine AG; assumption)) (by euclid_assumption "" (show l ≠ m; assumption)) (by euclid_assumption "" (show k ≠ m; assumption)) (by euclid_assumption "" (show m ≠ d; assumption)) (by euclid_assumption "" (show ¬l.onLine AG; assumption)) (by euclid_assumption "" (show ¬k.onLine AG; assumption)) (by euclid_assumption "" (show l.sameSide k AG; assumption)))
   exact ⟨step15_assumption1_hft, step15_assumption1_hss_kd, hss_lk⟩
 
 end Elements.Book3

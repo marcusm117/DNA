@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_7_step4
     (step2 : |(e─b)| + |(e─f)| > |(b─f)|)
     (step3 : |(e─b)| + |(e─f)| = |(f─a)|)

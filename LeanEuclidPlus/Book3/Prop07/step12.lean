@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_7_step12
     (hbet_efd : between e f d)
     (step10 : |(g─f)| + |(f─e)| > |(e─d)|)

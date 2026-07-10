@@ -16,7 +16,6 @@ namespace Elements.Book3
 --     → linarith with ∠k:m:d < ∠l:m:d and 0 ≤ ∠k:m:l → contradiction
 --   Case g.sameSide a MK: contradiction with ¬g.sameSide a MK
 --   Case l.sameSide a MK: → ¬(d.sameSide l MK) by transitivity with ¬d.sameSide a MK
-set_option systemE.solverTime 30 in
 theorem helper_3_8_step15_assumption1_hss_kd (m k l d g a h : Point)
     (MK ML AG : Line)
     (hdAG : d.onLine AG) (haAG : a.onLine AG) (hgAG : g.onLine AG)

@@ -6,7 +6,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_7_step2 (e b f : Point) (BE BF AD : Line)
     (hassump1 : formTriangle e b f BE BF AD)
     : |(e─b)| + |(e─f)| > |(b─f)| := by
