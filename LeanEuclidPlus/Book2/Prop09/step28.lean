@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop34
+import Book1Variants.Prop34
 import Helpers.OffLine
 import Book2.Prop09.step28_pgram
 set_option linter.unusedVariables false

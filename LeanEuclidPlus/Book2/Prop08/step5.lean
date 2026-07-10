@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop34
+import Book1Variants.Prop34
 import Book2.Prop08.step5_cbqr
 import Book2.Prop08.step5_bdrp
 set_option linter.unusedVariables false

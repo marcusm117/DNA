@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop29
+import Book1Variants.Prop29
 import Book2.Prop04.step5_bgd
 import Book2.Prop04.step5_ss
 import Book2.Prop04.step5_corr

@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop47
+import Book1.Prop47.Main
 import Helpers.OffLine
 import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false

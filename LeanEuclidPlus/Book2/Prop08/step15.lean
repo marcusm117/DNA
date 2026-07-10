@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop43
+import Book1.Prop43.Main
 import Helpers.Area
 import Book2.Prop08.step12_gkgq_ang_qkd
 import Book2.Prop08.step12_gkgq_ang_kqe

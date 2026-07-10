@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop30
+import Book1.Prop30.Main
 
 namespace Elements.Book2
 

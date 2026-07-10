@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop30
+import Book1.Prop30.Main
 import Book2.Prop05.step11_ahpar_kh
 import Book2.Prop05.step11_ahpar_dh
 import Book2.Prop05.step11_ahpar_akdg

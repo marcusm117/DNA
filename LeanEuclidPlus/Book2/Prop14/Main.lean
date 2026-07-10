@@ -1,8 +1,8 @@
 import SystemE
-import Book.Prop03
-import Book.Prop10
-import Book.Prop11
-import Book.Prop45
+import Book1.Prop03.Main
+import Book1.Prop10.Main
+import Book1Variants.Prop11
+import Book1.Prop45.Main
 import Book2.Prop05.Main
 import Book2.Prop14.step1
 import Book2.Prop14.step2

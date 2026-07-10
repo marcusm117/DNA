@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop05
+import Book1Variants.Prop05
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 

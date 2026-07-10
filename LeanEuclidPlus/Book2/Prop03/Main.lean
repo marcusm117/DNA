@@ -1,6 +1,6 @@
 import SystemE
-import Book.Prop46
-import Book.Prop31
+import Book1Variants.Prop46
+import Book1.Prop31.Main
 import Book2.Prop03.step1
 import Book2.Prop03.step2
 import Book2.Prop03.step3

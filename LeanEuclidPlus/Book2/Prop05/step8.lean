@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop36
+import Book1Variants.Prop36
 import Book2.Prop05.step8_alpar_kss
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false

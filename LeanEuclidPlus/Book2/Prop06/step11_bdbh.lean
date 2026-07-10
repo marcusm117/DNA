@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop06
+import Book1.Prop06.Main
 import Book2.Prop06.step11_dmdb_iso
 import Book2.Prop06.step11_dmdb_corr
 import Book2.Prop06.step11_dmdb_tri

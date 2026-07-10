@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop34
+import Book1Variants.Prop34
 import Book2.Prop04.step5_cnad
 import Book2.Prop04.step8_dnab
 import Book2.Prop04.step9_anbe

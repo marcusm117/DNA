@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop36
+import Book1Variants.Prop36
 import Book2.Prop06.step6_bgce_ne
 import Book2.Prop06.step6_hoffab
 import Book2.Prop06.step6_lc

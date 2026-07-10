@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop43
+import Book1.Prop43.Main
 import Book2.Prop05.step6_big_eoff
 import Book2.Prop05.step6_doffce
 import Book2.Prop05.step6_boffef

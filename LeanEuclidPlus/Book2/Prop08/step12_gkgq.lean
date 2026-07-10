@@ -1,6 +1,6 @@
 import SystemE
-import Book.Prop05
-import Book.Prop06
+import Book1Variants.Prop05
+import Book1.Prop06.Main
 import Book2.Prop08.step12_gkgq_triade
 import Book2.Prop08.step12_gkgq_trigkq
 import Book2.Prop08.step12_gkgq_ang

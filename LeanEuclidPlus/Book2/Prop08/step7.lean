@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop36
+import Book1Variants.Prop36
 import Helpers.Area
 import Book2.Prop08.step7_gkqr
 import Book2.Prop08.step7_knrp

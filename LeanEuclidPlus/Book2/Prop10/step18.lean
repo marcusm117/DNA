@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop32
+import Book1.Prop32.Main
 import Mathlib.Tactic.Linarith
 import Book2.Prop10.step18_tri
 set_option linter.unusedVariables false

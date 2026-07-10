@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop06
+import Book1.Prop06.Main
 import Book2.Prop05.step13_dhdb_bopp
 import Book2.Prop05.step13_dhdb_bhe
 import Book2.Prop05.step13_dhdb_ssdc

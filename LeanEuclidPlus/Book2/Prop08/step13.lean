@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop36
+import Book1Variants.Prop36
 import Book2.Prop08.step12_gkgq_ang_qkd
 import Book2.Prop08.step13_mnop
 import Book2.Prop08.step13_acgm

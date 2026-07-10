@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop47
+import Book1.Prop47.Main
 import Helpers.OffLine
 import Mathlib.Tactic.Linarith
 import Book2.Prop09.step26_formtri

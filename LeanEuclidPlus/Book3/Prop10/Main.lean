@@ -26,6 +26,7 @@ by
       p.onCircle DEF ∧ q.onCircle DEF ∧ r.onCircle DEF := by assumption
   obtain ⟨b, g, h, hbg, hbh, hgh, hbABC, hgABC, hhABC, hbDEF, hgDEF, hhDEF⟩ := h_sup
 
+  -- Note: Euclid names four intersection points B, G, F, H in this sentence but F is not every used in the proof and creates issues so we are unfaithful here by ommiting F.
   euclid_sentence "3.10.1"
     "For, if possible, let the circle $ABC$ cut the circle $DEF$ at more than two points, $B$, $G$, $F$, and $H$."
     (step1 : b ≠ g ∧ b ≠ h ∧ g ≠ h ∧ b.onCircle ABC ∧ g.onCircle ABC ∧ h.onCircle ABC ∧ b.onCircle DEF ∧ g.onCircle DEF ∧ h.onCircle DEF) := by sorry

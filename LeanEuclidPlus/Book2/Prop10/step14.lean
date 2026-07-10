@@ -1,6 +1,6 @@
 import SystemE
-import Book.Prop05
-import Book.Prop32
+import Book1Variants.Prop05
+import Book1.Prop32.Main
 import Helpers.OffLine
 import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false

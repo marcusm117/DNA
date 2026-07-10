@@ -1,10 +1,10 @@
 import SystemE
-import Book.Prop03
-import Book.Prop11
-import Book.Prop29
-import Book.Prop30
-import Book.Prop31
-import Book.Prop34
+import Book1.Prop03.Main
+import Book1Variants.Prop11
+import Book1Variants.Prop29
+import Book1.Prop30.Main
+import Book1.Prop31.Main
+import Book1Variants.Prop34
 
 namespace Elements.Book2
 

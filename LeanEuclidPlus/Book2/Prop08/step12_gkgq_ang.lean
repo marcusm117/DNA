@@ -1,6 +1,6 @@
 import SystemE
-import Book.Prop05
-import Book.Prop29
+import Book1Variants.Prop05
+import Book1Variants.Prop29
 import Book2.Prop08.step12_gkgq_ang_qkd
 import Book2.Prop08.step12_gkgq_ang_kqe
 import Book2.Prop08.step12_gkgq_ang_gsaed

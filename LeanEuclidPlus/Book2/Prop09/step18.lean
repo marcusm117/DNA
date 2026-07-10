@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop06
+import Book1.Prop06.Main
 import Helpers.OffLine
 import Book2.Prop09.step13_befb
 import Book2.Prop09.step18_formtri

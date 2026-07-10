@@ -1,5 +1,5 @@
 import SystemE
-import Book.Prop34
+import Book1Variants.Prop34
 import Mathlib.Tactic.Linarith
 import Book2.Prop08.step12_cbgk
 import Book2.Prop08.step12_bdbk
