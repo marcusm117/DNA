@@ -135,6 +135,34 @@ _REDIR_PROTECTED = re.compile(
     ">>?\\s*['\"]?[^\\s'\"]*(?:" + "|".join(re.escape(f) for f in _PROTECTED_JSON) + ")")
 
 
+# Pipeline scripts that MUST run BARE (CLAUDE.md: "run bare, no pipe to grep/head; just read what the
+# script prints"). They already emit short, formatted, self-bounded output — piping/redirecting them is
+# both pointless and the #1 cause of wasted turns: a trailing `2>&1` gets shell-tokenized (the `&`) into a
+# phantom `1` segment, so the generic gate fires "`1` is not on the Bash allowlist" — a message the agent
+# can't act on, so it retries variants indefinitely. Catch the pattern up front with a fix-naming deny.
+_BARE_ONLY_PY = {"wire_main.py", "smt_probe.py", "find.py", "bake_index.py",
+                 "scaffold_step.py", "faithful_map_assemble.py", "assumptions.py"}
+
+def _is_pipeline_script(toks):
+    """True if this segment invokes a sanctioned bare-only pipeline script (python3 scripts/<x>.py or
+    check_faithful.sh) — the ones CLAUDE.md says to run by themselves and just read."""
+    i = 0
+    while i < len(toks) and (re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", toks[i])
+                             or toks[i] in ("command", "builtin", "exec", "time", "nohup")):
+        i += 1
+    if i >= len(toks):
+        return False
+    base = toks[i].rsplit("/", 1)[-1]
+    if base == "check_faithful.sh":
+        return True
+    if base in ("python", "python3") and i + 1 < len(toks):
+        nxt = toks[i + 1]
+        arg = nxt.rsplit("/", 1)[-1]
+        return (nxt.startswith("scripts/") or nxt.startswith("./scripts/")) and (
+            arg.startswith("check_") or arg in _BARE_ONLY_PY)
+    return False
+
+
 def main():
     try:
         data = json.load(sys.stdin)
@@ -154,11 +182,34 @@ def main():
              "(check_steps/check_signatures --save, assumptions.py), never edited directly by the agent. "
              + ALLOWED_SUMMARY)
 
+    segs = _segments(cmd)
+
+    # BARE-ONLY pipeline scripts: if a sanctioned `python3 scripts/*.py` / `check_faithful.sh` shows up
+    # in a MULTI-segment command, the agent has piped or redirected it (`| head`, `| grep`, `2>&1`,
+    # `> file`). That's blocked by CLAUDE.md AND is what produces the baffling "`1` is not on the
+    # allowlist" deny (the `&` in `2>&1` splits into a phantom `1`). Hard-deny with the actual fix named,
+    # so the agent re-runs bare on the FIRST retry instead of thrashing. (Read-only `grep … | head` etc.
+    # is untouched — those segments aren't pipeline scripts, so this never fires for them.)
+    if len(segs) > 1 and any(_is_pipeline_script(s) for s in segs):
+        print(json.dumps({"hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "deny",
+            "permissionDecisionReason":
+                "A pipeline script (`python3 scripts/…` or `check_faithful.sh`) must run BARE — it "
+                "already prints short, formatted output, so piping/redirecting it is unnecessary and "
+                "blocked (CLAUDE.md). FIX: drop the `| head` / `| grep` / `2>&1` / `> file` and re-run "
+                "the command by itself, then read what it prints. NOTE: a trailing `2>&1` is what the "
+                "shell splits into a stray `1` — that phantom token is the real source of any confusing "
+                "\"`1` is not on the Bash allowlist\" error you may have just hit; it does NOT mean "
+                "find.py/check_* is disallowed. " + ALLOWED_SUMMARY,
+        }}))
+        sys.exit(0)
+
     # Inspect every sub-command (split on shell separators) against a POSITIVE allowlist — anything
     # that doesn't match a known-good shape is gated (ask/deny per hygiene.conf), not just the named
     # inspection binaries. This is what catches `git grep` (a git SUBcommand, not a leading `grep`),
     # `git fetch`, `npm install`, etc. — anything CLAUDE.md's allowlist doesn't name.
-    for toks in _segments(cmd):
+    for toks in segs:
         if not toks:
             continue
         # skip leading ENV=val assignments and a leading 'command'/'builtin' wrapper

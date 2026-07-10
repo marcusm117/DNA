@@ -21,9 +21,6 @@ by
   euclid_intro_sentence "3.10.0"
     "A circle does not cut a(nother) circle at more than two points."
 
-  -- Flat reductio: euclid_intros has introduced the existential as a hypothesis and set the goal to
-  -- False. Obtain witness points B, G, H (3 of Euclid's 4; F is named in step1 text but unused after).
-  -- h_sup is a copy so the original existential hypothesis remains in context.
   have h_sup : ∃ (p q r : Point), p ≠ q ∧ p ≠ r ∧ q ≠ r ∧
       p.onCircle ABC ∧ q.onCircle ABC ∧ r.onCircle ABC ∧
       p.onCircle DEF ∧ q.onCircle DEF ∧ r.onCircle DEF := by assumption

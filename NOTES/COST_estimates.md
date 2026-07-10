@@ -3,7 +3,7 @@
 # My personal Notes
 
 # aside. copy paste text to proofs:
-/faithful-prove /LeanEuclidPlus/Book3/Prop02. Note you are in DNA. cd to LeanEuclidPlus ONCE. Do not keep cd once you are already in this folder.
+/faithful-prove /LeanEuclidPlus/Book3/Prop09. Note you are in DNA. cd to LeanEuclidPlus ONCE. Do not keep cd once you are already in this folder.
 
 # map copy paste
 

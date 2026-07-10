@@ -8,3 +8,30 @@ Questinos:
 
 WTS:
 - maybe methodology briefly to get everyone on same page, and discuss if this should be on paper or not since maybe is long, and formalizing it how etc.
+
+
+
+
+July 9:
+- pass in LLM.
+- thinks worth should be worth(LLM, ...).
+- put inputs in the require. 
+- have return. True False
+
+- line 8 no here (use // on the line of else). status not all cap. 
+- comment line 11 and 17, so easier what it is doing.
+- clean up the go to.
+
+- less commentary in paper. no "most tricky". describe what is going on in precise language, and then.
+- explain the methodology only. do not motivate in the methodology. motivate high level in the motivating example.
+
+- methodology starting with subsection "problem definitions". What is the problem we solve, what is the input (formal symbols), what is the output, and what conditions it must satisfy. 
+- caption symbols should be defined in the problem definition.and m
+
+- I am going to solve this problem in these stage...
+- then talk about each stage.
+
+- use n rather than |...|
+
+
+- FOR SURVEY, if I wanna fix book 1 things, do before next thursday

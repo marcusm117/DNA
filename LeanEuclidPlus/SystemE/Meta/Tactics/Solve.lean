@@ -214,7 +214,13 @@ def EuclidApply (rule : Term) (idents : Array Ident)  : TacticM Unit := do
   | e =>
     match e.getAppFnArgs with
     | (``Exists, _) =>  -- τ is `∃ x, ...`
-      evalTactic $ ← `(tactic| obtain ⟨$idents,*, ($(mkIdent hnm))⟩ := $rule)
+      let closedByExact ← try
+        evalTactic $ ← `(tactic| exact $rule)
+        pure true
+      catch _ =>
+        pure false
+      if !closedByExact then
+        evalTactic $ ← `(tactic| obtain ⟨$idents,*, ($(mkIdent hnm))⟩ := $rule)
     | _ =>
       evalTactic $ ← `(tactic| first
         | (obtain ⟨$(mkIdent hnm)⟩ := $rule)

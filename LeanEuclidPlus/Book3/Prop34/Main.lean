@@ -11,6 +11,12 @@ open Elements.Book1
 set_option systemE.solverTime 30 in
 theorem proposition_34 : ∀ (ABC : Circle) (d1 d d2 : Point),
   d1 ≠ d ∧ d2 ≠ d →
+  -- Non-degeneracy: the given angle must be a genuine (bent) rectilinear angle, strictly between
+  -- zero and a straight angle. `d1 ≠ d ∧ d2 ≠ d` does NOT prevent d1,d,d2 being collinear (angle
+  -- 0 or ∟+∟), and the cut-off (inscribed) angle ∠ b:a:c is always in (0, ∟+∟) — so a collinear
+  -- given angle makes the ∃-conclusion FALSE (and collapses the chord onto the tangent line). (cf.
+  -- Book1/Prop23's `formRectilinearAngle`, which admits and case-splits 0/straight; not usable here.)
+  0 < ∠ d1:d:d2 → ∠ d1:d:d2 < ∟ + ∟ →
   ∃ (b c : Point), b.onCircle ABC ∧ c.onCircle ABC ∧ b ≠ c ∧
     ∃ a : Point, a.onCircle ABC ∧ ∠ b:a:c = ∠ d1:d:d2 :=
 by

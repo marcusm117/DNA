@@ -25,6 +25,10 @@ theorem proposition_7 : ∀ (ABCD : Circle) (a d e f b c g : Point) (AD : Line),
   b.onCircle ABCD →
   c.onCircle ABCD →
   g.onCircle ABCD →
+  -- Non-degeneracy: b, c, g are not the endpoints of the diameter
+  b ≠ a → b ≠ d →
+  c ≠ a → c ≠ d →
+  g ≠ a → g ≠ d →
   ∠ b:e:f > ∠ c:e:f →
   ∠ c:e:f > ∠ g:e:f →
   |(f─a)| > |(f─b)| ∧
@@ -40,14 +44,14 @@ by
 
   -- B, C, G (and their circle-membership + the angle ordering ∠BEF>∠CEF>∠GEF) are now theorem
   -- binders/hypotheses, in context from euclid_intros.
-  have BE : Line := by sorry
-  have CE : Line := by sorry
-  have GE : Line := by sorry
+  euclid_apply (line_from_points b e) as BE
+  euclid_apply (line_from_points c e) as CE
+  euclid_apply (line_from_points g e) as GE
   euclid_sentence "3.7.1"
     "For let $BE$, $CE$, and $GE$ be joined."
     (step1 : distinctPointsOnLine b e BE ∧ distinctPointsOnLine c e CE ∧ distinctPointsOnLine g e GE) := by sorry
 
-  have BF : Line := by sorry
+  euclid_apply (line_from_points b f) as BF
   -- @assumption_gap
   have step2_assumption1 : formTriangle e b f BE BF AD := by sorry
   -- @assumption ("for every triangle (any) two sides are greater than the remaining (side)", formTriangle e b f BE BF AD)
@@ -92,6 +96,16 @@ by
     "So, for the same (reasons), $CF$ is also greater than $FG$."
     (step9 : |(f─c)| > |(f─g)|) := by sorry
 
+  -- H is constructed (by I.23) such that ∠FEH = ∠GEF; FH is joined.
+  -- Placed here (before step11 introduces subtraction) so euclid_apply for FH/EH
+  -- doesn't encounter the HSub term in context.
+  -- hh_exist omits opposingSides to avoid poisoning euclid_finish via SMT translation;
+  -- hh_opp is proved separately as a standalone sorry node just before exact.
+  have hh_exist : ∃ h : Point, h.onCircle ABCD ∧ ∠ f:e:h = ∠ g:e:f ∧ h ≠ g := by sorry
+  obtain ⟨h, hh_on, hh_ang_pre, hh_ne_g⟩ := hh_exist
+  euclid_apply (line_from_points f h) as FH
+  euclid_apply (line_from_points e h) as EH
+
   -- @assumption_gap
   have step10_assumption1 : |(g─f)| + |(f─e)| > |(g─e)| := by sorry
   -- @assumption_valid
@@ -129,10 +143,6 @@ by
   euclid_wts "3.7.17"
     "I also say that from point $F$ only two equal (straight-lines) will radiate towards (the circumference of) circle $ABCD$, (one) on each (side) of the least (straight-line) $FD$."
 
-  -- H is constructed (by I.23) such that ∠FEH = ∠GEF; FH is joined.
-  have h : Point := by sorry
-  have FH : Line := by sorry
-  have EH : Line := by sorry
   euclid_sentence "3.7.18"
     "For let the (angle) $FEH$, equal to angle $GEF$, be constructed on the straight-line $EF$, at the point $E$ on it [Prop.~1.23], and let $FH$ be joined."
     (step18 : ∠ f:e:h = ∠ g:e:f ∧ distinctPointsOnLine f h FH) := by sorry
@@ -160,11 +170,7 @@ by
 
   have habsurd1 : ¬(∃ k : Point, k.onCircle ABCD ∧ |(f─k)| = |(f─g)| ∧ k ≠ g ∧ k ≠ h) := by
     intro hsuppose1
-    have k : Point := by sorry
-    have hk_on : k.onCircle ABCD := by sorry
-    have hk_eq : |(f─k)| = |(f─g)| := by sorry
-    have hk_ne_g : k ≠ g := by sorry
-    have hk_ne_h : k ≠ h := by sorry
+    obtain ⟨k, hk_on, hk_eq, hk_ne_g, hk_ne_h⟩ := hsuppose1
     euclid_sentence "3.7.23"
       "For, if possible, let $FK$ (so) radiate."
       (step23 : k.onCircle ABCD ∧ |(f─k)| = |(f─g)|) := by sorry
@@ -197,7 +203,6 @@ by
     "Thus, (there is) only one (such straight-line)."
     (step28 : ∀ n : Point, n.onCircle ABCD → |(f─n)| = |(f─g)| → n = g ∨ n = h) := by sorry
 
-  have hh_on : h.onCircle ABCD := by sorry
   have hh_opp : h.opposingSides g AD := by sorry
   exact ⟨step13, step15, step16, step14, h, hh_on, hh_opp, step21.symm, step28⟩
   euclid_conclude_sentence "3.7.29"

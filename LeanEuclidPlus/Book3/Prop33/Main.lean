@@ -18,6 +18,12 @@ open Elements.Book1
 set_option systemE.solverTime 30 in
 theorem proposition_33 : ∀ (a b c₁ c c₂ : Point),
   a ≠ b →
+  -- Non-degeneracy: the given angle must be a genuine (bent) rectilinear angle, strictly between
+  -- zero and a straight angle. An inscribed angle ∠ a:e:b is always in (0, ∟+∟), so a collinear
+  -- given angle (0 or ∟+∟) makes the ∃-conclusion FALSE — there is no such witness. (cf. Book1/Prop23,
+  -- whose `formRectilinearAngle` guard still ADMITS the 0/straight cases and handles them by a case
+  -- split; an inscribed-angle target cannot be satisfied there, so we exclude them in the signature.)
+  0 < ∠ c₁:c:c₂ → ∠ c₁:c:c₂ < ∟ + ∟ →
   ∃ (α : Circle) (e : Point), a.onCircle α ∧ b.onCircle α ∧ e.onCircle α ∧ ∠ a:e:b = ∠ c₁:c:c₂ :=
 by
   euclid_intros

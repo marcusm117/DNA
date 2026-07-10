@@ -25,10 +25,15 @@ theorem proposition_8 : ∀ (ABC : Circle) (m d a e f c g k l h : Point) (AG : L
   k.onCircle ABC → (∃ kf : Point, kf.onCircle ABC ∧ between d k kf) →
   l.onCircle ABC → (∃ lf : Point, lf.onCircle ABC ∧ between d l lf) →
   h.onCircle ABC → (∃ hf : Point, hf.onCircle ABC ∧ between d h hf) →
+  -- Non-degeneracy: concave arc points ≠ far endpoint; c also ≠ near endpoint g (not angle-derivable)
+  e ≠ a → f ≠ a → c ≠ a → c ≠ g →
+  k ≠ g → l ≠ g → h ≠ g →
   -- Angle ordering at M for concave lines (nearer to DA = larger angle at M)
   ∠ e:m:d > ∠ f:m:d → ∠ f:m:d > ∠ c:m:d →
   -- Angle ordering at M for convex lines (nearer to DG = smaller angle at M)
   ∠ k:m:d < ∠ l:m:d → ∠ l:m:d < ∠ h:m:d →
+  -- Same-side condition for convex arc: k and l on same side of diameter AG (figure-reading)
+  l.sameSide k AG →
   -- (1) CONCAVE: DA is the greatest line to the concave arc; nearer-to-DA is greater
   ( |(d─a)| > |(d─e)| ∧ |(d─e)| > |(d─f)| ∧ |(d─f)| > |(d─c)| ) ∧
   -- (2) CONVEX: DG is the least line to the convex arc; nearer-to-DG is less
@@ -125,8 +130,10 @@ by
 
   euclid_apply (line_from_points l d) as LD
   -- @assumption_gap
-  have step15_assumption1 : formTriangle m l d ML LD AG ∧ m.sameSide k LD ∧ d.sameSide k ML ∧ l.sameSide k AG := by sorry
-  -- @assumption ("in triangle $MLD$, the two internal straight-lines $MK$ and $KD$ were constructed on one of the sides, $MD$", formTriangle m l d ML LD AG ∧ m.sameSide k LD ∧ d.sameSide k ML ∧ l.sameSide k AG)
+  -- @euclid_gap: Euclid reads K inside triangle MLD from the figure; m.sameSide k LD is false when D is barely outside the circle (K can lie on the wrong side of LD); handled via by_cases in step15
+  have step15_assumption1 : formTriangle m l d ML LD AG ∧ d.sameSide k ML ∧ l.sameSide k AG := by sorry
+  -- @suppress_deps_check "source cites [Prop.~1.21] (internal lines < two sides) but I.21 requires m.sameSide k LD which is the @euclid_gap (K inside triangle MLD not provable without figure assumption); formal proof uses proposition_24 via angle comparison"
+  -- @assumption ("in triangle $MLD$, the two internal straight-lines $MK$ and $KD$ were constructed on one of the sides, $MD$", formTriangle m l d ML LD AG ∧ d.sameSide k ML ∧ l.sameSide k AG)
   euclid_sentence "3.8.15"
     "And since in triangle $MLD$, the two internal straight-lines $MK$ and $KD$ were constructed on one of the sides, $MD$, (then) $MK$ and $KD$ are thus less than $ML$ and $LD$ [Prop.~1.21]."
     (step15 : |(m─k)| + |(k─d)| < |(m─l)| + |(l─d)|) := by sorry
@@ -139,6 +146,9 @@ by
     "Thus, the remainder $DK$ is less than the remainder $DL$."
     (step17 : |(d─k)| < |(d─l)|) := by sorry
 
+  -- Reconstruct the far-partner existential for h from the destructured inaccessible parts
+  -- (the proposition's ∃ hf was destructured by euclid_intros into w✝/left✝¹⁸/right✝¹²)
+  have hhfar_h : ∃ p : Point, p.onCircle ABC ∧ between d h p := ⟨_, by assumption, by assumption⟩
   euclid_sentence "3.8.18"
     "So, similarly, we can show that $DL$ is also less than $DH$."
     (step18 : |(d─l)| < |(d─h)|) := by sorry
