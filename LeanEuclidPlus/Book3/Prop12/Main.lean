@@ -21,7 +21,6 @@ by
 
   have habsurd1 : ¬(¬ between f a g) := by
     intro hsuppose1
-    -- orchestrator-step1: "FCDG" = ∃ c d, c on ABC, d on ADE, F-C-D-G betweenness; c,d bound by obtain
     euclid_sentence "3.12.1"
       "For (if) not (then), if possible, let it go like $FCDG$ (in the figure),"
       (step1 : ∃ (c d : Point), c.onCircle ABC ∧ d.onCircle ADE ∧ between f c d ∧ between c d g) := by sorry
@@ -33,16 +32,22 @@ by
       "and let $AF$ and $AG$ be joined."
       (step2 : distinctPointsOnLine a f AF ∧ distinctPointsOnLine a g AG) := by sorry
 
+    -- @assumption_valid
+    have step3_assumption1 : f.isCentre ABC := by assumption
     -- @assumption ("point $F$ is the center of circle $ABC$", f.isCentre ABC)
     euclid_sentence "3.12.3"
       "Therefore, since point $F$ is the center of circle $ABC$, $FA$ is equal to $FC$."
       (step3 : |(f─a)| = |(f─c)|) := by sorry
 
+    -- @assumption_valid
+    have step4_assumption1 : g.isCentre ADE := by assumption
     -- @assumption ("point $G$ is the center of circle $ADE$", g.isCentre ADE)
     euclid_sentence "3.12.4"
       "Again, since point $G$ is the center of circle $ADE$, $GA$ is equal to $GD$."
       (step4 : |(g─a)| = |(g─d)|) := by sorry
 
+    -- @assumption_valid
+    have step5_assumption1 : |(f─a)| = |(f─c)| := by assumption
     -- @assumption ("$FA$ was also shown (to be) equal to $FC$", |(f─a)| = |(f─c)|)
     euclid_sentence "3.12.5"
       "And $FA$ was also shown (to be) equal to $FC$. Thus, the (straight-lines) $FA$ and $AG$ are equal to the (straight-lines) $FC$ and $GD$."

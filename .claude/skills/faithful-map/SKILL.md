@@ -90,6 +90,18 @@ A discrepancy you hit while mapping is one of THREE things — only the first is
 - **A Euclid generic-position PROOF gap → fill it + mark `@euclid_gap`.** Euclid reads a true-in-general
   fact off the figure that a degenerate admissible model violates; his theorem still holds. Add the
   implicit case (`by_cases`/`wlog`) and mark the site (CLAUDE.md's `@euclid_gap`). Expected, not a bug.
+  **You MUST ship the FRAME, not a TODO.** The `by_cases`/`wlog` split is map-phase STRUCTURAL work (like
+  a reductio frame) — build it NOW. Only the degenerate branch's *body* is deferrable to Phase B, and it
+  is deferred as a DECLARED node: `have gap_<why> : <the-branch-goal> := by sorry` then `exact gap_<why>`
+  (the generic branch keeps Euclid's sentences). **⛔ NEVER leave the false-in-model fact as a bare
+  `have hx : e ≠ f := by sorry` with a `-- FIX (pending)` comment.** That `sorry` is UNPROVABLE by design
+  (false in the degenerate model), yet NO gate catches it — `check_step --provable` tolerates every sorry
+  and the stray-sorry check passes a declared node body — so it silently rots into Phase B as a landmine
+  Phase B can never discharge. If you can name a fact as an `@euclid_gap` because it's false in some
+  admissible model, you have ALREADY done the reasoning to split on it; splitting is not extra proving,
+  it's finishing the map. (Worked: `Book3/Prop14` — `e ≠ f`/`e ≠ g` false when the chord is a diameter →
+  nested `by_cases h_ef : e = f` / `h_eg : e = g`, two `gap_*_diam` declared nodes, generic branch derives
+  `hef := h_ef`; `Book3/Prop09` is the same shape.)
 - **A genuine OUTSIDE-SOURCE bug (NOT ours, NOT a mere implicit case) → STOP + REPORT.** A real error in
   the source: Euclid's own mistake, a translation/text error (the English asserts something inconsistent
   or absent from the Greek), or a wrong editorial citation (a `[Prop.~B.N]` bracket that points at the

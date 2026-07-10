@@ -1,4 +1,5 @@
 import SystemE
+import Mathlib.Tactic.Linarith
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -19,27 +20,25 @@ by
   euclid_intro_sentence "3.15.0"
     "In a circle, a diameter (is) the greatest (straight-line), and for the others, a (straight-line) nearer to the center is always greater than one further away. Let $ABCD$ be a circle, and let $AD$ be its diameter, and $E$ (its) center. And let $BC$ be nearer to the diameter $AD$,$^\\dag$ and $FG$ further away. I say that $AD$ is the greatest (straight-line), and $BC$ (is) greater than $FG$."
 
-  -- Introduce line objects EH and EK via have (avoiding e ≠ h/k side conditions)
   have hlines : ∃ EH EK : Line, distinctPointsOnLine e h EH ∧ distinctPointsOnLine e k EK := by sorry
   obtain ⟨EH, EK, hEH, hEK⟩ := hlines
   euclid_sentence "3.15.1"
     "For let $EH$ and $EK$ be drawn from the center $E$, at right-angles to $BC$ and $FG$ (respectively) [Prop.~1.12]."
-    (step1 : distinctPointsOnLine e h EH ∧ distinctPointsOnLine e k EK) := by sorry
+    (step1 : distinctPointsOnLine e h EH ∧ distinctPointsOnLine e k EK ∧ ∠ e:h:b = ∟ ∧ ∠ e:k:f = ∟) := by sorry
 
+  -- @assumption_valid
+  have step2_assumption1 : |(e─h)| < |(e─k)| := by assumption
   -- @assumption ("$BC$ is nearer to the center, and $FG$ further away", |(e─h)| < |(e─k)|)
-  -- orchestrator-restatement: |(e─k)| > |(e─h)| is the hypothesis |(e─h)| < |(e─k)| flipped; Def.3.5 IS the hypothesis encoding, no other form exists
   euclid_sentence "3.15.2"
-    "And since $BC$ is nearer to the center, and $FG$ further away, $EK$ (is) thus greater than $EH$ [Def.~3.5]."
+     "And since $BC$ is nearer to the center, and $FG$ further away, $EK$ (is) thus greater than $EH$ [Def.~3.5]."
     (step2 : |(e─k)| > |(e─h)|) := by sorry
 
-  -- Introduce point L on EK with |EL| = |EH| via have (avoids proposition_3 line-arg issues)
   have hstep3 : ∃ l : Point, between e l k ∧ |(e─l)| = |(e─h)| := by sorry
   obtain ⟨l, hl_betw, hl_eq⟩ := hstep3
   euclid_sentence "3.15.3"
     "Let $EL$ be made equal to $EH$ [Prop.~1.3]."
     (step3 : |(e─l)| = |(e─h)|) := by sorry
 
-  -- Introduce: m0 (off EK perpendicular at l), MN line, circle-intersection points m and n
   have hstep4_aux : ∃ (m0 : Point) (MN : Line),
       ¬(m0.onLine EK) ∧ ∠ e:l:m0 = ∟ ∧ distinctPointsOnLine l m0 MN := by sorry
   obtain ⟨m0, MN, hm0_off, hm0_perp, hMN⟩ := hstep4_aux
@@ -59,11 +58,15 @@ by
     "And let $ME$, $EN$, $FE$, and $EG$ be joined."
     (step5 : distinctPointsOnLine m e ME ∧ distinctPointsOnLine e n EN ∧ distinctPointsOnLine f e FE ∧ distinctPointsOnLine e g EG) := by sorry
 
+  -- @assumption_valid
+  have step6_assumption1 : |(e─h)| = |(e─l)| := by linarith
   -- @assumption ("$EH$ is equal to $EL$", |(e─h)| = |(e─l)|)
   euclid_sentence "3.15.6"
     "And since $EH$ is equal to $EL$, $BC$ is also equal to $MN$ [Prop.~3.14]."
     (step6 : |(b─c)| = |(m─n)|) := by sorry
 
+  -- @assumption_valid
+  have step7_assumption1 : |(a─e)| = |(m─e)| ∧ |(e─d)| = |(e─n)| := by euclid_finish
   -- @assumption ("$AE$ is equal to $EM$, and $ED$ to $EN$", |(a─e)| = |(m─e)| ∧ |(e─d)| = |(e─n)|)
   euclid_sentence "3.15.7"
     "Again, since $AE$ is equal to $EM$, and $ED$ to $EN$, $AD$ is thus equal to $ME$ and $EN$."
@@ -82,18 +85,23 @@ by
     "Thus, $AD$ is greater than $BC$."
     (step10 : |(a─d)| > |(b─c)|) := by sorry
 
+  -- @assumption_valid
+  have step11_assumption1 : |(m─e)| = |(f─e)| ∧ |(e─n)| = |(e─g)| := by euclid_finish
+  -- @assumption_gap
+  have step11_assumption2 : ∠ m:e:n > ∠ f:e:g := by sorry
   -- @assumption ("the two (straight-lines) $ME$, $EN$ are equal to the two (straight-lines) $FE$, $EG$ (respectively)", |(m─e)| = |(f─e)| ∧ |(e─n)| = |(e─g)|)
   -- @assumption ("angle $MEN$ [is] greater than angle $FEG$", ∠ m:e:n > ∠ f:e:g)
   euclid_sentence "3.15.11"
     "And since the two (straight-lines) $ME$, $EN$ are equal to the two (straight-lines) $FE$, $EG$ (respectively), and angle $MEN$ [is] greater than angle $FEG$,$^\\ddag$ the base $MN$ is thus greater than the base $FG$ [Prop.~1.24]."
     (step11 : |(m─n)| > |(f─g)|) := by sorry
 
+  -- @assumption_valid
+  have step12_assumption1 : |(m─n)| = |(b─c)| := by assumption
   -- @assumption ("$MN$ was shown (to be) equal to $BC$", |(m─n)| = |(b─c)|)
   euclid_sentence "3.15.12"
     "But, $MN$ was shown (to be) equal to $BC$ [(so) $BC$ is also greater than $FG$]."
     (step12 : |(b─c)| > |(f─g)|) := by sorry
 
-  -- orchestrator-restatement: step13 restates step10 as part-1 summary; faithful (Euclid writes both)
   euclid_sentence "3.15.13"
     "Thus, the diameter $AD$ (is) the greatest (straight-line),"
     (step13 : |(a─d)| > |(b─c)|) := by sorry

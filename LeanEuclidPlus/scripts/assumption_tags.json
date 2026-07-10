@@ -1532,5 +1532,259 @@
       "type": "e.onLine GK \u2227 between a e b \u2227 |(a\u2500e)| = |(e\u2500b)| \u2227 \u2220 a:e:d = \u221f \u2192 \u2200 o : Point, o.isCentre ABC \u2192 o.onLine GK",
       "verdict": "hard"
     }
+  },
+  "Book3/Prop10": {
+    "step4_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "in circle $ABC$ some straight-line $AC$ cuts some (other) straight-line $BH$ in half, and at right-angles",
+      "type": "k.onLine AC \u2227 between b k h \u2227 |(b\u2500k)| = |(k\u2500h)| \u2227 \u2220 b:k:c\u2080 = \u221f",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "in the same circle $ABC$ some straight-line $NO$ cuts some (other straight-line) $BG$ in half, and at right-angles",
+      "type": "l.onLine NO \u2227 between b l g \u2227 |(b\u2500l)| = |(l\u2500g)| \u2227 \u2220 b:l:m\u2080 = \u221f",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop11": {
+    "step3_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "that is to say $FH$",
+      "type": "|(f\u2500a)| = |(f\u2500h)|",
+      "verdict": "closes"
+    },
+    "step3_assumption2": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "since $AG$ and $GF$ is greater than $FA$, that is to say $FH$ [Prop.~1.20]",
+      "type": "|(a\u2500g)| + |(g\u2500f)| > |(f\u2500h)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop12": {
+    "step3_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $F$ is the center of circle $ABC$",
+      "type": "f.isCentre ABC",
+      "verdict": "closes"
+    },
+    "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $G$ is the center of circle $ADE$",
+      "type": "g.isCentre ADE",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$FA$ was also shown (to be) equal to $FC$",
+      "type": "|(f\u2500a)| = |(f\u2500c)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop13": {
+    "step10_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "it was also shown (to be) much greater than it",
+      "type": "|(b\u2500h)| > |(h\u2500d)|",
+      "verdict": "closes"
+    },
+    "step15_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "two points, $A$ and $C$, be taken at random on the circumference of each of the circles $ABDC$ and $ACK$",
+      "type": "d.onCircle ABDC \u2227 d.onCircle EBFD \u2227 b.onCircle ABDC \u2227 b.onCircle EBFD \u2227 d \u2260 b",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $G$ is the center of circle $ABDC$",
+      "type": "g.isCentre ABDC",
+      "verdict": "closes"
+    },
+    "step9_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "point $H$ is the center of circle $EBFD$",
+      "type": "h.isCentre EBFD",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop14": {
+    "step10_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the angle at $F$ (is) a right-angle",
+      "type": "\u2220 a:f:e = \u221f",
+      "verdict": "closes"
+    },
+    "step11_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the angle at $G$ (is) a right-angle",
+      "type": "\u2220 c:g:e = \u221f",
+      "verdict": "closes"
+    },
+    "step12_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AF$ is equal to $CG$",
+      "type": "|(a\u2500f)| = |(c\u2500g)|",
+      "verdict": "closes"
+    },
+    "step15_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "straight-lines in a circle are said to be equally far from the center when perpendicular (straight-lines) which are drawn to them from the center are equal",
+      "type": "|(e\u2500f)| = |(e\u2500g)|",
+      "verdict": "closes"
+    },
+    "step19_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$AE$ is equal to $CE$",
+      "type": "|(a\u2500e)| = |(e\u2500c)|",
+      "verdict": "closes"
+    },
+    "step22_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$EF$ (is) equal to $EG$",
+      "type": "|(e\u2500f)| = |(e\u2500g)|",
+      "verdict": "closes"
+    },
+    "step25_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AB$ is double $AF$, and $CD$ double $CG$",
+      "type": "|(a\u2500b)| = |(a\u2500f)| + |(a\u2500f)| \u2227 |(c\u2500d)| = |(c\u2500g)| + |(c\u2500g)|",
+      "verdict": "closes"
+    },
+    "step4_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "some straight-line, $EF$, through the center (of the circle), cuts some (other) straight-line, $AB$, not through the center, at right-angles",
+      "type": "e.onLine EF \u2227 f.onLine EF \u2227 \u2220 a:f:e = \u221f",
+      "verdict": "closes"
+    },
+    "step8_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AB$ is equal to $CD$",
+      "type": "|(a\u2500b)| = |(c\u2500d)|",
+      "verdict": "closes"
+    },
+    "step9_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$AE$ is equal to $EC$",
+      "type": "|(a\u2500e)| = |(e\u2500c)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop15": {
+    "step11_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "the two (straight-lines) $ME$, $EN$ are equal to the two (straight-lines) $FE$, $EG$ (respectively)",
+      "type": "|(m\u2500e)| = |(f\u2500e)| \u2227 |(e\u2500n)| = |(e\u2500g)|",
+      "verdict": "closes"
+    },
+    "step11_assumption2": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "angle $MEN$ [is] greater than angle $FEG$",
+      "type": "\u2220 m:e:n > \u2220 f:e:g",
+      "verdict": "hard"
+    },
+    "step12_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$MN$ was shown (to be) equal to $BC$",
+      "type": "|(m\u2500n)| = |(b\u2500c)|",
+      "verdict": "closes"
+    },
+    "step2_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BC$ is nearer to the center, and $FG$ further away",
+      "type": "|(e\u2500h)| < |(e\u2500k)|",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "$EH$ is equal to $EL$",
+      "type": "|(e\u2500h)| = |(e\u2500l)|",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$AE$ is equal to $EM$, and $ED$ to $EN$",
+      "type": "|(a\u2500e)| = |(m\u2500e)| \u2227 |(e\u2500d)| = |(e\u2500n)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop16": {
+    "step15_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AGD$ is a right-angle",
+      "type": "\u2220 a:g:d = \u221f",
+      "verdict": "closes"
+    },
+    "step15_assumption2": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$DAG$ (is) less than a right-angle",
+      "type": "\u2220 d:a:g < \u221f",
+      "verdict": "hard"
+    },
+    "step3_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$DA$ is equal to $DC$",
+      "type": "|(d\u2500a)| = |(d\u2500c)|",
+      "verdict": "closes"
+    }
   }
 }

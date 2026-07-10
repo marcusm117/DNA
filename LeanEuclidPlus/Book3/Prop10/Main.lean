@@ -49,11 +49,15 @@ by
     "And $KC$ and $LM$ being drawn at right-angles to $BH$ and $BG$ from $K$ and $L$ (respectively) [Prop.~1.11], let them (then) be drawn through to points $A$ and $E$ (respectively)."
     (step3 : ∠ b:k:c₀ = ∟ ∧ a.onLine AC ∧ ∠ b:l:m₀ = ∟ ∧ e.onLine NO) := by sorry
 
+  -- @assumption_valid
+  have step4_assumption1 : k.onLine AC ∧ between b k h ∧ |(b─k)| = |(k─h)| ∧ ∠ b:k:c₀ = ∟ := by euclid_finish
   -- @assumption ("in circle $ABC$ some straight-line $AC$ cuts some (other) straight-line $BH$ in half, and at right-angles", k.onLine AC ∧ between b k h ∧ |(b─k)| = |(k─h)| ∧ ∠ b:k:c₀ = ∟)
   euclid_sentence "3.10.4"
     "Therefore, since in circle $ABC$ some straight-line $AC$ cuts some (other) straight-line $BH$ in half, and at right-angles, the center of circle $ABC$ is thus on $AC$ [Prop.~3.1~corr.]."
     (step4 : ∃ o : Point, o.isCentre ABC ∧ o.onLine AC) := by sorry
 
+  -- @assumption_valid
+  have step5_assumption1 : l.onLine NO ∧ between b l g ∧ |(b─l)| = |(l─g)| ∧ ∠ b:l:m₀ = ∟ := by euclid_finish
   -- @assumption ("in the same circle $ABC$ some straight-line $NO$ cuts some (other straight-line) $BG$ in half, and at right-angles", l.onLine NO ∧ between b l g ∧ |(b─l)| = |(l─g)| ∧ ∠ b:l:m₀ = ∟)
   euclid_sentence "3.10.5"
     "Again, since in the same circle $ABC$ some straight-line $NO$ cuts some (other straight-line) $BG$ in half, and at right-angles, the center of circle $ABC$ is thus on $NO$ [Prop.~3.1~corr.]."

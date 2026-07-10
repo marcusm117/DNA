@@ -28,6 +28,8 @@ by
     euclid_sentence "3.16.2"
       "and let $DC$ be joined."
       (step2 : distinctPointsOnLine d c DC) := by sorry
+    -- @assumption_valid
+    have step3_assumption1 : |(d─a)| = |(d─c)| := by euclid_finish
     -- @assumption ("$DA$ is equal to $DC$", |(d─a)| = |(d─c)|)
     euclid_sentence "3.16.3"
       "Since $DA$ is equal to $DC$, angle $DAC$ is also equal to angle $ACD$ [Prop.~1.5]."
@@ -79,6 +81,10 @@ by
     euclid_sentence "3.16.14"
       "and let $DG$ be drawn from point $D$, perpendicular to $FA$ [Prop.~1.12]."
       (step14 : g.onLine FA ∧ ∠ a:g:d = ∟) := by sorry
+    -- @assumption_valid
+    have step15_assumption1 : ∠ a:g:d = ∟ := by assumption
+    -- @assumption_gap
+    have step15_assumption2 : ∠ d:a:g < ∟ := by sorry
     -- @assumption ("$AGD$ is a right-angle", ∠ a:g:d = ∟)
     -- @assumption ("$DAG$ (is) less than a right-angle", ∠ d:a:g < ∟)
     euclid_sentence "3.16.15"
@@ -102,37 +108,24 @@ by
   euclid_wts "3.16.20"
     "And I also say that the semi-circular angle contained by the straight-line $BA$ and the circumference $CHA$ is greater than any acute rectilinear angle whatsoever, and the remaining (angle) contained by the circumference $CHA$ and the straight-line $AE$ is less than any acute rectilinear angle whatsoever."
 
-  -- orchestrator-HORN-unrenderable: the antecedent compares rectilinear angles to the
-  -- semi-circular horn angle (BA ∧ arc CHA) and to the curvilinear angle (arc CHA ∧ AE) —
-  -- no curved-angle sort in System E. Expressible gloss (Reading A): the adjacent
-  -- line-incidence consequence — any line through a distinct from AE cuts the circle.
-  euclid_sentence "3.16.21"
+  -- @euclid_gap: horn angles (semi-circular ∧ arc, curvilinear ∧ tangent) have no sort in
+  -- System E; sentences 21–25 are textually preserved but carry no expressible claim.
+  euclid_conclude_sentence "3.16.21"
     "For if any rectilinear angle is greater than the (angle) contained by the straight-line $BA$ and the circumference $CHA$, or less than the (angle) contained by the circumference $CHA$ and the straight-line $AE$, (then) a straight-line can be inserted into the space between the circumference $CHA$ and the straight-line $AE$---anything which will make (an angle) contained by straight-lines greater than the angle contained by the straight-line $BA$ and the circumference $CHA$, or less than the (angle) contained by the circumference $CHA$ and the straight-line $AE$."
-    (step21 : ∀ (FA : Line), a.onLine FA → FA ≠ AE → FA.intersectsCircle ABC) := by sorry
 
-  euclid_sentence "3.16.22"
+  euclid_conclude_sentence "3.16.22"
     "But (such a straight-line) cannot be inserted."
-    (step22 : ¬(∃ (FA : Line), a.onLine FA ∧ FA ≠ AE ∧ ¬FA.intersectsCircle ABC)) := by sorry
 
-  -- orchestrator-HORN-unrenderable: "the angle contained by the straight-line $BA$ and the
-  -- circumference $CHA$" is a semi-circular horn angle with no System-E rendering.
-  -- Expressible gloss (Reading A): the tangency universal.
-  euclid_sentence "3.16.23"
+  euclid_conclude_sentence "3.16.23"
     "Thus, an acute (angle) contained by straight-lines cannot be greater than the angle contained by the straight-line $BA$ and the circumference $CHA$,"
-    (step23 : ∀ (FA : Line), a.onLine FA → FA ≠ AE → FA.intersectsCircle ABC) := by sorry
 
-  -- orchestrator-HORN-unrenderable: "the angle contained by the circumference $CHA$ and the
-  -- straight-line $AE$" is a curvilinear horn angle with no System-E rendering.
-  -- Expressible gloss (Reading A): same tangency universal.
-  euclid_sentence "3.16.24"
+  euclid_conclude_sentence "3.16.24"
     "neither (can it be) less than the (angle) contained by the circumference $CHA$ and the straight-line $AE$."
-    (step24 : ∀ (FA : Line), a.onLine FA → FA ≠ AE → FA.intersectsCircle ABC) := by sorry
 
-  euclid_sentence "3.16.25"
+  euclid_conclude_sentence "3.16.25"
     "So, from this, (it is) manifest that a (straight-line) drawn at right-angles to the diameter of a circle, from its extremity, touches the circle [and that the straight-line touches the circle at a single point, inasmuch as it was also shown that a (straight-line) meeting (the circle) at two (points) falls inside it [Prop.~3.2]\\,]."
-    (step25 : (∃ p : Point, p.onLine AE ∧ p.onCircle ABC) ∧ ¬ AE.intersectsCircle ABC) := by sorry
 
-  exact ⟨step25, step21⟩
+  exact ⟨step11, fun FA hFA hne => by_contra fun h => step19 ⟨FA, hFA, hne, h⟩⟩
   euclid_conclude_sentence "3.16.26"
     "(Which is) the very thing it was required to show."
 
