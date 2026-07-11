@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_13_step3 (EBFD : Circle) (h : Point)
     (hcenEBFD : h.isCentre EBFD) :
     h.isCentre EBFD := by

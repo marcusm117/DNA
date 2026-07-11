@@ -1,20 +1,21 @@
 import SystemE
 import Book1.Prop47.Main
 import Mathlib.Tactic.Linarith
+import Book3.Prop15.step11_assumption2_pg_ekg
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step11_assumption2_pg
-    (k g e f : Point) (ABCD : Circle) (FG : Line)
+    (k g e f : Point) (ABCD : Circle) (FG EK : Line)
     (h_centre : e.isCentre ABCD) (hg_on : g.onCircle ABCD)
     (hf_FG : f.onLine FG) (hg_FG : g.onLine FG) (hk_FG : k.onLine FG)
-    (hperp_k : ∠ e:k:f = ∟) :
+    (he_EK : e.onLine EK) (hk_EK : k.onLine EK)
+    (h_e_off_FG : ¬e.onLine FG)
+    (hperp_k : ∠ e:k:f = ∟)
+    (h_fkg : between f k g) :
     |(k─g)| * |(k─g)| + |(e─k)| * |(e─k)| = |(e─g)| * |(e─g)| := by
-  -- Delegate the angle derivation to a leaf sub-node
-  have step11_assumption2_pg_ekg : ∠ e:k:g = ∟ := by sorry
   by_cases hkg : k = g
   · have h0 : |(k─g)| = 0 := zero_segment_onlyif k g hkg
     have heq : |(e─g)| = |(e─k)| := by rw [← hkg]
@@ -24,7 +25,9 @@ theorem helper_3_15_step11_assumption2_pg
       have heq : |(k─g)| = |(e─g)| := by rw [hke]
       have h1 : |(k─g)| * |(k─g)| = |(e─g)| * |(e─g)| := by rw [heq]
       nlinarith [h0, h1]
-    · -- right angle at k: apply prop47 at vertex k
+    · -- Non-degenerate: k ≠ g, k ≠ e; ¬e.onLine FG + EK line + perp gives ∠e:k:g = ∟
+      have step11_assumption2_pg_ekg : ∠ e:k:g = ∟ := by euclid_apply (helper_3_15_step11_assumption2_pg_ekg k g e f FG EK (by euclid_assumption "" (show f.onLine FG; assumption)) (by euclid_assumption "" (show g.onLine FG; assumption)) (by euclid_assumption "" (show k.onLine FG; assumption)) (by euclid_assumption "" (show e.onLine EK; assumption)) (by euclid_assumption "" (show k.onLine EK; assumption)) (by euclid_assumption "" (show ¬e.onLine FG; assumption)) (by euclid_assumption "" (show ∠ e:k:f = ∟; assumption)) (by euclid_assumption "" (show k ≠ g; assumption)) (by euclid_assumption "" (show k ≠ e; assumption)) (by euclid_assumption "" (show between f k g; assumption)))
+      -- right angle at k: apply prop47 at vertex k
       euclid_apply (line_from_points e k) as EK2
       euclid_apply (line_from_points e g) as EG2
       have htri : formTriangle k e g EK2 EG2 FG := by euclid_finish

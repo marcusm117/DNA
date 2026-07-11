@@ -7,7 +7,6 @@ namespace Elements.Book3
 
 -- |b─h| = |l─m|: from equal Pythagorean equations + equal radii + equal distances
 -- a² = b² ∧ a,b ≥ 0 → a = b via (a-b)(a+b) = 0
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_eq_bh_lm
     (b h l m e : Point)
     (h_pb : |(b─h)| * |(b─h)| + |(e─h)| * |(e─h)| = |(e─b)| * |(e─b)|)

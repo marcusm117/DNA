@@ -54,6 +54,15 @@ axiom angle_symm : ∀ (a b c : Point),
 axiom angle_range : ∀ (ang : Angle),
   (0 : ℝ) ≤ ang ∧ ang ≤ ∟ + ∟
 
+-- A right angle is a positive quantity. `∟` (Angle.Right) is an opaque real with no
+-- built-in positivity, so without this the angle theory is satisfiable by ∟ = 0, which
+-- collapses every "collinear points subtend a right angle ⟹ False" argument (the solver
+-- sets ∟ = 0 and both degenerate branches — degenerated_angle giving 0 and flat_angle
+-- giving ∟ + ∟ — close vacuously). Post. 4 fixes ∟ as a definite quantity, and Def. I.10
+-- defines it by a non-degenerate geometric act (a line standing on another), both of which
+-- entail ∟ > 0. A constraint on the opaque measurement constant, not a derivable claim.
+axiom right_angle_pos : (0 : ℝ) < ∟
+
 --
 -- 6.
 -- △aab = 0. △

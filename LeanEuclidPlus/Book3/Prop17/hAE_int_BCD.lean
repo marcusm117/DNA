@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_17_hAE_int_BCD (e : Point) (BCD : Circle) (AE : Line)
     (he_on : e.onLine AE) (hc : e.isCentre BCD) : AE.intersectsCircle BCD := by
   have he_in : e.insideCircle BCD := center_inside_circle e BCD hc

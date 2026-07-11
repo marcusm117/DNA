@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_17_hane (a e : Point) (BCD : Circle)
     (left : ¬a.insideCircle BCD) (step1 : e.isCentre BCD) : a ≠ e := by
   intro h_eq

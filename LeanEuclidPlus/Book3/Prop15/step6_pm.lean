@@ -8,7 +8,6 @@ namespace Elements.Book3
 
 -- Pythagorean for m-side: |l─m|² + |e─l|² = |e─m|² (right angle at l)
 -- Three cases: l=m, l=e (both trivial), l≠m∧l≠e (proposition_47).
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_pm
     (m l e : Point) (ABCD : Circle) (MN : Line)
     (h_centre : e.isCentre ABCD) (hm_on : m.onCircle ABCD)

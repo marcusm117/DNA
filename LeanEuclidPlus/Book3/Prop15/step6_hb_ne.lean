@@ -7,7 +7,6 @@ namespace Elements.Book3
 
 -- h ≠ b: if h = b then |e─h| = |e─b| = |e─m|, so |e─l| = |e─m|,
 -- then |l─m|² + |e─l|² = |e─m|² → |l─m|² = 0 → l = m, contradicting between m l n.
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_hb_ne
     (b h l m n e : Point) (ABCD : Circle)
     (step6_pm : |(l─m)| * |(l─m)| + |(e─l)| * |(e─l)| = |(e─m)| * |(e─m)|)

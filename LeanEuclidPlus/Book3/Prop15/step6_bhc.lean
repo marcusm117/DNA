@@ -8,7 +8,6 @@ namespace Elements.Book3
 -- between b h c: from |b─h| = |h─c| and b≠c, h≠b, h≠c, all on BC.
 -- between_points (b h c BC) : between b h c ∨ between h b c ∨ between b c h.
 -- The other two cases force |b─c| = 0, contradicting b≠c.
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_bhc
     (b c h : Point) (BC : Line)
     (hb_BC : b.onLine BC) (hc_BC : c.onLine BC) (hh_BC : h.onLine BC)

@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step11_assumption2_tri_emn
     (e m n : Point) (ABCD : Circle)
     (ME MN EN : Line)

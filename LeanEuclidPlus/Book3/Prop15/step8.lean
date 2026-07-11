@@ -9,7 +9,6 @@ namespace Elements.Book3
 -- Key: must establish formTriangle e m n ME MN EN, which requires ¬e.onLine MN.
 -- ¬e.onLine MN: e and l are both on EK, e ≠ l (from between e l k),
 --   so if e were on MN then EK = MN, but m0 is on MN yet off EK — contradiction.
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step8
     (m e n l m0 k : Point) (ABCD : Circle) (ME MN EN EK : Line)
     (h_centre : e.isCentre ABCD)
@@ -28,6 +27,7 @@ theorem helper_3_15_step8
   have hen : e ≠ n := by euclid_finish
   have he_off_MN : ¬e.onLine MN := by euclid_finish
   have htri : formTriangle e m n ME MN EN := by euclid_finish
-  exact (Elements.Book1.proposition_20 e m n ME MN EN htri).1
+  euclid_apply (Elements.Book1.proposition_20 e m n ME MN EN)
+  linarith [segment_symmetric m e, segment_symmetric e n]
 
 end Elements.Book3

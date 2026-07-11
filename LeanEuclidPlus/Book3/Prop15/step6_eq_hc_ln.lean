@@ -6,7 +6,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book3
 
 -- |h─c| = |l─n|: from equal Pythagorean equations + equal radii + equal distances
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_eq_hc_ln
     (h c l n e b m : Point)
     (h_pc : |(h─c)| * |(h─c)| + |(e─h)| * |(e─h)| = |(e─b)| * |(e─b)|)

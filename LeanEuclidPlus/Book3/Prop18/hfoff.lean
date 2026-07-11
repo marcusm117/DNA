@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_18_hfoff (f : Point) (ABC : Circle) (DE : Line)
     (h_no_int : ¬DE.intersectsCircle ABC) (h_centre : f.isCentre ABC) :
     ¬f.onLine DE := by

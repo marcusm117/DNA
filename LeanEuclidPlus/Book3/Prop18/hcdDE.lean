@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_18_hcdDE (c d : Point) (DE : Line)
     (h_con : c.onLine DE) (h_don : d.onLine DE) (h_ne : d ≠ c) :
     distinctPointsOnLine c d DE := by

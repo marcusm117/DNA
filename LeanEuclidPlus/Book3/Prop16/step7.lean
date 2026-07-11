@@ -1,13 +1,12 @@
 import SystemE
 import Mathlib.Tactic.Linarith
 import Book1.Prop17.Main
--- Proposition citations: import Book1.PropNN.Main / Book2.PropNN.Main / Book3.PropNN.Main — NOT Book.PropNN
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
+-- Proposition citations: import Book1.PropNN.Main / Book2.PropNN.Main / Book3.PropNN.Main — NOT Book.PropNN
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_16_step7
     (d a c : Point) (ABC : Circle) (DC : Line)
     (left : d.isCentre ABC)
@@ -26,7 +25,8 @@ theorem helper_3_16_step7
   obtain ⟨DA, hDAd, hDAa⟩ := line_from_points d a hda
   obtain ⟨AC, hACa, hACc⟩ := line_from_points a c hac
   have htri : formTriangle d a c DA AC DC := by euclid_finish
-  have h17 : ∠ d:a:c + ∠ a:c:d < ∟ + ∟ := Elements.Book1.proposition_17 d a c DA AC DC htri
+  have h17 : ∠ d:a:c + ∠ a:c:d < ∟ + ∟ := by
+    euclid_apply (Elements.Book1.proposition_17 d a c DA AC DC htri)
   linarith
 
 end Elements.Book3

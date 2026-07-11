@@ -7,7 +7,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book3
 
 -- Pythagorean for b-side: |b─h|² + |e─h|² = |e─b|² (right angle at h)
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_pb
     (b h e : Point) (ABCD : Circle) (BC : Line)
     (h_centre : e.isCentre ABCD) (hb_on : b.onCircle ABCD)

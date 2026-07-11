@@ -4,7 +4,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_16_step1
     (a : Point) (ABC : Circle) (AE : Line)
     (hsuppose1 : AE.intersectsCircle ABC)

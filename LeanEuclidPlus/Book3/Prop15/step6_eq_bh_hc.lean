@@ -7,7 +7,6 @@ namespace Elements.Book3
 
 -- |b─h| = |h─c|: both Pythagorean equations have the same RHS (|e─b|²),
 -- so |b─h|² = |h─c|² → (|b─h| - |h─c|)(|b─h| + |h─c|) = 0 → |b─h| = |h─c|.
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_eq_bh_hc
     (b h c e : Point)
     (h_pb : |(b─h)| * |(b─h)| + |(e─h)| * |(e─h)| = |(e─b)| * |(e─b)|)

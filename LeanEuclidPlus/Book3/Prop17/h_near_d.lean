@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_17_h_near_d (a e : Point) (BCD : Circle) (AE : Line)
     (hcen : e.isCentre BCD)
     (he : e.onLine AE)

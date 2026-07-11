@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step11_assumption2_arith_gt
     (l m k f : Point)
     (h_lm_gt_kf_sq : |(l─m)| * |(l─m)| > |(k─f)| * |(k─f)|) :

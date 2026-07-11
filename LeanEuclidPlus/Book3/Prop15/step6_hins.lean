@@ -6,7 +6,6 @@ set_option linter.unnecessarySeqFocus false
 namespace Elements.Book3
 
 -- h is inside ABCD: foot of perp from centre is inside the circle (non-diameter chord)
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_hins
     (b h e : Point) (ABCD : Circle)
     (h_centre : e.isCentre ABCD) (hb_on : b.onCircle ABCD)

@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step11_assumption2_bisect
     (m n e l k m0 : Point) (ABCD : Circle) (MN EK : Line)
     (h_centre : e.isCentre ABCD)

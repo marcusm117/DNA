@@ -506,6 +506,9 @@ def euclidTheory : List Smt.Command := [
       )
     )
   )")),
+  -- right_angle_pos
+  (Smt.Command.assert (Smt.Term.literalT "
+  (> RightAngle 0.0)")),
   -- degenerated_area
   (Smt.Command.assert (Smt.Term.literalT "
   (forall ((a Point) (b Point))

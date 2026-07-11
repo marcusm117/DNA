@@ -8,7 +8,6 @@ namespace Elements.Book3
 
 -- Pythagorean for c-side: |h─c|² + |e─h|² = |e─b|²
 -- ∠e:h:c = ∟ from ∠e:h:b = ∟ + collinearity of b,h,c (h≠b, h≠c, EH line provided).
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_pc
     (b c h e : Point) (ABCD : Circle) (BC EH : Line)
     (h_centre : e.isCentre ABCD)

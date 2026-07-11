@@ -8,7 +8,6 @@ namespace Elements.Book3
 
 -- Pythagorean for n-side: |l─n|² + |e─l|² = |e─m|² (right angle at l, n-direction)
 -- Three cases: l=n, l=e (trivial), l≠n∧l≠e (proposition_47 + equal radii).
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_pn
     (m n l e : Point) (ABCD : Circle) (MN : Line)
     (h_centre : e.isCentre ABCD)

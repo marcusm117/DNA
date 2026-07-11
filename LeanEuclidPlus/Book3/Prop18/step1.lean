@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_18_step1 (c d f g : Point) (DE FG : Line)
     (h_gon_DE : g.onLine DE) (h_fon_FG : f.onLine FG) (h_gon_FG : g.onLine FG)
     (h_angle : ∠ c:g:f = ∟ ∨ ∠ d:g:f = ∟) :

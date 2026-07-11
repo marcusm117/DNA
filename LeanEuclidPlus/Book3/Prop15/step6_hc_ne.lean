@@ -7,7 +7,6 @@ namespace Elements.Book3
 
 -- h ≠ c: if h = c then |e─h| = |e─c| = |e─m| (equal radii), so |e─l| = |e─m|,
 -- then |l─m|² = 0 → l = m, contradicting between m l n.
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step6_hc_ne
     (c h l m n e : Point) (ABCD : Circle)
     (h_centre : e.isCentre ABCD) (hm_on : m.onCircle ABCD) (hc_on : c.onCircle ABCD)

@@ -1,10 +1,10 @@
 import SystemE
+import Book3.Prop15.hstep4_pts_lin
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_15_hstep4_pts
     (e k l h f m0 : Point) (ABCD : Circle) (FG EK MN : Line)
     (h_centre : e.isCentre ABCD)
@@ -22,7 +22,7 @@ theorem helper_3_15_hstep4_pts
     ∃ m n : Point, m.onCircle ABCD ∧ n.onCircle ABCD ∧ between m l n ∧ ∠ m:l:e = ∟ ∧
     m.onLine MN ∧ n.onLine MN := by
   -- Sub-node: l inside ABCD (backed by hstep4_pts_lin.lean)
-  have hstep4_pts_lin : l.insideCircle ABCD := by sorry
+  have hstep4_pts_lin : l.insideCircle ABCD := by euclid_apply (helper_3_15_hstep4_pts_lin e k l f h ABCD FG EK (by euclid_assumption "" (show e.isCentre ABCD; assumption)) (by euclid_assumption "" (show f.onCircle ABCD; assumption)) (by euclid_assumption "" (show distinctPointsOnLine e k EK; assumption)) (by euclid_assumption "" (show k.onLine FG; assumption)) (by euclid_assumption "" (show f.onLine FG; assumption)) (by euclid_assumption "" (show ∠ e:k:f = ∟; assumption)) (by euclid_assumption "" (show |(e─l)| = |(e─h)|; assumption)) (by euclid_assumption "" (show |(e─h)| < |(e─k)|; assumption)))
   -- Derived facts (stable; hEK/hMN not consumed by obtain)
   have h_l_on_MN : l.onLine MN := hMN.1
   have h_m0_on_MN : m0.onLine MN := hMN.2.1

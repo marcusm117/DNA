@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_17_step2 (a e : Point) (AE : Line)
     (ha : a.onLine AE) (he : e.onLine AE) (hane : a ≠ e) : distinctPointsOnLine a e AE := by
   exact ⟨ha, he, hane⟩

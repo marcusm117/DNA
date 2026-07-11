@@ -6,7 +6,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step2
     (e h k : Point)
     (hassump1 : |(e─h)| < |(e─k)|) :

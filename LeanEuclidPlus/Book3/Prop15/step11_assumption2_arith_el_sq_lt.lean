@@ -5,7 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book3
 
-set_option systemE.solverTime 30 in
 theorem helper_3_15_step11_assumption2_arith_el_sq_lt
     (e l k : Point)
     (h_el_lt_ek : |(e─l)| < |(e─k)|) :
