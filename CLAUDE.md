@@ -145,6 +145,19 @@ that is **our unfaithfulness — FIX it, do not mark it.** (Worked: `Book3/Prop0
 real `@euclid_gap`s [diameter degeneracy]; `Book3/Prop01` [off-circle C] and `Book3/Prop05`,`Prop06`
 [added betweenness] were unfaithfulness, fixed not marked.)
 
+**⛔ "System E is missing an axiom" is almost always a MIS-PROOF — do NOT draft a new axiom.** Books 1–3
+added exactly ONE axiom (Def I.15's centre-*existence* clause, a Euclid **Definition**, human-authorized).
+A candidate axiom MUST be a **specific named Euclid Postulate/Definition** you can cite verbatim; a
+**derived proposition** ("outer-circle point is outside the inner circle", "two common points ⟹ circles
+cross", any containment/nesting lemma) is a THEOREM to prove, never an axiom — its non-derivability means
+YOUR proof is wrong. Extra red flag: if the unprovable thing is a `have`/construction *you inserted* (not
+one of Euclid's mapped sentences), suspect it is **FALSE** and check it against the proof's OWN later steps
+before anything else. (III.11 disaster: agent inserted `have … between g d h`, couldn't prove it, and drafted
+`non_intersecting_circles_outer_point_outside` — but that betweenness is refuted by the proof's own step 4
+`AG > GH` [inner-radius > GH ⟹ H *inside*, not outside], and the "axiom" was just a containment theorem.
+Full ladder in the `prove-euclid` skill's anti-axiom rule.) Editing `SystemE/**` is hard-denied to the
+agent; never "ask and proceed" — STOP and hand the human a written analysis.
+
 ## Wrong SOURCE citation — waive it with `@suppress_deps_check` (a CITATION-metadata bug, ≠ a proof gap)
 
 Sometimes the source EDITION cites the wrong proposition — a `[Prop.~B.N]` bracket that points at a prop

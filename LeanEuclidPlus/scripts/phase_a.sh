@@ -14,7 +14,10 @@
 # MULTI-PROP (quiet — one line per prop, errors printed only on failure):
 #   scripts/phase_a.sh Book3                     # all Prop* in Book3
 #   scripts/phase_a.sh Book3 all                 # same
-#   scripts/phase_a.sh Book3 04 05 06            # specific props (zero-pad optional)
+#   scripts/phase_a.sh Book3 4 5 6               # specific props (zero-pad optional)
+#   scripts/phase_a.sh Book3 11-16               # a range, props 11..16
+#   scripts/phase_a.sh Book3 11-                 # prop 11 to the end of the book
+#   scripts/phase_a.sh Book3 1 10-14 20          # mix singles + ranges (commas ok too)
 #
 # Assumption flags (apply to both modes):
 #   --skip_assumptions      skip the assumptions sweep entirely
@@ -27,6 +30,7 @@ set -uo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"   # LeanEuclidPlus/
 cd "$HERE"
+source "$HERE/scripts/prop_select.sh"                     # shared BOOK/range selector grammar
 
 VENV="${LEANEUCLID_VENV:-$HOME/.venvs/leaneuclid}"
 if [ -d "$VENV/bin" ]; then
@@ -152,28 +156,7 @@ else
 # ═════════════════════════════════════════════════════════════════════════════
 
   BOOK="$1"; shift
-
-  [ ! -d "$BOOK" ] && { echo "phase_a: directory not found: '$BOOK'" >&2; exit 2; }
-
-  PROPS=()
-  if [ "$#" -eq 0 ] || { [ "$#" -eq 1 ] && [ "${1:-}" = "all" ]; }; then
-    for d in "$BOOK"/Prop*/; do
-      [ -f "${d}Main.lean" ] && PROPS+=("${d%/}")
-    done
-    [ "${#PROPS[@]}" -eq 0 ] && { echo "phase_a: no Prop*/Main.lean found in $BOOK" >&2; exit 2; }
-  else
-    for n in "$@"; do
-      n="${n#Prop}"
-      printf -v padded "%02d" "$((10#$n))" 2>/dev/null || padded="$n"
-      d="$BOOK/Prop$padded"
-      if [ -f "$d/Main.lean" ]; then
-        PROPS+=("$d")
-      else
-        echo "phase_a: no $d/Main.lean — skipping" >&2
-      fi
-    done
-    [ "${#PROPS[@]}" -eq 0 ] && { echo "phase_a: no valid props found" >&2; exit 2; }
-  fi
+  resolve_props phase_a "$BOOK" "$@" || exit 2   # sets PROPS=(sorted propdirs)
 
   TOTAL="${#PROPS[@]}"
   N_PASS=0; N_FAIL=0

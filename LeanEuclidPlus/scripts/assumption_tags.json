@@ -1786,5 +1786,129 @@
       "type": "|(d\u2500a)| = |(d\u2500c)|",
       "verdict": "closes"
     }
+  },
+  "Book3/Prop17": {
+    "step18_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "a (straight-line) drawn at right-angles to the diameter of a circle, from its extremity, touches the circle",
+      "type": "\u2200 (p q r : Point) (\u03b3 : Circle) (L : Line), r.isCentre \u03b3 \u2227 p.onCircle \u03b3 \u2227 distinctPointsOnLine p q L \u2227 \u2220 r:p:q = \u221f \u2192 (\u2203 s : Point, s.onLine L \u2227 s.onCircle \u03b3) \u2227 \u00ac L.intersectsCircle \u03b3",
+      "verdict": "hard"
+    },
+    "step7_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$E$ is the center of circles $BCD$ and $AFG$",
+      "type": "e.isCentre BCD \u2227 e.isCentre AFG",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop18": {
+    "step2_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "angle $FGC$ is a right-angle",
+      "type": "\u2220 f:g:c = \u221f",
+      "verdict": "closes"
+    },
+    "step3_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "the greater angle is subtended by the greater side [Prop.~1.19]",
+      "type": "\u2220 f:g:c > \u2220 f:c:g",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop19": {
+    "step3_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "some straight-line $DE$ touches the circle $ABC$",
+      "type": "c.onCircle ABC \u2227 c.onLine DE \u2227 \u00acDE.intersectsCircle ABC",
+      "verdict": "closes"
+    },
+    "step3_assumption2": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$FC$ has been joined from the center to the point of contact",
+      "type": "f.isCentre ABC \u2227 f \u2260 c",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop20": {
+    "step2_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$EA$ is equal to $EB$",
+      "type": "|(e\u2500a)| = |(e\u2500b)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop21": {
+    "step3_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "angle $BFD$ is at the center",
+      "type": "f'.isCentre ABCD",
+      "verdict": "closes"
+    },
+    "step3_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BAD$ at the circumference",
+      "type": "a.onCircle ABCD",
+      "verdict": "closes"
+    },
+    "step3_assumption3": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "they have the same circumference base $BCD$",
+      "type": "b.onCircle ABCD \u2227 d.onCircle ABCD \u2227 distinctPointsOnLine b d BD",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop22": {
+    "step2_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "the three angles of any triangle are equal to two right-angles",
+      "type": "\u2220 c:a:b + \u2220 a:b:c + \u2220 b:c:a = \u221f + \u221f",
+      "verdict": "hard"
+    },
+    "step3_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "they are in the same segment $BADC$",
+      "type": "\u2203 (BC : Line), distinctPointsOnLine b c BC \u2227 a.sameSide d BC",
+      "verdict": "hard"
+    },
+    "step4_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "they are in the same segment $ADCB$",
+      "type": "\u2203 (AB\u2080 : Line), distinctPointsOnLine a b AB\u2080 \u2227 c.sameSide d AB\u2080",
+      "verdict": "hard"
+    },
+    "step8_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$ABC$, $BAC$, and $ACB$ are equal to two right-angles",
+      "type": "\u2220 c:a:b + \u2220 a:b:c + \u2220 b:c:a = \u221f + \u221f",
+      "verdict": "closes"
+    }
   }
 }

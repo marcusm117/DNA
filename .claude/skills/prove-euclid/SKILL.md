@@ -86,8 +86,28 @@ builds." These are absolute:
   base where nobody will ever discharge it, and quietly corrupts every other proof. **Editing `SystemE/**`
   is HARD-DENIED to you** (permissions); do not try, do not propose the edit-and-proceed, do not write the
   Z3 counterpart. "It's not derivable from the current axioms" is **almost NEVER** a reason to add one —
-  it is a reason to suspect YOUR proof. When a fact you "need" isn't derivable, walk this ladder BEFORE
-  the thought "System E is missing an axiom" is even allowed:
+  it is a reason to suspect YOUR proof.
+  - **⛔ THE HARD FILTER (apply this FIRST — it kills almost every bogus "need an axiom"):** a legitimate
+    System-E addition must be a **specific, named Euclid Postulate or Definition** that the axiomatization
+    dropped — you must be able to write "this is Postulate N / Definition B.N, verbatim." A **derived
+    proposition** is NEVER a valid axiom: if what you want is a *theorem* (a containment lemma, "two common
+    points ⟹ the circles cross", "a point on the outer circle is outside the inner", "internally-tangent
+    circles are nested" — anything with the shape of a RESULT rather than a primitive), it must be PROVED,
+    not axiomatized, and its non-derivability means **your proof is wrong**, not System E. The one and only
+    axiom ever added across Books 1–3 was Def I.15's *existence-of-centre* clause (a Definition, human-
+    authorized) — the base rate for "this prop needs a new axiom" is ~zero. If you cannot cite the Postulate/
+    Definition number, STOP: you do not have an axiom, you have a mis-proof. **NEVER draft an axiom, write
+    its signature, or say "human action needed: add axiom X" for a derived fact — that itself is the failure.**
+  When a fact you "need" isn't derivable, walk this ladder BEFORE the thought "System E is missing an axiom"
+  is even allowed:
+  0. **Is the unprovable thing a `have`/construction I INSERTED (not one of Euclid's mapped sentences)?**
+     Then suspect it is **FALSE**, not un-derivable. A self-inserted bridging fact that resists every tactic
+     is almost always geometrically wrong — and the fastest check is your OWN proof: does it contradict a
+     later mapped step? (III.11 disaster: the agent inserted `have hd_ex : … between g d h`, couldn't prove
+     it, and invented `non_intersecting_circles_outer_point_outside`. But `between g d h` needs H *outside*
+     the inner circle, while the proof's own **step 4** — Euclid's `AG > GH`, with `AG` = inner radius —
+     says H is *inside* it. The bridging `have` was refuted by a step of the same proof; the "missing axiom"
+     was a derived containment lemma dressed up as a postulate. Both filters fired; the agent ignored both.)
   1. **Is my proof STRUCTURE wrong / am I proving the wrong sub-fact?** (Re-read Euclid's actual argument —
      don't reinvent it. The Prop05/III.5 disaster: an agent needed `¬(circle intersects itself)`, declared
      it a missing axiom, and started editing System E — when Euclid's "the lesser to the greater" is a

@@ -5,7 +5,8 @@
 # Usage:
 #   scripts/phase_a_check.sh Book3           # all Prop* in Book3
 #   scripts/phase_a_check.sh Book3 4-11      # props 4 through 11
-#   scripts/phase_a_check.sh Book3 4 6 10    # specific props (mix of ranges and singles ok)
+#   scripts/phase_a_check.sh Book3 11-       # prop 11 to the end of the book
+#   scripts/phase_a_check.sh Book3 4 6 10    # specific props (mix of ranges + singles, commas ok)
 #
 # Checks per prop:
 #   1. mapped        — has euclid_sentence steps
@@ -20,48 +21,14 @@ set -uo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"   # LeanEuclidPlus/
 cd "$HERE"
+source "$HERE/scripts/prop_select.sh"                     # shared BOOK/range selector grammar
 
 SIGS="scripts/step_signatures.json"
 
-[ "$#" -lt 1 ] && { echo "usage: scripts/phase_a_check.sh <book> [range|props…]" >&2; exit 2; }
+[ "$#" -lt 1 ] && { echo "usage: scripts/phase_a_check.sh <book> [range|props…|N-M|N-]" >&2; exit 2; }
 
 BOOK="$1"; shift
-[ ! -d "$BOOK" ] && { echo "phase_a_check: directory not found: '$BOOK'" >&2; exit 2; }
-
-# ── collect props ─────────────────────────────────────────────────────────────
-PROPS=()
-if [ "$#" -eq 0 ]; then
-  for d in "$BOOK"/Prop*/; do
-    [ -f "${d}Main.lean" ] && PROPS+=("${d%/}")
-  done
-  [ "${#PROPS[@]}" -eq 0 ] && { echo "phase_a_check: no Prop*/Main.lean found in $BOOK" >&2; exit 2; }
-else
-  for arg in "$@"; do
-    if [[ "$arg" == *-* ]] && [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then
-      # Range: e.g. 4-11
-      LO="${arg%-*}"; HI="${arg#*-}"
-      for (( n = 10#$LO; n <= 10#$HI; n++ )); do
-        printf -v padded "%02d" "$n"
-        d="$BOOK/Prop$padded"
-        if [ -f "$d/Main.lean" ]; then
-          PROPS+=("$d")
-        else
-          echo "  [skip] $d — no Main.lean" >&2
-        fi
-      done
-    else
-      n="${arg#Prop}"
-      printf -v padded "%02d" "$((10#$n))" 2>/dev/null || padded="$n"
-      d="$BOOK/Prop$padded"
-      if [ -f "$d/Main.lean" ]; then
-        PROPS+=("$d")
-      else
-        echo "  [skip] $d — no Main.lean" >&2
-      fi
-    fi
-  done
-  [ "${#PROPS[@]}" -eq 0 ] && { echo "phase_a_check: no valid props found" >&2; exit 2; }
-fi
+resolve_props phase_a_check "$BOOK" "$@" || exit 2   # sets PROPS=(sorted propdirs)
 
 # ── check each prop ───────────────────────────────────────────────────────────
 TOTAL="${#PROPS[@]}"

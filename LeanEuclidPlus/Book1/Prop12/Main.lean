@@ -17,7 +17,8 @@ namespace Elements.Book1
 
 theorem proposition_12 : ∀ (a b c : Point) (AB : Line),
   distinctPointsOnLine a b AB ∧ ¬(c.onLine AB) →
-  exists h : Point, h.onLine AB ∧ (∠ a:h:c = ∟ ∨ ∠ b:h:c = ∟) := by
+  exists h : Point, h.onLine AB ∧ (∠ a:h:c = ∟ ∨ ∠ b:h:c = ∟) ∧
+    (∀ (p : Point), p.onLine AB → p ≠ h → ∠ p:h:c = ∟) := by
   euclid_intros
   euclid_intro_sentence "1.12.0"
     "To draw a straight-line perpendicular to a given infinite straight-line from a given point which is not on it.   Let $AB$ be the given infinite straight-line  and $C$ the given point, which is not on ($AB$). So it is required to draw a  straight-line  perpendicular to the given infinite straight-line $AB$ from the given point $C$, which is not on ($AB$). "
@@ -81,7 +82,17 @@ theorem proposition_12 : ∀ (a b c : Point) (AB : Line),
     "and the former straight-line is called a perpendicular to that upon which it stands [Def.~1.10]. "
     (step11 : ∠ a:h:c = ∟ ∨ ∠ b:h:c = ∟) := by euclid_apply (helper_1_12_step11 a b c e g h AB CH (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show e.onLine AB; assumption)) (by euclid_assumption "" (show g.onLine AB; assumption)) (by euclid_assumption "" (show h.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine CH; assumption)) (by euclid_assumption "" (show h.onLine CH; assumption)) (by euclid_assumption "" (show between e h g; assumption)) (by euclid_assumption "" (show ¬c.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show ∠ c:h:g = ∟ ∧ ∠ e:h:c = ∟; assumption)))
 
-  exact ⟨h, step9, step11⟩
+  -- The foot H is perpendicular to the WHOLE line AB (its own proof: H bisects the
+  -- circle–line intersections E, G, so CH makes a right angle with every point of AB).
+  -- This determinacy is what downstream props (e.g. III.14) need to pin the foot.
+  have hperp : ∀ (p : Point), p.onLine AB → p ≠ h → ∠ p:h:c = ∟ := by
+    intro p hpAB hpne
+    by_cases hbp : between e h p
+    · euclid_apply (equal_angles h g p c c AB CH)
+      euclid_finish
+    · euclid_apply (equal_angles h e p c c AB CH)
+      euclid_finish
+  exact ⟨h, step9, step11, hperp⟩
   euclid_conclude_sentence "1.12.12"
     "Thus, the (straight-line) $CH$ has been drawn perpendicular to the given infinite straight-line $AB$ from the given point $C$, which is not on  ($AB$). (Which is) the very thing it was required to do."
 

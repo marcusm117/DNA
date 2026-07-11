@@ -6,11 +6,35 @@ ground truth: faithfulness work re-proves the BODY but must NEVER alter a statem
 lazy and quietly weaken a hypothesis or goal to make a proof close. This script lets the human catch
 that independently of any agent.
 
-  SNAPSHOT (run BEFORE any agent touches a proof — captures the trusted baseline):
+  SNAPSHOT ALL (run BEFORE any agent touches a proof — captures the trusted baseline):
       python3 scripts/check_signatures.py --save
 
-  DIFF (run AFTER agents finish — exits non-zero on any change):
+  SNAPSHOT A SUBSET (re-save just the matching signatures, leave every other baseline entry intact):
+      python3 scripts/check_signatures.py --save Prop14        # substring: Prop14 in every book
+      python3 scripts/check_signatures.py --save Book3         # whole book 3
+      python3 scripts/check_signatures.py --save Book3/11-16    # props 11..16 in book 3
+      python3 scripts/check_signatures.py --save Book3/11-      # prop 11 to the end of book 3
+      python3 scripts/check_signatures.py --save Book3/11       # just prop 11 (Book3/Prop11 also ok)
+  The argument is either a book/range SPEC or a plain SUBSTRING (see FILTER below). Any baseline entry
+  matching the filter but no longer present in the sources is REMOVED; non-matching entries are
+  untouched. Use this after you've (intentionally, human-authorised) established or changed a prop's
+  statement, instead of re-snapshotting the whole baseline.
+
+  DIFF ALL (run AFTER agents finish — exits non-zero on any change):
       python3 scripts/check_signatures.py
+
+  DIFF A SUBSET (same FILTER grammar as --save; checks only the matching keys):
+      python3 scripts/check_signatures.py Book3/Prop11   # exit 0 if just Prop11 is unchanged
+      python3 scripts/check_signatures.py Book3/11-16     # check props 11..16 of book 3
+  A single bare (non-flag) argument scopes the diff. Exits 0 if the matching signatures equal the
+  baseline, 1 on a change/add/remove within scope, 2 if the filter matches nothing on either side.
+
+  FILTER grammar (used by both --save <F> and the bare-argument diff):
+      BookN            whole book N               (book 1 = both flat `Book/` and `Book1/`)
+      BookN/LO-HI      props LO..HI in book N      (Prop prefix optional: BookN/PropLO also works)
+      BookN/LO-        props LO..end in book N
+      BookN/LO         just prop LO in book N
+      <anything else>  plain SUBSTRING of the key `<relfile>::proposition_<name>` (e.g. `Prop14`)
 
 It scans `Book/Prop*.lean` (Book 1, flat) plus the foldered layouts `Book1/Prop*/Main.lean`,
 `Book2/Prop*/Main.lean`, and `Book3/Prop*/Main.lean` for `theorem proposition_<name> : <type> :=`,
@@ -55,6 +79,47 @@ def norm(s: str) -> str:
     return " ".join(s.split())
 
 
+# A filter argument is either a plain SUBSTRING (matched against the key) or a book/range SPEC:
+#   Book3            whole book 3
+#   Book3/11-16      props 11..16 in book 3
+#   Book3/11-        props 11..end in book 3
+#   Book3/11         just prop 11 in book 3        (Prop prefix optional: Book3/Prop11 same)
+# Anything not matching this grammar (e.g. `Prop14`, a bare name) falls back to substring matching.
+# Book 1 lives in BOTH `Book/` (flat) and `Book1/`; a `Book1…` spec matches both (compared by number).
+RANGE_RE = re.compile(r"^(Book\d*)(?:/(?:Prop)?(\d+)(-)?(\d+)?)?$")
+
+
+def _book_num(prefix: str) -> int:
+    """'Book' or 'Book1' -> 1, 'Book2' -> 2, 'Book3' -> 3."""
+    d = prefix[4:]
+    return int(d) if d else 1
+
+
+def _key_book_prop(key: str):
+    """(book_number, prop_number) for a signature key, or None if it isn't a Prop file key."""
+    m = re.match(r"^(Book\d*)/Prop(\d+)", key)
+    return (_book_num(m.group(1)), int(m.group(2))) if m else None
+
+
+def parse_filter(f: str):
+    """Return a predicate key->bool for a filter argument (range spec, else substring)."""
+    m = RANGE_RE.match(f)
+    if not m:
+        return lambda k: f in k
+    book = _book_num(m.group(1))
+    lo, dash, hi = m.group(2), m.group(3), m.group(4)
+    if lo is None:                                   # whole book
+        return lambda k: (_key_book_prop(k) or (None,))[0] == book
+    lo = int(lo)
+    if dash is None:                                 # single prop
+        return lambda k: _key_book_prop(k) == (book, lo)
+    hi = int(hi) if hi is not None else None         # range lo-hi or lo-
+    def pred(k):
+        bp = _key_book_prop(k)
+        return bp is not None and bp[0] == book and bp[1] >= lo and (hi is None or bp[1] <= hi)
+    return pred
+
+
 def _prop_files():
     """Every proposition source file, flat OR folder layout, relative to BOOK_ROOT:
       Book 1 (flat):    Book/Prop*.lean
@@ -97,12 +162,22 @@ def save():
     return 0
 
 
-def diff():
+def diff(prop_filter=None):
+    """Diff current signatures against the baseline. If prop_filter is given, restrict BOTH sides to
+    keys containing it as a substring (e.g. 'Book3/Prop11') — a scoped check of just that prop."""
     if not os.path.exists(BASELINE):
         print(f"no baseline at {BASELINE}; run `check_signatures.py --save` first")
         return 2
     base = json.load(open(BASELINE, encoding="utf-8"))
     cur  = extract()
+
+    if prop_filter is not None:
+        pred = parse_filter(prop_filter)
+        base = {k: v for k, v in base.items() if pred(k)}
+        cur  = {k: v for k, v in cur.items()  if pred(k)}
+        if not base and not cur:
+            print(f"no signatures match '{prop_filter}' in either baseline or sources")
+            return 2
 
     changed = [k for k in base if k in cur and base[k]["sig"] != cur[k]["sig"]]
     removed = [k for k in base if k not in cur]
@@ -117,27 +192,29 @@ def diff():
     for k in sorted(added):
         print(f"ADDED    {k}  ({cur[k]['file']}:{cur[k]['line']})")
 
+    scope = f" matching '{prop_filter}'" if prop_filter is not None else ""
     if changed or removed or added:
         print(f"\nFAIL: {len(changed)} changed, {len(removed)} removed, {len(added)} added "
               f"(statements must not change; new props are fine — re-run --save if intended)")
         return 1
-    print(f"OK: all {len(base)} proposition signatures unchanged")
+    print(f"OK: all {len(base)} proposition signatures{scope} unchanged")
     return 0
 
 
 def save_prop(prop_filter):
-    """Re-save signatures for files matching prop_filter (e.g. 'Prop14'), keep the rest."""
+    """Re-save signatures matching prop_filter (substring or book/range spec), keep the rest."""
+    pred = parse_filter(prop_filter)
     if os.path.exists(BASELINE):
         sigs = json.load(open(BASELINE, encoding="utf-8"))
     else:
         sigs = {}
     cur = extract()
-    removed = [k for k in list(sigs) if prop_filter in k and k not in cur]
+    removed = [k for k in list(sigs) if pred(k) and k not in cur]
     for k in removed:
         del sigs[k]
     updated = 0
     for k, v in cur.items():
-        if prop_filter in k:
+        if pred(k):
             sigs[k] = v
             updated += 1
     with open(BASELINE, "w", encoding="utf-8") as f:
@@ -154,6 +231,8 @@ def main(argv):
         return save_prop(argv[1])
     if not argv:
         return diff()
+    if len(argv) == 1 and not argv[0].startswith("-"):
+        return diff(argv[0])
     print(__doc__)
     return 2
 

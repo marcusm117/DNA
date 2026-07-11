@@ -11,7 +11,7 @@ theorem proposition_15 : ∀ (a b c d e f g h k : Point) (ABCD : Circle) (BC FG 
   a.onCircle ABCD ∧ d.onCircle ABCD ∧ between a e d ∧
   b.onCircle ABCD ∧ c.onCircle ABCD ∧ distinctPointsOnLine b c BC ∧
   f.onCircle ABCD ∧ g.onCircle ABCD ∧ distinctPointsOnLine f g FG ∧
-  h.onLine BC ∧ ∠ e:h:b = ∟ ∧
+  h.onLine BC ∧ ∠ e:h:b = ∟ ∧ e ≠ h ∧
   k.onLine FG ∧ ∠ e:k:f = ∟ ∧
   |(e─h)| < |(e─k)| →
   |(a─d)| > |(b─c)| ∧ |(b─c)| > |(f─g)| :=
@@ -19,6 +19,8 @@ by
   euclid_intros
   euclid_intro_sentence "3.15.0"
     "In a circle, a diameter (is) the greatest (straight-line), and for the others, a (straight-line) nearer to the center is always greater than one further away. Let $ABCD$ be a circle, and let $AD$ be its diameter, and $E$ (its) center. And let $BC$ be nearer to the diameter $AD$,$^\\dag$ and $FG$ further away. I say that $AD$ is the greatest (straight-line), and $BC$ (is) greater than $FG$."
+
+  have heh : e ≠ h := by assumption
 
   have hlines : ∃ EH EK : Line, distinctPointsOnLine e h EH ∧ distinctPointsOnLine e k EK := by sorry
   obtain ⟨EH, EK, hEH, hEK⟩ := hlines

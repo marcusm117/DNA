@@ -7,19 +7,25 @@
 #   scripts/phase_c.sh Book3.Prop04.Main         # dotted module form tolerated
 #   scripts/phase_c.sh Book3/Prop04 --unwire     # reverse wiring back to Phase-B
 #
-# MULTI-PROP (quiet — one line per prop, errors printed only on failure):
+# MULTI-PROP (quiet — prints ONLY failures + a one-line summary; nothing per passing prop):
 #   scripts/phase_c.sh Book3                     # all Prop* in Book3
 #   scripts/phase_c.sh Book3 all                 # same
-#   scripts/phase_c.sh Book3 04 05 06            # specific props (zero-pad optional)
+#   scripts/phase_c.sh Book3 4 5 6               # specific props (zero-pad optional)
+#   scripts/phase_c.sh Book3 11-16               # a range, props 11..16
+#   scripts/phase_c.sh Book3 11-                 # prop 11 to the end of the book
+#   scripts/phase_c.sh Book3 1 10-14 20          # mix singles + ranges
+#   scripts/phase_c.sh Book3 1,10,2              # commas tolerated
+# (out-of-range / missing numbers are silently skipped; `Prop` prefix optional on any number)
 #
-# Exit code: 0 iff all props passed; non-zero on any failure.
+# Exit code: 0 iff all selected props passed; non-zero on any failure.
 
 set -uo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"   # LeanEuclidPlus/
 cd "$HERE"
+source "$HERE/scripts/prop_select.sh"                     # shared BOOK/range selector grammar
 
-[ "$#" -lt 1 ] && { echo "usage: scripts/phase_c.sh <propdir|book> [props…|all] [--unwire]" >&2; exit 2; }
+[ "$#" -lt 1 ] && { echo "usage: scripts/phase_c.sh <propdir|book> [props…|all|N-M|N-] [--unwire]" >&2; exit 2; }
 
 # ── detect mode ───────────────────────────────────────────────────────────────
 # Single-prop: first arg contains "/" or "Prop" (path or dotted-module form).
@@ -95,67 +101,36 @@ else
 # ═════════════════════════════════════════════════════════════════════════════
 
   BOOK="$1"; shift
+  resolve_props phase_c "$BOOK" "$@" || exit 2   # sets PROPS=(sorted propdirs)
 
-  [ ! -d "$BOOK" ] && { echo "phase_c: directory not found: '$BOOK'" >&2; exit 2; }
-
-  # Collect prop directories
-  PROPS=()
-  if [ "$#" -eq 0 ] || { [ "$#" -eq 1 ] && [ "${1:-}" = "all" ]; }; then
-    for d in "$BOOK"/Prop*/; do
-      [ -f "${d}Main.lean" ] && PROPS+=("${d%/}")
-    done
-    [ "${#PROPS[@]}" -eq 0 ] && { echo "phase_c: no Prop*/Main.lean found in $BOOK" >&2; exit 2; }
-  else
-    for n in "$@"; do
-      n="${n#Prop}"                              # strip leading "Prop" if given
-      printf -v padded "%02d" "$((10#$n))" 2>/dev/null || padded="$n"
-      d="$BOOK/Prop$padded"
-      if [ -f "$d/Main.lean" ]; then
-        PROPS+=("$d")
-      else
-        echo "phase_c: no $d/Main.lean — skipping" >&2
-      fi
-    done
-    [ "${#PROPS[@]}" -eq 0 ] && { echo "phase_c: no valid props found" >&2; exit 2; }
-  fi
-
+  # ── run each prop; stay SILENT on pass, print captured output on fail ────────
+  # A transient one-line "currently doing" status is shown when stderr is a terminal
+  # (\r-overwritten, cleared at the end) so a passing run still ends concise.
   TOTAL="${#PROPS[@]}"
-  N_PASS=0; N_FAIL=0
-  FAILED=()
+  N_FAIL=0; FAILED=()
+  status() { [ -t 2 ] && printf '\r\033[K  ▸ [%d/%d] %s …' "$1" "$TOTAL" "$2" >&2; }
+  clear_status() { [ -t 2 ] && printf '\r\033[K' >&2; }
 
-  echo "Phase C — $BOOK  ($TOTAL prop(s))"
-  echo
-
-  for i in "${!PROPS[@]}"; do
-    PROPDIR="${PROPS[$i]}"
-    IDX=$((i + 1))
-    printf "  [%d/%d] %-24s" "$IDX" "$TOTAL" "$PROPDIR"
-
+  IDX=0
+  for PROPDIR in "${PROPS[@]}"; do
+    IDX=$((IDX + 1))
+    status "$IDX" "$PROPDIR"
     OUT="$(bash "${BASH_SOURCE[0]}" "$PROPDIR" 2>&1)"
-    RC=$?
-
-    if [ "$RC" -eq 0 ]; then
-      echo "PASS"
-      N_PASS=$((N_PASS + 1))
-    else
-      echo "FAIL"
-      N_FAIL=$((N_FAIL + 1))
-      FAILED+=("$PROPDIR")
-      # Re-indent and print the captured output so the failure is readable
-      while IFS= read -r line; do echo "        $line"; done <<< "$OUT"
+    if [ "$?" -ne 0 ]; then
+      clear_status
+      N_FAIL=$((N_FAIL + 1)); FAILED+=("$PROPDIR")
+      echo "✗ FAIL  $PROPDIR"
+      while IFS= read -r line; do echo "    $line"; done <<< "$OUT"
       echo
     fi
   done
+  clear_status
 
-  echo
-  echo "─────────────────────────────────────────"
   if [ "$N_FAIL" -eq 0 ]; then
-    echo "✓ $N_PASS/$TOTAL PASS — all props faithful."
-  else
-    echo "✗ $N_PASS/$TOTAL PASS, $N_FAIL FAIL"
-    echo "  Failed: ${FAILED[*]}"
+    echo "✓ phase_c $BOOK: $TOTAL/$TOTAL passed (${PROPS[*]##*/})"
+    exit 0
   fi
-
-  [ "$N_FAIL" -eq 0 ] && exit 0 || exit 1
+  echo "✗ phase_c $BOOK: $((TOTAL - N_FAIL))/$TOTAL passed, $N_FAIL failed — ${FAILED[*]##*/}"
+  exit 1
 
 fi
