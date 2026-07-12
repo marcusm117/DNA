@@ -10,7 +10,7 @@ set_option linter.unnecessarySeqFocus false
 
 namespace Elements.Book2
 
-theorem helper_2_8_step13 (a b c d e g k m o q : Point)
+theorem helper_2_8_step13 (a b c d e g k m o q r p : Point)
     (AB AE BL CH ED MN OP : Line)
     (h_a_ab : a.onLine AB) (h_b_ab : b.onLine AB) (h_c_ab : c.onLine AB)
     (h_acb : between a c b) (h_abd : between a b d) (h_d_ab : d.onLine AB)
@@ -24,7 +24,8 @@ theorem helper_2_8_step13 (a b c d e g k m o q : Point)
     (h_ch_ae : ¬(CH.intersectsLine AE)) (h_bl_ae : ¬(BL.intersectsLine AE))
     (h_mn_ab : ¬(MN.intersectsLine AB)) (h_op_ab : ¬(OP.intersectsLine AB))
     (h_dae : ∠ d:a:e = ∟)
-    (h_cg_gq : |(c─g)| = |(g─q)|) :
+    (h_cg_gq : |(c─g)| = |(g─q)|)
+    (h_qr_rp : |(q─r)| = |(r─p)|) :
     Triangle.area △ a:c:g + Triangle.area △ a:g:m =
       Triangle.area △ m:g:q + Triangle.area △ m:q:o := by
   have step12_gkgq_ang_qkd : between q k d := by euclid_apply (helper_2_8_step12_gkgq_ang_qkd a b c d e g k q AB AE BL CH ED MN (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine AE; assumption)) (by euclid_assumption "" (show e.onLine ED; assumption)) (by euclid_assumption "" (show d.onLine ED; assumption)) (by euclid_assumption "" (show k.onLine ED; assumption)) (by euclid_assumption "" (show q.onLine ED; assumption)) (by euclid_assumption "" (show |(a─e)| = |(a─d)|; assumption)) (by euclid_assumption "" (show c.onLine CH; assumption)) (by euclid_assumption "" (show g.onLine CH; assumption)) (by euclid_assumption "" (show q.onLine CH; assumption)) (by euclid_assumption "" (show b.onLine BL; assumption)) (by euclid_assumption "" (show k.onLine BL; assumption)) (by euclid_assumption "" (show g.onLine MN; assumption)) (by euclid_assumption "" (show k.onLine MN; assumption)) (by euclid_assumption "" (show ¬(CH.intersectsLine AE); assumption)) (by euclid_assumption "" (show ¬(BL.intersectsLine AE); assumption)) (by euclid_assumption "" (show ¬(MN.intersectsLine AB); assumption)) (by euclid_assumption "" (show ∠ d:a:e = ∟; assumption)))

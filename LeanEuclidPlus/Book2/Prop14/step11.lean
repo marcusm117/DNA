@@ -12,9 +12,10 @@ namespace Elements.Book2
 -- orderings — and the degenerate E=G — give the same equation.
 theorem helper_2_14_step11 (b₀ e f g : Point) (BE : Line)
     (h_b0 : b₀.onLine BE) (h_e : e.onLine BE) (h_f : f.onLine BE)
-    (h_bef : between b₀ e f) (h_bgf : between b₀ g f) (h_mid : |(b₀─g)| = |(g─f)|) :
+    (h_bfcut : (between b₀ g f ∧ |(b₀─g)| = |(g─f)|) ∧ between b₀ e f) :
     |(b₀─e)| * |(e─f)| + |(e─g)| * |(e─g)| = |(g─f)| * |(g─f)| := by
   euclid_intros
+  obtain ⟨⟨h_bgf, h_mid⟩, h_bef⟩ := h_bfcut
   by_cases heg : e = g
   · euclid_finish
   · by_cases hbge : between b₀ g e

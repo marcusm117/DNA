@@ -4,6 +4,7 @@ import Book1.Prop10.Main
 import Book1Variants.Prop11
 import Book1.Prop45.Main
 import Book2.Prop05.Main
+import Mathlib.Tactic.Linarith
 import Book2.Prop14.step1
 import Book2.Prop14.step2
 import Book2.Prop14.step4
@@ -70,10 +71,12 @@ theorem proposition_14 : ∀ (a b c q : Point) (AB BC CQ AQ QB : Line),
 
   by_cases heq : |(b₀─e)| = |(e─d)|
   -- Case BE = ED: the rectangle BD is already the required square; nothing more to construct.
+  -- @assumption_valid
+  have step2_assumption1 : Triangle.area △ b₀:e:d + Triangle.area △ b₀:c₀:d = Triangle.area △ a:b:q + Triangle.area △ q:b:c := by linarith
   -- @assumption ("the square $BD$, equal to the rectilinear figure $A$", Triangle.area △ b₀:e:d + Triangle.area △ b₀:c₀:d = Triangle.area △ a:b:q + Triangle.area △ q:b:c)
   · euclid_sentence "2.14.2"
       "Therefore, if $BE$ is equal to $ED$ then that (which) was prescribed has taken place. For the square $BD$, equal to the rectilinear figure $A$, has been constructed."
-      (step2 : |(b₀─e)| * |(b₀─e)| = Triangle.area △ a:b:q + Triangle.area △ q:b:c) := by euclid_apply (helper_2_14_step2 a b c q e d b₀ c₀ ED B₀C₀ BE DC (by euclid_assumption "" (show formParallelogram e d b₀ c₀ ED B₀C₀ BE DC; assumption)) (by euclid_assumption "" (show Triangle.area △b₀:e:d + Triangle.area △b₀:c₀:d = Triangle.area △ a:b:q + Triangle.area △ q:b:c ∧ ∠ c₀:b₀:e = ∟; assumption)) (by euclid_assumption "" (show |(b₀─e)| = |(e─d)|; assumption)))
+      (step2 : |(b₀─e)| * |(b₀─e)| = Triangle.area △ a:b:q + Triangle.area △ q:b:c) := by euclid_apply (helper_2_14_step2 a b c q e d b₀ c₀ ED B₀C₀ BE DC (by euclid_assumption "" (show formParallelogram e d b₀ c₀ ED B₀C₀ BE DC; assumption)) (by euclid_assumption "" (show Triangle.area △b₀:e:d + Triangle.area △b₀:c₀:d = Triangle.area △ a:b:q + Triangle.area △ q:b:c ∧ ∠ c₀:b₀:e = ∟; assumption)) (by euclid_assumption "" (show |(b₀─e)| = |(e─d)|; assumption)) (by euclid_assumption "the square $BD$, equal to the rectilinear figure $A$" (show Triangle.area △ b₀:e:d + Triangle.area △ b₀:c₀:d = Triangle.area △ a:b:q + Triangle.area △ q:b:c; assumption)))
     -- The witness in this case: the square on BE itself — the goal is proven.
     exact ⟨b₀, e, step2⟩
   -- Case BE ≠ ED: one of BE, ED is greater (2.14.3). WLOG take BE to be the greater
@@ -138,10 +141,12 @@ theorem proposition_14 : ∀ (a b c q : Point) (AB BC CQ AQ QB : Line),
       euclid_sentence "2.14.9"
         "and let $GH$ be joined."
         (step10 : distinctPointsOnLine g h GH) := by euclid_apply (helper_2_14_step10 g h b₀ f GH (by euclid_assumption "" (show g.onLine GH; assumption)) (by euclid_assumption "" (show h.onLine GH; assumption)) (by euclid_assumption "" (show |(g─h)| = |(g─b₀)|; assumption)) (by euclid_assumption "" (show between b₀ g f; assumption)))
-      -- @assumption ("the straight-line $BF$ has been cut---equally at $G$, and unequally at $E$", |(b₀─g)| = |(g─f)| ∧ between b₀ e f)
+      -- @assumption_valid
+      have step11_assumption1 : (between b₀ g f ∧ |(b₀─g)| = |(g─f)|) ∧ between b₀ e f := by euclid_finish
+      -- @assumption ("the straight-line $BF$ has been cut---equally at $G$, and unequally at $E$", (between b₀ g f ∧ |(b₀─g)| = |(g─f)|) ∧ between b₀ e f)
       euclid_sentence "2.14.10"
         "Therefore, since the straight-line $BF$ has been cut---equally at $G$, and unequally at $E$---the rectangle contained by $BE$ and $EF$, plus the square on $EG$, is thus equal to the square on $GF$ [Prop.~2.5]."
-        (step11 : |(b₀─e)| * |(e─f)| + |(e─g)| * |(e─g)| = |(g─f)| * |(g─f)|) := by euclid_apply (helper_2_14_step11 b₀ e f g BE (by euclid_assumption "" (show b₀.onLine BE; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show f.onLine BE; assumption)) (by euclid_assumption "" (show between b₀ e f; assumption)) (by euclid_assumption "" (show between b₀ g f; assumption)) (by euclid_assumption "" (show |(b₀─g)| = |(g─f)|; assumption)))
+        (step11 : |(b₀─e)| * |(e─f)| + |(e─g)| * |(e─g)| = |(g─f)| * |(g─f)|) := by euclid_apply (helper_2_14_step11 b₀ e f g BE (by euclid_assumption "" (show b₀.onLine BE; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show f.onLine BE; assumption)) (by euclid_assumption "the straight-line $BF$ has been cut---equally at $G$, and unequally at $E$" (show (between b₀ g f ∧ |(b₀─g)| = |(g─f)|) ∧ between b₀ e f; assumption)))
       euclid_sentence "2.14.11"
         "And $GF$ (is) equal to $GH$."
         (step12 : |(g─f)| = |(g─h)|) := by euclid_apply (helper_2_14_step12 g f h b₀ (by euclid_assumption "" (show |(b₀─g)| = |(g─f)|; assumption)) (by euclid_assumption "" (show |(g─h)| = |(g─b₀)|; assumption)))
@@ -160,6 +165,8 @@ theorem proposition_14 : ∀ (a b c q : Point) (AB BC CQ AQ QB : Line),
       euclid_sentence "2.14.16"
         "Thus, the remaining rectangle contained by $BE$ and $EF$ is equal to the square on $EH$."
         (step17 : |(b₀─e)| * |(e─f)| = |(e─h)| * |(e─h)|) := by euclid_apply (helper_2_14_step17 b₀ e f h (by euclid_assumption "" (show |(b₀─e)| * |(e─f)| = |(h─e)| * |(h─e)|; assumption)))
+      -- @assumption_valid
+      have step18_assumption1 : |(e─f)| = |(e─d)| := by assumption
       -- @assumption ("$EF$ (is) equal to $ED$", |(e─f)| = |(e─d)|)
       euclid_sentence "2.14.17"
         "But, $BD$ is the (rectangle contained) by $BE$ and $EF$. For $EF$ (is) equal to $ED$."

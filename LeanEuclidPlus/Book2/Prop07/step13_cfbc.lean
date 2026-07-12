@@ -14,6 +14,8 @@ theorem helper_2_7_step13_cfbc (c g b f : Point) (CN BE AB HF : Line)
     Triangle.area △ c:b:f + Triangle.area △ c:f:g = |(b─c)| * |(b─c)| := by
   euclid_intros
   euclid_apply (rectangle_area c g b f CN BE AB HF)
+  have hcb : |(c─b)| = |(b─c)| := by euclid_finish
+  have hcg : |(c─g)| = |(b─c)| := by euclid_finish
   euclid_finish
 
 end Elements.Book2

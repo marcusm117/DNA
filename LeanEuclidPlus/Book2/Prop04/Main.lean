@@ -13,7 +13,6 @@ import Book2.Prop04.step9
 import Book2.Prop04.step10
 import Book2.Prop04.step11
 import Book2.Prop04.step12
-import Book2.Prop04.step13
 import Book2.Prop04.step14
 import Book2.Prop04.step15
 import Book2.Prop04.step16
@@ -34,6 +33,7 @@ import Book2.Prop04.step30
 import Book2.Prop04.step31
 import Book2.Prop04.step32
 import Book2.Prop04.step33
+import Book2.Prop04.step14_assumption1
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -75,11 +75,15 @@ by
     "and let $HK$ be drawn through $G$, parallel to either of $AB$ or $DE$ [Prop.~1.31]."
     (step4 : g.onLine HK ∧ ¬(HK.intersectsLine AB)) := by euclid_apply (helper_2_4_step4 g HK AB (by euclid_assumption "" (show g.onLine HK; assumption)) (by euclid_assumption "" (show ¬(HK.intersectsLine AB); assumption)))
 
+  -- @assumption_valid
+  have step5_assumption1 : ¬(CF.intersectsLine AD) := by assumption
   -- @assumption ("$CF$ is parallel to $AD$", ¬(CF.intersectsLine AD))
   euclid_sentence "2.4.5"
     "And since $CF$ is parallel to $AD$, and $BD$ has fallen across them, the external angle $CGB$ is equal to the internal and opposite (angle) $ADB$ [Prop.~1.29]."
     (step5 : ∠ c:g:b = ∠ a:d:b) := by euclid_apply (helper_2_4_step5 a b c d g AB CF AD BD (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine CF; assumption)) (by euclid_assumption "" (show g.onLine CF; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show b ≠ d; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption "" (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption "$CF$ is parallel to $AD$" (show ¬(CF.intersectsLine AD); assumption)))
 
+  -- @assumption_valid
+  have step6_assumption1 : |(a─d)| = |(a─b)| := by assumption
   -- @assumption ("the side $BA$ is also equal to $AD$", |(a─d)| = |(a─b)|)
   euclid_sentence "2.4.6"
     "But, $ADB$ is equal to $ABD$, since the side $BA$ is also equal to $AD$ [Prop.~1.5]."
@@ -109,13 +113,15 @@ by
     "Thus, $CGKB$ is equilateral."
     (step12 : |(c─g)| = |(g─k)| ∧ |(g─k)| = |(k─b)| ∧ |(k─b)| = |(b─c)|) := by euclid_apply (helper_2_4_step12 b c g k (by euclid_assumption "" (show |(b─c)| = |(c─g)|; assumption)) (by euclid_assumption "" (show |(c─b)| = |(g─k)|; assumption)) (by euclid_assumption "" (show |(c─g)| = |(k─b)|; assumption)) (by euclid_assumption "" (show |(g─k)| = |(k─b)|; assumption)))
 
-  euclid_sentence "2.4.13"
+  euclid_wts "2.4.13"
     "So I say that (it is) also right-angled."
-    (step13 : (∠ k:b:c = ∟) ∧ (∠ b:c:g = ∟) ∧ (∠ c:g:k = ∟) ∧ (∠ g:k:b = ∟)) := by euclid_apply (helper_2_4_step13 a b c d e g k AB CF AD BE HK BD DE (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show k.onLine BE; assumption)) (by euclid_assumption "" (show g.onLine HK; assumption)) (by euclid_assumption "" (show k.onLine HK; assumption)) (by euclid_assumption "" (show c.onLine CF; assumption)) (by euclid_assumption "" (show g.onLine CF; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show ¬(HK.intersectsLine AB); assumption)) (by euclid_assumption "" (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption "" (show ¬(CF.intersectsLine AD); assumption)) (by euclid_assumption "" (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption "" (show e ≠ b; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption "" (show |(d─e)| = |(a─b)|; assumption)) (by euclid_assumption "" (show |(b─c)| = |(c─g)|; assumption)) (by euclid_assumption "" (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption "" (show ∠ a:b:e = ∟; assumption)))
 
+  -- @assumption_gap
+  have step14_assumption1 : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_4_step14_assumption1 a b c d e g AB CF AD BE (by euclid_assumption "" (show c.onLine CF; assumption)) (by euclid_assumption "" (show g.onLine CF; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show ¬(CF.intersectsLine AD); assumption)) (by euclid_assumption "" (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption "" (show e ≠ b; assumption)))
+  -- @assumption ("$CG$ is parallel to $BK$", ¬(CF.intersectsLine BE))
   euclid_sentence "2.4.14"
     "For since $CG$ is parallel to $BK$ [and the straight-line $CB$ has fallen across them], the angles $KBC$ and $GCB$ are thus equal to two right-angles [Prop.~1.29]."
-    (step14 : ∠ k:b:c + ∠ g:c:b = ∟ + ∟) := by euclid_apply (helper_2_4_step14 a b c d e g k AB CF AD BE HK BD (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine CF; assumption)) (by euclid_assumption "" (show g.onLine CF; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine HK; assumption)) (by euclid_assumption "" (show k.onLine HK; assumption)) (by euclid_assumption "" (show k.onLine BE; assumption)) (by euclid_assumption "" (show ¬(HK.intersectsLine AB); assumption)) (by euclid_assumption "" (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption "" (show ¬(CF.intersectsLine AD); assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show e ≠ b; assumption)) (by euclid_assumption "" (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption "" (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption "" (show ∠ a:b:e = ∟; assumption)))
+    (step14 : ∠ k:b:c + ∠ g:c:b = ∟ + ∟) := by euclid_apply (helper_2_4_step14 a b c d e g k AB CF AD BE HK BD (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine CF; assumption)) (by euclid_assumption "" (show g.onLine CF; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine HK; assumption)) (by euclid_assumption "" (show k.onLine HK; assumption)) (by euclid_assumption "" (show k.onLine BE; assumption)) (by euclid_assumption "" (show ¬(HK.intersectsLine AB); assumption)) (by euclid_assumption "" (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption "" (show ¬(CF.intersectsLine AD); assumption)) (by euclid_assumption "$CG$ is parallel to $BK$" (show ¬(CF.intersectsLine BE); assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show e ≠ b; assumption)) (by euclid_assumption "" (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption "" (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption "" (show ∠ a:b:e = ∟; assumption)))
 
   euclid_sentence "2.4.15"
     "But $KBC$ (is) a right-angle."
@@ -165,6 +171,8 @@ by
     (step25 : Triangle.area △ a:c:g + Triangle.area △ a:g:h =
       Triangle.area △ g:k:e + Triangle.area △ g:e:f) := by euclid_apply (helper_2_4_step25 a b c d e f g h k AB CF AD BE HK BD DE (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine CF; assumption)) (by euclid_assumption "" (show g.onLine CF; assumption)) (by euclid_assumption "" (show f.onLine CF; assumption)) (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show h.onLine AD; assumption)) (by euclid_assumption "" (show e.onLine BE; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show k.onLine BE; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show f.onLine DE; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine HK; assumption)) (by euclid_assumption "" (show h.onLine HK; assumption)) (by euclid_assumption "" (show k.onLine HK; assumption)) (by euclid_assumption "" (show ¬(HK.intersectsLine AB); assumption)) (by euclid_assumption "" (show ¬(AD.intersectsLine BE); assumption)) (by euclid_assumption "" (show ¬(CF.intersectsLine AD); assumption)) (by euclid_assumption "" (show ¬(DE.intersectsLine AB); assumption)) (by euclid_assumption "" (show ∠ a:d:e = ∟; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show e ≠ b; assumption)) (by euclid_assumption "" (show |(a─d)| = |(a─b)|; assumption)) (by euclid_assumption "" (show |(d─e)| = |(a─b)|; assumption)) (by euclid_assumption "" (show ∠ b:a:d = ∟; assumption)) (by euclid_assumption "" (show ∠ a:b:e = ∟; assumption)) (by euclid_assumption "" (show |(b─c)| = |(c─g)|; assumption)))
 
+  -- @assumption_valid
+  have step26_assumption1 : |(b─c)| = |(c─g)| := by assumption
   -- @assumption ("$GC$ (is) equal to $CB$", |(b─c)| = |(c─g)|)
   euclid_sentence "2.4.26"
     "And $AG$ is the (rectangle contained) by $AC$ and $CB$. For $GC$ (is) equal to $CB$."

@@ -5,7 +5,6 @@ import Book2.Prop04.step8_dnab
 import Book2.Prop04.step9_anbe
 import Book2.Prop04.step5_bgd
 import Book2.Prop04.step9_cnbe
-import Book2.Prop04.step9_cfbe
 import Book2.Prop04.step9_gnab
 import Book2.Prop04.step9_knab
 import Book2.Prop04.step14_ks
@@ -30,6 +29,7 @@ theorem helper_2_4_step14 (a b c d e g k : Point) (AB CF AD BE HK BD : Line)
     (hgHK : g.onLine HK) (hkHK : k.onLine HK) (hkBE : k.onLine BE)
     (hHKAB : ¬(HK.intersectsLine AB)) (hADBE : ¬(AD.intersectsLine BE))
     (hCFAD : ¬(CF.intersectsLine AD))
+    (hCFBE_par : ¬(CF.intersectsLine BE))
     (hab : a ≠ b) (heb : e ≠ b) (hadab : |(a─d)| = |(a─b)|)
     (hbad : ∠ b:a:d = ∟) (habe : ∠ a:b:e = ∟) :
     ∠ k:b:c + ∠ g:c:b = ∟ + ∟ := by
@@ -50,7 +50,6 @@ theorem helper_2_4_step14 (a b c d e g k : Point) (AB CF AD BE HK BD : Line)
   have hBEAD : BE ≠ AD := fun h => step9_anbe (h ▸ haAD)
   have step9_cnbe : ¬(c.onLine BE) := by euclid_apply (helper_2_4_step9_cnbe a b c AB BE (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BE; assumption)) (by euclid_assumption "" (show ¬(a.onLine BE); assumption)))
   have hCFBE : CF ≠ BE := fun h => step9_cnbe (h ▸ hcCF)
-  have step9_cfbe : ¬(CF.intersectsLine BE) := by euclid_apply (helper_2_4_step9_cfbe CF AD BE (by euclid_assumption "" (show CF ≠ BE; assumption)) (by euclid_assumption "" (show BE ≠ AD; assumption)) (by euclid_assumption "" (show AD ≠ CF; assumption)) (by euclid_assumption "" (show ¬(CF.intersectsLine AD); assumption)) (by euclid_assumption "" (show ¬(AD.intersectsLine BE); assumption)))
   have step9_gnab : ¬(g.onLine AB) := by euclid_apply (helper_2_4_step9_gnab a b d g AB BD (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine BD; assumption)) (by euclid_assumption "" (show g.onLine BD; assumption)) (by euclid_assumption "" (show d.onLine BD; assumption)) (by euclid_assumption "" (show b ≠ g; assumption)) (by euclid_assumption "" (show ¬(d.onLine AB); assumption)))
   -- k ∉ AB (k on HK ∥ AB), giving the interior distinctness c ≠ g and b ≠ k
   have step9_knab : ¬(k.onLine AB) := by euclid_apply (helper_2_4_step9_knab g k AB HK (by euclid_assumption "" (show g.onLine HK; assumption)) (by euclid_assumption "" (show k.onLine HK; assumption)) (by euclid_assumption "" (show ¬(g.onLine AB); assumption)) (by euclid_assumption "" (show ¬(HK.intersectsLine AB); assumption)))

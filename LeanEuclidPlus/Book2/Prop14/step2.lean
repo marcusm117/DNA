@@ -11,7 +11,8 @@ theorem helper_2_14_step2
     (a b c q e d b₀ c₀ : Point) (ED B₀C₀ BE DC : Line)
     (fp : formParallelogram e d b₀ c₀ ED B₀C₀ BE DC)
     (step1 : Triangle.area △b₀:e:d + Triangle.area △b₀:c₀:d = Triangle.area △ a:b:q + Triangle.area △ q:b:c ∧ ∠ c₀:b₀:e = ∟)
-    (heq : |(b₀─e)| = |(e─d)|) :
+    (heq : |(b₀─e)| = |(e─d)|)
+    (h_bda : Triangle.area △ b₀:e:d + Triangle.area △ b₀:c₀:d = Triangle.area △ a:b:q + Triangle.area △ q:b:c) :
     |(b₀─e)| * |(b₀─e)| = Triangle.area △ a:b:q + Triangle.area △ q:b:c := by
   have hra : (∠ e:b₀:c₀ : ℝ) = ∟ := by euclid_finish
   have hrect := rectangle_area e d b₀ c₀ ED B₀C₀ BE DC ⟨fp, hra⟩

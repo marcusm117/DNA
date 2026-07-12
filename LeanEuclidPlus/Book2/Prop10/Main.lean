@@ -2,6 +2,7 @@ import SystemE
 import Book1.Prop03.Main
 import Book1Variants.Prop11
 import Book1.Prop31.Main
+import Mathlib.Tactic.Linarith
 import Book2.Prop10.step1
 import Book2.Prop10.step2
 import Book2.Prop10.step3
@@ -43,6 +44,7 @@ import Book2.Prop10.step38
 import Book2.Prop10.step39
 import Book2.Prop10.step40
 import Book2.Prop10.step41
+import Book2.Prop10.step21_assumption1
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -89,9 +91,12 @@ theorem proposition_10 : ∀ (a b c d : Point) (AD : Line),
     (step5 : d.onLine FD ∧ ¬(FD.intersectsLine CE)) := by euclid_apply (helper_2_10_step5 d FD CE (by euclid_assumption "" (show d.onLine FD; assumption)) (by euclid_assumption "" (show ¬FD.intersectsLine CE; assumption)))
 
   euclid_apply (intersection_lines EF FD) as f
+  -- @assumption_valid
+  have step6_assumption1 : ¬(FD.intersectsLine CE) := by assumption
+  -- @assumption ("the parallel straight-lines $EC$ and $FD$", ¬(FD.intersectsLine CE))
   euclid_sentence "2.10.6"
     "And since some straight-line $EF$ falls across the parallel straight-lines $EC$ and $FD$, the (internal angles) $CEF$ and $EFD$ are thus equal to two right-angles [Prop.~1.29]."
-    (step6 : ∠ c:e:f + ∠ e:f:d = ∟ + ∟) := by euclid_apply (helper_2_10_step6 a b c d e e0 e1 f AD CE EF FD (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show ¬EF.intersectsLine AD; assumption)) (by euclid_assumption "" (show d.onLine FD; assumption)) (by euclid_assumption "" (show f.onLine FD; assumption)) (by euclid_assumption "" (show ¬FD.intersectsLine CE; assumption)))
+    (step6 : ∠ c:e:f + ∠ e:f:d = ∟ + ∟) := by euclid_apply (helper_2_10_step6 a b c d e e0 e1 f AD CE EF FD (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show ¬EF.intersectsLine AD; assumption)) (by euclid_assumption "" (show d.onLine FD; assumption)) (by euclid_assumption "" (show f.onLine FD; assumption)) (by euclid_assumption "the parallel straight-lines $EC$ and $FD$" (show ¬(FD.intersectsLine CE); assumption)))
 
   euclid_sentence "2.10.7"
     "Thus, $FEB$ and $EFD$ are less than two right-angles."
@@ -111,14 +116,19 @@ theorem proposition_10 : ∀ (a b c d : Point) (AD : Line),
     "Let them be produced, and let them meet together at $G$, and let $AG$ be joined."
     (step10 : distinctPointsOnLine a g AG) := by euclid_apply (helper_2_10_step10 a b c e e0 e1 g AD CE EB AG (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show g.onLine EB; assumption)) (by euclid_assumption "" (show a.onLine AG; assumption)) (by euclid_assumption "" (show g.onLine AG; assumption)))
 
+  -- @assumption_valid
+  have step11_assumption1 : |(c─e)| = |(a─c)| := by assumption
   -- @assumption ("$AC$ is equal to $CE$", |(c─e)| = |(a─c)|)
   euclid_sentence "2.10.11"
     "And since $AC$ is equal to $CE$, angle $EAC$ is also equal to (angle) $AEC$ [Prop.~1.5]."
     (step11 : ∠ e:a:c = ∠ a:e:c) := by euclid_apply (helper_2_10_step11 a b c e e0 e1 AD EA CE (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show a.onLine EA; assumption)) (by euclid_assumption "" (show e.onLine EA; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "$AC$ is equal to $CE$" (show |(c─e)| = |(a─c)|; assumption)))
 
+  -- @assumption_valid
+  have step12_assumption1 : ∠ a:c:e = ∟ := by assumption
+  -- @assumption ("the (angle) at $C$ (is) a right-angle", ∠ a:c:e = ∟)
   euclid_sentence "2.10.12"
     "And the (angle) at $C$ (is) a right-angle."
-    (step12 : ∠ a:c:e = ∟) := by euclid_apply (helper_2_10_step12 a c e (by euclid_assumption "" (show ∠ a:c:e = ∟; assumption)))
+    (step12 : ∠ a:c:e = ∟) := by euclid_apply (helper_2_10_step12 a c e (by euclid_assumption "the (angle) at $C$ (is) a right-angle" (show ∠ a:c:e = ∟; assumption)))
 
   euclid_sentence "2.10.13"
     "Thus, $EAC$ and $AEC$ [are] each half a right-angle [Prop.~1.32]."
@@ -132,6 +142,8 @@ theorem proposition_10 : ∀ (a b c d : Point) (AD : Line),
     "Thus, (angle) $AEB$ is a right-angle."
     (step15 : ∠ a:e:b = ∟) := by euclid_apply (helper_2_10_step15 a b c e e0 e1 AD CE EA EB (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show a.onLine EA; assumption)) (by euclid_assumption "" (show e.onLine EA; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "" (show ∠ e:a:c = ∟ / 2 ∧ ∠ a:e:c = ∟ / 2; assumption)) (by euclid_assumption "" (show ∠ c:e:b = ∟ / 2 ∧ ∠ e:b:c = ∟ / 2; assumption)))
 
+  -- @assumption_valid
+  have step16_assumption1 : ∠ e:b:c = ∟ / 2 := by linarith
   -- @assumption ("since $EBC$ is half a right-angle", ∠ e:b:c = ∟ / 2, use_override step14.2)
   euclid_sentence "2.10.16"
     "And since $EBC$ is half a right-angle, $DBG$ (is) thus also half a right-angle [Prop.~1.15]."
@@ -153,10 +165,12 @@ theorem proposition_10 : ∀ (a b c d : Point) (AD : Line),
     "So side $BD$ is also equal to side $GD$ [Prop.~1.6]."
     (step20 : |(b─d)| = |(g─d)|) := by euclid_apply (helper_2_10_step20 a b c d e e0 e1 f g AD CE EB EF FD (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "" (show ∠ a:c:e0 = ∟; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show g.onLine EB; assumption)) (by euclid_assumption "" (show g.onLine FD; assumption)) (by euclid_assumption "" (show d.onLine FD; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine FD; assumption)) (by euclid_assumption "" (show ¬EF.intersectsLine AD; assumption)) (by euclid_assumption "" (show ¬FD.intersectsLine CE; assumption)) (by euclid_assumption "" (show ∠ d:g:b = ∠ d:b:g; assumption)))
 
-  -- ∠EGF = ∟/2 is derived inside this cone (step21_egf = ∠d:g:b via ray coincidence), not an input.
+  -- @assumption_gap
+  have step21_assumption1 : ∠ e:g:f = ∟ / 2 := by euclid_apply (helper_2_10_step21_assumption1 a b c d e e0 e1 f g AD CE EB EF FD (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "" (show ∠ a:c:e0 = ∟; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show g.onLine EB; assumption)) (by euclid_assumption "" (show g.onLine FD; assumption)) (by euclid_assumption "" (show d.onLine FD; assumption)) (by euclid_assumption "" (show f.onLine FD; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show ¬EF.intersectsLine AD; assumption)) (by euclid_assumption "" (show ¬FD.intersectsLine CE; assumption)) (by euclid_assumption "" (show ∠ d:g:b = ∟ / 2; assumption)))
+  -- @assumption ("$EGF$ is half a right-angle", ∠ e:g:f = ∟ / 2)
   euclid_sentence "2.10.21"
     "Again, since $EGF$ is half a right-angle, and the (angle) at $F$ (is) a right-angle, for it is equal to the opposite (angle) at $C$ [Prop.~1.34], the remaining (angle) $FEG$ is thus half a right-angle."
-    (step21 : ∠ f:e:g = ∟ / 2) := by euclid_apply (helper_2_10_step21 a b c d e e0 e1 f g AD CE EB EF FD (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "" (show ∠ a:c:e0 = ∟; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show g.onLine FD; assumption)) (by euclid_assumption "" (show d.onLine FD; assumption)) (by euclid_assumption "" (show f.onLine FD; assumption)) (by euclid_assumption "" (show g.onLine EB; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show ¬EF.intersectsLine AD; assumption)) (by euclid_assumption "" (show ¬FD.intersectsLine CE; assumption)) (by euclid_assumption "" (show ∠ a:c:e = ∟; assumption)) (by euclid_assumption "" (show ∠ d:g:b = ∟ / 2; assumption)))
+    (step21 : ∠ f:e:g = ∟ / 2) := by euclid_apply (helper_2_10_step21 a b c d e e0 e1 f g AD CE EB EF FD (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "" (show ∠ a:c:e0 = ∟; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show g.onLine FD; assumption)) (by euclid_assumption "" (show d.onLine FD; assumption)) (by euclid_assumption "" (show f.onLine FD; assumption)) (by euclid_assumption "" (show g.onLine EB; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show ¬EF.intersectsLine AD; assumption)) (by euclid_assumption "" (show ¬FD.intersectsLine CE; assumption)) (by euclid_assumption "" (show ∠ a:c:e = ∟; assumption)) (by euclid_assumption "" (show ∠ d:g:b = ∟ / 2; assumption)) (by euclid_assumption "$EGF$ is half a right-angle" (show ∠ e:g:f = ∟ / 2; assumption)))
 
   euclid_sentence "2.10.22"
     "Thus, angle $EGF$ (is) equal to $FEG$."
@@ -166,6 +180,8 @@ theorem proposition_10 : ∀ (a b c d : Point) (AD : Line),
     "So the side $GF$ is also equal to the side $EF$ [Prop.~1.6]."
     (step23 : |(g─f)| = |(e─f)|) := by euclid_apply (helper_2_10_step23 a b c d e e0 e1 f g AD CE EB EF FD (by euclid_assumption "" (show a.onLine AD; assumption)) (by euclid_assumption "" (show b.onLine AD; assumption)) (by euclid_assumption "" (show c.onLine AD; assumption)) (by euclid_assumption "" (show d.onLine AD; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e0.onLine CE; assumption)) (by euclid_assumption "" (show e1.onLine CE; assumption)) (by euclid_assumption "" (show ¬e0.onLine AD; assumption)) (by euclid_assumption "" (show between c e e1; assumption)) (by euclid_assumption "" (show ∠ a:c:e0 = ∟; assumption)) (by euclid_assumption "" (show e.onLine EF; assumption)) (by euclid_assumption "" (show f.onLine EF; assumption)) (by euclid_assumption "" (show g.onLine FD; assumption)) (by euclid_assumption "" (show d.onLine FD; assumption)) (by euclid_assumption "" (show f.onLine FD; assumption)) (by euclid_assumption "" (show g.onLine EB; assumption)) (by euclid_assumption "" (show e.onLine EB; assumption)) (by euclid_assumption "" (show b.onLine EB; assumption)) (by euclid_assumption "" (show ¬EF.intersectsLine AD; assumption)) (by euclid_assumption "" (show ¬FD.intersectsLine CE; assumption)) (by euclid_assumption "" (show ∠ e:g:f = ∠ f:e:g; assumption)))
 
+  -- @assumption_valid
+  have step24_assumption1 : |(c─e)| = |(a─c)| := by assumption
   -- @assumption ("$EC$ is equal to $CA$", |(c─e)| = |(a─c)|)
   euclid_sentence "2.10.24"
     "And since [$EC$ is equal to $CA$] the square on $EC$ is [also] equal to the square on $CA$."
@@ -183,6 +199,8 @@ theorem proposition_10 : ∀ (a b c d : Point) (AD : Line),
     "Thus, the square on $EA$ is double the square on $AC$."
     (step27 : |(e─a)| * |(e─a)| = 2 * (|(a─c)| * |(a─c)|)) := by euclid_apply (helper_2_10_step27 a c e (by euclid_assumption "" (show |(e─a)| * |(e─a)| = |(e─c)| * |(e─c)| + |(c─a)| * |(c─a)|; assumption)) (by euclid_assumption "" (show |(e─c)| * |(e─c)| + |(c─a)| * |(c─a)| = 2 * (|(c─a)| * |(c─a)|); assumption)))
 
+  -- @assumption_valid
+  have step28_assumption1 : |(g─f)| = |(e─f)| := by assumption
   -- @assumption ("$FG$ is equal to $EF$", |(g─f)| = |(e─f)|)
   euclid_sentence "2.10.28"
     "Again, since $FG$ is equal to $EF$, the (square) on $FG$ is also equal to the (square) on $FE$."

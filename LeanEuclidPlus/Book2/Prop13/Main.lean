@@ -25,6 +25,8 @@ theorem proposition_13 : ∀ (a b c d : Point) (AB BC CA : Line),
   euclid_intro_sentence "2.13.0"
     "In acute-angled triangles, the square on the side subtending the acute angle is less than the (sum of the) squares on the sides containing the acute angle by twice the (rectangle) contained by one of the sides around the acute angle, to which a perpendicular (straight-line) falls, and the (straight-line) cut off inside (the triangle) by the perpendicular (straight-line) towards the acute angle. Let $ABC$ be an acute-angled triangle, having the angle at (point) $B$ acute. And let $AD$ be drawn from point $A$, perpendicular to $BC$ [Prop.~1.12]. I say that the square on $AC$ is less than the (sum of the) squares on $CB$ and $BA$ by twice the rectangle contained by $CB$ and $BD$."
 
+  -- @assumption_valid
+  have step1_assumption1 : between b d c := by assumption
   -- @assumption ("the straight-line $CB$ has been cut, at random, at (point) $D$", between b d c)
   euclid_sentence "2.13.1"
     "For since the straight-line $CB$ has been cut, at random, at (point) $D$, the (sum of the) squares on $CB$ and $BD$ is thus equal to twice the rectangle contained by $CB$ and $BD$, and the square on $DC$ [Prop.~2.7]."
@@ -38,6 +40,8 @@ theorem proposition_13 : ∀ (a b c d : Point) (AB BC CA : Line),
     "Thus, the (sum of the) squares on $CB$, $BD$, and $DA$ is equal to twice the rectangle contained by $CB$ and $BD$, and the (sum of the) squares on $AD$ and $DC$."
     (step3 : |(c─b)| * |(c─b)| + |(b─d)| * |(b─d)| + |(d─a)| * |(d─a)| = 2 * (|(c─b)| * |(b─d)|) + |(a─d)| * |(a─d)| + |(d─c)| * |(d─c)|) := by euclid_apply (helper_2_13_step3 c b d a (by euclid_assumption "" (show |(c─b)| * |(c─b)| + |(b─d)| * |(b─d)| + |(d─a)| * |(d─a)| = 2 * (|(c─b)| * |(b─d)|) + |(d─c)| * |(d─c)| + |(d─a)| * |(d─a)|; assumption)))
 
+  -- @assumption_valid
+  have step4_assumption1 : ∠ a:d:c = ∟ := by assumption
   -- @assumption ("the angle at (point) $D$ is a right-angle", ∠ a:d:c = ∟)
   euclid_sentence "2.13.4"
     "But, the (square) on $AB$ (is) equal to the (sum of the squares) on $BD$ and $DA$. For the angle at (point) $D$ is a right-angle [Prop.~1.47]."

@@ -28,7 +28,6 @@ import Book2.Prop06.step11_kac_right
 import Book2.Prop06.step11_sscm
 import Book2.Prop06.step11_akm_right
 import Book2.Prop06.step11_rect
-import Book2.Prop06.step11_dmdb
 set_option linter.unusedVariables false
 set_option linter.unnecessarySeqFocus false
 
@@ -54,7 +53,8 @@ theorem helper_2_6_step11 (a b c d e f g h l m k : Point) (AB CE DF EF BG KM DE 
     (hBGCE : ¬(BG.intersectsLine CE)) (hKMAB : ¬(KM.intersectsLine AB))
     (hAKCE : ¬(AK.intersectsLine CE))
     (hdce : ∠ d:c:e = ∟) (hcef : ∠ c:e:f = ∟) (hcdf : ∠ c:d:f = ∟) (hdfe : ∠ d:f:e = ∟)
-    (hecDF : e.sameSide c DF) :
+    (hecDF : e.sameSide c DF)
+    (h_dmdb : |(d─m)| = |(d─b)|) :
     Triangle.area △ a:d:m + Triangle.area △ a:m:k = |(a─d)| * |(d─b)| := by
   euclid_intros
   -- ===== figure preamble (reused off-line / sameSide / parallel facts from steps 2/6/7/9) =====
@@ -95,8 +95,7 @@ theorem helper_2_6_step11 (a b c d e f g h l m k : Point) (AB CE DF EF BG KM DE 
   have step11_akm_right : ∠ a:k:m = ∟ := by euclid_apply (helper_2_6_step11_akm_right a c k m AB AK KM (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show a.onLine AK; assumption)) (by euclid_assumption "" (show k.onLine AK; assumption)) (by euclid_assumption "" (show k.onLine KM; assumption)) (by euclid_assumption "" (show m.onLine KM; assumption)) (by euclid_assumption "" (show a ≠ c; assumption)) (by euclid_assumption "" (show a ≠ k; assumption)) (by euclid_assumption "" (show k ≠ m; assumption)) (by euclid_assumption "" (show ∠ k:a:c = ∟; assumption)) (by euclid_assumption "" (show c.sameSide m AK; assumption)) (by euclid_assumption "" (show ¬(AB.intersectsLine KM); assumption)))
   -- ===== rectangle area = |a─d|·|d─m| =====
   have step11_rect : Triangle.area △ a:d:m + Triangle.area △ a:m:k = |(a─d)| * |(d─m)| := by euclid_apply (helper_2_6_step11_rect a d m k AB KM AK DF (by euclid_assumption "" (show formParallelogram a d k m AB KM AK DF; assumption)) (by euclid_assumption "" (show ∠ a:k:m = ∟; assumption)))
-  -- ===== DM = DB =====
-  have step11_dmdb : |(d─m)| = |(d─b)| := by euclid_apply (helper_2_6_step11_dmdb a b c d e h m AB CE DF EF BG KM DE (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine AB; assumption)) (by euclid_assumption "" (show d.onLine AB; assumption)) (by euclid_assumption "" (show c.onLine CE; assumption)) (by euclid_assumption "" (show e.onLine CE; assumption)) (by euclid_assumption "" (show d.onLine DF; assumption)) (by euclid_assumption "" (show m.onLine DF; assumption)) (by euclid_assumption "" (show b.onLine BG; assumption)) (by euclid_assumption "" (show h.onLine BG; assumption)) (by euclid_assumption "" (show m.onLine KM; assumption)) (by euclid_assumption "" (show h.onLine KM; assumption)) (by euclid_assumption "" (show d.onLine DE; assumption)) (by euclid_assumption "" (show e.onLine DE; assumption)) (by euclid_assumption "" (show h.onLine DE; assumption)) (by euclid_assumption "" (show between a c b; assumption)) (by euclid_assumption "" (show between a b d; assumption)) (by euclid_assumption "" (show |(c─e)| = |(c─d)|; assumption)) (by euclid_assumption "" (show ∠ d:c:e = ∟; assumption)) (by euclid_assumption "" (show formParallelogram d m b h DF BG AB KM; assumption)) (by euclid_assumption "" (show between d h e; assumption)) (by euclid_assumption "" (show ¬(b.onLine DE); assumption)) (by euclid_assumption "" (show ¬(h.onLine AB); assumption)) (by euclid_assumption "" (show ¬(e.onLine AB); assumption)) (by euclid_assumption "" (show ¬(BG.intersectsLine CE); assumption)))
-  rw [step11_rect, step11_dmdb]
+  -- ===== DM = DB (supplied by @assumption h_dmdb) =====
+  rw [step11_rect, h_dmdb]
 
 end Elements.Book2

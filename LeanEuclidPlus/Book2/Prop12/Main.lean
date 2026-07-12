@@ -23,6 +23,8 @@ theorem proposition_12 : ∀ (a b c d : Point) (AB BC CA : Line),
   euclid_intro_sentence "2.12.0"
     "In obtuse-angled triangles, the square on the side subtending the obtuse angle is greater than the (sum of the) squares on the sides containing the obtuse angle by twice the (rectangle) contained by one of the sides around the obtuse angle, to which a perpendicular (straight-line) falls, and the (straight-line) cut off outside (the triangle) by the perpendicular (straight-line) towards the obtuse angle. Let $ABC$ be an obtuse-angled triangle, having the angle $BAC$ obtuse. And let $BD$ be drawn from point $B$, perpendicular to $CA$ produced [Prop.~1.12]. I say that the square on $BC$ is greater than the (sum of the) squares on $BA$ and $AC$ by twice the rectangle contained by $CA$ and $AD$."
 
+  -- @assumption_valid
+  have step1_assumption1 : between d a c := by assumption
   -- @assumption ("the straight-line $CD$ has been cut, at random, at point $A$", between d a c)
   euclid_sentence "2.12.1"
     "For since the straight-line $CD$ has been cut, at random, at point $A$, the (square) on $DC$ is thus equal to the (sum of the) squares on $CA$ and $AD$, and twice the rectangle contained by $CA$ and $AD$ [Prop.~2.4]."
@@ -36,6 +38,8 @@ theorem proposition_12 : ∀ (a b c d : Point) (AB BC CA : Line),
     "Thus, the (sum of the squares) on $CD$ and $DB$ is equal to the (sum of the) squares on $CA$, $AD$, and $DB$, and twice the [rectangle contained] by $CA$ and $AD$."
     (step3 : |(c─d)| * |(c─d)| + |(d─b)| * |(d─b)| = |(c─a)| * |(c─a)| + |(a─d)| * |(a─d)| + |(d─b)| * |(d─b)| + 2 * (|(c─a)| * |(a─d)|)) := by euclid_apply (helper_2_12_step3 c d a b (by euclid_assumption "" (show |(d─c)| * |(d─c)| + |(d─b)| * |(d─b)| = |(c─a)| * |(c─a)| + |(a─d)| * |(a─d)| + |(d─b)| * |(d─b)| + 2 * (|(c─a)| * |(a─d)|); assumption)))
 
+  -- @assumption_valid
+  have step4_assumption1 : ∠ b:d:c = ∟ := by assumption
   -- @assumption ("the angle at $D$ (is) a right-angle", ∠ b:d:c = ∟)
   euclid_sentence "2.12.4"
     "But, the (square) on $CB$ is equal to the (sum of the squares) on $CD$ and $DB$. For the angle at $D$ (is) a right-angle [Prop.~1.47]."

@@ -2,6 +2,7 @@ import SystemE
 import Book1Variants.Prop46
 import Book1.Prop10.Main
 import Book1.Prop03.Main
+import Mathlib.Tactic.Linarith
 import Book2.Prop11.step1
 import Book2.Prop11.step2
 import Book2.Prop11.step3
@@ -9,7 +10,6 @@ import Book2.Prop11.step4
 import Book2.Prop11.step5
 import Book2.Prop11.step6
 import Book2.Prop11.step7
-import Book2.Prop11.step8
 import Book2.Prop11.step9
 import Book2.Prop11.step10
 import Book2.Prop11.step11
@@ -77,14 +77,18 @@ theorem proposition_11 : ∀ (a b : Point) (AB : Line),
     "and let $GH$ be drawn through to (point) $K$."
     (step7 : k.onLine GH) := by euclid_apply (helper_2_11_step7 k GH CD (by euclid_assumption "" (show k.onLine GH; assumption)) (by euclid_assumption "" (show k.onLine CD; assumption)))
 
-  euclid_sentence "2.11.8"
+  euclid_wts "2.11.8"
     "I say that $AB$ has been cut at $H$ such as to make the rectangle contained by $AB$ and $BH$ equal to the square on $AH$."
-    (step8 : |(a─b)| * |(b─h)| = |(a─h)| * |(a─h)|) := by euclid_apply (helper_2_11_step8 a b c e f f0 g h x AB AC AH GH CD (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show f.onLine AC; assumption)) (by euclid_assumption "" (show between a e c; assumption)) (by euclid_assumption "" (show |(a─e)| = |(e─c)|; assumption)) (by euclid_assumption "" (show |(a─c)| = |(a─b)|; assumption)) (by euclid_assumption "" (show ∠ b:a:c = ∟; assumption)) (by euclid_assumption "" (show between c a f0; assumption)) (by euclid_assumption "" (show between e f f0; assumption)) (by euclid_assumption "" (show |(e─f)| = |(b─e)|; assumption)) (by euclid_assumption "" (show |(a─h)| = |(a─f)|; assumption)) (by euclid_assumption "" (show h.onLine AH; assumption)) (by euclid_assumption "" (show a.onLine AH; assumption)) (by euclid_assumption "" (show ∠ f:a:h = ∟; assumption)) (by euclid_assumption "" (show ¬ x.onLine AC; assumption)) (by euclid_assumption "" (show ¬ b.onLine AC; assumption)) (by euclid_assumption "" (show ¬ h.onLine AC; assumption)) (by euclid_assumption "" (show ¬ x.sameSide b AC; assumption)) (by euclid_assumption "" (show ¬ h.sameSide x AC; assumption)))
 
-  -- @assumption ("the straight-line $AC$ has been cut in half at $E$, and $FA$ has been added to it", |(a─e)| = |(e─c)|)
+  -- @assumption_valid
+  have step9_assumption1 : |(a─e)| = |(e─c)| := by linarith
+  -- @assumption_valid
+  have step9_assumption2 : between c a f0 := by assumption
+  -- @assumption ("the straight-line $AC$ has been cut in half at $E$", |(a─e)| = |(e─c)|)
+  -- @assumption ("$FA$ has been added to it", between c a f0)
   euclid_sentence "2.11.9"
     "For since the straight-line $AC$ has been cut in half at $E$, and $FA$ has been added to it, the rectangle contained by $CF$ and $FA$, plus the square on $AE$, is thus equal to the square on $EF$ [Prop.~2.6]."
-    (step9 : |(c─f)| * |(f─a)| + |(a─e)| * |(a─e)| = |(e─f)| * |(e─f)|) := by euclid_apply (helper_2_11_step9 a b c e f f0 AB AC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show f.onLine AC; assumption)) (by euclid_assumption "" (show between a e c; assumption)) (by euclid_assumption "the straight-line $AC$ has been cut in half at $E$, and $FA$ has been added to it" (show |(a─e)| = |(e─c)|; assumption)) (by euclid_assumption "" (show ∠ b:a:c = ∟; assumption)) (by euclid_assumption "" (show between c a f0; assumption)) (by euclid_assumption "" (show between e f f0; assumption)) (by euclid_assumption "" (show |(e─f)| = |(b─e)|; assumption)))
+    (step9 : |(c─f)| * |(f─a)| + |(a─e)| * |(a─e)| = |(e─f)| * |(e─f)|) := by euclid_apply (helper_2_11_step9 a b c e f f0 AB AC (by euclid_assumption "" (show a.onLine AB; assumption)) (by euclid_assumption "" (show b.onLine AB; assumption)) (by euclid_assumption "" (show a ≠ b; assumption)) (by euclid_assumption "" (show a.onLine AC; assumption)) (by euclid_assumption "" (show c.onLine AC; assumption)) (by euclid_assumption "" (show f.onLine AC; assumption)) (by euclid_assumption "" (show between a e c; assumption)) (by euclid_assumption "the straight-line $AC$ has been cut in half at $E$" (show |(a─e)| = |(e─c)|; assumption)) (by euclid_assumption "" (show ∠ b:a:c = ∟; assumption)) (by euclid_assumption "$FA$ has been added to it" (show between c a f0; assumption)) (by euclid_assumption "" (show between e f f0; assumption)) (by euclid_assumption "" (show |(e─f)| = |(b─e)|; assumption)))
 
   euclid_sentence "2.11.10"
     "And $EF$ (is) equal to $EB$."
@@ -94,6 +98,8 @@ theorem proposition_11 : ∀ (a b : Point) (AB : Line),
     "Thus, the (rectangle contained) by $CF$ and $FA$, plus the (square) on $AE$, is equal to the (square) on $EB$."
     (step11 : |(c─f)| * |(f─a)| + |(a─e)| * |(a─e)| = |(e─b)| * |(e─b)|) := by euclid_apply (helper_2_11_step11 a c e f b (by euclid_assumption "" (show |(c─f)| * |(f─a)| + |(a─e)| * |(a─e)| = |(e─f)| * |(e─f)|; assumption)) (by euclid_assumption "" (show |(e─f)| = |(e─b)|; assumption)))
 
+  -- @assumption_valid
+  have step12_assumption1 : ∠ b:a:c = ∟ := by assumption
   -- @assumption ("the angle at $A$ (is) a right-angle", ∠ b:a:c = ∟)
   euclid_sentence "2.11.12"
     "But, the (sum of the squares) on $BA$ and $AE$ is equal to the (square) on $EB$. For the angle at $A$ (is) a right-angle [Prop.~1.47]."
@@ -111,6 +117,8 @@ theorem proposition_11 : ∀ (a b : Point) (AB : Line),
     "Thus, the remaining rectangle contained by $CF$ and $FA$ is equal to the square on $AB$."
     (step15 : |(c─f)| * |(f─a)| = |(a─b)| * |(a─b)|) := by euclid_apply (helper_2_11_step15 a b c f (by euclid_assumption "" (show |(c─f)| * |(f─a)| = |(a─b)| * |(a─b)|; assumption)))
 
+  -- @assumption_valid
+  have step16_assumption1 : |(f─g)| = |(a─f)| := by assumption
   -- @assumption ("$AF$ (is) equal to $FG$", |(f─g)| = |(a─f)|)
   euclid_sentence "2.11.16"
     "And $FK$ is the (rectangle contained) by $CF$ and $FA$. For $AF$ (is) equal to $FG$."
@@ -132,6 +140,8 @@ theorem proposition_11 : ∀ (a b : Point) (AB : Line),
     "Thus, the remaining (square) $FH$ is equal to the (rectangle) $HD$."
     (step20 : Triangle.area △ f:g:h + Triangle.area △ f:a:h = Triangle.area △ h:b:d + Triangle.area △ h:k:d) := by euclid_apply (helper_2_11_step20 a f g h b d k (by euclid_assumption "" (show Triangle.area △ f:g:h + Triangle.area △ f:a:h = Triangle.area △ h:b:d + Triangle.area △ h:k:d; assumption)))
 
+  -- @assumption_valid
+  have step21_assumption1 : |(b─d)| = |(a─b)| := by euclid_finish
   -- @assumption ("$AB$ (is) equal to $BD$", |(b─d)| = |(a─b)|)
   euclid_sentence "2.11.21"
     "And $HD$ is the (rectangle contained) by $AB$ and $BH$. For $AB$ (is) equal to $BD$."
