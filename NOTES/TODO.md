@@ -1,8 +1,10 @@
 # CURR
+- derivation is not enough in the paper. what about the structure, like the have, the by_contra, the cases etc., or are these also functions. but then fmain does not contain all the euclid sentences and it is not that simple? or can we say structural things do not affect and more so change goal??
+
 - make sure to prepare to delete Book/ . Currently Book3 is using it, and we should make it use things in Book1/ or Book1Vairants thing similar toi how book 1 imports. we should do it immediately so agents do not get confused. and a checker that they can only import these ones.
 
 ## Prove last done
-- 10
+- 22
 
 ## Map last done (including assumption):
 - 22 (saved)

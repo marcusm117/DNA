@@ -790,25 +790,49 @@ SUPPRESS_DEPS_KEYWORD = re.compile(r'(?m)^[ \t]*--[ \t]*@suppress_deps_check\b')
 _SENT_LOC = re.compile(r'euclid_sentence\s*"((?:[^"\\]|\\.)*)"')
 
 
+# Lines the Assumption Phase (assumptions.py) MATERIALIZES into the annotation block, above the
+# euclid_sentence, when it turns an `-- @assumption` into a checked obligation: the `@assumption_valid`/
+# `@assumption_gap` classification tag, and the `have <node>_assumption<N> : <type> := by <tactic>` have
+# itself (which may wrap onto continuation lines before its `:=`). These legally sit BETWEEN a
+# `@suppress_deps_check` tag and its sentence, so `_next_sentence_loc` must scan over them too — otherwise
+# a valid tag looks "detached" after the sweep runs (crashing gate-C / --all and blanking the status mirror).
+_ASSUMPTION_CLASS_TAG = re.compile(r'(?m)^[ \t]*--[ \t]*@assumption_(?:valid|gap)\b')
+_ASSUMPTION_HAVE = re.compile(r'^[ \t]*have[ \t]+\w+_assumption\d+\b')
+
+
 def _next_sentence_loc(src, pos):
-    """From char offset `pos`, scan forward over blank + annotation (@assumption/@args/
-    @suppress_deps_check) lines; return the `loc` of the first euclid_sentence head reached, or None if a
-    non-annotation, non-sentence line is hit first (i.e. the tag is not attached to a sentence)."""
+    """From char offset `pos`, scan forward over blank + annotation lines (@assumption/@args/
+    @suppress_deps_check, the @assumption_valid/@assumption_gap classification tags, and the materialized
+    `have <node>_assumption<N> …` obligation the Assumption Phase inserts) to the first euclid_sentence
+    head; return its `loc`, or None only if a genuinely-unrelated line is hit first (tag not attached to a
+    sentence). Tolerating the materialized lines is what keeps a @suppress_deps_check tag valid AFTER the
+    assumption sweep — and keeps gate-C / --all / the status mirror from breaking on it."""
     i, n = pos, len(src)
+    in_have = False                                              # inside a multi-line `have …_assumption…`
     while i < n:
         eol = src.find("\n", i)
         if eol == -1:
             eol = n
         line = src[i:eol]
         stripped = line.strip()
+        if in_have:                                             # swallow continuation lines up to `:=`
+            if ":=" in line:
+                in_have = False
+            i = eol + 1
+            continue
         if not stripped:
             i = eol + 1
             continue
         if stripped.startswith("euclid_sentence"):
             m = _SENT_LOC.search(src[i:i + 400])                 # loc is on this line; small window is safe
             return m.group(1) if m else None
+        if _ASSUMPTION_HAVE.match(line):
+            if ":=" not in line:                                # wrapped have — swallow its continuation
+                in_have = True
+            i = eol + 1
+            continue
         if (ASSUMPTION_ANNOT.match(line) or ARGS_ANNOT.match(line)
-                or SUPPRESS_DEPS_ANNOT.match(line)):
+                or SUPPRESS_DEPS_ANNOT.match(line) or _ASSUMPTION_CLASS_TAG.match(line)):
             i = eol + 1
             continue
         return None

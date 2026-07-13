@@ -1163,6 +1163,424 @@
       "verdict": "closes"
     }
   },
+  "Book2/Prop01": {
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BG$ (is) equal to $A$",
+      "type": "|(b\u2500g)| = |(a\u2081\u2500a\u2082)|",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BG$ (is) equal to $A$",
+      "type": "|(b\u2500g)| = |(a\u2081\u2500a\u2082)|",
+      "verdict": "closes"
+    },
+    "step8_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BG$ [Prop.~1.34], (is) equal to $A$",
+      "type": "|(b\u2500g)| = |(a\u2081\u2500a\u2082)|",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop02": {
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AD$ (is) equal to $AB$",
+      "type": "|(a\u2500d)| = |(a\u2500b)|",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BE$ (is) equal to $AB$",
+      "type": "|(b\u2500e)| = |(a\u2500b)|",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop03": {
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BE$ (is) equal to $BC$",
+      "type": "|(b\u2500e)| = |(c\u2500b)|",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$DC$ (is) equal to $CB$",
+      "type": "|(c\u2500d)| = |(c\u2500b)|",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop04": {
+    "step14_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$CG$ is parallel to $BK$",
+      "type": "\u00ac(CF.intersectsLine BE)",
+      "verdict": "hard"
+    },
+    "step26_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$GC$ (is) equal to $CB$",
+      "type": "|(b\u2500c)| = |(c\u2500g)|",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$CF$ is parallel to $AD$",
+      "type": "\u00ac(CF.intersectsLine AD)",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the side $BA$ is also equal to $AD$",
+      "type": "|(a\u2500d)| = |(a\u2500b)|",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop05": {
+    "step8_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AC$ is also equal to $CB$",
+      "type": "|(a\u2500c)| = |(c\u2500b)|",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop06": {
+    "step11_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$DM$ is equal to $DB$",
+      "type": "|(d\u2500m)| = |(d\u2500b)|",
+      "verdict": "hard"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AC$ is equal to $CB$",
+      "type": "|(a\u2500c)| = |(c\u2500b)|",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop08": {
+    "step12_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "since $CB$ is equal to $BD$",
+      "type": "|(b\u2500d)| = |(c\u2500b)|",
+      "verdict": "closes"
+    },
+    "step13_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "since $CG$ is equal to $GQ$",
+      "type": "|(c\u2500g)| = |(g\u2500q)|",
+      "verdict": "closes"
+    },
+    "step13_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "and $QR$ to $RP$",
+      "type": "|(q\u2500r)| = |(r\u2500p)|",
+      "verdict": "closes"
+    },
+    "step21_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$BK$ (is) equal to $BD$",
+      "type": "|(b\u2500k)| = |(b\u2500d)|",
+      "verdict": "error"
+    },
+    "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "since $CB$ is equal to $BD$",
+      "type": "|(b\u2500d)| = |(c\u2500b)|",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "since $BC$ is equal to $BD$",
+      "type": "|(b\u2500d)| = |(c\u2500b)|",
+      "verdict": "closes"
+    },
+    "step6_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "and $GK$ to $KN$",
+      "type": "|(g\u2500k)| = |(k\u2500n)|",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop09": {
+    "step13_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$GEF$ is half a right-angle",
+      "type": "\u2220 g:e:f = \u221f / 2",
+      "verdict": "error"
+    },
+    "step16_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "the angle at $B$ is half a right-angle",
+      "type": "\u2220 e:b:c = \u221f / 2",
+      "verdict": "closes"
+    },
+    "step19_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AC$ is equal to $CE$",
+      "type": "|(c\u2500e)| = |(a\u2500c)|",
+      "verdict": "closes"
+    },
+    "step21_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "angle $ACE$ (is) a right-angle",
+      "type": "\u2220 a:c:e = \u221f",
+      "verdict": "closes"
+    },
+    "step24_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$EG$ is equal to $GF$",
+      "type": "|(e\u2500g)| = |(g\u2500f)|",
+      "verdict": "closes"
+    },
+    "step32_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the angle $AEF$ is a right-angle",
+      "type": "\u2220 a:e:b = \u221f",
+      "verdict": "closes"
+    },
+    "step35_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "the angle at $D$ is a right-angle",
+      "type": "\u2220 f:d:b = \u221f",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AC$ is equal to $CE$",
+      "type": "|(c\u2500e)| = |(a\u2500c)|",
+      "verdict": "closes"
+    },
+    "step8_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the (angle) at $C$ is a right-angle",
+      "type": "\u2220 a:c:e = \u221f",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop10": {
+    "step11_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AC$ is equal to $CE$",
+      "type": "|(c\u2500e)| = |(a\u2500c)|",
+      "verdict": "closes"
+    },
+    "step12_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the (angle) at $C$ (is) a right-angle",
+      "type": "\u2220 a:c:e = \u221f",
+      "verdict": "closes"
+    },
+    "step16_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "since $EBC$ is half a right-angle",
+      "type": "\u2220 e:b:c = \u221f / 2",
+      "verdict": "closes"
+    },
+    "step21_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$EGF$ is half a right-angle",
+      "type": "\u2220 e:g:f = \u221f / 2",
+      "verdict": "error"
+    },
+    "step24_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$EC$ is equal to $CA$",
+      "type": "|(c\u2500e)| = |(a\u2500c)|",
+      "verdict": "closes"
+    },
+    "step28_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$FG$ is equal to $EF$",
+      "type": "|(g\u2500f)| = |(e\u2500f)|",
+      "verdict": "closes"
+    },
+    "step6_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the parallel straight-lines $EC$ and $FD$",
+      "type": "\u00ac(FD.intersectsLine CE)",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop11": {
+    "step12_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the angle at $A$ (is) a right-angle",
+      "type": "\u2220 b:a:c = \u221f",
+      "verdict": "closes"
+    },
+    "step16_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AF$ (is) equal to $FG$",
+      "type": "|(f\u2500g)| = |(a\u2500f)|",
+      "verdict": "closes"
+    },
+    "step21_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$AB$ (is) equal to $BD$",
+      "type": "|(b\u2500d)| = |(a\u2500b)|",
+      "verdict": "closes"
+    },
+    "step9_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "the straight-line $AC$ has been cut in half at $E$",
+      "type": "|(a\u2500e)| = |(e\u2500c)|",
+      "verdict": "closes"
+    },
+    "step9_assumption2": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$FA$ has been added to it",
+      "type": "between c a f0",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop12": {
+    "step1_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the straight-line $CD$ has been cut, at random, at point $A$",
+      "type": "between d a c",
+      "verdict": "closes"
+    },
+    "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the angle at $D$ (is) a right-angle",
+      "type": "\u2220 b:d:c = \u221f",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop13": {
+    "step1_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the straight-line $CB$ has been cut, at random, at (point) $D$",
+      "type": "between b d c",
+      "verdict": "closes"
+    },
+    "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the angle at (point) $D$ is a right-angle",
+      "type": "\u2220 a:d:c = \u221f",
+      "verdict": "closes"
+    }
+  },
+  "Book2/Prop14": {
+    "step11_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "the straight-line $BF$ has been cut---equally at $G$, and unequally at $E$",
+      "type": "(between b\u2080 g f \u2227 |(b\u2080\u2500g)| = |(g\u2500f)|) \u2227 between b\u2080 e f",
+      "verdict": "closes"
+    },
+    "step18_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$EF$ (is) equal to $ED$",
+      "type": "|(e\u2500f)| = |(e\u2500d)|",
+      "verdict": "closes"
+    },
+    "step2_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "the square $BD$, equal to the rectilinear figure $A$",
+      "type": "Triangle.area \u25b3 b\u2080:e:d + Triangle.area \u25b3 b\u2080:c\u2080:d = Triangle.area \u25b3 a:b:q + Triangle.area \u25b3 q:b:c",
+      "verdict": "closes"
+    }
+  },
   "Book3/Prop01": {
     "step10_assumption1": {
       "closed_by": "euclid_finish",
@@ -1909,6 +2327,318 @@
       "text": "$ABC$, $BAC$, and $ACB$ are equal to two right-angles",
       "type": "\u2220 c:a:b + \u2220 a:b:c + \u2220 b:c:a = \u221f + \u221f",
       "verdict": "closes"
+    }
+  },
+  "Book3/Prop23": {
+    "step4_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "segment $ACB$ is similar to segment $ADB$",
+      "type": "\u2220 a:c:b = \u2220 a:d:b",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop25": {
+    "step10_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AD$ is equal to $DC$",
+      "type": "|(a\u2500d)| = |(d\u2500c)|",
+      "verdict": "closes"
+    },
+    "step10_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$DE$ (is) common",
+      "type": "|(d\u2500e)| = |(d\u2500e)|",
+      "verdict": "closes"
+    },
+    "step11_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "For each (is) a right-angle",
+      "type": "\u2220 a:d:e = \u221f \u2227 \u2220 c:d:e = \u221f",
+      "verdict": "closes"
+    },
+    "step18_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "because the center $E$ happens to lie outside it",
+      "type": "e.opposingSides b AC",
+      "verdict": "closes"
+    },
+    "step19_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "angle $ABD$ is equal to $BAD$",
+      "type": "\u2220 a:b:d = \u2220 b:a:d",
+      "verdict": "closes"
+    },
+    "step19_assumption2": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$AD$ becomes equal to each of $BD$ [Prop.~1.6] and $DC$",
+      "type": "|(a\u2500d)| = |(b\u2500d)| \u2227 |(a\u2500d)| = |(d\u2500c)|",
+      "verdict": "closes"
+    },
+    "step22_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$ABD$ is less than $BAD$",
+      "type": "\u2220 a:b:d < \u2220 b:a:d",
+      "verdict": "closes"
+    },
+    "step9_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "angle $ABE$ is equal to $BAE$",
+      "type": "\u2220 a:b:e = \u2220 b:a:e",
+      "verdict": "hard"
+    }
+  },
+  "Book3/Prop32": {
+    "step12_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$ABCD$ is a quadrilateral in a circle",
+      "type": "a.onCircle ABCD \u2227 b.onCircle ABCD \u2227 c.onCircle ABCD \u2227 d.onCircle ABCD",
+      "verdict": "closes"
+    },
+    "step14_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$BAD$ was shown (to be) equal to $DBF$",
+      "type": "\u2220 f:b:d = \u2220 b:a:d",
+      "verdict": "closes"
+    },
+    "step4_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "some straight-line $EF$ touches the circle $ABCD$ at point $B$",
+      "type": "b.onLine EF \u2227 b.onCircle ABCD \u2227 \u00acEF.intersectsCircle ABCD",
+      "verdict": "closes"
+    },
+    "step4_assumption2": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$BA$ has been drawn from the point of contact, at right-angles to the tangent",
+      "type": "distinctPointsOnLine b a' BA \u2227 \u2220 a':b:f = \u221f",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop33": {
+    "step13_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AD$ is at the extremity of diameter $AE$, (namely, point) $A$, at right-angles to $AE$",
+      "type": "\u2220 d:a:e = \u221f",
+      "verdict": "closes"
+    },
+    "step14_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "some straight-line $AD$ touches the circle $ABE$",
+      "type": "(\u2203 p : Point, p.onLine AD \u2227 p.onCircle \u03b1) \u2227 \u00ac AD.intersectsCircle \u03b1",
+      "verdict": "closes"
+    },
+    "step14_assumption2": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "some (other) straight-line $AB$ has been drawn across from the point of contact $A$ into circle $ABE$",
+      "type": "a.onLine AB \u2227 b.onLine AB \u2227 b.onCircle \u03b1",
+      "verdict": "closes"
+    },
+    "step22_assumption1": {
+      "closed_by": "linarith",
+      "level": 4,
+      "tag": "valid",
+      "text": "the angle at $A$ being a right-angle",
+      "type": "\u2220 b:a:d = \u221f",
+      "verdict": "closes"
+    },
+    "step23_assumption1": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "(the latter angle), being in a semi-circle, is also a right-angle",
+      "type": "\u2220 a:e:b = \u221f",
+      "verdict": "hard"
+    },
+    "step33_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AF$ is equal to $FB$",
+      "type": "|(a\u2500f)| = |(f\u2500b)|",
+      "verdict": "closes"
+    },
+    "step33_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$FG$ (is) common",
+      "type": "|(f\u2500g)| = |(f\u2500g)|",
+      "verdict": "closes"
+    },
+    "step38_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AD$ is at right-angles to the diameter $AE$, at its extremity",
+      "type": "\u2220 d:a:e = \u221f",
+      "verdict": "closes"
+    },
+    "step39_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$AB$ has been drawn across (the circle) from the point of contact $A$",
+      "type": "a.onLine AB \u2227 b.onLine AB \u2227 b.onCircle \u03b1",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$AF$ is equal to $FB$",
+      "type": "|(a\u2500f)| = |(f\u2500b)|",
+      "verdict": "closes"
+    },
+    "step7_assumption2": {
+      "closed_by": "rfl",
+      "level": 1,
+      "tag": "valid",
+      "text": "$FG$ (is) common",
+      "type": "|(f\u2500g)| = |(f\u2500g)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop34": {
+    "step3_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "some straight-line $EF$ touches the circle $ABC$",
+      "type": "b.onLine EF \u2227 b.onCircle ABC \u2227 \u00ac EF.intersectsCircle ABC",
+      "verdict": "closes"
+    },
+    "step3_assumption2": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$BC$ has been drawn across (the circle) from the point of contact $B$",
+      "type": "b.onCircle ABC \u2227 b.onLine BC \u2227 c.onCircle ABC \u2227 c.onLine BC \u2227 b \u2260 c",
+      "verdict": "hard"
+    }
+  },
+  "Book3/Prop35": {
+    "step1_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$AE$, $EC$, $DE$, and $EB$ being equal",
+      "type": "|(a\u2500e)| = |(e\u2500c)| \u2227 |(e\u2500c)| = |(d\u2500e)| \u2227 |(d\u2500e)| = |(b\u2500e)|",
+      "verdict": "closes"
+    },
+    "step5_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "some straight-line, $GF$, through the center, cuts at right-angles some (other) straight-line, $AC$, not through the center",
+      "type": "(\u2220 a:g:f = \u221f \u2228 \u2220 c:g:f = \u221f) \u2227 \u00acf.onLine AC",
+      "verdict": "closes"
+    },
+    "step7_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the straight-line $AC$ is cut equally at $G$, and unequally at $E$",
+      "type": "|(a\u2500g)| = |(g\u2500c)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop36": {
+    "step17_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "some straight-line, $EF$, through the center, cuts some (other) straight-line, $AC$, not through the center, at right-angles",
+      "type": "e.isCentre ABC \u2227 e.onLine EF \u2227 \u00ace.onLine DA \u2227 (\u2220 a:f:e = \u221f \u2228 \u2220 c:f:e = \u221f)",
+      "verdict": "closes"
+    },
+    "step19_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "the straight-line $AC$ is cut in half at point $F$",
+      "type": "|(a\u2500f)| = |(f\u2500c)|",
+      "verdict": "closes"
+    },
+    "step23_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$EFC$ [is] a right-angle",
+      "type": "\u2220 e:f:c = \u221f",
+      "verdict": "closes"
+    },
+    "step28_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$EBD$ (is) a right-angle",
+      "type": "\u2220 e:b:d = \u221f",
+      "verdict": "closes"
+    },
+    "step2_assumption1": {
+      "closed_by": "assumption",
+      "level": 2,
+      "tag": "valid",
+      "text": "$F$ be the center of circle $ABC$",
+      "type": "f.isCentre ABC",
+      "verdict": "closes"
+    },
+    "step4_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "straight-line $AC$ is cut in half at $F$",
+      "type": "|(a\u2500f)| = |(f\u2500c)|",
+      "verdict": "closes"
+    }
+  },
+  "Book3/Prop37": {
+    "step5_assumption1": {
+      "closed_by": "euclid_finish",
+      "level": 6,
+      "tag": "valid",
+      "text": "$DE$ touches circle $ABC$",
+      "type": "(\u2203 p : Point, p.onLine DE \u2227 p.onCircle ABC) \u2227 \u00ac DE.intersectsCircle ABC",
+      "verdict": "closes"
+    },
+    "step5_assumption2": {
+      "closed_by": null,
+      "level": null,
+      "tag": "gap",
+      "text": "$DCA$ cuts (it)",
+      "type": "\u2203 DCA : Line, d.onLine DCA \u2227 c.onLine DCA \u2227 a.onLine DCA \u2227 DCA.intersectsCircle ABC",
+      "verdict": "hard"
     }
   }
 }

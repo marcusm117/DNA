@@ -60,11 +60,7 @@ by
     "And they are on equal straight-lines [$BC$ and $EF$]."
     (step7 : |(b─c)| = |(e─f)|) := by sorry
 
-  -- orchestrator-arcCentralAngle: Prop3.24 applied to segments BAC/EDF: "similar segments on equal
-  -- straight-lines are equal"; in arc-as-central-angle convention, segment equality = major arc
-  -- equality ↔ minor arc equality ↔ ∠b:g:c=∠e:h:f (primer §arc-as-magnitude, "major=major ↔
-  -- minor complements equal"); Prop3.24 can't be directly called (different-center circles, different
-  -- chord lines); claim = the arc-equality consequent in System E.
+  -- @suppress_deps_check "III.24 (similar segments on equal straight-lines are equal) is deliberately not formalized: a faithful proof needs a circle-superposition axiom, which System E lacks (superposition exists only for triangles), and we chose not to add it."
   euclid_sentence "3.26.8"
     "And similar segments of circles on equal straight-lines are equal to one another [Prop.~3.24]."
     (step8 : ∠ b:g:c = ∠ e:h:f) := by sorry

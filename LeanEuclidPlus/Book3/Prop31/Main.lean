@@ -19,7 +19,6 @@ by
   euclid_intro_sentence "3.31.0"
     "In a circle, the angle in a semi-circle is a right-angle, and that in a greater segment (is) less than a right-angle, and that in a lesser segment (is) greater than a right-angle. And, further, the angle of a segment greater (than a semi-circle) is greater than a right-angle, and the angle of a segment less (than a semi-circle) is less than a right-angle. Let $ABCD$ be a circle, and let $BC$ be its diameter, and $E$ its center. And let $BA$, $AC$, $AD$, and $DC$ be joined. I say that the angle $BAC$ in the semi-circle $BAC$ is a right-angle, and the angle $ABC$ in the segment $ABC$, (which is) greater than a semi-circle, is less than a right-angle, and the angle $ADC$ in the segment $ADC$, (which is) less than a semi-circle, is greater than a right-angle."
 
-  -- Construction witnesses: AE line (joining A to center E) and F (extension of BA beyond A)
   have hAE0_ex : ∃ AE0 : Line, distinctPointsOnLine a e AE0 := by sorry
   obtain ⟨AE0, hAE0⟩ := hAE0_ex
   have hf_ex : ∃ f : Point, between b a f := by sorry

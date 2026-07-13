@@ -21,14 +21,22 @@ import Book3.Prop20.Main
 import Book3.Prop21.Main
 import Book3.Prop22.Main
 import Book3.Prop23.Main
-import Book3.Prop24.Main
+
+-- 24 requires circle superposition arguments, not currently in System E.
+-- import Book3.Prop24.Main
+
 import Book3.Prop25.Main
-import Book3.Prop26.Main
-import Book3.Prop27.Main
-import Book3.Prop28.Main
-import Book3.Prop29.Main
-import Book3.Prop30.Main
-import Book3.Prop31.Main
+
+-- 26 to 30 require circumference length, which is not currently in System E so we ignore these.
+-- import Book3.Prop26.Main
+-- import Book3.Prop27.Main
+-- import Book3.Prop28.Main
+-- import Book3.Prop29.Main
+-- import Book3.Prop30.Main
+
+-- Uses horn angle, not in System E so we ignore
+-- import Book3.Prop31.Main
+
 import Book3.Prop32.Main
 import Book3.Prop33.Main
 import Book3.Prop34.Main
